@@ -1,0 +1,22 @@
+<body *ngIf="inicioSesion">
+  <app-navbar></app-navbar>
+  <main class="wrapper d-flex">
+    <app-menu></app-menu>
+    <div id="content">
+      <router-outlet> </router-outlet>
+    </div>
+  </main>
+  <footer class="footer">
+    <app-footer></app-footer>
+  </footer>
+</body>
+
+<body *ngIf="!inicioSesion" class="body-login">
+  <app-login-page (valueInicioSesion)="estadoInicioSesion($event)">
+  </app-login-page>
+  <footer class="footer footer-login">
+    <app-footer></app-footer>
+  </footer>
+</body>
+
+<!-- <app-login-page></app-login-page> -->
