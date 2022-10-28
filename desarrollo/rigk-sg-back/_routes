@@ -1,0 +1,28 @@
+- /api/v1
+    - /auth
+        - POST /login
+        - POST /register
+        - POST /recovery
+        - POST /sendCode
+    - /user
+        - GET /:id
+        - POST /
+        - PUT /:id
+    - /business
+        - GET /verify/:id/:user
+        - POST /
+        - PUT /:id
+    - /products
+        - GET /
+        - GET /price/:id
+        - POST /
+        - PUT /price/:id
+        - PUT /:id
+    - /form
+        - GET / _?filters_
+        - GET /previous/:year
+        - GET /all
+        - GET /:id
+        - POST /:status
+        - PUT /status/:id
+        - PUT /:id
