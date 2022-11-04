@@ -12,19 +12,18 @@ class LoginLogic {
         
         const user = req.body.user;
         const password = req.body.password;
-
-        let passworHash = bcrypt.hashSync(password, 8);
         
         try{
             
             const output = await loginDao.login(user);
+            console.log(password, output.PASSWORD)
             bcrypt.compare(password, output.PASSWORD).then(async (r) => {
                 if(r){
-                    const token = await generarJWT(user, `${output.FIRST_NAME} ${output.LAST_NAME}`, "");
+                    const token = await generarJWT(output.ID, user);
                     res.json(token);
                 }
                 else{
-                    res.send('No Pasó :(');                }
+                    res.send('Usuario y/o contraseña incorrectos, intenta nuevamente');                }
             });
             
         }

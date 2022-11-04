@@ -3,19 +3,48 @@ import mysqlcon from '../db';
 
 class SendCodeDao {
 
-    async sendCode(USER: string) {
+    async verifyEmail(USER: string) {
         const conn = mysqlcon.getConnection()!;
-        const res = await conn.query("SELECT * FROM USER WHERE USER = ?", USER).then((res) => res[0]).catch(error => {undefined});
+        const res:any = await conn.query("SELECT EMAIL,ID FROM USER WHERE EMAIL = ?", [USER]).then((res) => res[0]).catch(error => [{undefined}]);
 
-        let recovery = false;
-        if(res != null && res != undefined) {
-            recovery = true;
+        let login = false;
+        if(res != null && res != undefined && res.length > 0) {
+            login = true;
+            conn.end();
+            return res[0];
         } else {
-            console.log("Correo no es  correcto, intente nuevamente");
+            conn.end();
+            console.log("Correo no es correcto, intente nuevamente");
+            return res;
         }
-        conn.end();
-        return recovery;
+        
     }
+
+    async generateCode(CODE: string, ID: string) {
+        const conn = mysqlcon.getConnection()!;
+        const res:any = await conn.query("UPDATE USER SET CODE = ?, DATE_CODE = NOW() WHERE ID=?", [CODE, ID]).then((res) => res[0]).catch(error => [{undefined}]);
+
+        return res;
+        
+    }
+
+    async date(USER: Date) {
+        const conn = mysqlcon.getConnection()!;
+        const res:any = await conn.query("SELECT DATE_CODE FROM USER WHERE EMAIL = ?", [USER]).then((res) => res[0]).catch(error => [{undefined}]);
+
+        let login = false;
+        if(res != null && res != undefined && res.length > 0) {
+            login = true;
+            conn.end();
+            return res[0];
+        } else {
+            conn.end();
+            console.log("Correo no es correcto, intente nuevamente");
+            return res;
+        }
+        
+    }
+    
 }
 
 const sendCodeDao = new SendCodeDao();
