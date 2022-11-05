@@ -1,11 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-
-// const loginDao = require('../dao/login-dao');
 import loginDao from '../dao/loginDao';
 import { generarJWT } from '../helpers/jwt';
-
-
 
 class LoginLogic {
     async login(req: Request, res: Response) {

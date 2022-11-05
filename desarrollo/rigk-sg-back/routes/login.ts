@@ -1,14 +1,12 @@
 import { Router } from "express";
 import loginLogic from "../controllers/loginLogic";
-import recoveryLogic from "../controllers/recoveryLogic";
-import sendCodeLogic from '../controllers/sendCodeLogic';
+import sendCodeLogic from '../controllers/recoveryLogic';
 import { veriryemail } from '../middleware/verifyemail';
-import codeVerifyLogic from '../controllers/codeVerifyLogic';
 
 const router = Router();
 
 router.post('/login', [ ], loginLogic.login);
-router.post('/recovery', [ ], recoveryLogic.recovery);
-router.post('/sendCode', [ ], sendCodeLogic.sendCode);
-router.post('/sendCode/verify', [ ], codeVerifyLogic.sendCode);
+router.post('/sendCode/recovery', [ ], sendCodeLogic.recoveryPassword);
+router.post('/sendCode', [], sendCodeLogic.sendCode);
+router.post('/sendCode/verify', [ ], sendCodeLogic.sendCodeVerify);
 export default router;

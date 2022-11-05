@@ -1,5 +1,4 @@
 import mysqlcon from '../db';
-
 class LoginDao {
     async login(USER: string) {
         const conn = mysqlcon.getConnection()!;
