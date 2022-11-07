@@ -4,6 +4,7 @@ import morgan from 'morgan';
 
 import loginRoutes from './routes/login';
 import businessRoutes from './routes/business';
+import statementRoutes from './routes/statmentsDeclaretion';
 
 class Server {
 
@@ -12,6 +13,7 @@ class Server {
     private apiPath = {
         auth: '/api/v1/auth',
         business: '/api/v1/business',
+        form: '/api/v1/statement',
     }
 
     constructor() {
@@ -24,6 +26,7 @@ class Server {
     routes() {
         this.app.use(this.apiPath.auth,loginRoutes);
         this.app.use(this.apiPath.business,businessRoutes);
+        this.app.use(this.apiPath.form,statementRoutes);
     }
 
     config() {
