@@ -3,7 +3,7 @@ import { NextFunction, Request, Response} from "express";
 
 const jwt = require('jsonwebtoken');
 
-const validarJWT = ( req: any, res: Response, next: NextFunction ) => {
+export const validarJWT = ( req: any, res: Response, next: NextFunction ) => {
 
     const token = req.header('x-token');
 
@@ -17,6 +17,7 @@ const validarJWT = ( req: any, res: Response, next: NextFunction ) => {
     try {
 
         const { uid, name, rol } = jwt.verify( token, process.env.SECRET_JWT_SEED! );
+        
         req.uid  = uid;
         req.name = name;
 

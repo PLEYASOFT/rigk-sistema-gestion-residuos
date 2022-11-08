@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.validarJWT = void 0;
 // import jwt from 'jsonwebtoken'
 const jwt = require('jsonwebtoken');
 const validarJWT = (req, res, next) => {
@@ -24,3 +25,4 @@ const validarJWT = (req, res, next) => {
     // TODO OK!
     next();
 };
+exports.validarJWT = validarJWT;

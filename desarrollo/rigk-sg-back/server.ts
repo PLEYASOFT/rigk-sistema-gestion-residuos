@@ -4,8 +4,7 @@ import morgan from 'morgan';
 
 import loginRoutes from './routes/login';
 import businessRoutes from './routes/business';
-import statementRoutes from './routes/statmentsDeclaretion';
-
+import statementRoutes from './routes/statmentProductor';
 class Server {
 
     private app: Application;
@@ -27,12 +26,23 @@ class Server {
         this.app.use(this.apiPath.auth,loginRoutes);
         this.app.use(this.apiPath.business,businessRoutes);
         this.app.use(this.apiPath.form,statementRoutes);
+        this.app.use((error:any, req:any, res:any, next:any) => {
+            if (error) {
+                console.log(error)
+                res.status(400).json({status:false, msg:"Error general"});
+                next();
+              } else {
+                next(error);
+              }
+        })
     }
 
     config() {
-        this.app.use(express.json());
+        this.app.use(express.urlencoded({extended: false}));
+        this.app.use(express.json({strict: true}));
         this.app.use(cors({origin: '*'}));
         this.app.use(morgan('dev'));
+        
     }
 
     listen() {
