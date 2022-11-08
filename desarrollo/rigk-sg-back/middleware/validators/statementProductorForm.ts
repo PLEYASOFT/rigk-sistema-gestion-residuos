@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import statementProductorFormScheme from '../../models/statementProductorForm';
+import { statementProductorFormScheme } from '../../models/statementProductor';
 
 export const verifyParametersProductorForm = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -10,7 +10,5 @@ export const verifyParametersProductorForm = async (req: Request, res: Response,
     } catch (error) {
         return res.status(400).json({status:false, msg: "Formato inválido"});
     }
-    
-    
 
 };

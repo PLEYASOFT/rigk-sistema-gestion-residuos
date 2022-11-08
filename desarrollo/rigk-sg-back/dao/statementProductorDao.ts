@@ -1,6 +1,5 @@
 import mysqlcon from '../db';
 
-
 class statementProductorDao {
 
     public async getDeclaretionByYear(business: string, year: string) {
@@ -31,8 +30,6 @@ class statementProductorDao {
         }
         return true;
     }
-    
-
 
 }
 

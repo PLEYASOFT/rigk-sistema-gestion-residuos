@@ -1,8 +1,5 @@
-import { NextFunction, Request, Response} from "express";
-// import jwt from 'jsonwebtoken'
-
+import { NextFunction, Response} from "express";
 const jwt = require('jsonwebtoken');
-
 export const verifyRolProductor = ( req: any, res: Response, next: NextFunction ) => {
 
     const token = req.header('x-token');
@@ -13,9 +10,7 @@ export const verifyRolProductor = ( req: any, res: Response, next: NextFunction 
             msg: 'error en el token'
         });
     }
-
     try {
-
         const { uid, name, rol } = jwt.verify( token, process.env.SECRET_JWT_SEED! );
         if(rol != 1) {
             return res.status(401).json({
@@ -25,7 +20,6 @@ export const verifyRolProductor = ( req: any, res: Response, next: NextFunction 
         }
         req.uid  = uid;
         req.name = name;
-
         
     } catch (error) {
         return res.status(401).json({
@@ -33,9 +27,5 @@ export const verifyRolProductor = ( req: any, res: Response, next: NextFunction 
             msg: 'Token no válido'
         });
     }
-
-
-
-    // TODO OK!
     next();
 }

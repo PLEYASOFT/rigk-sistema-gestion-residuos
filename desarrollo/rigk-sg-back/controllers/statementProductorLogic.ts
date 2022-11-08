@@ -1,10 +1,7 @@
 import { Request, Response } from 'express';
-import loginDao from '../dao/loginDao';
 import statementDao from '../dao/statementProductorDao';
 
-
 class StatementProductorLogic {
-
     public async getStatmentByYear(req: Request, res: Response) {
         const {year, business} = req.params;
         try {
@@ -22,7 +19,6 @@ class StatementProductorLogic {
         }
     }
     public async saveForm(req: Request, res: Response) {
-        
         try {
             const {header, detail} = req.body;
             const {id_header} = await statementDao.saveDeclaretion(header,detail);

@@ -2,7 +2,7 @@ import mysqlcon from '../db';
 
 class BusinessDao {
 
-    async checkID(user:string, id:string) {
+    public async checkID(user:string, id:string) {
         const conn = mysqlcon.getConnection()!;
         const res = await conn.query("SELECT * FROM user_business WHERE ID_USER = ? AND ID_BUSINESS = ?", [user,id])
         console.log(res);
