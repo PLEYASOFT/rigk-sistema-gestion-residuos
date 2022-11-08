@@ -4,7 +4,7 @@ import { validateLogin } from "../middleware/validateLogin";
 
 const router = Router();
 
-router.post('/', [], authLogic.login);
+router.post('/', [validateLogin], authLogic.login);
 router.post('/modifyPassword', [], authLogic.modifyPassword);
 router.post('/sendCode', [], authLogic.sendCode);
 router.post('/sendCode/verify', [ ], authLogic.sendCodeVerify);
