@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import mysqlcon from '../db';
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
 import { generarJWT } from '../helpers/jwt';
 import { sendCode } from '../helpers/sendCode';
 import authDao from '../dao/authDao';
@@ -23,7 +22,8 @@ class AuthLogic {
                         res.json('Contraseña cambiada')
                     }
                     else{
-                        res.send('Contraseña incorrecta, intenta nuevamente');                }
+                        res.send('Contraseña incorrecta, intenta nuevamente');                
+                    }
                 });    
             }
             else{
@@ -36,12 +36,9 @@ class AuthLogic {
     }
 
     async login(req: Request, res: Response) {
-        
         const user = req.body.user;
         const password = req.body.password;
-        
         try{
-            
             const output = await authDao.login(user);
             console.log(password, output.PASSWORD)
             bcrypt.compare(password, output.PASSWORD).then(async (r) => {
@@ -50,9 +47,9 @@ class AuthLogic {
                     res.json(token);
                 }
                 else{
-                    res.send('Usuario y/o contraseña incorrectos, intenta nuevamente');                }
+                    res.send('Usuario y/o contraseña incorrectos, intenta nuevamente');                
+                }
             });
-            
         }
         catch(err){
             console.log(err)
@@ -61,13 +58,10 @@ class AuthLogic {
     }
 
     async sendCode(req: Request, res: Response) {
-
         const {user} = req.body;
-
         console.log(user)
         try{
             const output = await authDao.verifyEmail(user);
-
             if(output.EMAIL == user)
             {
                 const cod = (Math.random() * (999999 -100000) + 100000).toFixed(0);
@@ -84,10 +78,8 @@ class AuthLogic {
     }
 
     async sendCodeVerify(req: Request, res: Response) {
-
         const code = req.body.code;
         const {user} = req.body;
-
         try{
 
             const output = await authDao.verifyCode(code,user);
@@ -110,7 +102,6 @@ class AuthLogic {
             else{
                 res.send("Código incorrecto");
             }
-            
         }
         catch(err){
             console.log(err)
@@ -119,12 +110,9 @@ class AuthLogic {
     }
 
     async recoveryPassword(req: Request, res: Response) {
-        
         const user = req.body.user;
         const password = req.body.password;
         const repeatPassword = req.body.repeatPassword;
-
-
         try{
             if(password == repeatPassword){
                 let passwordHash = bcrypt.hashSync(password, 8);
@@ -133,11 +121,9 @@ class AuthLogic {
 
                 res.json("Haz recuperado tu contraseña")
             }
-
             else{
                 res.send("Contraseñas no coinciden");
             }
-            
         }
         catch(err){
             console.log(err)
