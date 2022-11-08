@@ -1,12 +1,13 @@
 import { Router } from "express";
-import loginLogic from "../controllers/loginLogic";
-import sendCodeLogic from '../controllers/recoveryLogic';
-import { veriryemail } from '../middleware/verifyemail';
+import authLogic from '../controllers/authLogic';
+import { validateLogin } from "../middleware/validateLogin";
 
 const router = Router();
 
-router.post('/login', [ ], loginLogic.login);
-router.post('/sendCode/recovery', [ ], sendCodeLogic.recoveryPassword);
-router.post('/sendCode', [], sendCodeLogic.sendCode);
-router.post('/sendCode/verify', [ ], sendCodeLogic.sendCodeVerify);
+router.post('/', [], authLogic.login);
+router.post('/modifyPassword', [], authLogic.modifyPassword);
+router.post('/sendCode', [], authLogic.sendCode);
+router.post('/sendCode/verify', [ ], authLogic.sendCodeVerify);
+router.post('/sendCode/recovery', [ ], authLogic.recoveryPassword);
+
 export default router;

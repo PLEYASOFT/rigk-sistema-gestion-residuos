@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import loginDao from '../dao/loginDao';
 import statementDao from '../dao/statementDeclaretionDao';
 
 
@@ -12,12 +11,6 @@ class StatementDeclaretionLogic {
             status: true,
             data: statement
         });
-    }
-    async saveForm(req: Request, res: Response) {
-        const {header, business} = req.body;
-
-        
-
     }
 }
 

@@ -1,10 +1,7 @@
-import { Request, Response } from 'express';
-
-import jwt from 'jsonwebtoken';
+import { Response } from 'express';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 
-import sendCodeDao from '../dao/recoveryDao';
 
 
 export const sendCode = ( output: any, cod: any, res: Response ) => {
