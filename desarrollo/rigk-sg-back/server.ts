@@ -50,6 +50,8 @@ class Server {
             console.log(`Servidor escuchando en puerto ${this.port}`);
         });
     }
+
+    
 }
 
 export default Server;
