@@ -1,1 +1,59 @@
-<p>navbar works!</p>
+<header class="header py-3 px-4 border-bottom">
+    <div class="d-flex flex-wrap align-items-center justify-content-between">
+        
+        <div class="d-flex align-items-center">
+            <!-- boton para mobile -->
+            <a class="btn d-inline-block d-lg-none me-3 navbar-btn" id="sidebarCollapse" role="button" href="#">
+                <i class="fa fa-bars fa-lg" aria-hidden="true"></i>
+            </a>
+            <!-- boton para desktop -->
+            <a class="btn d-none d-lg-inline-block me-3" href="#">
+                <span class="shrink-btn"><i class="fa fa-bars fa-lg" aria-hidden="true"></i></span>
+            </a>
+            <!-- sitename -->
+            <div class="d-lg-flex align-items-center">
+                <a class="logo-h me-3 d-block" href="#"><img class="img-fluid" src="assets/images/logo-prorep-w.png" width="200" alt="Ir al inicio"></a>
+                <span class="site-name">Gestión de Residuos v.1</span>
+            </div>
+            
+        </div>
+
+        <div class="menu-h-2 d-flex text-end align-items-center position-relative">
+            <!-- Perfil -->
+            <div class="profile me-2 me-lg-4">
+                <a class="text-decoration-none" data-bs-toggle="collapse" href="#info-profile" role="button" aria-expanded="false" aria-controls="info-profile">
+                    <img src="assets/images/foto-usuario-h.png" alt="" class="rounded-circle img-fluid" width="70" height="70">
+                </a>
+            </div>
+
+            <!-- Notificaciones-->
+            <div class="info-profile collapse" id="info-profile">
+                <div class="info-profile__header">
+                    <img src="assets/images/foto-usuario-h.png" alt="" class="rounded-circle" width="70" height="70">
+                </div>
+                <div class="info-profile__body">
+                    <ul class="list-profile list-unstyled">
+                        <li class="list-profile__title">Nombre Usuario</li>
+                        <li class="list-profile__text">Jorge Lucero Desa</li>
+                    </ul>
+                    <ul class="list-profile list-unstyled">
+                        <li class="list-profile__title">Perfil</li>
+                        <li class="list-profile__text">Administrador</li>
+                    </ul>
+                    <ul class="list-profile list-unstyled">
+                        <li class="list-profile__title">Institución</li>
+                        <li class="list-profile__text">Nombre Institución</li>
+                    </ul>
+                    <ul class="list-profile list-unstyled">
+                        <li class="list-profile__title">Fecha / Hora ingreso</li>
+                        <li class="list-profile__text">26/10/2022 - 14:20</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Botón salir -->
+            <a class="btn btn-sign-out" href="#"><i class="fa fa-sign-out fa-lg" aria-hidden="true"></i></a>
+        </div>
+
+    </div>
+
+</header>

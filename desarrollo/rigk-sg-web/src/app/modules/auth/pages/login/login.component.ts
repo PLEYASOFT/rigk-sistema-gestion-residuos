@@ -14,17 +14,6 @@ export class LoginComponent implements OnInit {
   }
 
   btnLogin() {
-    const usuario = "lalla";
-    const contrasenia = "bbb";
-
-
-    this.authSerice.login(usuario, contrasenia).subscribe(r=>{
-      if(r.status) {
-        // ... ok logeado
-      } else {
-        // no login
-      }
-    });
   }
 
 }

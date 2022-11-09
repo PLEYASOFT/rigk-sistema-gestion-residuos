@@ -7,18 +7,16 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ProductorService {
 
-  url = `${environment.API_V1_URL}/auth`;
+  url = `${environment.API_V1_URL}/statement`;
 
   constructor(private http: HttpClient) { }
 
-  login(user:string,password:string) {
-
-    // const tmp = {
-    //   status: true,
-    //   data: [... ""]
-    // }
-
-    return this.http.post<any>(`${this.url}/login`, {user,password});
+  saveForm(data: any) {
+    return this.http.post(`${this.url}`, data);
+  }
+  
+  getValueStatementByYear(id_business:any, year:number) {
+    return this.http.get<any>(`${this.url}/${id_business}/year/${year}`);
   }
 
 }
