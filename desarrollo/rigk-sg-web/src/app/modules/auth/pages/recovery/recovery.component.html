@@ -1,4 +1,3 @@
-
 <body class="body-login">
 
 <div class="container d-flex">
@@ -6,30 +5,22 @@
         <div class="mb-4">
             <a href="index.html"><img src="assets/images/logo-prorep-w.png" width="240" alt="Ir al inicio"></a>
         </div>
-        <form class="form-login"
+        <form class="form-recovery"
               autocomplete="off"
               [formGroup]="formData"
-              (ngSubmit)="btnLogin()">
+              (ngSubmit)="btnRecovery()">
             <div class="mb-4">
                 <div class="input-group">
                     <button class="input-group-text input-group-text-left">
                         <i class="fa fa-user fa-fw" aria-hidden="true"></i>
                     </button>
-                    <input type="user" class="form-control" id="usuario" formControlName="user" placeholder="Usuario">
+                    <input type="user" class="form-control" id="usuario" formControlName="user" placeholder="Ingrese su correo">
                 </div>
             </div>
+            
             <div class="mb-4">
-                <div class="input-group">
-                    <button class="input-group-text input-group-text-left">
-                        <i class="fa fa-lock fa-fw" aria-hidden="true"></i>
-                    </button>
-                    <input type="password" class="form-control" id="password" formControlName="password" placeholder="Contraseña">
-                </div>
+                <button type="submit" class="btn btn-primary btn-fa w-100">Enviar <i class="fa fa-long-arrow-right fa-fw" aria-hidden="true"></i></button>
             </div>
-            <div class="mb-4">
-                <button type="submit" class="btn btn-primary btn-fa w-100">Iniciar Sesión <i class="fa fa-long-arrow-right fa-fw" aria-hidden="true"></i></button>
-            </div>
-            <a routerLink="/auth/recovery" class="text-center" href="#">¿Olvidó su contraseña?</a>
         </form>
     </div>
 </div>
@@ -63,13 +54,3 @@
 </script>
 
 </body>
-
-<!--<form [formGroup]="formData" (ngSubmit)="btnLogin()">
-
-    <input type="text" formControlName="user" placeholder="Nombre de usuario">
-
-    <input type="password" formControlName="password">
-
-    <input type="submit" value="Enviar">
-    
-</form> -->
