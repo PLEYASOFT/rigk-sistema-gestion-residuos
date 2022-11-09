@@ -24,10 +24,20 @@ class Server {
     routes() {
         this.app.use(this.apiPath.auth,loginRoutes);
         this.app.use(this.apiPath.business,businessRoutes);
+
+        this.app.use((error:any, req:any, res:any, next:any) => {
+            if (error) {
+                console.log(error)
+                res.status(400).json({status:false, msg:"Error general"});
+                next();
+              } else {
+                next(error);
+              }
+        })
     }
 
     config() {
-        this.app.use(express.json());
+        this.app.use(express.json())
         this.app.use(cors({origin: '*'}));
         this.app.use(morgan('dev'));
     }
@@ -37,6 +47,8 @@ class Server {
             console.log(`Servidor escuchando en puerto ${this.port}`);
         });
     }
+
+    
 }
 
 export default Server;
