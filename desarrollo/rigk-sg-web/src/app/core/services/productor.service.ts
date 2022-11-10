@@ -12,11 +12,16 @@ export class ProductorService {
   constructor(private http: HttpClient) { }
 
   saveForm(data: any) {
-    return this.http.post(`${this.url}`, data);
+    console.log(data)
+    return this.http.post<any>(`${this.url}`, data,{headers: {
+      "x-token": sessionStorage.getItem('token')!
+    }});
   }
   
   getValueStatementByYear(id_business:any, year:number) {
-    return this.http.get<any>(`${this.url}/${id_business}/year/${year}`);
+    return this.http.get<any>(`${this.url}/${id_business}/year/${year}`, {headers: {
+      "x-token": sessionStorage.getItem('token')!
+    }});
   }
 
 }
