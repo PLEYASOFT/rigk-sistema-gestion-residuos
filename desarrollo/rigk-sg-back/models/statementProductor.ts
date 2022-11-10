@@ -9,21 +9,23 @@ export const statementProductorFormScheme = Joi.object({
                         .max(9999)
                         .required(),
         state: Joi.boolean(),
-        created_by: Joi.string()
+        created_by: Joi.number()
                     .required()
     }),
-    detail: Joi.object({
+    detail: Joi.array().has(Joi.object({
         precedence: Joi.number()
                     .required(),
         hazard: Joi.number()
                     .required(),
         recyclability: Joi.number()
                         .required(),
-        type_residye: Joi.number()
+        type_residue: Joi.number()
                         .required(),
         value: Joi.number()
-                        .required()
-    }),
+                        .required(),
+        amount: Joi.number().required()
+    })),
+    
 });
 
 export const statementByIdScheme = Joi.object({
