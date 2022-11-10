@@ -11171,8 +11171,8 @@ textarea.form-control-lg {
  * -------------------------- */
 @font-face {
   font-family: "FontAwesome";
-  src: url("./assets/webfonts/fontawesome-webfont.eot?v=4.7.0");
-  src: url("./assets/webfonts/fontawesome-webfont.eot?#iefix&v=4.7.0") format("embedded-opentype"), url("./assets/webfonts/fontawesome-webfont.woff2?v=4.7.0") format("woff2"), url("./assets/webfonts/fontawesome-webfont.woff?v=4.7.0") format("woff"), url("./assets/webfonts/fontawesome-webfont.ttf?v=4.7.0") format("truetype"), url("./assets/webfonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular") format("svg");
+  src: url("../webfonts/fontawesome-webfont.eot?v=4.7.0");
+  src: url("../webfonts/fontawesome-webfont.eot?#iefix&v=4.7.0") format("embedded-opentype"), url("../webfonts/fontawesome-webfont.woff2?v=4.7.0") format("woff2"), url("../webfonts/fontawesome-webfont.woff?v=4.7.0") format("woff"), url("../webfonts/fontawesome-webfont.ttf?v=4.7.0") format("truetype"), url("../webfonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular") format("svg");
   font-weight: normal;
   font-style: normal;
 }
@@ -14243,7 +14243,7 @@ body {
   background-position: right;
   background-repeat: repeat-y;
   background-size: cover;
-  /*background-image: url(./assets/images/c-bar.svg);*/
+  background-image: url(../images/c-bar.svg);
   position: relative;
   bottom: -32px;
 }
@@ -14254,7 +14254,7 @@ body {
   background-position: right;
   background-repeat: repeat-y;
   background-size: cover;
-  /*background-image: url(./assets/images/c-bar.svg);*/
+  background-image: url(../images/c-bar.svg);
   position: absolute;
   bottom: 0;
 }
@@ -14342,7 +14342,7 @@ p {
 }
 
 .body-login {
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(./assets/images/bg-login.jpg);
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(../images/bg-login.jpg);
   background-size: auto;
   background-position: left center;
 }
@@ -14354,7 +14354,7 @@ p {
     align-items: center;
     min-height: 100vh;
     overflow: hidden;
-    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(./assets/images/bg-login.jpg);
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(../images/bg-login.jpg);
     background-size: cover;
     background-position: center right;
   }
@@ -14825,7 +14825,7 @@ body.shrink #content {
 .box-inicio {
   background-color: #212529;
   color: #ffffff;
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(./assets/images/bg-login.jpg);
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(../images/bg-login.jpg);
   background-size: cover;
 }
 .box-inicio h2, .box-inicio .h2 {
