@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component} from '@angular/core';
+import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-recovery',
@@ -9,29 +10,22 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class RecoveryComponent{
 
   formData: FormGroup = this.fb.group({
-    user: [ '', [Validators.required, Validators.email]]
+    user: [ '', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(3)]],
+    repeatPassword: ['', [Validators.required, Validators.minLength(3)]]
   });
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder,
+              private authService: AuthService) { }
 
-  
-
-  
-
-  btnRecovery() {
+  btnrecovery() {
     
     console.log(this.formData.value);
-    console.log(this.formData.valid);
 
+    const {user, password, repeatPassword} = this.formData.value;
 
-    /*this.authService.login(usuario, contrasenia).subscribe((r: { status: any; })=>{
-      if(r.status) {
-        // ... ok logeado
-      } else {
-        // no login
-      }
-    });*/
+    this.authService.recovery(user, password, repeatPassword).subscribe(resp => {
+      console.log(resp);
+    });
   }
-
-
 }

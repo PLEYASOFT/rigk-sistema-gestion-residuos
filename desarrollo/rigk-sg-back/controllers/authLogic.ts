@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import { generarJWT } from '../helpers/jwt';
 import { sendCode } from '../helpers/sendCode';
 import authDao from '../dao/authDao';
+import { resolve } from 'path';
 
 class AuthLogic {
 
@@ -22,16 +23,16 @@ class AuthLogic {
                         res.json('Contraseña cambiada')
                     }
                     else{
-                        res.send('Contraseña incorrecta, intenta nuevamente');                
+                        res.json('Contraseña incorrecta, intenta nuevamente');                
                     }
                 });    
             }
             else{
-                res.send("Correo inválido");
+                res.json("Correo inválido");
             }
         } catch (err) {
             console.log(err)
-            res.send({status: 0, message: "Ocurrió un error"});
+            res.json({status: 0, message: "Ocurrió un error"});
         }
     }
 
@@ -40,20 +41,19 @@ class AuthLogic {
         const password = req.body.password;
         try{
             const output = await authDao.login(user);
-            console.log(password, output.PASSWORD)
             bcrypt.compare(password, output.PASSWORD).then(async (r) => {
                 if(r){
-                    const token = await generarJWT(output.ID, user);
+                    const token = await generarJWT(output.ID, user, output.ROL);
                     res.json(token);
                 }
                 else{
-                    res.send('Usuario y/o contraseña incorrectos, intenta nuevamente');                
+                    res.json('Usuario y/o contraseña incorrectos, intenta nuevamente');                
                 }
             });
         }
         catch(err){
             console.log(err)
-            res.send({status: 0, message: "Ocurrió un error"});
+            res.json({status: 0, message: "Ocurrió un error"});
         }
     }
 
@@ -68,12 +68,13 @@ class AuthLogic {
                 await authDao.generateCode(cod, output.ID);
                 
                 sendCode(output,cod,res);
+                
+                res.json(output.EMAIL);
             }
-            res.send(output);
         }
         catch(err){
             console.log(err)
-            res.send({status: 0, message: "Ocurrió un error"});
+            res.json({status: 0, message: "Ocurrió un error"});
         }
     }
 
@@ -93,14 +94,14 @@ class AuthLogic {
                 console.log(dif2);
 
                 if(dif2 <= 5){
-                    res.send("Código correcto, modifique contraseña")
+                    res.json("Código correcto, modifique contraseña")
                 }
                 else{
-                    res.send("Código expirado, solicitelo nuevamente")
+                    res.json("Código expirado, solicitelo nuevamente")
                 }
             }
             else{
-                res.send("Código incorrecto");
+                res.json("Código incorrecto");
             }
         }
         catch(err){
@@ -117,17 +118,17 @@ class AuthLogic {
             if(password == repeatPassword){
                 let passwordHash = bcrypt.hashSync(password, 8);
 
-                const output = await authDao.recovery(passwordHash, user);
+                await authDao.recovery(passwordHash, user);
 
                 res.json("Haz recuperado tu contraseña")
             }
             else{
-                res.send("Contraseñas no coinciden");
+                res.json("Contraseñas no coinciden");
             }
         }
         catch(err){
             console.log(err)
-            res.send({status: 0, message: "Ocurrió un error"});
+            res.json({status: 0, message: "Ocurrió un error"});
         }
     }
 }

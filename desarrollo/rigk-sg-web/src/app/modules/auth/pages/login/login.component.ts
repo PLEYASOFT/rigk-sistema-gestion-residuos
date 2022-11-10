@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductorService } from '../../../../core/services/productor.service';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
-import router from '../../../../../../../rigk-sg-back/routes/login';
 import { Router } from 'express';
 import { AuthService } from '../../../../core/services/auth.service';
 
@@ -18,7 +17,6 @@ export class LoginComponent{
   });
 
   constructor(private fb: FormBuilder,
-              private router: Router,
               private authService: AuthService) { }
 
   btnLogin() {

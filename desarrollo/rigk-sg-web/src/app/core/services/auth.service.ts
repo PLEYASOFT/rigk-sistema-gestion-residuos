@@ -7,18 +7,23 @@ import { environment } from 'src/environments/environment';
 })
 export class AuthService {
 
-  url = `${environment.API_V1_URL}/auth`;
+  url = `${environment.API_V1_URL}`;
 
   constructor(private http: HttpClient) { }
 
   login(user:string,password:string) {
-
-    // const tmp = {
-    //   status: true,
-    //   data: [... ""]
-    // }
-
-    return this.http.post<any>(`${this.url}`, {user,password});
+    return this.http.post<any>(`${this.url}/auth`, {user,password});
   }
 
+  sendCode(user:string) {
+    return this.http.post<any>(`${this.url}/auth/sendCode`, {user});
+  }
+
+  verifyCode(code:string,user:string){
+    return this.http.post<any>(`${this.url}/auth/sendCode/verify`, {code, user});
+  }
+
+  recovery(user:string,password:string,repeatPassword:string){
+    return this.http.post<any>(`${this.url}/auth/sendCode/recovery`, {user, password,repeatPassword});
+  }
 }
