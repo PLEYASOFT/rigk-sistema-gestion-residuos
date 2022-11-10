@@ -8,18 +8,20 @@ class statementProductorDao {
         const id_statement = res_header[0].ID;
         const res_detail: any = await conn?.execute("SELECT * FROM detail_statement_form WHERE ID_HEADER = ?",[id_statement]).then((res) => res[0]).catch(error => {undefined});
 
-        return {header: res_header[0], detail: res_detail[0]};
+        return {header: res_header[0], detail: res_detail};
     }
 
     public async saveDeclaretion(header: any, detail: any[]) {
-        const {id_business, year_statement, state, creater_by} = header;
+        const {id_business, year_statement, state, created_by} = header;
+        console.log(header);
         const conn = mysqlcon.getConnection();
-        const id = await conn?.execute("INSERT INTO header_statement_form(ID_BUSINESS,YEAR_STATEMENT,STATE,CREATER_BY) VALUES (?,?,?,?) RETURNING id", [id_business,year_statement,state,creater_by]).then((res) => res[0]).catch(error => {undefined});
+        const resp: any = await conn?.execute("INSERT INTO header_statement_form(ID_BUSINESS,YEAR_STATEMENT,STATE,CREATED_BY) VALUES (?,?,?,?)", [id_business,year_statement,state,created_by]).then(res=>res[0]).catch(error => {console.log(error)});
+        
         for (let i = 0; i < detail.length; i++) {
-            const {id_header, precedence,hazard,recyclability,type_residue,value} = detail[i];
-            await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE) VALUES (?,?,?,?,?,?)",[id_header, precedence,hazard,recyclability,type_residue,value]);
+            const {id_header, precedence,hazard,recyclability,type_residue,value,amount} = detail[i];
+            await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)",[resp.insertId, precedence,hazard,recyclability,type_residue,value, amount]).catch(err=>console.log(err));
         }
-        return {id_header: id};
+        return {id_header: resp.insertId};
     }
 
     public async changeStateHeader(state:boolean, id:number) {
