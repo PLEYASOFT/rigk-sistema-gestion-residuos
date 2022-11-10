@@ -11,7 +11,7 @@ const routes: Routes = [
     children: [
       { path: 'inicio', component: HomeComponent },
       { path: 'formulario', component: FormComponent },
-      { path: '**', redirectTo: 'formulario', pathMatch: 'full' }
+      { path: '**', redirectTo: 'inicio', pathMatch: 'full' }
     ]
   }
 ];

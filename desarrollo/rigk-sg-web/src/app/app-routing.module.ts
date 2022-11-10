@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './core/guards/auth.guard';
 
 const routes: Routes = [
   {
@@ -8,9 +9,8 @@ const routes: Routes = [
   },
   {
     path: 'productor',
-    canActivate: [],
+    canActivate: [AuthGuard],
     loadChildren: () => import('./modules/productor-statement/productor-statement.module').then(m=>m.ProductorStatementModule),
-
   }
 ];
 
