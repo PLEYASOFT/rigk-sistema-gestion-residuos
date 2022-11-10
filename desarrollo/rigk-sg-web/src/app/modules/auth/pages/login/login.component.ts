@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductorService } from '../../../../core/services/productor.service';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { Router } from 'express';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
@@ -9,7 +9,7 @@ import { AuthService } from '../../../../core/services/auth.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent{
+export class LoginComponent implements OnInit{
 
   formData: FormGroup = this.fb.group({
     user: [ '', [Validators.required, Validators.email]],
@@ -17,20 +17,23 @@ export class LoginComponent{
   });
 
   constructor(private fb: FormBuilder,
-              private authService: AuthService) { }
+              private authService: AuthService,
+              private router: Router) { }
+  ngOnInit(): void {
+    if(sessionStorage.getItem('token')) {
+      this.router.navigate(['/productor']);
+      // sessionStorage.clear();
+    }
+  }
 
   btnLogin() {
-<<<<<<< HEAD
-=======
-    
-    console.log(this.formData.value);
 
     const {user, password} = this.formData.value;
 
     this.authService.login(user, password).subscribe(resp => {
-      console.log(resp);
+      sessionStorage.setItem('token', resp);
+      this.router.navigate(['/productor']);
     });
->>>>>>> 67ff8093ae66dd03c9d92d323decaa09ab11ba78
   }
 
 }
