@@ -11,6 +11,11 @@ const routes: Routes = [
     path: 'productor',
     canActivate: [AuthGuard],
     loadChildren: () => import('./modules/productor-statement/productor-statement.module').then(m=>m.ProductorStatementModule),
+  },
+  {
+    path: '**',
+    redirectTo: 'auth',
+    pathMatch: 'full'
   }
 ];
 
