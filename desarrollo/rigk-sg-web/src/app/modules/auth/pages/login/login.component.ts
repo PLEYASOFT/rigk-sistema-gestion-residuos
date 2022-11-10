@@ -20,6 +20,8 @@ export class LoginComponent{
               private authService: AuthService) { }
 
   btnLogin() {
+<<<<<<< HEAD
+=======
     
     console.log(this.formData.value);
 
@@ -28,6 +30,7 @@ export class LoginComponent{
     this.authService.login(user, password).subscribe(resp => {
       console.log(resp);
     });
+>>>>>>> 67ff8093ae66dd03c9d92d323decaa09ab11ba78
   }
 
 }

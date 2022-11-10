@@ -4,6 +4,8 @@ import { FooterComponent } from './components/footer/footer.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 
+import { RouterModule } from '@angular/router';
+
 
 
 @NgModule({
@@ -18,6 +20,7 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
     SidebarComponent
   ],
   imports: [
+    RouterModule,
     CommonModule
   ],
 })

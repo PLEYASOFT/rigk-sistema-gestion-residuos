@@ -11172,6 +11172,10 @@ textarea.form-control-lg {
 @font-face {
   font-family: "FontAwesome";
   src: url("./assets/webfonts/fontawesome-webfont.eot?v=4.7.0");
+<<<<<<< HEAD
+  /* src: url("./assets/") format("embedded-opentype"), url("./assets//webfonts/fontawesome-webfont.woff2?v=4.7.0") format("woff2"), url("./assets//webfonts/fontawesome-webfont.woff?v=4.7.0") format("woff"), url("./assets//webfonts/fontawesome-webfont.ttf?v=4.7.0") format("truetype"), url("./assets//webfonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular") format("svg"); */
+=======
+>>>>>>> 67ff8093ae66dd03c9d92d323decaa09ab11ba78
   src: url("./assets/webfonts/fontawesome-webfont.eot?#iefix&v=4.7.0") format("embedded-opentype"), url("./assets/webfonts/fontawesome-webfont.woff2?v=4.7.0") format("woff2"), url("./assets/webfonts/fontawesome-webfont.woff?v=4.7.0") format("woff"), url("./assets/webfonts/fontawesome-webfont.ttf?v=4.7.0") format("truetype"), url("./assets/webfonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular") format("svg");
   font-weight: normal;
   font-style: normal;
@@ -14243,7 +14247,11 @@ body {
   background-position: right;
   background-repeat: repeat-y;
   background-size: cover;
+<<<<<<< HEAD
+  /* background-image: url(./assets/images/c-bar.svg); */
+=======
   /*background-image: url(./assets/images/c-bar.svg);*/
+>>>>>>> 67ff8093ae66dd03c9d92d323decaa09ab11ba78
   position: relative;
   bottom: -32px;
 }
@@ -14254,7 +14262,11 @@ body {
   background-position: right;
   background-repeat: repeat-y;
   background-size: cover;
+<<<<<<< HEAD
+  /* background-image: url(./assets/images/c-bar.svg); */
+=======
   /*background-image: url(./assets/images/c-bar.svg);*/
+>>>>>>> 67ff8093ae66dd03c9d92d323decaa09ab11ba78
   position: absolute;
   bottom: 0;
 }
