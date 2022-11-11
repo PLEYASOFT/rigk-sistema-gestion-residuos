@@ -1,6 +1,7 @@
 import { Component} from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-verify-code',
@@ -15,7 +16,8 @@ export class VerifyCodeComponent{
   });
 
   constructor(private fb: FormBuilder,
-              private authService: AuthService) { }
+              private authService: AuthService,
+              private router: Router) { }
 
   btnverifyCode() {
     
@@ -23,6 +25,7 @@ export class VerifyCodeComponent{
     const {code, user} = this.formData.value;
     this.authService.verifyCode(code, user).subscribe(resp => {
       console.log(resp);
+      this.router.navigate(['/auth/recovery']);
     });
   }
 }

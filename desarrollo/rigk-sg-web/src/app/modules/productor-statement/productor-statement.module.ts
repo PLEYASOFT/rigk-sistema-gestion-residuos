@@ -7,13 +7,17 @@ import { SharedModule } from '../../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HomeComponent } from './pages/home/home.component';
 import { LayoutComponent } from './pages/layout/layout.component';
+import { ProfileComponent } from './pages/profile/profile.component';
+import { StatementsComponent } from './pages/statements/statements.component';
 
 
 @NgModule({
   declarations: [
     FormComponent,
     HomeComponent,
-    LayoutComponent
+    LayoutComponent,
+    ProfileComponent,
+    StatementsComponent
   ],
   imports: [
     CommonModule,

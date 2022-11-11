@@ -1,7 +1,11 @@
-<app-navbar></app-navbar>
+
+
+
+
+<app-navbar (isVisibleBar)="onToggleMenu($event)"></app-navbar>
 
 <main class="wrapper d-flex">
-    <app-sidebar></app-sidebar>
+    <app-sidebar [isVisible]="isVisible"></app-sidebar>
     <router-outlet></router-outlet>
 </main>
 

@@ -1,6 +1,7 @@
 import { Component} from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-send-code',
@@ -14,7 +15,8 @@ export class SendCodeComponent{
   });
 
   constructor(private fb: FormBuilder,
-              private authService: AuthService) { }
+              private authService: AuthService,
+              private router: Router) { }
 
   btnSendCode() {
     
@@ -24,6 +26,7 @@ export class SendCodeComponent{
 
     this.authService.sendCode(user).subscribe(resp => {
       console.log(resp);
+      this.router.navigate(['/auth/verifycode']);
     });
   }
 }

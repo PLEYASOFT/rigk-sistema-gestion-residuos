@@ -18,9 +18,10 @@ class StatementProductorLogic {
             });
         }
     }
-    public async saveForm(req: Request, res: Response) {
+    public async saveForm(req: any, res: Response) {
         try {
             const {header, detail} = req.body;
+            header.created_by = req['uid'];
             const {id_header} = await statementDao.saveDeclaretion(header,detail);
             res.status(200).json({
                 status: true,

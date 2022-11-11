@@ -44,7 +44,7 @@ class AuthLogic {
             bcrypt.compare(password, output.PASSWORD).then(async (r) => {
                 if(r){
                     const token = await generarJWT(output.ID, user, output.ROL);
-                    res.json(token);
+                    res.json({status:true, data:token});
                 }
                 else{
                     res.json('Usuario y/o contraseña incorrectos, intenta nuevamente');                
