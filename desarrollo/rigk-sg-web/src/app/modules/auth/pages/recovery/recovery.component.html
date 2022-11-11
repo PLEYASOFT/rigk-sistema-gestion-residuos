@@ -21,8 +21,7 @@
         </div>
         <form class="form-recovery"
               autocomplete="off"
-              [formGroup]="formData"
-              (ngSubmit)="btnrecovery()">
+              [formGroup]="formData">
             <div class="mb-4">
                 <div class="input-group">
                     <button class="input-group-text input-group-text-left">
@@ -48,7 +47,7 @@
                 </div>
             </div>
             <div class="mb-4">
-                <button type="submit" class="btn btn-primary btn-fa w-100 " routerLink="/auth/login"> Enviar <i class="fa fa-long-arrow-right fa-fw" aria-hidden="true"></i></button>
+                <button type="button" (click)="btnrecovery()" class="btn btn-primary btn-fa w-100 "> Enviar <i class="fa fa-long-arrow-right fa-fw" aria-hidden="true"></i></button>
             </div>
         </form>
     </div>

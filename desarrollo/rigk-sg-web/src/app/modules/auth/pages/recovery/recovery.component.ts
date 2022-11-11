@@ -1,6 +1,7 @@
 import { Component} from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-recovery',
@@ -16,9 +17,12 @@ export class RecoveryComponent{
   });
 
   constructor(private fb: FormBuilder,
-              private authService: AuthService) { }
+              private authService: AuthService,
+              private router: Router) { }
 
   btnrecovery() {
+
+    console.log("aaa")
     
     console.log(this.formData.value);
 
@@ -26,6 +30,7 @@ export class RecoveryComponent{
 
     this.authService.recovery(user, password, repeatPassword).subscribe(resp => {
       console.log(resp);
+      this.router.navigate(['/auth/login']);
     });
   }
 }

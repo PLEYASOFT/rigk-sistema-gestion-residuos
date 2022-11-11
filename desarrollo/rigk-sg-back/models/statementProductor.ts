@@ -9,8 +9,6 @@ export const statementProductorFormScheme = Joi.object({
                         .max(9999)
                         .required(),
         state: Joi.boolean(),
-        created_by: Joi.number()
-                    .required()
     }),
     detail: Joi.array().has(Joi.object({
         precedence: Joi.number()

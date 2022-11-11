@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductorService } from '../../../../core/services/productor.service';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,14 @@ export class LoginComponent implements OnInit{
 
   constructor(private fb: FormBuilder,
               private authService: AuthService,
-              private router: Router) { }
+              private router: Router,
+              private actived: ActivatedRoute) {
+                this.actived.queryParams.subscribe(r=>{
+                  if(r['logout']) {
+                    sessionStorage.clear();
+                  }
+                })
+              }
   ngOnInit(): void {
     if(sessionStorage.getItem('token')) {
       this.router.navigate(['/productor']);
@@ -27,12 +35,21 @@ export class LoginComponent implements OnInit{
   }
 
   btnLogin() {
-
     const {user, password} = this.formData.value;
 
     this.authService.login(user, password).subscribe(resp => {
-      sessionStorage.setItem('token', resp);
-      this.router.navigate(['/productor']);
+      
+      if(!resp.status) {
+        Swal.fire({
+          title: 'Tenemos problemas',
+          text: resp.message,
+          icon: 'error'
+        });
+      } else {
+        sessionStorage.setItem('token', resp.data);
+        this.router.navigate(['/productor']);
+      }
+
     });
   }
 
