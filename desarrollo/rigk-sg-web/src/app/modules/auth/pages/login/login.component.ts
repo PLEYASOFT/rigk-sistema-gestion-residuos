@@ -11,6 +11,9 @@ import Swal from 'sweetalert2';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit{
+  
+  error = false;
+  msg = '';
 
   formData: FormGroup = this.fb.group({
     user: [ '', [Validators.required, Validators.email]],
@@ -40,13 +43,11 @@ export class LoginComponent implements OnInit{
     this.authService.login(user, password).subscribe(resp => {
       
       if(!resp.status) {
-        Swal.fire({
-          title: 'Tenemos problemas',
-          text: resp.message,
-          icon: 'error'
-        });
+        this.error = true;
+        this.msg = resp.msg;
       } else {
-        sessionStorage.setItem('token', resp.data);
+        console.log(resp)
+        sessionStorage.setItem('token', resp.data.token);
         this.router.navigate(['/productor']);
       }
 

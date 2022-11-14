@@ -31,9 +31,9 @@ export class FormComponent implements OnInit {
   isSubmited = false;
   isEdited = false;
 
-
   id_business: number = 0;
   year_statement: number = 0;
+  id_statement: number | null = null;
 
   detail = this.fb.group({
     precedence: [],
@@ -67,6 +67,8 @@ export class FormComponent implements OnInit {
 
   ngOnInit(): void {
 
+    this.getDraftStatement();
+
     Swal.fire({
       title: 'Cargando Datos',
       text: 'Se está recuperando datos del servidor',
@@ -78,6 +80,39 @@ export class FormComponent implements OnInit {
     this.getValueStatementByYear();
 
   }
+
+  getDraftStatement() {
+    this.productorService.getValueStatementByYear(this.id_business, this.year_statement).subscribe(resp=>{
+      if(resp.status) {
+        console.log(resp.data.header);
+        this.id_statement = resp.data.header.ID;
+        
+        resp.data.detail.forEach((r:any)=>{    
+          const obj = this.toLowerKeys(r);
+          this.detailForm.push(obj);
+          (document.getElementById(`inp_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}_${r?.PRECEDENCE}_${r?.HAZARD}`) as HTMLInputElement).value = r?.VALUE;
+          const tmp_weight = (parseInt((document.getElementById(`actual_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value) || 0) + parseInt(r?.VALUE);
+          const tmp_amount = (parseInt((document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value) || 0) + parseInt(r?.AMOUNT);
+          
+          (document.getElementById(`actual_weight_${r?.RECYCLABILITY}_${r.TYPE_RESIDUE}`) as HTMLInputElement).value = tmp_weight.toString();
+          (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r.TYPE_RESIDUE}`) as HTMLInputElement).value = tmp_amount.toString();
+        });
+      }
+
+    })
+  }
+
+
+toLowerKeys(obj:any) {
+  // 👇️ [ ['NAME', 'Tom'], ['AGE', 30] ]
+  const entries = Object.entries(obj);
+
+  return Object.fromEntries(
+    entries.map(([key, value]) => {
+      return [key.toLowerCase(), value];
+    }),
+  );
+}
 
   submitForm( state = true ) {
 
@@ -98,31 +133,79 @@ export class FormComponent implements OnInit {
     const header = {
       id_business: this.id_business,
       year_statement: this.year_statement,
-      state
+      state,
+      id_statement: this.id_statement
     }
 
-    this.productorService.saveForm({header, detail}).subscribe(r=>{
-      if(r.status) {
-        Swal.close();
-        Swal.fire({
-          title: 'Datos Guardados',
-          text: `Se guardaron correctamente los datos en el servidor ${!this.isSubmited ? 'como borrador':''}`,
-          icon: 'success'
-        }).then(result => {
-          if(result.isConfirmed) {
-            this.isSubmited = true;
-            this.router.navigate(['/productor/home']);
+    if(this.id_statement && state) {
+      if(!this.isEdited) {
+        this.productorService.updateStateStatement(this.id_statement,state).subscribe(r=>{
+          if(r.status) {
+            Swal.close();
+            Swal.fire({
+              title: 'Datos Guardados',
+              text: `Se guardaron correctamente los datos en el servidor ${!this.isSubmited ? 'como borrador':''}`,
+              icon: 'success'
+            }).then(result => {
+              if(result.isConfirmed) {
+                this.isSubmited = true;
+                this.router.navigate(['/productor/home']);
+              }
+            });
+          } else {
+            Swal.close();
+            Swal.fire({
+              title: 'Datos Guardados',
+              text: r.msg,
+              icon: 'success'
+            }).then(result => {
+              if(result.isConfirmed) {
+                this.isSubmited = true;
+                this.router.navigate(['/productor/home']);
+              }
+            });
           }
         });
-        
       } else {
-        Swal.fire({
-          title: 'Error',
-          text: 'Algo salió mal',
-          icon: 'error'
+        this.productorService.updateValuesStatement(this.id_statement, this.detailForm).subscribe(r=>{
+          if(r.status){
+            Swal.fire({
+              title: 'Datos Guardados',
+              text: `Se a publicado declaración en el servidor`,
+              icon: 'success'
+            }).then(result => {
+              if(result.isConfirmed) {
+                this.isSubmited = true;
+                this.router.navigate(['/productor/home']);
+              }
+            });
+          }
         })
       }
-    });
+    } else {
+      this.productorService.saveForm({header, detail}).subscribe(r=>{
+        if(r.status) {
+          Swal.close();
+          Swal.fire({
+            title: 'Datos Guardados',
+            text: `Se guardaron correctamente los datos en el servidor ${!this.isSubmited ? 'como borrador':''}`,
+            icon: 'success'
+          }).then(result => {
+            if(result.isConfirmed) {
+              this.isSubmited = true;
+              this.router.navigate(['/productor/home']);
+            }
+          });
+          
+        } else {
+          Swal.fire({
+            title: 'Error',
+            text: 'Algo salió mal',
+            icon: 'error'
+          })
+        }
+      });
+    }
   }
   updateValue(recyclability:any,type_residue:any, precedence:any, hazard:any,target:any) {
     this.isEdited = true;
@@ -136,9 +219,10 @@ export class FormComponent implements OnInit {
 
     for (let i = 0; i < this.detailForm.length; i++) {
       const r = this.detailForm[i];
-      console.log("r",r)
-      sum +=parseInt(r.value);
-      if(r.type_residue == type_residue && r.precedence == precedence && r.hazard == hazard) {
+      sum +=parseInt(r.value||0);
+      // console.log(r)
+      if(r.type_residue == type_residue && r.precedence == precedence && r.hazard == hazard && r.recyclability == recyclability) {
+        console.log(r)
         tmp = r;
       }
     }  
@@ -150,11 +234,8 @@ export class FormComponent implements OnInit {
     if(tmp) {
       const index = this.detailForm.indexOf(tmp);
       sum = sum - {...this.detailForm[index]}.value;
-      console.log("first", sum)
-      
       this.detailForm[index].value = value;
-      sum += this.detailForm[index].value;
-      console.log("sec", sum)
+      sum += parseInt(this.detailForm[index].value);
     } else {
       sum += value;
       this.detailForm.push({precedence,hazard,value,type_residue,amount:(sum * 16269), recyclability});
@@ -191,7 +272,6 @@ export class FormComponent implements OnInit {
       Swal.close();
 
       this.detailLastForm?.forEach(r=>{
-        console.log(r);
         
         (document.getElementById(`inp_l_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}_${r?.PRECEDENCE}_${r?.HAZARD}`) as HTMLInputElement).value = r?.VALUE;
         const tmp_weight = (parseInt((document.getElementById(`last_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value) || 0) + parseInt(r?.VALUE);

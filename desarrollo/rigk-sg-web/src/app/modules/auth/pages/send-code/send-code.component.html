@@ -23,12 +23,64 @@
               autocomplete="off"
               [formGroup]="formData"
               (ngSubmit)="btnSendCode()">
-            <div class="mb-4">
+            <div class="mb-4" *ngIf="step == 0">
                 <div class="input-group">
                     <button class="input-group-text input-group-text-left">
                         <i class="fa fa-user fa-fw" aria-hidden="true"></i>
                     </button>
                     <input type="user" class="form-control" id="usuario" formControlName="user" placeholder="Ingrese su correo">
+                </div>
+            </div>
+
+            <div class="mb-4" *ngIf="step == 1">
+                <div class="mb-4">
+                    <div class="input-group">
+                        <button class="input-group-text input-group-text-left">
+                            <i class="fa fa-user fa-fw" aria-hidden="true"></i>
+                        </button>
+                        <input type="user" readonly="" class="form-control" id="usuario" formControlName="user" placeholder="Ingrese su correo">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <button class="input-group-text input-group-text-left">
+                        <i class="fa fa-user fa-fw" aria-hidden="true"></i>
+                    </button>
+                    <input type="code" class="form-control" id="code" formControlName="code" placeholder="Ingrese código">
+                </div>
+            </div>
+
+            <div class="mb-4" *ngIf="step >= 2">
+                <div class="mb-4">
+                    <div class="input-group">
+                        <button class="input-group-text input-group-text-left">
+                            <i class="fa fa-user fa-fw" aria-hidden="true"></i>
+                        </button>
+                        <input type="user" readonly="" class="form-control" id="usuario" formControlName="user" placeholder="Ingrese su correo">
+                    </div>
+                </div>
+                <div class="mb-4">
+                <div class="input-group">
+                    <button class="input-group-text input-group-text-left">
+                        <i class="fa fa-user fa-fw" aria-hidden="true"></i>
+                    </button>
+                    <input type="code" readonly="" class="form-control" id="code" formControlName="code" placeholder="Ingrese código">
+                </div>
+                </div>
+                <div class="mb-4">
+                <div class="input-group">
+                    <button class="input-group-text input-group-text-left">
+                        <i class="fa fa-lock fa-fw" aria-hidden="true"></i>
+                    </button>
+                    <input type="password"  class="form-control" id="password" formControlName="password" placeholder="Nueva contraseña">
+                </div>
+                </div>
+                <div class="mb-4">
+                <div class="input-group">
+                    <button class="input-group-text input-group-text-left">
+                        <i class="fa fa-lock fa-fw" aria-hidden="true"></i>
+                    </button>
+                    <input type="password"   class="form-control" id="repeatPassword" formControlName="repeatPassword" placeholder="Repetir contraseña">
+                </div>
                 </div>
             </div>
             

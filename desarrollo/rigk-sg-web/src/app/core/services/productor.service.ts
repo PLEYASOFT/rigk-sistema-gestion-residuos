@@ -28,5 +28,20 @@ export class ProductorService {
       catchError(err => of(err.error))
     );
   }
+  updateStateStatement(id_header:any, state:any) {
+    return this.http.put<any>(`${this.url}/${id_header}/state/${state}`, {headers: {
+      "x-token": sessionStorage.getItem('token')!
+    }}).pipe(
+      catchError(err => of(err.error))
+    );
+  }
+  updateValuesStatement(id_header:any, detail:any) {
+    console.log(detail)
+    return this.http.put<any>(`${this.url}/${id_header}`,{detail}, {headers: {
+      "x-token": sessionStorage.getItem('token')!
+    }}).pipe(
+      catchError(err => of(err.error))
+    );
+  }
 
 }

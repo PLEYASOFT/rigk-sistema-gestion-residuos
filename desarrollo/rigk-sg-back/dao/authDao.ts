@@ -81,9 +81,9 @@ class AuthDao {
 
     async verifyCode(CODE: string, USER: string) {
         const conn = mysqlcon.getConnection()!;
-        const res:any = await conn.query("SELECT CODE,DATE_CODE,ID,ROL FROM USER WHERE CODE = ? AND EMAIL =?", [CODE,USER]).then((res) => res[0]).catch(error => [{undefined}]);
+        const res:any = await conn.query("SELECT CODE,DATE_CODE,ID FROM USER WHERE CODE = ? AND EMAIL =?", [CODE,USER]).then((res) => res[0]).catch(error => [{undefined}]);
 
-        console.log(res)
+        console.log(res, res.length)
         let login = false;
         if(res != null && res != undefined && res.length > 0) {
             login = true;
