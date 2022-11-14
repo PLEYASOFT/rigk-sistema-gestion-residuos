@@ -1,1 +1,34 @@
 <p>profile works!</p>
+<button >Modificar contraseña</button>
+<hr>
+<form class="form-recovery"
+              autocomplete="off"
+              [formGroup]="formData">
+            <div class="mb-4">
+                <div class="input-group">
+                    <button class="input-group-text input-group-text-left">
+                        <i class="fa fa-lock fa-fw" aria-hidden="true"></i>
+                    </button>
+                    <input type="password" class="form-control" id="password" formControlName="actual" placeholder="Contraseña actual">
+                </div>
+            </div>
+            <div class="mb-4">
+                <div class="input-group">
+                    <button class="input-group-text input-group-text-left">
+                        <i class="fa fa-lock fa-fw" aria-hidden="true"></i>
+                    </button>
+                    <input type="password" class="form-control" id="password" formControlName="password" placeholder="Nueva contraseña">
+                </div>
+            </div>
+            <div class="mb-4">
+                <div class="input-group">
+                    <button class="input-group-text input-group-text-left">
+                        <i class="fa fa-lock fa-fw" aria-hidden="true"></i>
+                    </button>
+                    <input type="repeatPassword" class="form-control" id="repeatPassword" formControlName="repeatPassword" placeholder="Repetir contraseña">
+                </div>
+            </div>
+            <div class="mb-4">
+                <button type="button" (click)="btnrecovery()" class="btn btn-primary btn-fa w-100 "> Enviar <i class="fa fa-long-arrow-right fa-fw" aria-hidden="true"></i></button>
+            </div>
+        </form>

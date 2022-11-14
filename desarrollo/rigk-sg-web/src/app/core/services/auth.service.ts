@@ -26,4 +26,7 @@ export class AuthService {
   recovery(user:string,password:string,repeatPassword:string){
     return this.http.post<any>(`${this.url}/auth/sendCode/recovery`, {user, password,repeatPassword});
   }
+  modifyPassword(password:string,newPassword:string, actual:string){
+    return this.http.post<any>(`${this.url}/auth/modifyPassword`, {newPassword, actual}, {headers:{"x-token":sessionStorage.getItem("token")!}});
+  }
 }

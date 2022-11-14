@@ -3,28 +3,38 @@ import bcrypt from 'bcrypt';
 
 class AuthDao {
 
-    async modifyPassword(EMAIL: string, PASSWORD: string, NEWPASSWORD: string) {
-        const conn = mysqlcon.getConnection()!;
-            const res_passwd:any = await conn.query("SELECT PASSWORD, SALT FROM USER WHERE EMAIL = ?", [EMAIL]).then((res) => res[0]).
-            catch(error => [{undefined}]);
-            console.log(res_passwd[0].PASSWORD, PASSWORD);
-                bcrypt.compare(PASSWORD, res_passwd[0].PASSWORD).then(async (r) => {
-                    if (r){
-                        let passwordHash = bcrypt.hashSync(NEWPASSWORD, 8);
-                        const res_update:any = await conn.query("UPDATE USER SET PASSWORD = ? WHERE EMAIL = ?", [passwordHash, EMAIL]).then((res) => res[0]).catch(error => [{undefined}]);
-                        if (res_update[0] !==undefined){
-                            return res_update.json({status:true})
-                        }
-                        else{
-                            return res_update.json({status:false})
-                        }
-                    }
-                    else{
-                        console.log("mensaje")
-                        return res_passwd                
-                    }
-                });
+    // async modifyPassword(EMAIL: string, PASSWORD: string, NEWPASSWORD: string) {
+    //     const conn = mysqlcon.getConnection()!;
+    //         const res_passwd:any = await conn.query("SELECT PASSWORD FROM USER WHERE ID = ?", [EMAIL]).then((res) => res[0]).
+    //         catch(error => [{undefined}]);
+    //         console.log(res_passwd[0].PASSWORD, PASSWORD);
+    //         console.log(EMAIL);
+    //             await bcrypt.compare(PASSWORD, res_passwd[0].PASSWORD).then(async (r) => {
+    //                 if (r){
+    //                     let passwordHash = bcrypt.hashSync(NEWPASSWORD, 8);
+    //                     const res_update:any = await conn.query("UPDATE USER SET PASSWORD = ? WHERE ID = ?", [passwordHash, EMAIL]).then((res) => res[0]).catch(error => [{undefined}]);
+    //                     return true
+    //                 }
+    //                 else{
+    //                     console.log("mensaje")
+    //                     return false                
+    //                 }
+    //             });
         
+    // }
+    async getPassword(ID: string) {
+        const conn = mysqlcon.getConnection()!;
+            const res_passwd:any = await conn.query("SELECT PASSWORD, SALT FROM USER WHERE ID = ?", [ID]).then((res) => res[0]).
+            catch(error => [{undefined}]);
+            console.log(res_passwd)
+            return res_passwd[0];
+    }
+    async updatePassword(PASSWORD: string ,USER: string) {
+        const conn = mysqlcon.getConnection()!;
+        const res:any = await conn.query("UPDATE USER SET PASSWORD = ? WHERE ID = ?", [PASSWORD, USER]).then((res) => res[0]).catch(error => [{undefined}]);
+
+        return res
+
     }
 
     async login(USER: string) {

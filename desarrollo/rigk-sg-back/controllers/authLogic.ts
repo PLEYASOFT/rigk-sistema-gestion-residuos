@@ -9,30 +9,29 @@ import { resolve } from 'path';
 
 class AuthLogic {
 
-    async modifyPassword(req:Request, res:Response) 
+    async modifyPassword(req:any, res:Response) 
     {
-        const {password ,newPassword, user} = req.body;
+        const {newPassword, actual} = req.body;
+        const user = req.uid;
+
         try {
-            const output = await authDao.verifyEmail(user);
-            if(output.EMAIL == user)
-            {
-                bcrypt.compare(password, output.PASSWORD).then(async (r) => {
-                    if(r){
-                        let passwordHash = bcrypt.hashSync(newPassword, 8);
-                        const output2 = await authDao.recovery(passwordHash, user);
-                        res.json('Contraseña cambiada')
-                    }
-                    else{
-                        res.json('Contraseña incorrecta, intenta nuevamente');                
-                    }
-                });    
-            }
-            else{
-                res.json("Correo inválido");
-            }
+            const output = await authDao.getPassword(user);
+            bcrypt.compare(actual, output.PASSWORD).then(async (r) => {
+                if(r){
+                    let passwordHash = bcrypt.hashSync(newPassword, 8);
+                    const output2 = await authDao.updatePassword(passwordHash, user);
+                    res.status(200).json({status:true, msg:'Contraseña cambiada', data: {}})
+                }
+                else{
+                    res.status(500).json({status:false, msg:'Contraseña incorrecta, intenta nuevamente', data: {}});
+                }
+            });
+            // }
+            // else{
+            //     res.status(500).json({status:false, msg:'Correo inválido', data: {}});
+            // }
         } catch (err) {
-            console.log(err)
-            res.json({status: 0, message: "Ocurrió un error"});
+            res.status(500).json({status:false, msg:'Ocurrió un error', data: {}});
         }
     }
 
