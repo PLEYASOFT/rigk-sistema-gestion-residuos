@@ -36,4 +36,7 @@ export class AuthService {
       catchError(err=>of(err.error))
     );
   }
+  modifyPassword(password:string,newPassword:string, actual:string){
+    return this.http.post<any>(`${this.url}/auth/modifyPassword`, {newPassword, actual}, {headers:{"x-token":sessionStorage.getItem("token")!}});
+  }
 }
