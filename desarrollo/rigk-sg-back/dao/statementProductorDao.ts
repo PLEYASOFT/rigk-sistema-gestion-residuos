@@ -4,7 +4,7 @@ class statementProductorDao {
 
     public async getDeclaretionByYear(business: string, year: string) {
         const conn = mysqlcon.getConnection();
-        const res_header: any = await conn?.execute("SELECT * FROM header_statement_form WHERE ID_BUSINESS = ? AND YEAR_STATEMENT = ?",[business, year]).then((res) => res[0]).catch(error => {undefined});
+        const res_header: any = await conn?.execute("SELECT * FROM header_statement_form WHERE ID_BUSINESS = ? AND YEAR_STATEMENT = ? ORDER BY ID DESC",[business, year]).then((res) => res[0]).catch(error => {undefined});
         const id_statement = res_header[0].ID;
         const res_detail: any = await conn?.execute("SELECT * FROM detail_statement_form WHERE ID_HEADER = ?",[id_statement]).then((res) => res[0]).catch(error => {undefined});
 
@@ -23,6 +23,25 @@ class statementProductorDao {
         }
         return {id_header: resp.insertId};
     }
+    public async updateValueStatement(id_header: any, detail: any[]) {
+        const conn = mysqlcon.getConnection();
+
+        // await conn?.execute("DELETE FROM detail_statement_form WHERE ID_HEADER=?", [id_header]);
+
+        for (let i = 0; i < detail.length; i++) {
+            const {precedence,hazard,recyclability,type_residue,value,amount} = detail[i];
+            if(detail[i].id) {
+                await conn?.execute("UPDATE detail_statement_form SET VALUE = ? WHERE ID=?", [value, detail[i].id]);
+            } else {
+                await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)",[id_header, precedence,hazard,recyclability,type_residue,value, amount]).catch(err=>console.log(err));
+            }
+        }
+
+        return;
+
+
+    }
+
 
     public async changeStateHeader(state:boolean, id:number) {
         const conn = mysqlcon.getConnection();
