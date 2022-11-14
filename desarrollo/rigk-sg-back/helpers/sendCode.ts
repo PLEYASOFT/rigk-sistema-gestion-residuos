@@ -10,14 +10,15 @@ export const sendCode = ( output: any, cod: any, res: Response ) => {
         auth: {
             user: `${process.env.EMAIL_ADDRESS}`,
             pass: `${process.env.EMAIL_PASSWORD}`,
-        }
+        },
+        secure:true
     });
 
     const mailOptions = {
-        from: 'correodepruebajuanoxx@gmail.com',
+        from: `PROREP noreply@gmail.com`,
         to: `${output.EMAIL}`,
-        subject: 'Correo de prueba',
-        text: `Tu código de verificación es: ${cod}`
+        subject: 'Código de recuperación',
+        text: `Tu código de recuperación es: ${cod}`
     }
 
     transporter.sendMail(mailOptions, (err, response) => {
