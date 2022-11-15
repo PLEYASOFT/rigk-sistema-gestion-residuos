@@ -38,5 +38,14 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
   }
+  pos="right";
+  
+  displayModifyPassword() {
+    if(this.pos == "right") {
+      this.pos = "down";
+    } else {
+      this.pos = "right";
+    }
+  }
 
 }
