@@ -27,9 +27,9 @@ export class ProfileComponent implements OnInit {
     this.authService.modifyPassword(password, repeatPassword, actual).subscribe(resp => {
     if (resp.status){
       Swal.fire({
-        title:"cambio de contraseña",
-        text:"la contraseña fue cambiada exitosamente",
-        icon:"success"
+        title:"Cambio de contraseña",
+        text:"La contraseña fue cambiada exitosamente",
+        icon:"success",
       })
       this.router.navigate(['/auth/login']);
     }
@@ -37,6 +37,15 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+  pos="right";
+  
+  displayModifyPassword() {
+    if(this.pos == "right") {
+      this.pos = "down";
+    } else {
+      this.pos = "right";
+    }
   }
 
 }

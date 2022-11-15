@@ -1,0 +1,24 @@
+.accordion {
+    border: none !important;
+}
+.accordion-item {
+    border: none;
+}
+
+.accordion .accordion-item:last-child {
+    border: none;
+}
+.accordion .accordion-body {
+    border: none;
+}
+
+a {
+    cursor: pointer;
+}
+a:hover {
+    color: #09a57b;
+}
+.swal-icon img{
+    width: 20px;
+    height: 20px;
+  }
