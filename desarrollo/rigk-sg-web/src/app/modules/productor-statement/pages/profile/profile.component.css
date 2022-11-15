@@ -18,3 +18,7 @@ a {
 a:hover {
     color: #09a57b;
 }
+.swal-icon img{
+    width: 20px;
+    height: 20px;
+  }
