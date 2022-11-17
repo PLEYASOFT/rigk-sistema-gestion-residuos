@@ -36,7 +36,6 @@ class AuthDao {
         return res
 
     }
-
     async login(USER: string) {
         const conn = mysqlcon.getConnection()!;
         const res:any = await conn.query("SELECT USER.ID,USER.PASSWORD,USER.SALT,USER_ROL.ROL_ID AS ROL FROM USER INNER JOIN USER_ROL ON USER_ROL.USER_ID = USER.ID WHERE USER.EMAIL = ?", [USER]).then((res) => res[0]).catch(error => [{undefined}]);
@@ -50,8 +49,6 @@ class AuthDao {
         conn.end();
         return res[0] || undefined;
     }
-
-
     async verifyEmail(USER: string) {
         const conn = mysqlcon.getConnection()!;
         const res:any = await conn.query("SELECT EMAIL,ID,PASSWORD FROM USER WHERE EMAIL = ?", [USER]).then((res) => res[0]).catch(error => [{undefined}]);
@@ -68,7 +65,6 @@ class AuthDao {
         }
         
     }
-
     async generateCode(CODE: string, ID: string) {
         const conn = mysqlcon.getConnection()!;
         const now = new Date();
@@ -77,8 +73,6 @@ class AuthDao {
         return res;
         
     }
-
-
     async verifyCode(CODE: string, USER: string) {
         const conn = mysqlcon.getConnection()!;
         const res:any = await conn.query("SELECT CODE,DATE_CODE,ID FROM USER WHERE CODE = ? AND EMAIL =?", [CODE,USER]).then((res) => res[0]).catch(error => [{undefined}]);

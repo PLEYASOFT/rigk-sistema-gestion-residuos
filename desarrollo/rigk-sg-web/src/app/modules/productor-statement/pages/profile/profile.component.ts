@@ -33,6 +33,15 @@ export class ProfileComponent implements OnInit {
       })
       this.router.navigate(['/auth/login']);
     }
+    else{
+      Swal.fire({
+        title:"Validar información",
+        text:resp.msg,
+        icon:"error",
+      });
+      this.formData.reset();
+
+    }
     });
   }
 

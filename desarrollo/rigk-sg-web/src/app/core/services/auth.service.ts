@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, of } from 'rxjs';
+import { catchError, of, pipe } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -36,7 +36,9 @@ export class AuthService {
       catchError(err=>of(err.error))
     );
   }
-  modifyPassword(password:string,newPassword:string, actual:string){
-    return this.http.post<any>(`${this.url}/modifyPassword`, {newPassword, actual}, {headers:{"x-token":sessionStorage.getItem("token")!}});
+  modifyPassword(repeatPassword:string,newPassword:string, actual:string){
+    return this.http.post<any>(`${this.url}/modifyPassword`, {newPassword, actual, repeatPassword}, {headers:{"x-token":sessionStorage.getItem("token")!}}).pipe(
+      catchError(err=>of(err.error))
+    );
   }
 }
