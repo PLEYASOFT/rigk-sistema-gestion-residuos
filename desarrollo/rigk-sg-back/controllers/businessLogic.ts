@@ -3,11 +3,12 @@ import businessDao from '../dao/businessDao';
 
 
 class BusinessLogic {
-    async verifyId(req: Request, res: Response) {
-        const {id, user} = req.params;
+    async verifyId(req: any, res: Response) {
+        const {id} = req.params;
+        const user = req.uid; 
         try {
             const resp = await businessDao.checkID(user,id);
-            res.status(200).json(resp);
+            res.status(200).json({status: resp, data:{}, msg: ''});
         } catch (err) {
             console.log(err);
             res.status(500).json({

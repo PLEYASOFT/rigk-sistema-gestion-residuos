@@ -5,11 +5,32 @@ class StatementProductorLogic {
     public async getStatmentByYear(req: Request, res: Response) {
         const {year, business} = req.params;
         try {
-            const statement = await statementDao.getDeclaretionByYear(business,year);
+            const statement: any | boolean = await statementDao.getDeclaretionByYear(business,year);
+            if(statement === false) {
+                return res.status(200).json({
+                    status: false,
+                    data: {},
+                    msg: "ID Empresa no válida"
+                });
+            }
             res.status(200).json({
                 status: true,
                 data: statement
             });
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
+    public async verifyDraft(req: Request, res: Response) {
+        const {business,year} = req.params;
+        try {
+            const haveDraft = await statementDao.haveDraft(business,year);
+            res.status(200).json({status: haveDraft});
+            
         } catch (error) {
             console.log(error)
             res.status(500).json({
@@ -50,7 +71,7 @@ class StatementProductorLogic {
     }
     public async updateValuesForm(req: Request, res: Response) {
         const {id} = req.params;
-        const {detail} = req.body;
+        const {detail, header} = req.body;
         try {
             await statementDao.updateValueStatement(id,detail);
             res.status(200).json({status:true});

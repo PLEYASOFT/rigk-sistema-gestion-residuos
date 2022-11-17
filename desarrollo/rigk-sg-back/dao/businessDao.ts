@@ -4,11 +4,11 @@ class BusinessDao {
 
     public async checkID(user:string, id:string) {
         const conn = mysqlcon.getConnection()!;
-        const res = await conn.query("SELECT * FROM user_business WHERE ID_USER = ? AND ID_BUSINESS = ?", [user,id])
-        console.log(res);
+        const res:any = await conn.query("SELECT * FROM user_business WHERE ID_USER = ? AND ID_BUSINESS = ?", [user,id]).then(res => res[0]).catch(erro=>undefined);
+        console.log(res)
         
         let isOk = false;
-        if(res != null && res != undefined) {
+        if((res != null && res != undefined) && res.length > 0 ) {
             isOk = true;
         }
         conn.end();
