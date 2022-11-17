@@ -41,8 +41,20 @@ export class LoginComponent implements OnInit{
     const {user, password} = this.formData.value;
 
     this.authService.login(user, password).subscribe(resp => {
-      
-      if(!resp.status) {
+
+      console.log(resp.status)
+      if (resp.status == 200)
+      {
+        if(!resp.body.status) {
+          this.error = true;
+          this.msg = resp.body.msg;
+        }
+        else{
+          sessionStorage.setItem('user', JSON.stringify( resp.body.data.user));
+          this.router.navigate(['/productor']);
+        }
+      }
+      else if(!resp.status) {
         this.error = true;
         this.msg = resp.msg;
       } else {
