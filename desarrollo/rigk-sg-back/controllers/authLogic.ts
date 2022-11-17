@@ -35,19 +35,34 @@ class AuthLogic {
     async login(req: Request, res: Response) {
         const user = req.body.user;
         const password = req.body.password;
-
         
         try{
             const output = await authDao.login(user);
+            
+            if(output != undefined){
                 bcrypt.compare(password, output.PASSWORD).then(async (r) => {
                     if(r){
                         const token = await generarJWT(output.ID, user, output.ROL);
-                        res.status(200).json({status:true, msg:'', data: {token}})
+                        delete output.PASSWORD;
+                        delete output.SALT;
+                        delete output.STATE
+                        delete output.DATE_CODE;
+                        delete output.CODE
+                        delete output.ID;
+                        res.header('x-token',token!.toString());
+                        res.header("Access-Control-Expose-Headers", "*");
+                        res.status(200).json({status:true, msg:'', data: {user:output}})
                     }
                     else{
-                        res.status(500).json({status:false, msg:'Usuario y/o contraseña incorrectos, intenta nuevamente', data: {}});
+                        res.status(200).json({status:false, msg:'Usuario y/o contraseña incorrectos, intenta nuevamente', data: {}});
                     }
                 });
+            }
+
+            else{
+                res.status(200).json({status:false, msg:'Usuario y/o contraseña incorrectos, intenta nuevamente', data: {}});
+            }
+                
         }
         catch(err){
             console.log(err)
@@ -70,7 +85,7 @@ class AuthLogic {
             }
 
             else{
-                res.status(500).json({status:false, msg:'Correo no registrado', data: {}});
+                res.status(200).json({status:false, msg:'Correo no registrado', data: {}});
             }
         }
         catch(err){
@@ -101,11 +116,11 @@ class AuthLogic {
                     res.status(200).json({status:true, msg:'Código correcto, modifique contraseña', data: {}})
                 }
                 else{
-                    res.status(500).json({status:false, msg:'Código expirado, solicitelo nuevamente', data: {}});
+                    res.status(200).json({status:false, msg:'Código expirado, solicitelo nuevamente', data: {}});
                 }
             }
             else{
-                res.status(500).json({status:false, msg:'Código incorrecto', data: {}});
+                res.status(200).json({status:false, msg:'Código incorrecto', data: {}});
             }
         }
         catch(err){
@@ -120,17 +135,43 @@ class AuthLogic {
         const repeatPassword = req.body.repeatPassword;
         try{
             console.log(password, repeatPassword)
-            if(password == repeatPassword){
-                let passwordHash = bcrypt.hashSync(password, 8);
-
-                await authDao.recovery(passwordHash, user);
-
-                res.status(200).json({status:true, msg:'Haz recuperado tu contraseña', data: {}})
+            if(password === '' || repeatPassword === ''){
+                res.status(200).json({status:false, msg:'Contraseña vacía', data: {}});
+            }
+            else if(password.length <=7 ){
+                res.status(200).json({status:false, msg:'La contraseña debe contener al menos 8 dígitos', data: {}});
             }
             else{
-                res.status(500).json({status:false, msg:'Contraseñas no coinciden', data: {}});
+                if(password == repeatPassword){
+                    let passwordHash = bcrypt.hashSync(password, 8);
+    
+                    await authDao.recovery(passwordHash, user);
+    
+                    res.status(200).json({status:true, msg:'Haz recuperado tu contraseña', data: {}})
+                }
+                else{
+                    res.status(200).json({status:false, msg:'Contraseñas no coinciden', data: {}});
+                }
             }
         }
+        catch(err){
+            console.log(err)
+            res.status(500).json({status:false, msg:'Ocurrió un error', data: {}});
+        }
+    }
+
+    async register(req: Request, res: Response) {
+        const user = req.body.user;
+        const first_name = req.body.first_name;
+        const last_name = req.body.last_name
+        const password = req.body.password;
+        
+        try{   
+            let passwordHash = bcrypt.hashSync(password, 8);
+            const result = await authDao.register(user,first_name,last_name,passwordHash);
+            console.log(result)
+            res.status(200).json({status:true, msg:'Has creado usuario', data: {}})
+            }
         catch(err){
             console.log(err)
             res.status(500).json({status:false, msg:'Ocurrió un error', data: {}});
