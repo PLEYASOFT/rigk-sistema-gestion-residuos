@@ -17,20 +17,24 @@ class AuthLogic {
         try {
             if(newPassword !== repeatPassword){
                 return res.status(200).json({status:false, msg: 'contraseña no coincide', data: {}})
-                
             }
-            const output = await authDao.getPassword(user);
-            bcrypt.compare(actual, output.PASSWORD).then(async (r) => {
-                if(r ){
-                    
-                    let passwordHash = bcrypt.hashSync(newPassword, 8);
-                    const output2 = await authDao.updatePassword(passwordHash, user);
-                    res.status(200).json({status:true, msg:'Contraseña cambiada', data: {}})
-                }
-                else{
-                    res.status(200).json({status:false, msg:'Contraseña incorrecta, intenta nuevamente', data: {}});
-                }
-            });
+            else if (newPassword == '' || repeatPassword == ''){
+                return res.status(200).json({status:false, msg: 'ingrese una contraseña', data: {}})
+            }
+            else{
+
+                const output = await authDao.getPassword(user);
+                bcrypt.compare(actual, output.PASSWORD).then(async (r) => {
+                    if(r ){
+                        let passwordHash = bcrypt.hashSync(newPassword, 8);
+                        const output2 = await authDao.updatePassword(passwordHash, user);
+                        res.status(200).json({status:true, msg:'Contraseña cambiada', data: {}})
+                    }
+                    else{
+                        res.status(200).json({status:false, msg:'Contraseña incorrecta, intenta nuevamente', data: {}});
+                    }
+                });
+            }
             
         } catch (err) {
             res.status(500).json({status:false, msg:'Ocurrió un error', data: {}});
@@ -73,13 +77,12 @@ class AuthLogic {
             res.status(500).json({status:false, msg:'Ocurrió un error', data: {}});
         }
     }
-
     async sendCode(req: Request, res: Response) {
         const {user} = req.body;
         console.log(user)
         try{
             const output = await authDao.verifyEmail(user);
-            if(output.EMAIL=== user)
+            if(output.EMAIL== user)
             {
                 const cod = (Math.random() * (999999 -100000) + 100000).toFixed(0);
                 await authDao.generateCode(cod, output.ID);
@@ -97,7 +100,6 @@ class AuthLogic {
             res.status(500).json({status:false, msg:'Ocurrió un error', data: {}});
         }
     }
-
     async sendCodeVerify(req: Request, res: Response) {
         const code = req.body.code;
         const {user} = req.body;
@@ -105,7 +107,7 @@ class AuthLogic {
             console.log(code, user)
             const output = await authDao.verifyCode(code,user);
             console.log(output)
-            if(output.CODE=== code)
+            if(output.CODE== code)
             {
                 const now = new Date().getTime();
                 const dateCode = new Date(output.DATE_CODE).getTime();
@@ -129,7 +131,6 @@ class AuthLogic {
             res.status(500).json({status:false, msg:'Ocurrió un error', data: {}});
         }
     }
-
     async recoveryPassword(req: Request, res: Response) {
         const user = req.body.user;
         const password = req.body.password;
