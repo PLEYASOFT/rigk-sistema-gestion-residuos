@@ -1,10 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-<<<<<<< HEAD
-import { catchError, of, pipe } from 'rxjs';
-=======
-import { catchError, map, of, tap } from 'rxjs';
->>>>>>> develop
+import { catchError, of, pipe, map, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({

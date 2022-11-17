@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import {loginScheme} from "../models/loginScheme";
+import { loginScheme } from "../models/loginScheme";
 
 export const validateLogin = async (req: Request, res: Response, next: NextFunction) => {
 
