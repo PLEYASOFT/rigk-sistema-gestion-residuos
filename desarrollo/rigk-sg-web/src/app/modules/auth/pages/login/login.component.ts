@@ -50,7 +50,6 @@ export class LoginComponent implements OnInit{
         sessionStorage.setItem('user', JSON.stringify( resp.body.data.user));
         this.router.navigate(['/productor']);
       }
-
     });
   }
 
