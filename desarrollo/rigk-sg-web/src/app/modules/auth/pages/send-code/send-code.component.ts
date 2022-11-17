@@ -86,8 +86,9 @@ export class SendCodeComponent{
       }
       
       else{
+        this.msg = resp.msg;
         Swal.fire({
-          title: 'Las contraseñas ingresadas no coinciden, intente nuevamente',
+          title: this.msg,
           icon: 'error'
         })
       }

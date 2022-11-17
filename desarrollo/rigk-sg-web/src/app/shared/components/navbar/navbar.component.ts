@@ -9,12 +9,16 @@ import { Router } from '@angular/router';
 })
 export class NavbarComponent implements OnInit {
 
+  userData: any | null;
+
   isVisible = true;
   @Output() isVisibleBar: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(private router: Router) { }
 
   ngOnInit(): void {
+    this.userData = JSON.parse(sessionStorage.getItem('user')!);
+    console.log(this.userData)
   }
 
   logout() {

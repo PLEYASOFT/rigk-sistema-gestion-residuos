@@ -38,7 +38,7 @@ class AuthDao {
     }
     async login(USER: string) {
         const conn = mysqlcon.getConnection()!;
-        const res:any = await conn.query("SELECT USER.ID,USER.PASSWORD,USER.SALT,USER_ROL.ROL_ID AS ROL FROM USER INNER JOIN USER_ROL ON USER_ROL.USER_ID = USER.ID WHERE USER.EMAIL = ?", [USER]).then((res) => res[0]).catch(error => [{undefined}]);
+        const res:any = await conn.query("SELECT USER.*,USER_ROL.ROL_ID AS ROL FROM USER INNER JOIN USER_ROL ON USER_ROL.USER_ID = USER.ID WHERE USER.EMAIL = ?", [USER]).then((res) => res[0]).catch(error => [{undefined}]);
         
         let login = false;
         if(res != null && res != undefined && res.length > 0) {
@@ -95,6 +95,15 @@ class AuthDao {
         const conn = mysqlcon.getConnection()!;
         const res:any = await conn.query("UPDATE USER SET PASSWORD = ? WHERE EMAIL = ?", [PASSWORD, USER]).then((res) => res[0]).catch(error => [{undefined}]);
 
+        return res
+        
+    }
+
+    async register(EMAIL: string, FIRST_NAME: string, LAST_NAME: string, PASSWORD: string) {
+        const conn = mysqlcon.getConnection()!;
+        const res:any = await conn.query("INSERT INTO user(EMAIL,FIRST_NAME,LAST_NAME, PASSWORD,STATE, SALT) VALUES (?,?,?,?,?,'ABC')", [EMAIL,FIRST_NAME,LAST_NAME,PASSWORD,1]).then((res) => res[0]).catch(error => [{undefined}]);
+        const res_1:any = await conn.query("INSERT INTO user_rol(USER_ID,ROL_ID) VALUES (?,?)", [res.insertId]).then((res) => res[0]).catch(error => [{undefined}]);
+        console.log(res)
         return res
         
     }

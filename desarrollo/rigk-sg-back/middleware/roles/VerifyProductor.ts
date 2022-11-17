@@ -5,7 +5,6 @@ export const verifyRolProductor = ( req: any, res: Response, next: NextFunction 
     const token = req.header('x-token');
 
     if( !token  ) {
-        console.log("first3")
         return res.status(401).json({
             ok: false,
             msg: 'error en el token'
@@ -23,7 +22,6 @@ export const verifyRolProductor = ( req: any, res: Response, next: NextFunction 
         }
         req.uid  = uid;
         req.name = name;
-        console.log("first2")
         
     } catch (error) {
         return res.status(401).json({

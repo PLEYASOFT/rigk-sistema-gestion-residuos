@@ -6,6 +6,7 @@ export const validarJWT = ( req: any, res: Response, next: NextFunction ) => {
 
     if( !token  ) {
         return res.status(401).json({
+            status: false,
             ok: false,
             msg: 'error en el token'
         });

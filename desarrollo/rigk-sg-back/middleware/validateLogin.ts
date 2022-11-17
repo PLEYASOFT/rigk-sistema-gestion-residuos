@@ -6,7 +6,6 @@ export const validateLogin = async (req: Request, res: Response, next: NextFunct
     const user = req.body.user;
     const password = req.body.password;
 
-
      
     try {
 

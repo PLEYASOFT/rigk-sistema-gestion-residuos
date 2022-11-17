@@ -7,7 +7,12 @@ import { verifyParametersModifyPassword } from "../middleware/validators/modifyP
 const router = Router();
 
 router.post('/', [validateLogin], authLogic.login);
+<<<<<<< HEAD
 router.post('/modifyPassword', [validarJWT, verifyParametersModifyPassword], authLogic.modifyPassword);
+=======
+router.post('/modifyPassword', [validarJWT], authLogic.modifyPassword);
+router.post('/register', [], authLogic.register);
+>>>>>>> develop
 router.post('/sendCode', [], authLogic.sendCode);
 router.post('/sendCode/verify', [ ], authLogic.sendCodeVerify);
 router.post('/sendCode/recovery', [ ], authLogic.recoveryPassword);
