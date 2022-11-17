@@ -10,6 +10,8 @@ import Swal from 'sweetalert2';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
+  userData: any | null;
+  
   formData: FormGroup = this.fb.group({
     actual: [ '', [Validators.required]],
     password: ['', [Validators.required, Validators.minLength(3)]],
@@ -37,6 +39,8 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.userData = JSON.parse(sessionStorage.getItem('user')!);
+    console.log(this.userData)
   }
   pos="right";
   
@@ -47,5 +51,6 @@ export class ProfileComponent implements OnInit {
       this.pos = "right";
     }
   }
+
 
 }

@@ -46,8 +46,8 @@ export class LoginComponent implements OnInit{
         this.error = true;
         this.msg = resp.msg;
       } else {
-        console.log(resp)
-        sessionStorage.setItem('token', resp.data.token);
+
+        sessionStorage.setItem('user', JSON.stringify( resp.body.data.user));
         this.router.navigate(['/productor']);
       }
 
