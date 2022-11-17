@@ -12,12 +12,17 @@ class AuthLogic {
     async modifyPassword(req:any, res:Response) 
     {
         const {newPassword, actual} = req.body;
+        const repeatPassword = req.body.repeatPassword;
         const user = req.uid;
-
         try {
+            if(newPassword !== repeatPassword){
+                return res.status(200).json({status:false, msg: 'contraseña no coincide', data: {}})
+                
+            }
             const output = await authDao.getPassword(user);
             bcrypt.compare(actual, output.PASSWORD).then(async (r) => {
-                if(r){
+                if(r ){
+                    
                     let passwordHash = bcrypt.hashSync(newPassword, 8);
                     const output2 = await authDao.updatePassword(passwordHash, user);
                     res.status(200).json({status:true, msg:'Contraseña cambiada', data: {}})
@@ -31,7 +36,6 @@ class AuthLogic {
             res.status(500).json({status:false, msg:'Ocurrió un error', data: {}});
         }
     }
-
     async login(req: Request, res: Response) {
         const user = req.body.user;
         const password = req.body.password;
@@ -75,7 +79,7 @@ class AuthLogic {
         console.log(user)
         try{
             const output = await authDao.verifyEmail(user);
-            if(output.EMAIL == user)
+            if(output.EMAIL=== user)
             {
                 const cod = (Math.random() * (999999 -100000) + 100000).toFixed(0);
                 await authDao.generateCode(cod, output.ID);
@@ -97,17 +101,14 @@ class AuthLogic {
     async sendCodeVerify(req: Request, res: Response) {
         const code = req.body.code;
         const {user} = req.body;
-
-        
         try{
             console.log(code, user)
             const output = await authDao.verifyCode(code,user);
             console.log(output)
-            if(output.CODE == code)
+            if(output.CODE=== code)
             {
                 const now = new Date().getTime();
                 const dateCode = new Date(output.DATE_CODE).getTime();
-
                 const dif2 = ((now - dateCode)/(60000));
 
                 console.log(dif2);
