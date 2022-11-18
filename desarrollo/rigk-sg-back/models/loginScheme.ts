@@ -6,7 +6,11 @@ export const loginScheme = Joi.object({
               .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required()
 });
 export const modifyPasswordScheme = Joi.object({
-    newPassword: Joi.string().min(4),
-    actual: Joi.string().min(4),
-    repeatPassword: Joi.string().min(4)
+    newPassword: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
+    actual: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
+    repeatPassword: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required()
+})
+export const recoveryPasswordScheme = Joi.object({
+    newPassword: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
+    repeatPassword: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required()
 })
