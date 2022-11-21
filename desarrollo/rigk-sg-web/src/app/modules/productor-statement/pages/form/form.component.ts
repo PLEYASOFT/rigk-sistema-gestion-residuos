@@ -87,13 +87,30 @@ export class FormComponent implements OnInit, AfterViewChecked {
       const last_recyclability_2 = parseInt((document.getElementById(`last_weight_2_${i}`) as HTMLInputElement).value);
       const last_recyclability_3 = parseInt((document.getElementById(`last_weight_3_${i}`) as HTMLInputElement).value);
 
-      const diff_1 = (((actual_recyclability_1 - last_recyclability_1) / last_recyclability_1) * 100);
-      const diff_2 = (((actual_recyclability_2 - last_recyclability_2) / last_recyclability_2) * 100);
-      const diff_3 = (((actual_recyclability_3 - last_recyclability_3) / last_recyclability_3) * 100);
+      let diff_1 = (((actual_recyclability_1 - last_recyclability_1) / last_recyclability_1) * 100);
+      let diff_2 = (((actual_recyclability_2 - last_recyclability_2) / last_recyclability_2) * 100);
+      let diff_3 = (((actual_recyclability_3 - last_recyclability_3) / last_recyclability_3) * 100);
 
-      (document.getElementById(`actual_dif_1_${i}`) as HTMLInputElement).value = `${diff_1 == Infinity ? 100 : diff_1.toFixed(2) || 0}%`;
-      (document.getElementById(`actual_dif_2_${i}`) as HTMLInputElement).value = `${diff_2 == Infinity ? 100 : diff_2.toFixed(2) || 0}%`;
-      (document.getElementById(`actual_dif_3_${i}`) as HTMLInputElement).value = `${diff_3 == Infinity ? 100 : diff_3.toFixed(2) || 0}%`;
+      if(diff_1.toFixed(2) == "NaN" || diff_1 == NaN) {
+        diff_1 = 0;
+      } else {
+        diff_1 = parseInt(diff_1.toFixed(2));
+      }
+      if(diff_2.toFixed(2) == "NaN" || diff_2 == NaN) {
+        diff_2 = 0;
+      } else {
+        diff_2 = parseInt(diff_2.toFixed(2));
+      }
+      if(diff_3.toFixed(2) == "NaN" || diff_3 == NaN) {
+        diff_3 = 0;
+      } else {
+        diff_3 = parseInt(diff_3.toFixed(2));
+      }
+
+
+      (document.getElementById(`actual_dif_1_${i}`) as HTMLInputElement).value = `${diff_1 == Infinity ? 100 : diff_1 || 0}%`;
+      (document.getElementById(`actual_dif_2_${i}`) as HTMLInputElement).value = `${diff_2 == Infinity ? 100 : diff_2 || 0}%`;
+      (document.getElementById(`actual_dif_3_${i}`) as HTMLInputElement).value = `${diff_3 == Infinity ? 100 : diff_3 || 0}%`;
     }
   }
 
