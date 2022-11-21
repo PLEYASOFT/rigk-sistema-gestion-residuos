@@ -87,30 +87,13 @@ export class FormComponent implements OnInit, AfterViewChecked {
       const last_recyclability_2 = parseInt((document.getElementById(`last_weight_2_${i}`) as HTMLInputElement).value);
       const last_recyclability_3 = parseInt((document.getElementById(`last_weight_3_${i}`) as HTMLInputElement).value);
 
-      let diff_1 = (((actual_recyclability_1 - last_recyclability_1) / last_recyclability_1) * 100);
-      let diff_2 = (((actual_recyclability_2 - last_recyclability_2) / last_recyclability_2) * 100);
-      let diff_3 = (((actual_recyclability_3 - last_recyclability_3) / last_recyclability_3) * 100);
+      const diff_1 = (((actual_recyclability_1 - last_recyclability_1) / last_recyclability_1) * 100);
+      const diff_2 = (((actual_recyclability_2 - last_recyclability_2) / last_recyclability_2) * 100);
+      const diff_3 = (((actual_recyclability_3 - last_recyclability_3) / last_recyclability_3) * 100);
 
-      if(diff_1.toFixed(2) == "NaN" || diff_1 == NaN) {
-        diff_1 = 0;
-      } else {
-        diff_1 = parseInt(diff_1.toFixed(2));
-      }
-      if(diff_2.toFixed(2) == "NaN" || diff_2 == NaN) {
-        diff_2 = 0;
-      } else {
-        diff_2 = parseInt(diff_2.toFixed(2));
-      }
-      if(diff_3.toFixed(2) == "NaN" || diff_3 == NaN) {
-        diff_3 = 0;
-      } else {
-        diff_3 = parseInt(diff_3.toFixed(2));
-      }
-
-
-      (document.getElementById(`actual_dif_1_${i}`) as HTMLInputElement).value = `${diff_1 == Infinity ? 100 : diff_1 || 0}%`;
-      (document.getElementById(`actual_dif_2_${i}`) as HTMLInputElement).value = `${diff_2 == Infinity ? 100 : diff_2 || 0}%`;
-      (document.getElementById(`actual_dif_3_${i}`) as HTMLInputElement).value = `${diff_3 == Infinity ? 100 : diff_3 || 0}%`;
+      (document.getElementById(`actual_dif_1_${i}`) as HTMLInputElement).value = `${diff_1 == Infinity ? 100 : parseInt(diff_1.toFixed(2)) || 0}%`;
+      (document.getElementById(`actual_dif_2_${i}`) as HTMLInputElement).value = `${diff_2 == Infinity ? 100 : parseInt(diff_2.toFixed(2)) || 0}%`;
+      (document.getElementById(`actual_dif_3_${i}`) as HTMLInputElement).value = `${diff_3 == Infinity ? 100 : parseInt(diff_3.toFixed(2)) || 0}%`;
     }
   }
 
@@ -263,6 +246,94 @@ export class FormComponent implements OnInit, AfterViewChecked {
           }
         }
       })
+    } else {
+      Swal.fire({
+        title: 'Guardando Datos',
+        text: `Se están guardando datos`,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        willClose: () => {
+
+        }
+      });
+      Swal.showLoading();
+
+      const detail = this.detailForm;
+      const header = {
+        id_business: this.id_business,
+        year_statement: this.year_statement,
+        state,
+        id_statement: this.id_statement
+      }
+
+      if (this.id_statement && state) {
+        if (!this.isEdited) {
+          this.productorService.updateStateStatement(this.id_statement, state).subscribe(r => {
+            if (r.status) {
+              Swal.close();
+              Swal.fire({
+                title: 'Datos Guardados',
+                text: `La información se guardó correctamente`,
+                icon: 'success'
+              }).then(result => {
+                if (result.isConfirmed) {
+                  this.isSubmited = true;
+                  this.router.navigate(['/productor/home']);
+                }
+              });
+            } else {
+              Swal.close();
+              Swal.fire({
+                title: 'Datos Guardados',
+                text: r.msg,
+                icon: 'success'
+              }).then(result => {
+                if (result.isConfirmed) {
+                  this.isSubmited = true;
+                  this.router.navigate(['/productor/home']);
+                }
+              });
+            }
+          });
+        } else {
+          this.productorService.updateValuesStatement(this.id_statement, this.detailForm, header).subscribe(r => {
+            if (r.status) {
+              Swal.fire({
+                title: 'Datos Guardados',
+                text: `Se a publicado declaración`,
+                icon: 'success'
+              }).then(result => {
+                if (result.isConfirmed) {
+                  this.isSubmited = true;
+                  this.router.navigate(['/productor/home']);
+                }
+              });
+            }
+          })
+        }
+      } else {
+        this.productorService.saveForm({ header, detail }).subscribe(r => {
+          if (r.status) {
+            Swal.close();
+            Swal.fire({
+              title: 'Datos Guardados',
+              text: `La información se guardó correctamente`,
+              icon: 'success'
+            }).then(result => {
+              if (result.isConfirmed) {
+                this.isSubmited = true;
+                this.router.navigate(['/productor/home']);
+              }
+            });
+          } else {
+            Swal.fire({
+              title: 'Error',
+              text: 'Algo salió mal',
+              icon: 'error'
+            })
+          }
+        });
+      }
     }
   }
   updateValue(recyclability: any, type_residue: any, precedence: any, hazard: any, target: any) {
@@ -309,7 +380,7 @@ export class FormComponent implements OnInit, AfterViewChecked {
 
     const last_weight = parseInt((document.getElementById(`last_weight_${recyclability}_${type_residue}`) as HTMLInputElement).value);
     const diff = (((sum - last_weight) / last_weight) * 100);
-    (document.getElementById(`actual_dif_${recyclability}_${type_residue}`) as HTMLInputElement).value = `${diff == Infinity ? 100 : diff.toFixed(2) || 0}%`;
+    (document.getElementById(`actual_dif_${recyclability}_${type_residue}`) as HTMLInputElement).value = `${diff == Infinity ? 100 : parseInt(diff.toFixed(2)) || 0}%`;
   }
 
   getValueStatementByYear() {
