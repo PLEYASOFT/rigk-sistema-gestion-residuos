@@ -137,25 +137,19 @@ class AuthLogic {
         const repeatPassword = req.body.repeatPassword;
         try{
             console.log(password, repeatPassword)
-            if(password === '' || repeatPassword === ''){
+            if(password !== repeatPassword){
+                return res.status(200).json({status:false, msg: 'contraseña no coincide', data: {}})
+            }
+            else if(password == '' || repeatPassword == ''){
                 res.status(200).json({status:false, msg:'Contraseña vacía', data: {}});
             }
-            else if(password.length <=7 ){
-                res.status(200).json({status:false, msg:'La contraseña debe contener al menos 8 dígitos', data: {}});
-            }
             else{
-                if(password == repeatPassword){
-                    let passwordHash = bcrypt.hashSync(password, 8);
-    
-                    await authDao.recovery(passwordHash, user);
-    
-                    res.status(200).json({status:true, msg:'Haz recuperado tu contraseña', data: {}})
-                }
-                else{
-                    res.status(200).json({status:false, msg:'Contraseñas no coinciden', data: {}});
-                }
+                let passwordHash = bcrypt.hashSync(password, 8);
+                await authDao.recovery(passwordHash, user);
+                res.status(200).json({status:true, msg:'Haz recuperado tu contraseña', data: {}})
             }
         }
+        
         catch(err){
             console.log(err)
             res.status(500).json({status:false, msg:'Ocurrió un error', data: {}});
