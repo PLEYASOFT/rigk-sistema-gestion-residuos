@@ -136,7 +136,6 @@ class AuthLogic {
         const password = req.body.password;
         const repeatPassword = req.body.repeatPassword;
         try{
-            console.log(password, repeatPassword)
             if(password !== repeatPassword){
                 return res.status(200).json({status:false, msg: 'contraseña no coincide', data: {}})
             }
