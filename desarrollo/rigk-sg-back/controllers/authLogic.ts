@@ -22,7 +22,6 @@ class AuthLogic {
                 return res.status(200).json({status:false, msg: 'ingrese una contraseña', data: {}})
             }
             else{
-
                 const output = await authDao.getPassword(user);
                 bcrypt.compare(actual, output.PASSWORD).then(async (r) => {
                     if(r ){
@@ -35,7 +34,6 @@ class AuthLogic {
                     }
                 });
             }
-            
         } catch (err) {
             res.status(500).json({status:false, msg:'Ocurrió un error', data: {}});
         }
@@ -46,7 +44,6 @@ class AuthLogic {
         
         try{
             const output = await authDao.login(user);
-            
             if(output != undefined){
                 bcrypt.compare(password, output.PASSWORD).then(async (r) => {
                     if(r){
@@ -66,11 +63,9 @@ class AuthLogic {
                     }
                 });
             }
-
             else{
                 res.status(200).json({status:false, msg:'Usuario y/o contraseña incorrectos, intenta nuevamente', data: {}});
             }
-                
         }
         catch(err){
             console.log(err)

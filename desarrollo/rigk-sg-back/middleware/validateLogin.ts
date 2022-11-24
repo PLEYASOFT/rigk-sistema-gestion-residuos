@@ -6,20 +6,16 @@ export const validateLogin = async (req: Request, res: Response, next: NextFunct
     const user = req.body.user;
     const password = req.body.password;
 
-     
     try {
-
         if(user == '' || password == ''){
             res.status(500).json({status:false, msg:'Debe ingresar usuario y contraseña', data: {}});
         }
-        
         else{
             const value = await loginScheme.validateAsync(req.body);
-            console.log(value);
             next();
         }
-        
     } catch (error) {
+        console.log(error);
         return res.status(400).json({status:false, msg: "Usuario y/o contraseña incorrectos, intenta nuevamente."});
     }
 };
