@@ -22,7 +22,6 @@ class AuthLogic {
                 return res.status(200).json({status:false, msg: 'ingrese una contraseña', data: {}})
             }
             else{
-
                 const output = await authDao.getPassword(user);
                 bcrypt.compare(actual, output.PASSWORD).then(async (r) => {
                     if(r ){
@@ -35,7 +34,6 @@ class AuthLogic {
                     }
                 });
             }
-            
         } catch (err) {
             res.status(500).json({status:false, msg:'Ocurrió un error', data: {}});
         }
@@ -46,7 +44,6 @@ class AuthLogic {
         
         try{
             const output = await authDao.login(user);
-            
             if(output != undefined){
                 bcrypt.compare(password, output.PASSWORD).then(async (r) => {
                     if(r){
@@ -66,11 +63,9 @@ class AuthLogic {
                     }
                 });
             }
-
             else{
                 res.status(200).json({status:false, msg:'Usuario y/o contraseña incorrectos, intenta nuevamente', data: {}});
             }
-                
         }
         catch(err){
             console.log(err)
@@ -136,26 +131,19 @@ class AuthLogic {
         const password = req.body.password;
         const repeatPassword = req.body.repeatPassword;
         try{
-            console.log(password, repeatPassword)
-            if(password === '' || repeatPassword === ''){
+            if(password !== repeatPassword){
+                return res.status(200).json({status:false, msg: 'contraseña no coincide', data: {}})
+            }
+            else if(password == '' || repeatPassword == ''){
                 res.status(200).json({status:false, msg:'Contraseña vacía', data: {}});
             }
-            else if(password.length <=7 ){
-                res.status(200).json({status:false, msg:'La contraseña debe contener al menos 8 dígitos', data: {}});
-            }
             else{
-                if(password == repeatPassword){
-                    let passwordHash = bcrypt.hashSync(password, 8);
-    
-                    await authDao.recovery(passwordHash, user);
-    
-                    res.status(200).json({status:true, msg:'Haz recuperado tu contraseña', data: {}})
-                }
-                else{
-                    res.status(200).json({status:false, msg:'Contraseñas no coinciden', data: {}});
-                }
+                let passwordHash = bcrypt.hashSync(password, 8);
+                await authDao.recovery(passwordHash, user);
+                res.status(200).json({status:true, msg:'Haz recuperado tu contraseña', data: {}})
             }
         }
+        
         catch(err){
             console.log(err)
             res.status(500).json({status:false, msg:'Ocurrió un error', data: {}});
