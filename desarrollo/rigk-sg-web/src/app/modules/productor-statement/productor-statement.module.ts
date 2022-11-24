@@ -9,7 +9,8 @@ import { HomeComponent } from './pages/home/home.component';
 import { LayoutComponent } from './pages/layout/layout.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { StatementsComponent } from './pages/statements/statements.component';
-
+import { SummaryStatementComponent } from './pages/components/summary-statement/summary-statement.component';
+import { FormStatementComponent } from './pages/components/form-statement/form-statement.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,9 @@ import { StatementsComponent } from './pages/statements/statements.component';
     HomeComponent,
     LayoutComponent,
     ProfileComponent,
-    StatementsComponent
+    StatementsComponent,
+    SummaryStatementComponent,
+    FormStatementComponent
   ],
   imports: [
     CommonModule,

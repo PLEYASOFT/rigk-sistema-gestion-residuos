@@ -5,6 +5,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { LayoutComponent } from './pages/layout/layout.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { StatementsComponent } from './pages/statements/statements.component';
+import { SummaryStatementComponent } from './pages/components/summary-statement/summary-statement.component';
 
 const routes: Routes = [
   {
@@ -15,6 +16,7 @@ const routes: Routes = [
       { path: 'form', component: FormComponent },
       { path: 'profile', component: ProfileComponent },
       { path: 'statements', component: StatementsComponent },
+      { path: 'summary', component:SummaryStatementComponent},
       { path: '**', redirectTo: 'home', pathMatch: 'full' }
     ]
   }
