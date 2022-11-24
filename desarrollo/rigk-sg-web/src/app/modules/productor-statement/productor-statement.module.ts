@@ -12,7 +12,6 @@ import { StatementsComponent } from './pages/statements/statements.component';
 import { SummaryStatementComponent } from './pages/components/summary-statement/summary-statement.component';
 import { FormStatementComponent } from './pages/components/form-statement/form-statement.component';
 
-
 @NgModule({
   declarations: [
     FormComponent,
