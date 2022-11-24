@@ -5,10 +5,9 @@ export const recoveryPassword = async (req: Request, res: Response, next: NextFu
 
     try {
         const value = await recoveryPasswordScheme.validateAsync(req.body);
-        console.log(value);
         next();
     } catch (error) {
+        console.log(error);
         return res.status(400).json({status:false, msg: "Formato inválido"});
     }
-
 };
