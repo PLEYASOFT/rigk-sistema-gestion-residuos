@@ -4,11 +4,11 @@ import { statementProductorFormScheme } from '../../models/statementProductor';
 export const verifyParametersProductorForm = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
-        const value = await statementProductorFormScheme.validateAsync(req.body);
+        await statementProductorFormScheme.validateAsync(req.body);
         next();
     } catch (error) {
         console.log(error);
-        return res.status(400).json({status:false, msg: "Formato inválido"});
+        return res.status(400).json({ status: false, msg: "Formato inválido" });
     }
 
 };

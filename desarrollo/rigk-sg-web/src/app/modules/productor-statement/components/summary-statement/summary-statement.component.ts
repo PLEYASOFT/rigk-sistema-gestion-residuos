@@ -90,7 +90,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewChecked {
   }
 
   getDraftStatement() {
-    this.productorService.getValueStatementByYear(this.id_business, this.year_statement).subscribe(resp => {
+    this.productorService.getValueStatementByYear(this.id_business, this.year_statement, 1).subscribe(resp => {
       if (resp.status) {
         if (resp.data.header.STATE) {
           this.router.navigate(['/productor/home']);
@@ -377,7 +377,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewChecked {
 
   getValueStatementByYear() {
     const year = this.year_statement - 1;
-    this.productorService.getValueStatementByYear(this.id_business, year).subscribe(r => {
+    this.productorService.getValueStatementByYear(this.id_business, year, 0).subscribe(r => {
       if (!r.status) {
         Swal.close();
         Swal.fire({

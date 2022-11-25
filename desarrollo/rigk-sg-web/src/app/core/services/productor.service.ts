@@ -7,49 +7,24 @@ import { catchError, of } from 'rxjs';
   providedIn: 'root'
 })
 export class ProductorService {
-
   url = `${environment.API_V1_URL}/statement`;
 
   constructor(private http: HttpClient) { }
 
   saveForm(data: any) {
-    console.log(data)
-    return this.http.post<any>(`${this.url}`, data,{headers: {
-      "x-token": sessionStorage.getItem('token')!
-    }}).pipe(
-      catchError(err=>of(err.error))
-    );
+    return this.http.post<any>(`${this.url}`, data);
   }
-  
-  getValueStatementByYear(id_business:any, year:number) {
-    return this.http.get<any>(`${this.url}/${id_business}/year/${year}`, {headers: {
-      "x-token": sessionStorage.getItem('token')!
-    }}).pipe(
-      catchError(err => of(err.error))
-    );
+  getValueStatementByYear(id_business: any, year: number, isDraft: number) {
+    return this.http.get<any>(`${this.url}/${id_business}/year/${year}/isDraft/${isDraft}`);
   }
-  updateStateStatement(id_header:any, state:any) {
-    return this.http.put<any>(`${this.url}/${id_header}/state/${state}`,{}, {headers: {
-      "x-token": sessionStorage.getItem('token')!
-    }}).pipe(
-      catchError(err => of(err.error))
-    );
+  updateStateStatement(id_header: any, state: any) {
+    return this.http.put<any>(`${this.url}/${id_header}/state/${state}`, {});
   }
-  updateValuesStatement(id_header:any, detail:any, header:any) {
-    return this.http.put<any>(`${this.url}/${id_header}`,{header, detail}, {headers: {
-      "x-token": sessionStorage.getItem('token')!
-    }}).pipe(
-      catchError(err => of(err.error))
-    );
+  updateValuesStatement(id_header: any, detail: any, header: any) {
+    return this.http.put<any>(`${this.url}/${id_header}`, { header, detail });
   }
-  verifyDraft(id_business:any, year:any) {
-    return this.http.get<any>(`${this.url}/draft/${id_business}/year/${year}`, {headers: {
-      "x-token": sessionStorage.getItem('token')!
-    }}).pipe(
-      catchError(err => of(err.error))
-    );
-
-
+  verifyDraft(id_business: any, year: any) {
+    return this.http.get<any>(`${this.url}/draft/${id_business}/year/${year}`);
   }
 
 }

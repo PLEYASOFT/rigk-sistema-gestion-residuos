@@ -10,41 +10,37 @@ import { ProductorService } from '../../../core/services/productor.service';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
-
   @Input() isVisible = true;
 
-  // actual_year = (new Date()).getFullYear();
-
   menu = [
-    {title: "Inicio", path: "#/productor/home", icon: "fa-home"},
-    {title: "Mi Perfil", path: "#/productor/profile", icon: "fa-user"},
-    {title: "Registro de declaración", path: "#/productor/form", icon: "fa-file-text"},
-    {title: "Consulta de declaración", path: "#/productor/statements", icon: "fa-search"},
-    
+    { title: "Inicio", path: "#/productor/home", icon: "fa-home" },
+    { title: "Mi Perfil", path: "#/productor/profile", icon: "fa-user" },
+    { title: "Registro de declaración", path: "#/productor/form", icon: "fa-file-text" },
+    { title: "Consulta de declaración", path: "#/productor/statements", icon: "fa-search" },
+
   ];
 
   constructor(private router: Router,
-              public businessService: BusinessService,
-              private productorService: ProductorService) { }
+    public businessService: BusinessService,
+    private productorService: ProductorService) { }
 
   ngOnInit(): void {
   }
 
   async showDialog() {
-     Swal.fire({
+    Swal.fire({
       title: 'Ingrese Datos',
       html: '<input id="inp_id_business" type="number" placeholder="ID Empresa" class="form-control"><br><input id="inp_year" type="number" placeholder="AÑO Declaración" class="form-control">',
       preConfirm: async () => {
-        
         const id_business = parseInt((document.getElementById('inp_id_business') as HTMLInputElement).value);
         const year = parseInt((document.getElementById('inp_year') as HTMLInputElement).value);
         const actual = new Date().getFullYear();
-        if( (year >= 1000 && year<=9999) && year <= actual && id_business>0) {
-          await this.businessService.verifyBusiness(id_business).subscribe(r=>{
-            if(r.status) {
-              this.productorService.verifyDraft(id_business, year).subscribe( r=> {
-                if(!r.status) {
-                  this.router.navigate(['/productor/form'], {queryParams:{year, id_business}});
+        if ((year >= 1000 && year <= 9999) && year <= actual && id_business > 0) {
+          await this.businessService.verifyBusiness(id_business).subscribe(r => {
+            if (r.status) {
+              this.productorService.verifyDraft(id_business, year).subscribe(r => {
+                if (!r.status) {
+                  this.router.navigate(['/productor/form'], { queryParams: { year, id_business } });
                 } else {
                   Swal.fire({
                     icon: 'info',
@@ -63,10 +59,9 @@ export class SidebarComponent implements OnInit {
           });
         } else {
           Swal.showValidationMessage('ID y/o Año incorrecto. Favor verificar')
-        }    
+        }
       }
     }).then(result => {
-      console.log(result);
     });
   }
 
