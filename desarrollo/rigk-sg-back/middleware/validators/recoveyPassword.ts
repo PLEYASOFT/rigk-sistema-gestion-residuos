@@ -4,10 +4,10 @@ import { recoveryPasswordScheme } from "../../models/loginScheme";
 export const recoveryPassword = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
-        const value = await recoveryPasswordScheme.validateAsync(req.body);
+        await recoveryPasswordScheme.validateAsync(req.body);
         next();
     } catch (error) {
         console.log(error);
-        return res.status(400).json({status:false, msg: "Formato inválido"});
+        return res.status(400).json({ status: false, msg: "Formato inválido" });
     }
 };

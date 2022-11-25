@@ -98,7 +98,7 @@ export class FormComponent implements OnInit, AfterViewChecked {
   }
 
   getDraftStatement() {
-    this.productorService.getValueStatementByYear(this.id_business, this.year_statement).subscribe(resp => {
+    this.productorService.getValueStatementByYear(this.id_business, this.year_statement, 1).subscribe(resp => {
       if (resp.status) {
         if (resp.data.header.STATE) {
           this.router.navigate(['/productor/home']);
@@ -122,7 +122,6 @@ export class FormComponent implements OnInit, AfterViewChecked {
     });
   }
 
-
   toLowerKeys(obj: any) {
     const entries = Object.entries(obj);
     return Object.fromEntries(
@@ -131,6 +130,7 @@ export class FormComponent implements OnInit, AfterViewChecked {
       }),
     );
   }
+
   submitForm(state = true) {
     let flagZero = true;
     for (let i = 0; i < this.detailForm.length; i++) {
@@ -161,10 +161,7 @@ export class FormComponent implements OnInit, AfterViewChecked {
             title: 'Guardando Datos',
             text: `Se están guardando datos`,
             timerProgressBar: true,
-            showConfirmButton: false,
-            willClose: () => {
-
-            }
+            showConfirmButton: false
           });
           Swal.showLoading();
 
@@ -347,7 +344,6 @@ export class FormComponent implements OnInit, AfterViewChecked {
       target.value = 0;
     }
 
-
     for (let i = 0; i < this.detailForm.length; i++) {
       const r = this.detailForm[i];
       if (r.type_residue == type_residue && r.recyclability == recyclability) {
@@ -357,15 +353,12 @@ export class FormComponent implements OnInit, AfterViewChecked {
         tmp = r;
       }
     }
-
     if (this.detailForm.length == 0) {
       sum = 0;
     }
-
     if (tmp) {
       const index = this.detailForm.indexOf(tmp);
       sum = sum - { ...this.detailForm[index] }.value;
-
       this.detailForm[index].value = value;
       sum += parseInt(this.detailForm[index].value);
     } else {
@@ -385,7 +378,7 @@ export class FormComponent implements OnInit, AfterViewChecked {
 
   getValueStatementByYear() {
     const year = this.year_statement - 1;
-    this.productorService.getValueStatementByYear(this.id_business, year).subscribe(r => {
+    this.productorService.getValueStatementByYear(this.id_business, year, 0).subscribe(r => {
       if (!r.status) {
         Swal.close();
         Swal.fire({

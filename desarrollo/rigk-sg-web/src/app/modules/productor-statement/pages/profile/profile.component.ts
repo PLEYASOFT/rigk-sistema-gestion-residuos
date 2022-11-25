@@ -11,55 +11,49 @@ import Swal from 'sweetalert2';
 })
 export class ProfileComponent implements OnInit {
   userData: any | null;
-  
+  pos = "right";
+
   formData: FormGroup = this.fb.group({
-    actual: [ '', [Validators.required]],
+    actual: ['', [Validators.required]],
     password: ['', [Validators.required, Validators.minLength(3)]],
     repeatPassword: ['', [Validators.required, Validators.minLength(3)]]
   });
 
   constructor(private fb: FormBuilder,
-              private authService: AuthService,
-              private router: Router) { }
-
-  btnrecovery() {
-
-    const {actual, password, repeatPassword} = this.formData.value;
-    console.log(this.formData.value)
-    this.authService.modifyPassword(password, repeatPassword, actual).subscribe(resp => {
-    if (resp.status){
-      Swal.fire({
-        title:"Cambio de contraseña",
-        text:"La contraseña fue cambiada exitosamente",
-        icon:"success",
-      })
-      this.router.navigate(['/auth/login']);
-    }
-    else{
-      Swal.fire({
-        title:"Validar información",
-        text:resp.msg,
-        icon:"error",
-      });
-      this.formData.reset();
-
-    }
-    });
-  }
+    private authService: AuthService,
+    private router: Router) { }
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
-    console.log(this.userData)
   }
-  pos="right";
-  
+
+  btnrecovery() {
+    const { actual, password, repeatPassword } = this.formData.value;
+    this.authService.modifyPassword(password, repeatPassword, actual).subscribe(resp => {
+      if (resp.status) {
+        Swal.fire({
+          title: "Cambio de contraseña",
+          text: "La contraseña fue cambiada exitosamente",
+          icon: "success",
+        })
+        this.router.navigate(['/auth/login']);
+      }
+      else {
+        Swal.fire({
+          title: "Validar información",
+          text: resp.msg,
+          icon: "error",
+        });
+        this.formData.reset();
+      }
+    });
+  }
+
   displayModifyPassword() {
-    if(this.pos == "right") {
+    if (this.pos == "right") {
       this.pos = "down";
     } else {
       this.pos = "right";
     }
   }
-
-
 }

@@ -6,6 +6,6 @@ import { validarJWT } from "../middleware/validar-jwt";
 
 const router = Router();
 
-router.get('/verify/:id', [ validarJWT, verifyParameters ], businessLogic.verifyId);
+router.get('/verify/:id', [validarJWT, verifyParameters], businessLogic.verifyId);
 
 export default router;
