@@ -37,26 +37,6 @@
             </ul>
         </div>
 
-        <!-- Estado y paginación -->
-        <div class="d-lg-flex justify-content-end mb-4">
-            <ul class="list list-status list-unstyled me-lg-4">
-                <li>Estado: <span class="color-green">Enviada</span></li>
-            </ul>
-            <ul class="list list-pagination list-unstyled">
-                <li><a href="#"><i class="fa fa-chevron-left fa-fw" aria-hidden="true"></i></a></li>
-                <li>Versión: <span class="color-green">1/1</span></li>
-                <li><a href="#"><i class="fa fa-chevron-right fa-fw" aria-hidden="true"></i></a></li>
-            </ul>
-        </div>
-        <!-- Switch y Excel -->
-        <div class="d-md-flex justify-content-between mb-5">
-            <div class="form-check form-switch lh-base mb-4 mb-lg-0">
-                <input class="form-check-input form-check-input-red" type="checkbox" role="switch" id="lastyears" checked>
-                <label class="form-check-label fw-bold" for="lastyears">Mostrar números de los últimos años</label>
-            </div>
-            <a class="btn" href="#">Exportar Excel <i class="fa fa-file-excel-o fa-fw fa-lg" aria-hidden="true"></i></a>
-        </div>
-
         <div class="row">
             <!-- Columna 1 -->
             <div class="col-12 col-xxl-9">
@@ -66,15 +46,18 @@
                         <thead>
                             <tr class="text-center">
                                 <th class="text-start">Material</th>
-                                <th colspan="2">Tipo de tonelaje A</th>
-                                <th colspan="2">Tipo de tonelaje B</th>
-                                <th colspan="2">Tipo de tonelaje C</th>
+                                <th colspan="2">Prim. Peligroso</th>
+                                <th colspan="2">Prim. No Peligroso</th>
+                                <th colspan="2">Secundario</th>
+                                <th colspan="2">Terciario</th>
                                 <th colspan="3">Peso total (ton)</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr class="text-center bg-green-light-2">
                                 <td class="fw-bold text-start">Embalaje de un solo uso</td>
+                                <td class="color-red" width="7%">2020</td>
+                                <td width="7%">2021</td>
                                 <td class="color-red" width="7%">2020</td>
                                 <td width="7%">2021</td>
                                 <td class="color-red" width="7%">2020</td>
@@ -95,6 +78,8 @@
                                 <td></td>
                                 <td class="bg-red-light">2,543</td>
                                 <td>2,600</td>
+                                <td class="bg-red-light">2,543</td>
+                                <td>2,600</td>
                                 <td class="bg-gray color-green">+2,24%</td>
                             </tr>
                             <tr class="text-end">
@@ -104,6 +89,8 @@
                                 <td class="bg-red-light"></td>
                                 <td></td>
                                 <td class="bg-red-light">0,154</td>
+                                <td>0,150</td>
+                                <td class="bg-red-light">0,145</td>
                                 <td>0,150</td>
                                 <td class="bg-red-light">0,145</td>
                                 <td>0,150</td>
@@ -119,10 +106,14 @@
                                 <td></td>
                                 <td class="bg-red-light">0,364</td>
                                 <td>0,400</td>
+                                <td class="bg-red-light">0,364</td>
+                                <td>0,400</td>
                                 <td class="bg-gray color-green">+9,89%</td>
                             </tr>
                             <tr class="text-center bg-green-light-2">
                                 <td class="fw-bold text-start">Embalaje reutilizable</td>
+                                <td class="color-red">2020</td>
+                                <td>2021</td>
                                 <td class="color-red">2020</td>
                                 <td>2021</td>
                                 <td class="color-red">2020</td>
@@ -143,12 +134,14 @@
                                 <td>2,250</td>
                                 <td class="bg-red-light">2,175</td>
                                 <td>2,250</td>
+                                <td class="bg-red-light">2,175</td>
+                                <td>2,250</td>
                                 <td class="bg-gray color-green">+3,45%</td>
                             </tr>
                         </tbody>
                         <tfoot>
                             <tr class="text-end">
-                                <td class="text-start" colspan="7">Total (ton)</td>
+                                <td class="text-start" colspan="9">Total (ton)</td>
                                 <td>5,227</td>
                                 <td>5,400</td>
                                 <td>+3,31%</td>
@@ -157,12 +150,12 @@
                     </table>
                     <!-- Tabla Mobile -->
                     <div class="mb-4 mb-lg-0">
-                        <!-- Tipo de tonelaje A -->
+                        <!-- Prim. Peligroso -->
                         <table class="table table-even table-section table-borderless table-align-middle table-border table-radius d-lg-none mb-0">
                             <thead>
                                 <tr>
                                     <th>Material</th>
-                                    <th colspan="2" class="text-center">Tipo de tonelaje A</th>
+                                    <th colspan="2" class="text-center">Prim. Peligroso</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -201,12 +194,12 @@
                                 <td colspan="3"></td>
                             </tfoot>
                         </table>
-                        <!-- Tipo de tonelaje B -->
+                        <!-- Prim. No Peligroso -->
                         <table class="table table-even table-section table-borderless table-align-middle table-border d-lg-none mb-0">
                             <thead>
                                 <tr>
                                     <th>Material</th>
-                                    <th colspan="2" class="text-center">Tipo de tonelaje B</th>
+                                    <th colspan="2" class="text-center">Prim. No Peligroso</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -245,12 +238,12 @@
                                 <td colspan="3"></td>
                             </tfoot>
                         </table>
-                        <!-- Tipo de tonelaje C -->
+                        <!-- Secundario -->
                         <table class="table table-even table-section table-borderless table-align-middle table-border d-lg-none mb-0">
                             <thead>
                                 <tr>
                                     <th>Material</th>
-                                    <th colspan="2" class="text-center">Tipo de tonelaje C</th>
+                                    <th colspan="2" class="text-center">Secundario</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -433,6 +426,7 @@
             <th colspan="2">Prim. Peligrosos</th>
             <th colspan="2">Prim. No Peligrosos</th>
             <th colspan="2">Secundario</th>
+            <th colspan="2">Terciario</th>
             <th colspan="2">Terciarios.</th>
             <th colspan="2">Peso (ton)</th>
             <th colspan="1">Dif (%)</th>
