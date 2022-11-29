@@ -6,16 +6,18 @@ import nodemailer from 'nodemailer';
 export const sendCode = ( output: any, cod: any, res: Response ) => {
 
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        pool: true,
+        host: "mail.prorep.cl",
+        port: 465,
+        secure:true,
         auth: {
-            user: `${process.env.EMAIL_ADDRESS}`,
-            pass: `${process.env.EMAIL_PASSWORD}`,
-        },
-        secure:true
+            user: "noreply@prorep.cl",
+            pass: "nr_prorep_22",
+        }
     });
 
     const mailOptions = {
-        from: `PROREP noreply@gmail.com`,
+        from: `PROREP noreply@prorep.cl`,
         to: `${output.EMAIL}`,
         subject: 'Código de recuperación',
         text: `Tu código de recuperación es: ${cod}`
