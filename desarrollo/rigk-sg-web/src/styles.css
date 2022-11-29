@@ -14264,7 +14264,7 @@ body {
   background-position: right;
   background-repeat: repeat-y;
   background-size: cover;
-  background-image: url(./assets/images/c-bar.svg);
+  /* background-image: url(./assets/images/c-bar.svg); */
   position: relative;
   bottom: -32px;
 }
@@ -14275,7 +14275,7 @@ body {
   background-position: right;
   background-repeat: repeat-y;
   background-size: cover;
-  background-image: url(./assets/images/c-bar.svg);
+  /* background-image: url(./assets/images/c-bar.svg); */
   position: absolute;
   bottom: 0;
 }
