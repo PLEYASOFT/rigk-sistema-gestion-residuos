@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterContentInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductorService } from 'src/app/core/services/productor.service';
@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
   templateUrl: './form-statement.component.html',
   styleUrls: ['./form-statement.component.css']
 })
-export class FormStatementComponent implements OnInit {
+export class FormStatementComponent implements OnInit, AfterContentInit {
     /**
    * BORRAR
    */
@@ -55,6 +55,9 @@ export class FormStatementComponent implements OnInit {
         this.year_statement = r['year'];
       });
     }
+  ngAfterContentInit(): void {
+    throw new Error('Method not implemented.');
+  }
 
   ngOnInit(): void {
     this.getValueStatementByYear();
@@ -68,6 +71,11 @@ export class FormStatementComponent implements OnInit {
     Swal.showLoading();
   }
 
+  ngAfterViewChecked(): void {
+    //Called after every check of the component's view. Applies to components only.
+    //Add 'implements AfterViewChecked' to the class.
+    this.calculateDiff()
+  }
 
   calculateDiff() {
     for (let i = 1; i <= 5; i++) {
@@ -75,9 +83,11 @@ export class FormStatementComponent implements OnInit {
       const actual_recyclability_2 = parseInt((document.getElementById(`actual_weight_2_${i}`) as HTMLInputElement).value);
       const actual_recyclability_3 = parseInt((document.getElementById(`actual_weight_3_${i}`) as HTMLInputElement).value);
 
-      const last_recyclability_1 = parseInt((document.getElementById(`last_weight_1_${i}`) as HTMLInputElement).value);
-      const last_recyclability_2 = parseInt((document.getElementById(`last_weight_2_${i}`) as HTMLInputElement).value);
-      const last_recyclability_3 = parseInt((document.getElementById(`last_weight_3_${i}`) as HTMLInputElement).value);
+      const last_recyclability_1 = parseInt((document.getElementById(`last_weight_1_${i}`) as HTMLElement).innerHTML);
+      const last_recyclability_2 = parseInt((document.getElementById(`last_weight_2_${i}`) as HTMLElement).innerHTML);
+      const last_recyclability_3 = parseInt((document.getElementById(`last_weight_3_${i}`) as HTMLElement).innerHTML);
+
+      console.log("asdasdasdaß",last_recyclability_1)
 
       const diff_1 = (((actual_recyclability_1 - last_recyclability_1) / last_recyclability_1) * 100);
       const diff_2 = (((actual_recyclability_2 - last_recyclability_2) / last_recyclability_2) * 100);
@@ -98,7 +108,8 @@ export class FormStatementComponent implements OnInit {
         this.id_statement = resp.data.header.ID;
         sessionStorage.setItem('id_statement', this.id_statement?.toString() || 'null');
 
-        resp.data.detail.forEach((r: any) => {
+        for (let i = 0; i < resp.data.detail.length; i++) {
+          const r = resp.data.detail[i];
           const obj = this.toLowerKeys(r);
           this.detailForm.push(obj);
           (document.getElementById(`inp_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}_${r?.PRECEDENCE}_${r?.HAZARD}`) as HTMLInputElement).value = r?.VALUE;
@@ -109,8 +120,9 @@ export class FormStatementComponent implements OnInit {
           if (r?.RECYCLABILITY >= 2) {
             (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = tmp_amount.toString();
           }
+        }
+        sessionStorage.setItem('detailForm', JSON.stringify(this.detailForm));
 
-        });
       }
     });
   }
@@ -165,7 +177,7 @@ export class FormStatementComponent implements OnInit {
       (document.getElementById(`actual_amount_${recyclability}_${type_residue}`) as HTMLInputElement).value = (sum * prices[type_residue - 1]).toString();
     }
 
-    const last_weight = parseInt((document.getElementById(`last_weight_${recyclability}_${type_residue}`) as HTMLInputElement).value);
+    const last_weight = parseInt((document.getElementById(`last_weight_${recyclability}_${type_residue}`) as HTMLElement).innerHTML);
     const diff = (((sum - last_weight) / last_weight) * 100);
     (document.getElementById(`actual_dif_${recyclability}_${type_residue}`) as HTMLInputElement).value = `${diff == Infinity ? 100 : parseInt(diff.toFixed(2)) || 0}%`;
   }
