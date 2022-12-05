@@ -3,27 +3,32 @@
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
         <li class="breadcrumb-item"><a href="#">Consulta de Declaración</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Declaración {{year_statement}} - NICO KNOTT (1100711705)</li>
+        <li class="breadcrumb-item active" aria-current="page">Declaración {{year_statement}} - NICO KNOTT (1100711705)
+        </li>
     </ol>
 </nav>
 <!-- fin breadcrumbs -->
 <h1>Formulario</h1>
 <hr>
 
-<button (click)="submitForm()" class="btn btn-primary" style="float:right;"> <i class="fa fa-save"></i> GUARDAR</button>
-<button (click)="submitForm(false)" class="btn btn-primary" style="float:right;"> <i class="fa fa-save"></i> BORRADOR</button>
+<button (click)="saveDraft()" class="btn btn-primary" style="float:right;"> <i class="fa fa-save"></i> BORRADOR</button>
 <br> <br>
+<p style="text-align: right;" *ngIf="hour != null">Borrador guardado a las: {{hour | date: 'HH:mm:ss'}}</p>
 <div class="w-100" style="width: 100% !important;">
     <div class="table-responsive mb-2 mb-lg-4">
         <ul class="list list-process list-unstyled">
-            <li (click)="optionSelected(1)" class="list-process__dot" [ngClass]="{active: position == 1}"><a >Formulario</a></li>
-            <li (click)="optionSelected(2)" class="list-process__dot" [ngClass]="{active: position == 2}"><a >Resumen</a></li>
-            <li (click)="optionSelected(3)" class="list-process__dot" [ngClass]="{active: position == 3}"><a >PATRICIO</a></li>
+            <li class="list-process__dot" [ngClass]="{active: position == 1}"><a>Formulario</a></li>
+            <li class="list-process__dot" [ngClass]="{active: position == 2}"><a>Resumen</a></li>
+            <li class="list-process__dot" [ngClass]="{active: position == 3}"><a>PATRICIO</a></li>
             <!-- <li (click)="optionSelected(6)" class="list-process__icon"><a ><img width="40" src="assets/images/ic-mail.svg"></a></li> -->
         </ul>
     </div>
 </div>
+<div style="text-align: right;">
+    <button class="btn btn-warning" (click)="changeStep(-1)">Atrás</button>
+    <button class="btn btn-primary" (click)="changeStep(1)">Siguiente</button>
+</div>
 
-<app-form-statement     *ngIf="position == 1"></app-form-statement>
-<app-summary-statement  *ngIf="position == 2"></app-summary-statement>
-<app-form-statement     *ngIf="position == 3"></app-form-statement>
+<app-form-statement *ngIf="position == 1"></app-form-statement>
+<app-summary-statement *ngIf="position == 2"></app-summary-statement>
+<app-form-statement *ngIf="position == 3"></app-form-statement>

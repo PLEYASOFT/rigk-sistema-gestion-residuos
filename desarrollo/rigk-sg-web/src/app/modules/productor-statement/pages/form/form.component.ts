@@ -25,12 +25,11 @@ export class FormComponent implements OnInit {
    * END BORRAr
    */
 
-
   position = 1;
+  hour: Date | null = null;
 
   isSubmited = false;
   isEdited = false;
-  
 
   id_business: number = 0;
   year_statement: number = 0;
@@ -49,27 +48,16 @@ export class FormComponent implements OnInit {
   }
 
   async ngOnDestroy() {
-    this.isEdited = Boolean(sessionStorage.getItem('isEdited') || false);
-    if (!this.isSubmited && this.isEdited) {
-      await this.submitForm(false);
-    }
+    // this.isEdited = Boolean(sessionStorage.getItem('isEdited') || false);
+    // if (!this.isSubmited && this.isEdited) {
+    //   // await this.submitForm(false);
+    // }
   }
 
   ngOnInit(): void {
   }
 
-  optionSelected(index: any) {
-    this.position = index;
-  }
-
-  submitForm(state = true) {
-    
-    this.detailForm = JSON.parse(sessionStorage.getItem('detailForm')!);
-    this.isEdited = Boolean(sessionStorage.getItem('isEdited') || false);
-    this.id_statement = parseInt(sessionStorage.getItem('id_statement')!) || null;
-    console.log("eee",this.id_statement);
-    
-
+  saveDraft() {
     let flagZero = true;
     for (let i = 0; i < this.detailForm.length; i++) {
       const reg = this.detailForm[i];
@@ -77,6 +65,14 @@ export class FormComponent implements OnInit {
         flagZero = false;
       }
     }
+    this.id_statement = parseInt(sessionStorage.getItem('id_statement')!) || null;
+    const detail = JSON.parse(sessionStorage.getItem('detailForm')!);
+    const header = {
+      id_business: this.id_business,
+      year_statement: this.year_statement,
+      state: false,
+      id_statement: this.id_statement
+    };
 
     if (flagZero) {
       this.detailForm.push({
@@ -102,173 +98,46 @@ export class FormComponent implements OnInit {
             showConfirmButton: false
           });
           Swal.showLoading();
-
-          const detail = this.detailForm;
-          const header = {
-            id_business: this.id_business,
-            year_statement: this.year_statement,
-            state,
-            id_statement: this.id_statement
-          }
-
-          if (this.id_statement && state) {
-            if (!this.isEdited) {
-              this.productorService.updateStateStatement(this.id_statement, state).subscribe(r => {
-                if (r.status) {
-                  Swal.close();
-                  Swal.fire({
-                    title: 'Datos Guardados',
-                    text: `La información se guardó correctamente`,
-                    icon: 'success'
-                  }).then(result => {
-                    if (result.isConfirmed) {
-                      this.afterSubmitedForm()
-                    }
-                  });
-                } else {
-                  Swal.close();
-                  Swal.fire({
-                    title: 'Datos Guardados',
-                    text: r.msg,
-                    icon: 'success'
-                  }).then(result => {
-                    if (result.isConfirmed) {
-                      this.afterSubmitedForm();
-                    }
-                  });
-                }
-              });
-            } else {
-              this.productorService.updateValuesStatement(this.id_statement, this.detailForm, header).subscribe(r => {
-                if (r.status) {
-                  Swal.fire({
-                    title: 'Datos Guardados',
-                    text: `Se a publicado declaración`,
-                    icon: 'success'
-                  }).then(result => {
-                    if (result.isConfirmed) {
-                      this.afterSubmitedForm();
-                    }
-                  });
-                }
-              })
-            }
-          } else {
-            this.productorService.saveForm({ header, detail }).subscribe(r => {
-              if (r.status) {
-                Swal.close();
-                Swal.fire({
-                  title: 'Datos Guardados',
-                  text: `La información se guardó correctamente`,
-                  icon: 'success'
-                }).then(result => {
-                  if (result.isConfirmed) {
-                    this.afterSubmitedForm();
-                  }
-                });
-              } else {
-                Swal.fire({
-                  title: 'Error',
-                  text: 'Algo salió mal',
-                  icon: 'error'
-                })
-              }
-            });
-          }
-        }
-      })
-    } else {
-      Swal.fire({
-        title: 'Guardando Datos',
-        text: `Se están guardando datos`,
-        timerProgressBar: true,
-        showConfirmButton: false,
-        willClose: () => {
-
         }
       });
-      Swal.showLoading();
-
-      const detail = this.detailForm;
-      const header = {
-        id_business: this.id_business,
-        year_statement: this.year_statement,
-        state,
-        id_statement: this.id_statement
-      }
-
-      if (this.id_statement && state) {
-        if (!this.isEdited) {
-          this.productorService.updateStateStatement(this.id_statement, state).subscribe(r => {
-            if (r.status) {
-              Swal.close();
-              Swal.fire({
-                title: 'Datos Guardados',
-                text: `La información se guardó correctamente`,
-                icon: 'success'
-              }).then(result => {
-                if (result.isConfirmed) {
-                  this.afterSubmitedForm();
-                }
-              });
-            } else {
-              Swal.close();
-              Swal.fire({
-                title: 'Datos Guardados',
-                text: r.msg,
-                icon: 'success'
-              }).then(result => {
-                if (result.isConfirmed) {
-                  this.afterSubmitedForm();
-                }
-              });
-            }
-          });
-        } else {
-          this.productorService.updateValuesStatement(this.id_statement, this.detailForm, header).subscribe(r => {
-            if (r.status) {
-              Swal.fire({
-                title: 'Datos Guardados',
-                text: `Se a publicado declaración`,
-                icon: 'success'
-              }).then(result => {
-                if (result.isConfirmed) {
-                 this.afterSubmitedForm();
-                }
-              });
-            }
-          })
-        }
-      } else {
+    } else {
+      if (this.id_statement == null) {
         this.productorService.saveForm({ header, detail }).subscribe(r => {
+          this.hour = new Date();
+        })
+      } else {
+        this.productorService.updateValuesStatement(this.id_statement, detail, header).subscribe(r => {
           if (r.status) {
-            Swal.close();
-            Swal.fire({
-              title: 'Datos Guardados',
-              text: `La información se guardó correctamente`,
-              icon: 'success'
-            }).then(result => {
-              if (result.isConfirmed) {
-                this.afterSubmitedForm();
-              }
-            });
-          } else {
-            Swal.fire({
-              title: 'Error',
-              text: 'Algo salió mal',
-              icon: 'error'
-            })
+            this.hour = new Date();
           }
         });
       }
     }
   }
 
+  updateFormState() {
+    this.id_statement = parseInt(sessionStorage.getItem('id_statement')!) || null;
+    this.productorService.updateStateStatement(this.id_statement, true).subscribe(r => {
+      // TODO: show meesage, redirectTO...
+    });
+  }
 
-  afterSubmitedForm() {
+  afterSubmitedForm(state: boolean) {
     sessionStorage.removeItem('id_statement');
     sessionStorage.removeItem('isEdited');
     this.isSubmited = true;
-    this.router.navigate(['/productor/home']);
+    if (state) {
+      this.router.navigate(['/productor/home']);
+    }
+  }
+  changeStep(val: number) {
+    this.position += val;
+    if (this.position > 1) {
+      this.saveDraft();
+    }
+    if (this.position == 0) {
+      this.position = 1;
+      return;
+    }
   }
 }
