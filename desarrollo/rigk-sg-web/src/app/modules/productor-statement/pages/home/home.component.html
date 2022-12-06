@@ -27,22 +27,12 @@
                         <p>Se aplican nuevas tarifas para el añode referencia 2022. <span class="text-uppercase">Estas se aplicarán</span> sobre la factura anticipada de 2022 para el año de devolución 2021.</p>
                         <ul class="list list-tarifas list-unstyled">
                             <li class="text-end d-block bg-blue color-white">Tarifas por tonelada</li>
-                            <li>
-                                <span>Embalaje reciclable</span>
-                                <span>$16.296</span>
+                            
+                            <li *ngFor="let type of rates">
+                                <span>{{type.name}}</span>
+                                <span>{{type.price}}</span>
                             </li>
-                            <li>
-                                <span>Plástico reciclable</span>
-                                <span>$50.721</span>
-                            </li>
-                            <li>
-                                <span>Embalaje no reciclable</span>
-                                <span>$76.560</span>
-                            </li>
-                            <li>
-                                <span>Embalaje reutilizable</span>
-                                <span>$0</span>
-                            </li>
+                            
                         </ul>
                         <p>Más información sobre estas tarifas en <a href="https://prorep.cl">https://prorep.cl</a></p>
                     </div>
