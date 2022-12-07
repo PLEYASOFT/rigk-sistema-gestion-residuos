@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import loginRoutes from './routes/login';
 import businessRoutes from './routes/business';
 import statementRoutes from './routes/statmentProductor';
+import ratesRoutes from './routes/rates';
 class Server {
 
     private app: Application;
@@ -13,6 +14,7 @@ class Server {
         auth: '/api/v1/auth',
         business: '/api/v1/business',
         form: '/api/v1/statement',
+        rates: '/api/v1/rates'
     }
 
     constructor() {
@@ -26,6 +28,7 @@ class Server {
         this.app.use(this.apiPath.auth,loginRoutes);
         this.app.use(this.apiPath.business,businessRoutes);
         this.app.use(this.apiPath.form,statementRoutes);
+        this.app.use(this.apiPath.rates,ratesRoutes)
         this.app.use((error:any, req:any, res:any, next:any) => {
             if (error) {
                 console.log(error)

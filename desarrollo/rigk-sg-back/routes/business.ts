@@ -1,4 +1,3 @@
-
 import { Router } from "express";
 import businessLogic from "../controllers/businessLogic";
 import { verifyParameters } from '../middleware/checkUserBusiness';
