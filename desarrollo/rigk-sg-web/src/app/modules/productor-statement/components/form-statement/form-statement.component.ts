@@ -147,15 +147,17 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     this.isEdited = true;
     let tmp;
     let sum = 0;
-    let value = parseInt(target.value);
-    if (!target.value || target.value < 0) {
+    const val = target.value.replace(",",".")
+    let value = parseFloat(val);
+    
+    if (!target.value || isNaN(value) || value < 0) {
       value = 0;
       target.value = 0;
     }
     for (let i = 0; i < this.detailForm.length; i++) {
       const r = this.detailForm[i];
       if (r.type_residue == type_residue && r.recyclability == recyclability) {
-        sum += parseInt(r.value || 0);
+        sum += parseFloat(r.value || 0);
       }
       if (r.type_residue == type_residue && r.precedence == precedence && r.hazard == hazard && r.recyclability == recyclability) {
         tmp = r;
@@ -168,7 +170,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
       const index = this.detailForm.indexOf(tmp);
       sum = sum - { ...this.detailForm[index] }.value;
       this.detailForm[index].value = value;
-      sum += parseInt(this.detailForm[index].value);
+      sum += parseFloat(this.detailForm[index].value);
     } else {
       sum += value;
       this.detailForm.push({ precedence, hazard, value, type_residue, amount: (sum * 16269), recyclability });
