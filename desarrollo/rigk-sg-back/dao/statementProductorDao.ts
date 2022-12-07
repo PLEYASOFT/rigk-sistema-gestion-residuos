@@ -19,7 +19,7 @@ class statementProductorDao {
         }
         const id_statement = res_header[0].ID;
         res_detail = await conn?.execute("SELECT * FROM detail_statement_form WHERE ID_HEADER = ?", [id_statement]).then((res) => res[0]).catch(error => { undefined });
-
+        conn?.end();
         return { header: res_header[0], detail: res_detail };
     }
 
@@ -43,11 +43,12 @@ class statementProductorDao {
                 await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, precedence, hazard, recyclability, type_residue, value, amount]).catch(err => console.log(err));
             }
         }
+        conn?.end();
         return { id_header: id_header };
     }
     public async updateValueStatement(id_header: any, detail: any[]) {
         const conn = mysqlcon.getConnection();
-        await conn?.execute("UPDATE header_statement_form SET STATE = true WHERE id = ?", [id_header]).then((res) => res[0]).catch(error => undefined);
+        // await conn?.execute("UPDATE header_statement_form SET STATE = true WHERE id = ?", [id_header]).then((res) => res[0]).catch(error => undefined);
 
         for (let i = 0; i < detail.length; i++) {
             const { precedence, hazard, recyclability, type_residue, value, amount } = detail[i];
@@ -57,6 +58,7 @@ class statementProductorDao {
                 await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, precedence, hazard, recyclability, type_residue, value, amount]).catch(err => console.log(err));
             }
         }
+        conn?.end();
         return;
     }
 
@@ -67,6 +69,7 @@ class statementProductorDao {
         if (tmp == undefined) {
             return false;
         }
+        conn?.end();
         return true;
     }
 

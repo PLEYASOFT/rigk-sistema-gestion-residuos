@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges, AfterViewChecked } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, AfterViewChecked, OnDestroy } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ProductorService } from '../../../../core/services/productor.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
   templateUrl: './form.component.html',
   styleUrls: ['./form.component.css']
 })
-export class FormComponent implements OnInit {
+export class FormComponent implements OnInit, OnDestroy {
   /**
    * BORRAR
    */
@@ -46,27 +46,23 @@ export class FormComponent implements OnInit {
       this.year_statement = r['year'];
     });
   }
-
-  async ngOnDestroy() {
-    // this.isEdited = Boolean(sessionStorage.getItem('isEdited') || false);
-    // if (!this.isSubmited && this.isEdited) {
-    //   // await this.submitForm(false);
-    // }
+  ngOnDestroy(): void {
+    this.afterSubmitedForm(false);
   }
 
   ngOnInit(): void {
   }
 
   saveDraft() {
+    this.id_statement = parseInt(sessionStorage.getItem('id_statement')!) || null;
+    const detail = JSON.parse(sessionStorage.getItem('detailForm')!);
     let flagZero = true;
-    for (let i = 0; i < this.detailForm.length; i++) {
-      const reg = this.detailForm[i];
+    for (let i = 0; i < detail.length; i++) {
+      const reg = detail[i];
       if (reg.value != 0) {
         flagZero = false;
       }
     }
-    this.id_statement = parseInt(sessionStorage.getItem('id_statement')!) || null;
-    const detail = JSON.parse(sessionStorage.getItem('detailForm')!);
     const header = {
       id_business: this.id_business,
       year_statement: this.year_statement,
@@ -75,7 +71,7 @@ export class FormComponent implements OnInit {
     };
 
     if (flagZero) {
-      this.detailForm.push({
+      detail.push({
         precedence: 1,
         hazard: 1,
         recyclability: 1,
@@ -98,13 +94,15 @@ export class FormComponent implements OnInit {
             showConfirmButton: false
           });
           Swal.showLoading();
+        } else {
+          this.position=1;
         }
       });
     } else {
       if (this.id_statement == null) {
         this.productorService.saveForm({ header, detail }).subscribe(r => {
           this.hour = new Date();
-        })
+        });
       } else {
         this.productorService.updateValuesStatement(this.id_statement, detail, header).subscribe(r => {
           if (r.status) {
@@ -125,6 +123,8 @@ export class FormComponent implements OnInit {
   afterSubmitedForm(state: boolean) {
     sessionStorage.removeItem('id_statement');
     sessionStorage.removeItem('isEdited');
+    sessionStorage.removeItem('detailForm');
+    sessionStorage.removeItem('detailLastForm');
     this.isSubmited = true;
     if (state) {
       this.router.navigate(['/productor/home']);
