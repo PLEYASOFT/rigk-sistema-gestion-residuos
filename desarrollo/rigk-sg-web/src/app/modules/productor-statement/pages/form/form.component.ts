@@ -46,8 +46,9 @@ export class FormComponent implements OnInit, OnDestroy {
       this.year_statement = r['year'];
     });
   }
-  ngOnDestroy(): void {
-    this.afterSubmitedForm(false);
+  ngOnDestroy():void {
+   this.saveDraft();
+    
   }
 
   ngOnInit(): void {

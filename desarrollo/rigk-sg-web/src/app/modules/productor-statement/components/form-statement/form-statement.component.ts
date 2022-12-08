@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductorService } from 'src/app/core/services/productor.service';
 import Swal from 'sweetalert2';
+import { RatesTsService } from '../../../../core/services/rates.ts.service';
 
 @Component({
   selector: 'app-form-statement',
@@ -46,18 +47,21 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
   headLastForm: any = {};
   detailLastForm: any[] = [];
 
+  rates: any[] = [];
+
   constructor(private fb: FormBuilder,
     public productorService: ProductorService,
     private router: Router,
-    private actived: ActivatedRoute) {
+    private actived: ActivatedRoute,
+    public ratesService: RatesTsService) {
     this.actived.queryParams.subscribe(r => {
       this.id_business = r['id_business'];
       this.year_statement = r['year'];
     });
   }
   ngOnDestroy(): void {
-    sessionStorage.removeItem('isEdited');
-    sessionStorage.removeItem('id_statement');
+    // sessionStorage.removeItem('isEdited');
+    // sessionStorage.removeItem('id_statement');
   }
 
   ngOnInit(): void {
@@ -70,6 +74,15 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
       showConfirmButton: false
     });
     Swal.showLoading();
+    this.ratesService.getCLP.subscribe({
+      next: r => {
+        console.log("aaaa", r);
+        this.rates = r.data;
+      },
+      error: error => {
+        console.log(error);
+      }
+    });
   }
 
   ngAfterViewChecked(): void {
@@ -100,6 +113,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     this.productorService.getValueStatementByYear(this.id_business, this.year_statement, 1).subscribe({
       next: resp => {
         if (resp.status) {
+          console.log("aaaa",resp.data);
           if (resp.data.header.STATE) {
             this.router.navigate(['/productor/home']);
           }
@@ -110,12 +124,18 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
             const obj = this.toLowerKeys(r);
             this.detailForm.push(obj);
             (document.getElementById(`inp_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}_${r?.PRECEDENCE}_${r?.HAZARD}`) as HTMLInputElement).value = r?.VALUE;
-            const tmp_weight = (parseInt((document.getElementById(`actual_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value) || 0) + parseInt(r?.VALUE);
-            const tmp_amount = (parseInt((document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value) || 0) + parseInt(r?.AMOUNT);
+            const tmp_weight = (parseFloat((document.getElementById(`actual_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value) || 0) + parseFloat(r?.VALUE);
+            const tmp_amount = (parseFloat((document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value) || 0) + parseFloat(r?.AMOUNT);
 
             (document.getElementById(`actual_weight_${r?.RECYCLABILITY}_${r.TYPE_RESIDUE}`) as HTMLInputElement).value = tmp_weight.toString();
+            if (r?.RECYCLABILITY < 2 && r?.TYPE_RESIDUE <= 3) {
+              (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = (tmp_amount).toString();
+            }
+            if (r?.RECYCLABILITY == 2) {
+              (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = (tmp_amount).toString();
+            }
             if (r?.RECYCLABILITY >= 2) {
-              (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = tmp_amount.toString();
+              (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = "0";
             }
           }
           sessionStorage.setItem('detailForm', JSON.stringify(this.detailForm));
@@ -147,9 +167,10 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     this.isEdited = true;
     let tmp;
     let sum = 0;
-    const val = target.value.replace(",",".")
+    let amount = 0;
+    const val = target.value.replace(",", ".")
     let value = parseFloat(val);
-    
+
     if (!target.value || isNaN(value) || value < 0) {
       value = 0;
       target.value = 0;
@@ -166,21 +187,56 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     if (this.detailForm.length == 0) {
       sum = 0;
     }
+
     if (tmp) {
       const index = this.detailForm.indexOf(tmp);
       sum = sum - { ...this.detailForm[index] }.value;
       this.detailForm[index].value = value;
       sum += parseFloat(this.detailForm[index].value);
+
+      if (recyclability < 2 && type_residue <= 3) {
+        amount = value * this.rates[type_residue - 1].clp;
+      }
+      if (recyclability == 2) {
+        amount = value * this.rates[3].clp
+      }
+      if (recyclability == 3) {
+        amount = 0;
+      }
+      this.detailForm[index].amount = amount;
+      
+
     } else {
       sum += value;
-      this.detailForm.push({ precedence, hazard, value, type_residue, amount: (sum * 16269), recyclability });
+      if (recyclability < 2 && type_residue <= 3) {
+        amount = value * this.rates[type_residue - 1].clp;
+      }
+      if (recyclability == 2) {
+        amount = value * this.rates[3].clp
+      }
+      if (recyclability == 3) {
+        amount = 0;
+      }
+      this.detailForm.push({ precedence, hazard, value, type_residue, amount, recyclability });
+
     }
+
+    if (recyclability < 2 && type_residue <= 3) {
+      amount = sum * this.rates[type_residue - 1].clp;
+    }
+    if (recyclability == 2) {
+      amount = value * this.rates[3].clp
+    }
+    if (recyclability == 3) {
+      amount = 0;
+    }
+
     sessionStorage.setItem('detailForm', JSON.stringify(this.detailForm));
+
     (document.getElementById(`actual_weight_${recyclability}_${type_residue}`) as HTMLInputElement).value = `${sum}`;
-    if (recyclability >= 2) {
-      (document.getElementById(`actual_amount_${recyclability}_${type_residue}`) as HTMLInputElement).value = (sum * prices[type_residue - 1]).toString();
-    }
-    const last_weight = parseInt((document.getElementById(`last_weight_${recyclability}_${type_residue}`) as HTMLElement).innerHTML);
+    (document.getElementById(`actual_amount_${recyclability}_${type_residue}`) as HTMLInputElement).value = amount.toString();
+
+    const last_weight = parseFloat((document.getElementById(`last_weight_${recyclability}_${type_residue}`) as HTMLElement).innerHTML);
     const diff = (((sum - last_weight) / last_weight) * 100);
     (document.getElementById(`actual_dif_${recyclability}_${type_residue}`) as HTMLInputElement).value = `${diff == Infinity ? 100 : parseInt(diff.toFixed(2)) || 0}%`;
   }

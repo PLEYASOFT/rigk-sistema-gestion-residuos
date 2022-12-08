@@ -12,4 +12,7 @@ export class RatesTsService {
   getRates(year: number) {
     return this.http.get<any>(`${this.url}/${year}`);
   }
+  get getCLP() {
+    return this.http.get<any>(`${this.url}/clp`);
+  }
 }
