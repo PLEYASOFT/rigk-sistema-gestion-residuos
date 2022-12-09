@@ -14,7 +14,7 @@ export class HomeComponent implements OnInit {
   
   ngOnInit(): void {
     const year = new Date().getFullYear();
-    this.ratesService.getRates(year+1).subscribe(resp =>{
+    this.ratesService.getRates(year).subscribe(resp =>{
       console.log(resp.data)
       if (resp.status){
         
