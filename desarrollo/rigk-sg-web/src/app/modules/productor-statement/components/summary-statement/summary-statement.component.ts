@@ -1,8 +1,8 @@
-import { AfterViewChecked, AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, OnInit, Renderer2 } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductorService } from 'src/app/core/services/productor.service';
-import Swal from 'sweetalert2';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-summary-statement',
@@ -52,14 +52,19 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   actual_weight_one = 0;
   actual_weight_two = 0;
   actual_weight_three = 0;
-
   last_weight_one = 0;
   last_weight_two = 0;
   last_weight_three = 0;
+  actual_amount_two = 0;
+  actual_amount_three = 0;
+  last_amount_two = 0;
+  last_amount_three = 0;
+  diff_weight_one = 0;
+  diff_weight_two = 0;
+  diff_weight_three = 0;
+  diff_amount_two = 0;
+  diff_amount_three = 0;
 
-  diff_one = 0;
-  diff_two = 0;
-  diff_three = 0;
   constructor(private fb: FormBuilder,
     public productorService: ProductorService,
     private router: Router,
@@ -71,10 +76,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   }
   ngAfterViewInit(): void {
     this.detailForm = JSON.parse(sessionStorage.getItem('detailForm')!);
-    console.log(this.detailForm);
-
     this.detailLastForm = JSON.parse(sessionStorage.getItem('detailLastForm')!);
-    console.log(this.detailLastForm);
     
     this.generateForm();
     this.generateDiff();
@@ -87,93 +89,197 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   generateForm(){
     this.detailLastForm = JSON.parse(sessionStorage.getItem("detailLastForm")!);
     this.detailForm = JSON.parse(sessionStorage.getItem('detailForm')!);
-    for (let i = 0; i < this.detailForm.length; i++) {
-      const r = this.detailForm[i];
+    let sum = 0;
+    for (let i = 1; i <= this.detailForm.length; i++) {
+      const r = this.detailForm[i-1];
+      const r2 = this.detailForm[i];
       (document.getElementById(`td_${r?.recyclability}_${r?.precedence}_${r?.hazard}_${r?.type_residue}`) as HTMLElement).innerHTML = r?.value;
       const tmp_weight = (parseInt((document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML) || 0) + parseInt(r?.value);
-      //const tmp_amount = (parseInt((document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML) || 0) + parseInt(r?.amount);
-
-      (document.getElementById(`actual_weight_${r?.recyclability}_${r.type_residue}`) as HTMLElement).innerHTML = tmp_weight.toString();
+      const tmp_amount = (parseInt((document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML) || 0) + parseInt(r?.amount)*parseInt(r?.value);
 
       if(r.recyclability == 1)
       {
         this.actual_weight_one = this.actual_weight_one +  parseInt(r?.value);
         (document.getElementById(`td_${r?.recyclability}`) as HTMLElement).innerHTML = this.actual_weight_one.toString();
+        (document.getElementById(`td_amount_${r?.recyclability}`) as HTMLElement).innerHTML = '0';
+        (document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = tmp_weight.toString();
+        (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = '0';
       }
 
       else if(r.recyclability == 2)
       {
+        sum = sum + tmp_amount;
         this.actual_weight_two = this.actual_weight_two +  parseInt(r?.value);
-        (document.getElementById(`td_${r?.recyclability}`) as HTMLElement).innerHTML = this.actual_weight_two.toString();
+        this.actual_amount_two = this.actual_amount_two +  r?.value*r?.amount;
+        if(r?.type_residue == r2?.type_residue ){
+          
+          (document.getElementById(`td_${r?.recyclability}`) as HTMLElement).innerHTML = this.actual_weight_two.toString();
+          (document.getElementById(`td_amount_${r?.recyclability}`) as HTMLElement).innerHTML = '$'+this.actual_amount_two.toLocaleString("es-ES");
+          (document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = tmp_weight.toString();
+          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = '$'+(sum.toLocaleString("es-ES"));
+
+        }
+        else{
+          (document.getElementById(`td_${r?.recyclability}`) as HTMLElement).innerHTML = this.actual_weight_two.toString();
+          (document.getElementById(`td_amount_${r?.recyclability}`) as HTMLElement).innerHTML = '$'+this.actual_amount_two.toLocaleString("es-ES");
+          (document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = tmp_weight.toString();
+          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = '$'+(sum.toLocaleString("es-ES"));
+          sum = 0;
+        }
       }
 
       else if(r.recyclability == 3)
       {
+        sum = sum + tmp_amount;
         this.actual_weight_three = this.actual_weight_three +  parseInt(r?.value);
-        (document.getElementById(`td_${r?.recyclability}`) as HTMLElement).innerHTML = this.actual_weight_three.toString();
+        this.actual_amount_three = this.actual_amount_three +  r?.value*r?.amount;
+
+        console.log('value: ',r?.value,' amount: ', r?.amount,' mult: ', r?.value*r?.amount ,' sum: ', sum, 'actual: ', this.actual_amount_three)
+
+        if(r?.type_residue == r2?.type_residue ){
+          
+          (document.getElementById(`td_${r?.recyclability}`) as HTMLElement).innerHTML = this.actual_weight_three.toString();
+          (document.getElementById(`td_amount_${r?.recyclability}`) as HTMLElement).innerHTML = '$'+this.actual_amount_three.toLocaleString("es-ES");
+          (document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = tmp_weight.toString();
+          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = '$'+(sum.toLocaleString("es-ES"));
+
+        }
+        else{
+          (document.getElementById(`td_${r?.recyclability}`) as HTMLElement).innerHTML = this.actual_weight_three.toString();
+          (document.getElementById(`td_amount_${r?.recyclability}`) as HTMLElement).innerHTML = '$'+this.actual_amount_three.toLocaleString("es-ES");
+          (document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = tmp_weight.toString();
+          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = '$'+(sum.toLocaleString("es-ES"));
+          sum = 0;
+        }
       }
-
-      
     }
-
-    for (let i = 0; i < this.detailLastForm.length; i++) {
-      const r = this.detailLastForm[i];
+    sum = 0;
+    for (let i = 1; i <= this.detailLastForm.length; i++) {
+      const r = this.detailLastForm[i-1];
+      const r2 = this.detailLastForm[i];
       (document.getElementById(`td_l_${r?.RECYCLABILITY}_${r?.PRECEDENCE}_${r?.HAZARD}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = r?.VALUE;
       const tmp_weight = (parseInt((document.getElementById(`l_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML) || 0) + parseInt(r?.VALUE);
-      //const tmp_amount = (parseInt((document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML) || 0) + parseInt(r?.AMOUNT);
-
-      (document.getElementById(`l_weight_${r?.RECYCLABILITY}_${r.TYPE_RESIDUE}`) as HTMLElement).innerHTML = tmp_weight.toString();
-      
+      const tmp_amount = (parseInt((document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML) || 0) + parseInt(r?.AMOUNT)*parseInt(r?.VALUE);
+    
       if(r.RECYCLABILITY == 1)
       {
+        
         this.last_weight_one = this.last_weight_one +  parseInt(r?.VALUE);
         (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_one.toString();
+        (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = '0';
+        (document.getElementById(`l_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = tmp_weight.toString();
+        (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = '0';
       }
 
       else if(r.RECYCLABILITY == 2)
       {
+        sum = sum + tmp_amount;
         this.last_weight_two = this.last_weight_two +  parseInt(r?.VALUE);
-        (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_two.toString();
-      }
+        this.last_amount_two = this.last_amount_two +  r?.VALUE*r?.AMOUNT;
+        if(r?.TYPE_RESIDUE == r2?.TYPE_RESIDUE ){
+          
+          (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_two.toString();
+          (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = '$'+this.last_amount_two.toLocaleString("es-ES");
+          (document.getElementById(`l_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = tmp_weight.toString();
+          (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = '$'+(sum.toLocaleString("es-ES"));
+
+        }
+        else{
+          (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_two.toString();
+          (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = '$'+this.last_amount_two.toLocaleString("es-ES");
+          (document.getElementById(`l_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = tmp_weight.toString();
+          (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = '$'+(sum.toLocaleString("es-ES"));
+          sum = 0;
+        }
+        }
 
       else if(r.RECYCLABILITY == 3)
       {
+        
+        sum = sum + tmp_amount;
         this.last_weight_three = this.last_weight_three +  parseInt(r?.VALUE);
-        (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_three.toString();
+        this.last_amount_three = this.last_amount_three +  r?.VALUE*r?.AMOUNT;
+        if(r?.TYPE_RESIDUE == r2?.TYPE_RESIDUE ){
+          
+          (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_three.toString();
+          (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = '$'+this.last_amount_three.toLocaleString("es-ES");
+          (document.getElementById(`l_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = tmp_weight.toString();
+          (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = '$'+(sum.toLocaleString("es-ES"));
+
+        }
+        else{
+          (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_three.toString();
+          (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = '$'+this.last_amount_three.toLocaleString("es-ES");
+          (document.getElementById(`l_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = tmp_weight.toString();
+          (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = '$'+(sum.toLocaleString("es-ES"));
+          sum = 0;
+        }
+        
       }
-      
     }
   }
 
   generateDiff()
   {
-    for (let i = 0; i < this.detailLastForm.length; i++) {
-      const r = this.detailLastForm[i];
-      const tmp_weight = (parseInt((document.getElementById(`actual_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML) || 0) + parseInt(r?.VALUE);
-      console.log(tmp_weight);
-      const tmp_l_weight = (parseInt((document.getElementById(`l_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML) || 0) + parseInt(r?.VALUE);
-      (document.getElementById(`diff_${r?.RECYCLABILITY}_${r.TYPE_RESIDUE}`) as HTMLElement).innerHTML = ((tmp_l_weight / tmp_weight) * 100).toFixed(2);
+    this.last_weight_one != 0 ? this.diff_weight_one = parseInt(((( this.actual_weight_one - this.last_weight_one) / this.last_weight_one) * 100).toFixed(2)) :
+                                this.diff_weight_one = 0;
+    this.last_weight_two != 0 ? this.diff_weight_two = parseInt(((( this.actual_weight_two - this.last_weight_two) / this.last_weight_two) * 100).toFixed(2)) :
+                                this.diff_weight_two = 0;
+    this.last_weight_three != 0 ? this.diff_weight_three = parseInt(((( this.actual_weight_three - this.last_weight_three) / this.last_weight_three) * 100).toFixed(2)) :
+                                this.diff_weight_three = 0;
+    this.last_amount_two != 0 ? this.diff_amount_two = parseInt(((( this.actual_amount_two - this.last_amount_two) / this.last_amount_two) * 100).toFixed(2)) :
+                                this.diff_amount_two = 0;
+    this.last_amount_three != 0 ? this.diff_amount_three = parseInt(((( this.actual_amount_three - this.last_amount_three) / this.last_amount_three) * 100).toFixed(2)) :
+                                this.diff_amount_three = 0;
 
-      this.diff_one = this.diff_one +  parseInt(((tmp_l_weight / tmp_weight) * 100).toFixed(2));
-
-      if(r.RECYCLABILITY == 1)
-      {
-        this.diff_one = this.diff_one +  parseInt(((tmp_l_weight / tmp_weight) * 100).toFixed(2));
-        (document.getElementById(`td_diff_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.diff_one.toString();
+    for (let i = 1; i <= 3; i++) {
+      for(let j = 1; j <= 5; j++){
+        
+      const tmp_weight = (parseInt((document.getElementById(`actual_weight_${i}_${j}`) as HTMLElement).innerHTML) || 0);
+      const tmp_l_weight = (parseInt((document.getElementById(`l_weight_${i}_${j}`) as HTMLElement).innerHTML) || 0);
+      const tmp_amount = parseInt((document.getElementById(`actual_amount_${i}_${j}`) as HTMLElement).innerHTML.replace(/[$.]/g,'')) ;
+      const tmp_l_amount = parseInt((document.getElementById(`l_amount_${i}_${j}`) as HTMLElement).innerHTML.replace(/[$.]/g,'')) ;
+      
+      if(tmp_l_weight != 0){
+        (document.getElementById(`diff_weight_${i}_${j}`) as HTMLElement).innerHTML = ((( tmp_weight - tmp_l_weight) / tmp_l_weight) * 100).toFixed(2)+'%';
+      }
+      else if (tmp_weight != 0){
+        (document.getElementById(`diff_weight_${i}_${j}`) as HTMLElement).innerHTML ='100%';
+      }
+      else{
+        (document.getElementById(`diff_weight_${i}_${j}`) as HTMLElement).innerHTML ='0%';
       }
 
-      else if(r.RECYCLABILITY == 2)
-      {
-        this.diff_two = this.diff_two +  parseInt(((tmp_l_weight / tmp_weight) * 100).toFixed(2));
-        (document.getElementById(`td_diff_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.diff_two.toString();
+      if(tmp_l_amount != 0){
+        (document.getElementById(`diff_amount_${i}_${j}`) as HTMLElement).innerHTML = ((( tmp_amount - tmp_l_amount) / tmp_l_amount) * 100).toFixed(2)+'%';
       }
-
-      else if(r.RECYCLABILITY == 3)
-      {
-        this.diff_three = this.diff_three +  parseInt(((tmp_l_weight / tmp_weight) * 100).toFixed(2));
-        (document.getElementById(`td_diff_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.diff_three.toString();
+      else if (tmp_amount != 0){
+        (document.getElementById(`diff_amount_${i}_${j}`) as HTMLElement).innerHTML ='100%';
+      }
+      else{
+        (document.getElementById(`diff_amount_${i}_${j}`) as HTMLElement).innerHTML ='0%';
+      }
+      
       }
     }
-     
+    
+    (document.getElementById(`td_diff_weight_1`) as HTMLElement).innerHTML = this.diff_weight_one.toString()+'%';
+    (document.getElementById(`td_diff_weight_2`) as HTMLElement).innerHTML = this.diff_weight_two.toString()+'%';
+    (document.getElementById(`td_diff_weight_3`) as HTMLElement).innerHTML = this.diff_weight_three.toString()+'%';
+    (document.getElementById(`td_diff_amount_1`) as HTMLElement).innerHTML = '0%';
+    (document.getElementById(`td_diff_amount_2`) as HTMLElement).innerHTML = this.diff_amount_two.toString()+'%';
+    (document.getElementById(`td_diff_amount_3`) as HTMLElement).innerHTML = this.diff_amount_three.toString()+'%';
   }
+
+  tableToExcel = (function() {
+    var uri = 'data:application/vnd.ms-excel;base64,'
+      , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
+      , base64 = function(s: string | number | boolean) { return window.btoa(unescape(encodeURIComponent(s))) }
+      , format = function(s: string, c: { [x: string]: any; worksheet?: any; table?: any; }) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
+    return function(table: any , name: any) {
+      if (!table.nodeType) table = document.getElementById(table)
+      var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML}
+      window.location.href = uri + base64(format(template, ctx))
+    }
+  })()
 }
