@@ -16,6 +16,30 @@ class RatesLogic {
             });
         }
     }
+    public async getRatesCLP(req: Request, res: Response) {
+        const now = new Date();
+        const date = now.toISOString().split("T")[0];
+        const year = (now.getFullYear()+1).toString();
+        try {
+            const uf = await ratesDao.getUF(date);
+            const rates_resp = await ratesDao.ratesID(year);
+            const resp: any[] = [];
+            for (let i = 0; i < rates_resp.length; i++) {
+                const rate = rates_resp[i];
+                rate.clp = (rate.price * uf).toFixed(0);
+                resp.push(rate);
+            }
+            
+            res.json({status:true,data:resp});
+
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
 }
 
 const ratesLogic = new RatesLogic();

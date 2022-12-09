@@ -46,8 +46,9 @@ export class FormComponent implements OnInit, OnDestroy {
       this.year_statement = r['year'];
     });
   }
-  ngOnDestroy(): void {
-    this.afterSubmitedForm(false);
+  ngOnDestroy():void {
+   this.saveDraft();
+    
   }
 
   ngOnInit(): void {
@@ -118,26 +119,5 @@ export class FormComponent implements OnInit, OnDestroy {
     this.productorService.updateStateStatement(this.id_statement, true).subscribe(r => {
       // TODO: show meesage, redirectTO...
     });
-  }
-
-  afterSubmitedForm(state: boolean) {
-    sessionStorage.removeItem('id_statement');
-    sessionStorage.removeItem('isEdited');
-    sessionStorage.removeItem('detailForm');
-    sessionStorage.removeItem('detailLastForm');
-    this.isSubmited = true;
-    if (state) {
-      this.router.navigate(['/productor/home']);
-    }
-  }
-  changeStep(val: number) {
-    this.position += val;
-    if (this.position > 1) {
-      this.saveDraft();
-    }
-    if (this.position == 0) {
-      this.position = 1;
-      return;
-    }
   }
 }
