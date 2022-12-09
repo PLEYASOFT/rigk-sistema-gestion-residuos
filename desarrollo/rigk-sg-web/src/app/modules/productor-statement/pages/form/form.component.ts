@@ -56,7 +56,7 @@ export class FormComponent implements OnInit, OnDestroy {
 
   saveDraft() {
     this.id_statement = parseInt(sessionStorage.getItem('id_statement')!) || null;
-    const detail = JSON.parse(sessionStorage.getItem('detailForm')!);
+    const detail = JSON.parse(sessionStorage.getItem('detailForm')!) || [];
     let flagZero = true;
     for (let i = 0; i < detail.length; i++) {
       const reg = detail[i];
