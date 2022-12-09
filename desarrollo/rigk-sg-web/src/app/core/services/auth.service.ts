@@ -32,4 +32,5 @@ export class AuthService {
     return this.http.post<any>(`${this.url}/modifyPassword`, { newPassword, actual, repeatPassword });
   }
 
+  
 }

@@ -1,24 +1,30 @@
 import { Response } from 'express';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
+import mysqlcon from '../db';
 
-
-export const sendCode = ( output: any, cod: any, res: Response ) => {
+export const sendCode = async ( output: any, cod: any, res: Response ) => {
 
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        pool: true,
+        host: "mail.prorep.cl",
+        port: 465,
+        secure:true,
         auth: {
             user: `${process.env.EMAIL_ADDRESS}`,
             pass: `${process.env.EMAIL_PASSWORD}`,
-        },
-        secure:true
+        }
     });
 
+    const conn = mysqlcon.getConnection()!;
+    const result: any = await conn.query("SELECT FIRST_NAME,LAST_NAME FROM USER WHERE EMAIL =?", [output.EMAIL]).then((res) => res[0]).catch(error => [{ undefined }]);
+
+    console.log(result)
     const mailOptions = {
-        from: `PROREP noreply@gmail.com`,
+        from: `PROREP noreply@prorep.cl`,
         to: `${output.EMAIL}`,
         subject: 'Código de recuperación',
-        text: `Tu código de recuperación es: ${cod}`
+        text: `${result[0].FIRST_NAME} ${result[0].LAST_NAME}, el código para la recuperación de su contraseña es:\n\n${cod}\n\nSaludos,\n\nEquipo PROREP\n\nPor favor, no responda a este email. Para más información, escriba a info@prorep.cl`
     }
 
     transporter.sendMail(mailOptions, (err, response) => {

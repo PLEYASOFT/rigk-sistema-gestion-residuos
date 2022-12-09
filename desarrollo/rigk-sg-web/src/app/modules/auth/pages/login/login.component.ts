@@ -37,13 +37,19 @@ export class LoginComponent implements OnInit {
 
   btnLogin() {
     const { user, password } = this.formData.value;
-    this.authService.login(user, password).subscribe(resp => {
-      if (!resp.body.status) {
+    this.authService.login(user,password).subscribe({
+      next: resp=> {
+        if (!resp.body.status) {
+          this.error = true;
+          this.msg = resp.body.msg;
+        } else {
+          sessionStorage.setItem('user', JSON.stringify(resp.body.data.user));
+          this.router.navigate(['/productor']);
+        }
+      },
+      error: err => {
         this.error = true;
-        this.msg = resp.body.msg;
-      } else {
-        sessionStorage.setItem('user', JSON.stringify(resp.body.data.user));
-        this.router.navigate(['/productor']);
+        this.msg = err.msg;
       }
     });
   }

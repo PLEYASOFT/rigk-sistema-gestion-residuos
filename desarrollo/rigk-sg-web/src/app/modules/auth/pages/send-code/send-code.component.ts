@@ -44,7 +44,8 @@ export class SendCodeComponent {
     if (this.step == 1) {
       const { user, code } = this.formData.value;
       //Pedir código
-      this.authService.verifyCode(code, user).subscribe(resp => {
+      this.authService.verifyCode(code, user).subscribe({
+        next: resp => {
         if (resp.status) {
           this.step++;
         }
@@ -55,13 +56,17 @@ export class SendCodeComponent {
             icon: 'error'
           })
         }
-      });
+      },
+    error: err => {
+      this.msg = err.msg;
+    }});
     }
 
     if (this.step == 2) {
       const { user, password, repeatPassword } = this.formData.value;
       //Recuperar contraseña
-      this.authService.recovery(user, password, repeatPassword).subscribe(resp => {
+      this.authService.recovery(user, password, repeatPassword).subscribe({
+        next: resp => {
         if (resp.status) {
           Swal.fire({
             title: 'Contraseña modificada exitosamente',
@@ -76,7 +81,15 @@ export class SendCodeComponent {
             icon: 'error'
           })
         }
-      });
+      },
+    error: err => {
+      this.msg = err.msg;
+      Swal.fire({
+        title: this.msg,
+        icon: 'error'
+      })
+    }});
     }
   }
 }
+
