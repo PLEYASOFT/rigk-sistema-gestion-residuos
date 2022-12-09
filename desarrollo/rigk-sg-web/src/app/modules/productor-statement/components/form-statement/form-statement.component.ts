@@ -258,7 +258,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
           })
         }
         this.detailLastForm = r.data.detail;
-        sessionStorage.setItem('detailLastForm', JSON.stringify(this.detailLastForm));
+        sessionStorage.setItem('detailLastForm', JSON.stringify(this.detailLastForm) || '""');
         this.headLastForm = r.data.health;
         Swal.close();
         this.detailLastForm?.forEach(r => {
