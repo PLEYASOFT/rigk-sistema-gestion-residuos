@@ -95,6 +95,22 @@ export class FormComponent implements OnInit, OnDestroy {
             showConfirmButton: false
           });
           Swal.showLoading();
+          if (this.id_statement == null) {
+            this.productorService.saveForm({ header, detail }).subscribe(r => {
+              this.hour = new Date();
+              if(r.status) {
+                sessionStorage.setItem('id_statement', r.data);
+                Swal.close()
+              }
+            });
+          } else {
+            this.productorService.updateValuesStatement(this.id_statement, detail, header).subscribe(r => {
+              if (r.status) {
+                this.hour = new Date();
+                Swal.close()
+              }
+            });
+          }
         } else {
           this.position=1;
         }
@@ -103,6 +119,9 @@ export class FormComponent implements OnInit, OnDestroy {
       if (this.id_statement == null) {
         this.productorService.saveForm({ header, detail }).subscribe(r => {
           this.hour = new Date();
+          if(r.status) {
+            sessionStorage.setItem('id_statement', r.data);
+          }
         });
       } else {
         this.productorService.updateValuesStatement(this.id_statement, detail, header).subscribe(r => {
