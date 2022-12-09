@@ -120,4 +120,14 @@ export class FormComponent implements OnInit, OnDestroy {
       // TODO: show meesage, redirectTO...
     });
   }
+  changeStep(val: number) {
+    this.position += val;
+    if (this.position > 1) {
+      this.saveDraft();
+    }
+    if (this.position == 0) {
+      this.position = 1;
+      return;
+    }
+  }
 }
