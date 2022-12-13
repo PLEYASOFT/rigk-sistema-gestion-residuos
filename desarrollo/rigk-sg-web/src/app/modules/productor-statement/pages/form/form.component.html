@@ -19,16 +19,17 @@
         <ul class="list list-process list-unstyled">
             <li class="list-process__dot" [ngClass]="{active: position == 1}"><a>Formulario</a></li>
             <li class="list-process__dot" [ngClass]="{active: position == 2}"><a>Resumen</a></li>
-            <li class="list-process__dot" [ngClass]="{active: position == 3}"><a>PATRICIO</a></li>
+            <li class="list-process__dot" [ngClass]="{active: position == 3}"><a>Facturación</a></li>
             <!-- <li (click)="optionSelected(6)" class="list-process__icon"><a ><img width="40" src="assets/images/ic-mail.svg"></a></li> -->
         </ul>
     </div>
 </div>
 <div style="text-align: right;">
     <button class="btn btn-warning" (click)="changeStep(-1)">Atrás</button>
-    <button class="btn btn-primary" (click)="changeStep(1)">Siguiente</button>
+    <button class="btn btn-primary" *ngIf="position < 3" (click)="changeStep(1)">Siguiente</button>
+    <button class="btn btn-primary" *ngIf="position == 3" (click)="updateFormState()">Enviar</button>
 </div>
 
 <app-form-statement *ngIf="position == 1"></app-form-statement>
 <app-summary-statement *ngIf="position == 2"></app-summary-statement>
-<app-form-statement *ngIf="position == 3"></app-form-statement>
+<app-send-statement *ngIf="position == 3"></app-send-statement>

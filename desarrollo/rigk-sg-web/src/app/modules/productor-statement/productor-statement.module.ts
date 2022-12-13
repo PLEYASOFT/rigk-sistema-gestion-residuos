@@ -11,6 +11,7 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { StatementsComponent } from './pages/statements/statements.component';
 import { SummaryStatementComponent } from './components/summary-statement/summary-statement.component';
 import { FormStatementComponent } from './components/form-statement/form-statement.component';
+import { SendStatementComponent } from './components/send-statement/send-statement.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { FormStatementComponent } from './components/form-statement/form-stateme
     ProfileComponent,
     StatementsComponent,
     SummaryStatementComponent,
-    FormStatementComponent
+    FormStatementComponent,
+    SendStatementComponent
   ],
   imports: [
     CommonModule,

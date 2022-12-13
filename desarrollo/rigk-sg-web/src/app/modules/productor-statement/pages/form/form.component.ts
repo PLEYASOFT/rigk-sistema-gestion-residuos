@@ -135,18 +135,46 @@ export class FormComponent implements OnInit, OnDestroy {
 
   updateFormState() {
     this.id_statement = parseInt(sessionStorage.getItem('id_statement')!) || null;
-    this.productorService.updateStateStatement(this.id_statement, true).subscribe(r => {
-      // TODO: show meesage, redirectTO...
-    });
+    Swal.fire({
+        icon: 'question',
+        title: 'Confirmación Envío',
+        text: 'Usted está a punto de enviar su declaración. Una vez enviada, no podrá realizar modificaciones sobre la misma. ¿Esta seguro de realizar el envío?',
+        showConfirmButton: true,
+        showCancelButton: true
+      }).then(r => {
+        if (r.isConfirmed) {
+          this.productorService.updateStateStatement(this.id_statement, true).subscribe(r => {
+            Swal.fire({
+              title: 'Exito',
+              text: 'La declaración fue enviada exitosamente',
+              showConfirmButton: true
+            }).then(r => {
+              sessionStorage.removeItem('id_statement');
+              sessionStorage.removeItem('isEdited');
+              this.isSubmited = true;
+              this.router.navigate(['/productor/home']);
+            });
+          });
+        }
+      });
   }
+
   changeStep(val: number) {
-    this.position += val;
-    if (this.position > 1) {
-      this.saveDraft();
-    }
     if (this.position == 0) {
       this.position = 1;
       return;
+    }
+    if (this.position >= 1 && this.position < 3 && val > 0) {
+      this.saveDraft();
+    }
+    if(val > 0) {
+      if(this.position < 3) {
+        this.position += val;
+      }
+    } else {
+      if(this.position > 1) {
+        this.position += val;
+      }
     }
   }
 }

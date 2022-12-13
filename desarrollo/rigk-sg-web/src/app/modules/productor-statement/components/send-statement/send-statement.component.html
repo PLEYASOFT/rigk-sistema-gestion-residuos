@@ -1,0 +1,119 @@
+    <div id="content" class="w-100">
+        <section class="consulta-declaracion">
+            <div class="row">
+                <!-- Col 1/4 -->
+                <div class="col-12 col-lg-6 col-xl-4 d-flex">
+                    <div class="box box-semiradius box-semiradius-secondary box-header mb-4">
+                        <h2 class="box-header-h1">Detalle Compañía</h2>
+                        <ul class="list list-data list-data-tit-text-col list-unstyled">
+                            <li>
+                                <span class="list-data__title">
+                                    <i class="fa fa-building fa-fw fa-lg" aria-hidden="true"></i>
+                                </span>
+                                <span class="list-data__text flex-grow-1 ps-0">
+                                    <strong>{{name_business}}</strong><br>
+                                    {{rut}}
+                                </span>
+                            </li>
+                            <li>
+                                <span class="list-data__title">
+                                    <i class="fa fa-map-marker fa-fw fa-lg" aria-hidden="true"></i>
+                                </span>
+                                <span class="list-data__text flex-grow-1 ps-0">
+                                    <strong>{{loc_address}}</strong>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="list-data__title">
+                                    <i class="fa fa-phone fa-fw fa-lg" aria-hidden="true"></i>
+                                </span>
+                                <span class="list-data__text flex-grow-1 ps-0">
+                                    {{phone}}<br>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="list-data__title">
+                                    <i class="fa fa-envelope fa-fw fa-lg" aria-hidden="true"></i>
+                                </span>
+                                <span class="list-data__text flex-grow-1 ps-0">
+                                    {{email}}
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Col 2/4 -->
+                <div class="col-12 col-lg-6 col-xl-4 d-flex">
+                    <div class="box box-semiradius box-semiradius-secondary box-header mb-4">
+                        <h2 class="box-header-h1">Gerente de cuenta</h2>
+                        <ul class="list list-data list-data-tit-text-col list-unstyled">
+                            <li>
+                                <span class="list-data__title">
+                                    <i class="fa fa-user fa-fw fa-lg" aria-hidden="true"></i>
+                                </span>
+                                <span class="list-data__text flex-grow-1 ps-0">
+                                    <strong>{{am_first_name}} {{am_last_name}}</strong><br>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="list-data__title">
+                                    <i class="fa fa-envelope fa-fw fa-lg" aria-hidden="true"></i>
+                                </span>
+                                <span class="list-data__text flex-grow-1 ps-0">
+                                    <strong>{{email}}</strong>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="list-data__title">
+                                    <i class="fa fa-phone fa-fw fa-lg" aria-hidden="true"></i>
+                                </span>
+                                <span class="list-data__text flex-grow-1 ps-0">
+                                    {{phone}}<br>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="list-data__title">
+                                    <i class="fa fa-map-marker fa-fw fa-lg" aria-hidden="true"></i>
+                                </span>
+                                <span class="list-data__text flex-grow-1 ps-0">
+                                    <strong>Dirección Administrador Cuenta</strong><br>
+                                    {{loc_address}}<br>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Col 3/4 -->
+                <div class="col-12 col-lg-6 col-xl-4 d-flex">
+                    <div class="box box-semiradius box-semiradius-red box-header mb-4">
+                        <h2 class="box-header-h1">Diferencia con declaración anterior</h2>
+                        <ul class="list list-data list-data-tit-text-col list-unstyled">
+                            <li>
+                                <span class="list-data__title col-6">Año anterior</span>
+                                <span class="list-data__text">{{amount_previous_year | currency}}</span>
+                            </li>
+                            <li>
+                                <span class="list-data__title col-6">Año actual</span>
+                                <span class="list-data__text">{{amount_current_year | currency}}</span>
+                            </li>
+                        </ul>
+                        <h3 class="box-header-h2">Detalle Facturación</h3>
+                        <ul class="list list-data list-data-tit-text-col list-unstyled">
+                            <li>
+                                <span class="list-data__title col-4">Nombre</span>
+                                <span class="list-data__text">{{invoice_name}}</span>
+                            </li>
+                            <li>
+                                <span class="list-data__title col-4">E-mail</span>
+                                <span class="list-data__text">{{invoice_email}}</span>
+                            </li>
+                            <li>
+                                <span class="list-data__title col-4">Teléfono</span>
+                                <span class="list-data__text">{{invoice_phone}}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
