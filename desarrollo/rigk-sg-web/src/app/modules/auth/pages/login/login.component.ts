@@ -43,7 +43,9 @@ export class LoginComponent implements OnInit {
           this.error = true;
           this.msg = resp.body.msg;
         } else {
+          const horaIngreso = new Date();
           sessionStorage.setItem('user', JSON.stringify(resp.body.data.user));
+          sessionStorage.setItem('horaIngreso',horaIngreso.toString());
           this.router.navigate(['/productor']);
         }
       },

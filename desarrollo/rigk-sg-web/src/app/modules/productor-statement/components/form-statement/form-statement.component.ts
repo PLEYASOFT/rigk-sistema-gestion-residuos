@@ -55,26 +55,24 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     private router: Router,
     private actived: ActivatedRoute,
     public ratesService: RatesTsService,
-    private currencyPipe:CurrencyPipe) {
+    private currencyPipe: CurrencyPipe) {
     this.actived.queryParams.subscribe(r => {
       this.id_business = r['id_business'];
       this.year_statement = r['year'];
     });
   }
   ngOnDestroy(): void {
-    // sessionStorage.removeItem('isEdited');
-    // sessionStorage.removeItem('id_statement');
   }
 
   ngOnInit(): void {
-    this.getDraftStatement();
-    this.getValueStatementByYear();
     Swal.fire({
       title: 'Cargando Datos',
       text: 'Se está recuperando datos',
       timerProgressBar: true,
       showConfirmButton: false
     });
+    this.getDraftStatement();
+    this.getValueStatementByYear();
     Swal.showLoading();
     this.ratesService.getCLP.subscribe({
       next: r => {
@@ -111,6 +109,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
   }
 
   getDraftStatement() {
+    this.detailForm = [];
     this.productorService.getValueStatementByYear(this.id_business, this.year_statement, 1).subscribe({
       next: resp => {
         if (resp.status) {
@@ -128,20 +127,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
             const tmp_amount = (parseFloat((document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value) || 0) + parseFloat(r?.AMOUNT);
 
             (document.getElementById(`actual_weight_${r?.RECYCLABILITY}_${r.TYPE_RESIDUE}`) as HTMLInputElement).value = tmp_weight.toString();
-            (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = this.currencyPipe.transform(tmp_amount.toString())!.toString();
-            // if (r?.RECYCLABILITY == 1 && r?.TYPE_RESIDUE <= 3) {
-            //   // (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = (tmp_amount).toString(); 
-            // }
-            // if (r?.RECYCLABILITY == 2) {
-            //   if(r?.TYPE_RESIDUE >= 4) {
-            //     (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = "0"
-            //   } else {
-            //     (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = this.currencyPipe.transform(tmp_amount.toString())!.toString();
-            //   }
-            // }
-            // if (r?.RECYCLABILITY >= 2) {
-            //   (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = "0";
-            // }
+            (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = this.currencyPipe.transform(tmp_amount.toString(), '', 'symbol', '1.0-0')!.toString();
           }
           sessionStorage.setItem('detailForm', JSON.stringify(this.detailForm));
         }
@@ -172,12 +158,11 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     let amount: number | string = 0;
 
     const pattern = /^[0-9](,[0-9])?$/;
-    if(!pattern.test(target.value)) {
+    if (!pattern.test(target.value)) {
       target.value = 0;
     }
 
-    let value = parseFloat(target.value.replace(",","."));
-    console.log(value)
+    let value = parseFloat(target.value.replace(",", "."));
     if (!target.value || isNaN(value) || value < 0) {
       value = 0;
       target.value = 0;
@@ -210,7 +195,6 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
         amount = 0;
       }
       this.detailForm[index].amount = amount;
-      
 
     } else {
       sum += value;
@@ -226,20 +210,15 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     }
 
     if (recyclability == 1 && type_residue <= 3) {
-      amount = this.currencyPipe.transform(Math.round(((this.rates[type_residue-1].clp)*sum)))!.toString();
-      
+      amount = this.currencyPipe.transform(Math.round(((this.rates[type_residue - 1].clp) * sum)), '', 'symbol', '1.0-0')!.toString();
     } else if (recyclability == 2 && type_residue <= 3) {
-      // amount = value * this.rates[3].clp
-      amount = this.currencyPipe.transform(Math.round(((this.rates[3].clp)*sum)))!.toString();
-      
+      amount = this.currencyPipe.transform(Math.round(((this.rates[3].clp) * sum)), '', 'symbol', '1.0-0')!.toString();
     } else {
       amount = 0;
     }
-    
-
     sessionStorage.setItem('detailForm', JSON.stringify(this.detailForm));
 
-    (document.getElementById(`actual_weight_${recyclability}_${type_residue}`) as HTMLInputElement).value = `${sum.toString().replace(".",",")}`;
+    (document.getElementById(`actual_weight_${recyclability}_${type_residue}`) as HTMLInputElement).value = `${sum.toString().replace(".", ",")}`;
     (document.getElementById(`actual_amount_${recyclability}_${type_residue}`) as HTMLInputElement).value = amount.toString();
 
     const last_weight = parseFloat((document.getElementById(`last_weight_${recyclability}_${type_residue}`) as HTMLElement).innerHTML);
@@ -267,7 +246,6 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
         sessionStorage.setItem('detailLastForm', JSON.stringify(this.detailLastForm) || '""');
         this.headLastForm = r.data.health;
         Swal.close();
-        (document.getElementById(`last_weight_${r?.RECYCLABILITY}_${r.TYPE_RESIDUE}`) as HTMLElement).innerHTML = "0";
         this.detailLastForm?.forEach(r => {
           (document.getElementById(`inp_l_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}_${r?.PRECEDENCE}_${r?.HAZARD}`) as HTMLElement).innerHTML = r?.VALUE;
           const tmp_weight = (parseInt((document.getElementById(`last_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML) || 0) + parseInt(r?.VALUE);
