@@ -46,9 +46,10 @@ export class FormComponent implements OnInit, OnDestroy {
       this.year_statement = r['year'];
     });
   }
-  ngOnDestroy():void {
-   this.saveDraft();
-    
+  ngOnDestroy(): void {
+    this.saveDraft();
+    sessionStorage.removeItem('id_statement');
+
   }
 
   ngOnInit(): void {
@@ -98,7 +99,7 @@ export class FormComponent implements OnInit, OnDestroy {
           if (this.id_statement == null) {
             this.productorService.saveForm({ header, detail }).subscribe(r => {
               this.hour = new Date();
-              if(r.status) {
+              if (r.status) {
                 sessionStorage.setItem('id_statement', r.data);
                 Swal.close()
               }
@@ -112,14 +113,14 @@ export class FormComponent implements OnInit, OnDestroy {
             });
           }
         } else {
-          this.position=1;
+          this.position = 1;
         }
       });
     } else {
       if (this.id_statement == null) {
         this.productorService.saveForm({ header, detail }).subscribe(r => {
           this.hour = new Date();
-          if(r.status) {
+          if (r.status) {
             sessionStorage.setItem('id_statement', r.data);
           }
         });

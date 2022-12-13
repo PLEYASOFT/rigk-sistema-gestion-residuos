@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 
 import { ProductorStatementRoutingModule } from './productor-statement-routing.module';
 import { FormComponent } from './pages/form/form.component';
@@ -28,6 +28,7 @@ import { FormStatementComponent } from './components/form-statement/form-stateme
     SharedModule,
     FormsModule,
     ReactiveFormsModule
-  ]
+  ],
+  providers: [CurrencyPipe]
 })
 export class ProductorStatementModule { }
