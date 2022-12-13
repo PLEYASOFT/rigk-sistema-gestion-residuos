@@ -157,7 +157,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     let sum = 0;
     let amount: number | string = 0;
 
-    const pattern = /^[0-9](,[0-9])?$/;
+    const pattern = /^[0-9]+(,[0-9]+)?$/;
     if (!pattern.test(target.value)) {
       target.value = 0;
     }
