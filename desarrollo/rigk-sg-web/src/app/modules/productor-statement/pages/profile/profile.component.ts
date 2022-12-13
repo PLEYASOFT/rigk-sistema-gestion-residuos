@@ -12,6 +12,7 @@ import Swal from 'sweetalert2';
 export class ProfileComponent implements OnInit {
   userData: any | null;
   pos = "right";
+  horaIngreso = new Date();
 
   formData: FormGroup = this.fb.group({
     actual: ['', [Validators.required]],
@@ -25,6 +26,7 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
+    this.horaIngreso = new Date(sessionStorage.getItem('horaIngreso')!);
   }
 
   btnrecovery() {

@@ -1,4 +1,4 @@
-import { AfterViewChecked, AfterViewInit, Component, OnInit, Renderer2 } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductorService } from 'src/app/core/services/productor.service';
@@ -12,7 +12,7 @@ import * as XLSX from 'xlsx';
 
 export class SummaryStatementComponent implements OnInit, AfterViewInit {
 
-
+  @ViewChild("table1") table!: ElementRef;
   /**
    * BORRAR
    */
@@ -304,15 +304,16 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     (document.getElementById(`td_diff_amount_3`) as HTMLElement).innerHTML = this.diff_amount_three.toString()+'%';
   }
 
-  tableToExcel = (function() {
-    var uri = 'data:application/vnd.ms-excel;base64,'
-      , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
-      , base64 = function(s: string | number | boolean) { return window.btoa(unescape(encodeURIComponent(s))) }
-      , format = function(s: string, c: { [x: string]: any; worksheet?: any; table?: any; }) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
-    return function(table: any , name: any) {
-      if (!table.nodeType) table = document.getElementById(table)
-      var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML}
-      window.location.href = uri + base64(format(template, ctx))
-    }
-  })()
+  tableToExcel() {
+    const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(
+      this.table.nativeElement
+    );
+
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+
+    /* save to file */
+    XLSX.writeFile(wb, "Tabla-Resumen.xlsx");
+  }
 }

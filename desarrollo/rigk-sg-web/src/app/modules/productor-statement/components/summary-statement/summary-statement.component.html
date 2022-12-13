@@ -1,21 +1,21 @@
 <!-- Excel -->
 <div class="d-md-flex justify-content-end">
-    <a class="btn" (click)="tableToExcel('table', 'W3C Example Table')" >Exportar Excel <i class="fa fa-file-excel-o fa-fw fa-lg" aria-hidden="true"></i></a>
+    <a class="btn" (click)="tableToExcel()" >Exportar Excel <i class="fa fa-file-excel-o fa-fw fa-lg" aria-hidden="true"></i></a>
 </div>
-<div id="content">
+<div class="w-100">
     
     <!-- inicio Consulta de Declaración -->
-    <section class="consulta-declaracion">
+    <section >
         
 
-        <div class="row">
+        <div class="row w-100">
             <!-- Columna 1 -->
-            <div id = "table" class="col-15 col-xxl-9" >
-                <div  *ngFor=" let t of tablas; let i = index">
+            <div id = "table" #table1 class="w-100" >
+                <div  *ngFor=" let t of tablas; let i = index" class="w-100">
                     <!-- Tabla Desktop -->
-                    <table  id = "table" class="table table-even table-section table-borderless table-border table-radius d-lg-table">
+                    <table class="table table-even table-section table-borderless table-border table-radius d-lg-table w-100">
                         <thead>
-                            <tr class="text-center">
+                            <tr class="text-center w-100">
                                 <th class="text-start">Material</th>
                                 <th colspan="2">Prim. Peligroso</th>
                                 <th colspan="2">Prim. No Peligroso</th>
@@ -26,7 +26,7 @@
                             </tr>
                         </thead>
                         <tbody >
-                            <tr class="text-center bg-green-light-2">
+                            <tr class="text-center bg-green-light-2 w-100">
                                 <td class="fw-bold text-start">{{t}}</td>
                                 <td class="color-red" width="7%">{{year_statement - 1}}</td>
                                 <td width="7%">{{year_statement}}</td>
@@ -43,7 +43,7 @@
                                 <td width="7%">{{year_statement}}</td>
                                 <td class="color-red" width="7%">Dif. (%)</td>
                             </tr>
-                            <tr class="text-end" *ngFor="let r of residuos; let x = index">
+                            <tr class="text-end w-100" *ngFor="let r of residuos; let x = index">
                                 <td class="text-start">{{r}}</td>
                                 <td class="bg-red-light " id ="td_l_{{i+1}}_1_1_{{x+1}}" >0</td>
                                 <td id="td_{{i+1}}_1_1_{{x+1}}">0</td>
@@ -62,7 +62,7 @@
                             </tr>
                         </tbody>
                         <tfoot>
-                            <tr class="text-end">
+                            <tr class="text-end w-100">
                                 <td class="text-start" colspan="9">Total (Peso / Monto)</td>
                                 <td id ="td_l_{{i+1}}">0</td>
                                 <td id ="td_{{i+1}}">0</td>
@@ -80,8 +80,8 @@
                 
             </div>
             <!-- Tabla Mobile -->
-            <div class="mb-4 mb-lg-0">
-                <!-- Prim. Peligroso -->
+            <!-- <div class="mb-4 mb-lg-0">
+                
                 <table class="table table-even table-section table-borderless table-align-middle table-border table-radius d-lg-none mb-0">
                     <thead>
                         <tr>
@@ -153,7 +153,7 @@
                         <td colspan="3"></td>
                     </tfoot>
                 </table>
-                <!-- Prim. No Peligroso -->
+                
                 <table class="table table-even table-section table-borderless table-align-middle table-border d-lg-none mb-0">
                     <thead>
                         <tr class="text-end">
@@ -254,7 +254,7 @@
                         <td colspan="3"></td>
                     </tfoot>
                 </table>
-                <!-- Secundario -->
+                
                 <table class="table table-even table-section table-borderless table-align-middle table-border d-lg-none mb-0">
                     <thead>
                         <tr class="text-end">
@@ -355,7 +355,7 @@
                         <td colspan="3"></td>
                     </tfoot>
                 </table>
-                <!-- Peso total (ton) -->
+                
                 <table class="table table-even table-section table-borderless table-align-middle table-border d-lg-none mb-0">
                     <thead>
                         <tr class="text-end">
@@ -495,7 +495,7 @@
                     </tfoot>
                 </table>
 
-            </div>
+            </div>-->
             <!-- Fin Tabla Mobile -->
         </div>
 

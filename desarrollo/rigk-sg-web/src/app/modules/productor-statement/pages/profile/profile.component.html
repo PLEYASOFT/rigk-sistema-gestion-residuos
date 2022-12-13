@@ -10,15 +10,15 @@
             </li>
             <li>
                 <span class="list-data__title">Perfil</span>
-                <span class="list-data__text">Productor</span>
+                <span class="list-data__text">{{userData.ROL_NAME}}</span>
             </li>
             <li>
-                <span class="list-data__title">Correo</span>
-                <span class="list-data__text">{{userData.EMAIL}}</span>
+                <span class="list-data__title">Institución</span>
+                <span class="list-data__text">{{userData.BUSINESS}}</span>
             </li>
             <li>
-                <span class="list-data__title">Teléfono</span>
-                <span class="list-data__text">{{userData.PHONE}}</span>
+                <span class="list-data__title">Fecha/ Hora ingreso</span>
+                <span class="list-data__text">{{horaIngreso | date:'dd/MM/yyyy HH:mm:ss'}}</span>
             </li>
         </ul>
     </div>
