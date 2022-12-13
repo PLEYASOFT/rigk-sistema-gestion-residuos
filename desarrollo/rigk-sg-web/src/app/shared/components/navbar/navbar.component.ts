@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 export class NavbarComponent implements OnInit {
   userData: any | null;
   isVisible = true;
+  horaIngreso = new Date();
   
   @Output() isVisibleBar: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -17,6 +18,7 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
+    this.horaIngreso = new Date(sessionStorage.getItem('horaIngreso')!);
   }
 
   logout() {
