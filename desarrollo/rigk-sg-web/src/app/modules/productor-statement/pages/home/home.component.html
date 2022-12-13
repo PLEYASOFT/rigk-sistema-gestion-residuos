@@ -17,16 +17,18 @@
                     <h2 class="h1">Bienvenida a mi declaración</h2>
                     <p>Con esta solicitud podrá declarar la cantidad y tipo de embalajes industriales a cargo de su empresa.</p>
                     <p>También puede consultar su declaración anterior y el estado de sus facturas.</p>
-                    <p>Si requiere asistencia con su declaración, puedes ver nuestro Webinar en francés <a class="color-white" href="#">Formación a la declaración</a>.</p>
+                    
+                    <h2 class="h1">Contacto:</h2>
+
                     <p><strong>¿Alguna pregunta?</strong> Póngase en contacto con nuestro equipo de atención al cliente.</p>
                     <p>Celular <strong><a class="color-white" href="tel:+56998172845">+56 9 98172845</a></strong> y mail <strong><a class="color-white" href="mailto:contacto@prorep.cl">contacto@prorep.cl</a></strong></p>
                 </div>
                 <!-- columna 2 -->
                 <div class="col-12 col-md-7">
                     <div class="pt-4 pt-md-0 mt-3 mt-md-0 border-top border-top-md-0">
-                        <p>Se aplican nuevas tarifas para el añode referencia 2022. <span class="text-uppercase">Estas se aplicarán</span> sobre la factura anticipada de 2022 para el año de devolución 2021.</p>
+                        <p>Se aplican nuevas tarifas para el año de referencia {{year}}. <span class="text-uppercase">Estas se aplicarán</span> sobre la factura anticipada de {{year}} para el año de devolución {{year-1}}.</p>
                         <ul class="list list-tarifas list-unstyled">
-                            <li class="text-end d-block bg-blue color-white">Tarifas por tonelada</li>
+                            <li class="text-end d-block bg-blue color-white">Tarifas por tonelada (UF)</li>
                             
                             <li *ngFor="let type of rates">
                                 <span>{{type.name}}</span>
@@ -34,7 +36,7 @@
                             </li>
                             
                         </ul>
-                        <p>Más información sobre estas tarifas en <a href="https://prorep.cl">https://prorep.cl</a></p>
+                        <p>Más información sobre estas tarifas en <a href="https://prorep.cl" target="_blank">https://prorep.cl</a></p>
                     </div>
                 </div>
             </div>

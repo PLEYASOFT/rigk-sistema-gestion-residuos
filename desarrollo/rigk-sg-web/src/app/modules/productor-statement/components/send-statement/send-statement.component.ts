@@ -12,7 +12,7 @@ import { ProductorService } from 'src/app/core/services/productor.service';
 export class SendStatementComponent implements OnInit {
 
   year_statement: number = 0;
-  
+
   id_business: string = "";
   name_business: string = "";
   rut: string = "";
@@ -28,15 +28,15 @@ export class SendStatementComponent implements OnInit {
   amount_current_year: number = 0;
   amount_previous_year: number = 0;
 
-  constructor(public businessService: BusinessService, 
-    public productorService: ProductorService, 
+  constructor(public businessService: BusinessService,
+    public productorService: ProductorService,
     private router: Router,
-    private actived: ActivatedRoute) { 
-      this.actived.queryParams.subscribe(r => {
-        this.id_business = r['id_business'];
-        this.year_statement = r['year'];
-      });
-    }
+    private actived: ActivatedRoute) {
+    this.actived.queryParams.subscribe(r => {
+      this.id_business = r['id_business'];
+      this.year_statement = r['year'];
+    });
+  }
 
   ngOnInit(): void {
     this.getBusiness();
@@ -77,7 +77,7 @@ export class SendStatementComponent implements OnInit {
     this.productorService.getValueStatementByYear(this.id_business, this.year_statement - 1, 0).subscribe({
       next: resp => {
         if (resp.status) {
-          if(resp.data.detail.length > 0) {
+          if (resp.data.detail.length > 0) {
             for (let i = 0; i < resp.data.detail.length; i++) {
               const reg = resp.data.detail[i];
               if (reg.AMOUNT != 0) {
@@ -97,10 +97,10 @@ export class SendStatementComponent implements OnInit {
       }
     });
 
-    this.productorService.getValueStatementByYear(this.id_business, this.year_statement, 0).subscribe({
+    this.productorService.getValueStatementByYear(this.id_business, this.year_statement, 1).subscribe({
       next: resp => {
         if (resp.status) {
-          if(resp.data.detail.length > 0) {
+          if (resp.data.detail.length > 0) {
             for (let i = 0; i < resp.data.detail.length; i++) {
               const reg = resp.data.detail[i];
               if (reg.AMOUNT != 0) {
@@ -120,5 +120,4 @@ export class SendStatementComponent implements OnInit {
       }
     });
   }
-
 }

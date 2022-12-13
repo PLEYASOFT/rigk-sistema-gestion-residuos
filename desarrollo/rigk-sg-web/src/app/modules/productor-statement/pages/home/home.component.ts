@@ -8,13 +8,14 @@ import { RatesTsService } from '../../../../core/services/rates.ts.service';
 })
 export class HomeComponent implements OnInit {
   //const year = new Date().year() +1
-  types=['EyE reciclables cartón', 'EyE Reciclable de metal', 'EyE de plástico', 'EyE no reciclables', 'EyE Reutilizables', 'EyE de madera']
+  types=['EyE reciclables cartón', 'EyE reciclable de metal', 'EyE de plástico', 'EyE no reciclables', 'EyE reutilizables', 'EyE de madera'];
+  year = new Date().getFullYear();
   rates:any[]=[]
   constructor(public ratesService:RatesTsService) { }
   
   ngOnInit(): void {
-    const year = new Date().getFullYear();
-    this.ratesService.getRates(year).subscribe(resp =>{
+    
+    this.ratesService.getRates(this.year).subscribe(resp =>{
       console.log(resp.data)
       if (resp.status){
         

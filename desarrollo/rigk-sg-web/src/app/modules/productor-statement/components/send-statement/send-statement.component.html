@@ -90,11 +90,11 @@
                         <ul class="list list-data list-data-tit-text-col list-unstyled">
                             <li>
                                 <span class="list-data__title col-6">Año anterior</span>
-                                <span class="list-data__text">{{amount_previous_year | currency}}</span>
+                                <span class="list-data__text">{{amount_previous_year | currency:'':'symbol':'1.0-0'}}</span>
                             </li>
                             <li>
                                 <span class="list-data__title col-6">Año actual</span>
-                                <span class="list-data__text">{{amount_current_year | currency}}</span>
+                                <span class="list-data__text">{{amount_current_year | currency:'':'symbol':'1.0-0'}}</span>
                             </li>
                         </ul>
                         <h3 class="box-header-h2">Detalle Facturación</h3>
