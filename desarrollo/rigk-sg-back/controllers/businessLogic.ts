@@ -17,6 +17,21 @@ class BusinessLogic {
             });
         }
     }
+
+    async getBusiness(req: any, res: Response) {
+        const {id} = req.params;
+
+        try {
+            const business = await businessDao.getBusiness(id);
+            res.status(200).json({status: business, data:{}, msg: ''});
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
 }
 
 const businessLogic = new BusinessLogic();
