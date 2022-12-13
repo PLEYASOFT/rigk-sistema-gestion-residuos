@@ -164,7 +164,7 @@ export class FormComponent implements OnInit, OnDestroy {
       this.position = 1;
       return;
     }
-    if (this.position >= 1 && val > 0) {
+    if (this.position >= 1 && this.position < 3 && val > 0) {
       this.saveDraft();
     }
     if(val > 0) {
