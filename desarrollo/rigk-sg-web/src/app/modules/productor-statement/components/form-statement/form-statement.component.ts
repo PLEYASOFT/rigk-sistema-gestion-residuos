@@ -267,6 +267,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
         sessionStorage.setItem('detailLastForm', JSON.stringify(this.detailLastForm) || '""');
         this.headLastForm = r.data.health;
         Swal.close();
+        (document.getElementById(`last_weight_${r?.RECYCLABILITY}_${r.TYPE_RESIDUE}`) as HTMLElement).innerHTML = "0";
         this.detailLastForm?.forEach(r => {
           (document.getElementById(`inp_l_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}_${r?.PRECEDENCE}_${r?.HAZARD}`) as HTMLElement).innerHTML = r?.VALUE;
           const tmp_weight = (parseInt((document.getElementById(`last_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML) || 0) + parseInt(r?.VALUE);
