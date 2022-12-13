@@ -47,11 +47,12 @@ export class FormComponent implements OnInit, OnDestroy {
     });
   }
   ngOnDestroy(): void {
-    this.saveDraft();
+    if(!this.isSubmited) {
+      this.saveDraft();
+    }
     sessionStorage.removeItem('id_statement');
     sessionStorage.removeItem('detailForm');
     sessionStorage.removeItem('detailLastForm');
-
   }
 
   ngOnInit(): void {
