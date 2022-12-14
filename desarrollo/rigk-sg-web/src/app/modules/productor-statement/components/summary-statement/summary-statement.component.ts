@@ -315,14 +315,14 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
 
   tableToExcel() {
     const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(
-      this.table.nativeElement
+      this.table.nativeElement, {raw: true}
     );
 
     console.log(ws)
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
-
+    //wb.Sheets["Sheet1"][0] = "@";
     /* save to file */
     XLSX.writeFile(wb, "Tabla-Resumen.xlsx");
   }
