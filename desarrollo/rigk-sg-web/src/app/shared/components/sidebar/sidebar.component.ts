@@ -27,6 +27,12 @@ export class SidebarComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  hideSidebar() {
+    if(window.innerWidth <= 992){
+      document.getElementById('sidebar')?.classList.toggle("active");
+    }
+  }
+
   async showDialog() {
     Swal.fire({
       title: 'Ingrese Datos',

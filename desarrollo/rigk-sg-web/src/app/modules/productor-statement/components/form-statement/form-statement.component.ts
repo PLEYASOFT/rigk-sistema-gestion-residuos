@@ -62,6 +62,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     });
   }
   ngOnDestroy(): void {
+    sessionStorage.removeItem('isEdited');
   }
 
   ngOnInit(): void {
@@ -153,6 +154,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
   }
 
   updateValue(recyclability: any, type_residue: any, precedence: any, hazard: any, target: any) {
+    sessionStorage.setItem('isEdited', "true");
     let tmp;
     let sum = 0;
     let amount: number | string = 0;
