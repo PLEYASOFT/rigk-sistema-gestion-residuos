@@ -13,6 +13,7 @@ export class ProfileComponent implements OnInit {
   userData: any | null;
   pos = "right";
   horaIngreso = new Date();
+  msg = '';
 
   formData: FormGroup = this.fb.group({
     actual: ['', [Validators.required]],
@@ -31,7 +32,8 @@ export class ProfileComponent implements OnInit {
 
   btnrecovery() {
     const { actual, password, repeatPassword } = this.formData.value;
-    this.authService.modifyPassword(password, repeatPassword, actual).subscribe(resp => {
+    this.authService.modifyPassword(password, repeatPassword, actual).subscribe({
+      next: resp => {
       if (resp.status) {
         Swal.fire({
           title: "Cambio de contraseña",
@@ -48,7 +50,15 @@ export class ProfileComponent implements OnInit {
         });
         this.formData.reset();
       }
-    });
+  },
+  error: err => {
+    this.msg = err.msg;
+    Swal.fire({
+      title: 'Formato inválido',
+      text: 'Contraseña debe contener al menos 8 caracteres',
+      icon: 'error'
+    })
+  }});
   }
 
   displayModifyPassword() {
