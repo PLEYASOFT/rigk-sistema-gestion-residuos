@@ -125,10 +125,11 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
             this.detailForm.push(obj);
             (document.getElementById(`inp_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}_${r?.PRECEDENCE}_${r?.HAZARD}`) as HTMLInputElement).value = r?.VALUE;
             const tmp_weight = (parseFloat((document.getElementById(`actual_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value) || 0) + parseFloat(r?.VALUE);
-            const tmp_amount = (parseFloat((document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value) || 0) + parseFloat(r?.AMOUNT);
-
-            (document.getElementById(`actual_weight_${r?.RECYCLABILITY}_${r.TYPE_RESIDUE}`) as HTMLInputElement).value = tmp_weight.toString();
-            (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = this.currencyPipe.transform(tmp_amount.toString(), '', 'symbol', '1.0-0')!.toString();
+            const target = (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value.replace("$","").replace(",","");
+            const tmp_amount:number = (parseFloat(target) || 0) + parseFloat(r?.AMOUNT);
+            
+            (document.getElementById(`actual_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = tmp_weight.toString();
+            (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = this.currencyPipe.transform(tmp_amount, '', 'symbol', '1.0-0')||"";
           }
           sessionStorage.setItem('detailForm', JSON.stringify(this.detailForm));
         }
