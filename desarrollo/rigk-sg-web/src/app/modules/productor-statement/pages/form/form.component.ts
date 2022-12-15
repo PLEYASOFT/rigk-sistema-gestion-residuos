@@ -59,6 +59,9 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   saveDraft() {
+    const edited = sessionStorage.getItem('isEdited') || false;
+    if(!edited) return;
+    
     this.id_statement = parseInt(sessionStorage.getItem('id_statement')!) || null;
     const detail = JSON.parse(sessionStorage.getItem('detailForm')!) || [];
     let flagZero = true;
@@ -87,7 +90,7 @@ export class FormComponent implements OnInit, OnDestroy {
       Swal.fire({
         icon: 'question',
         title: '¿Formulario vacio?',
-        text: 'El formulario tiene todos los valores en cero. ¿Estas seguro de enviarlo?',
+        text: 'El formulario tiene todos los valores en cero. ¿Estas seguro de guardar borrador?',
         showConfirmButton: true,
         showCancelButton: true
       }).then(r => {
