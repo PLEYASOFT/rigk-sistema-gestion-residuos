@@ -13,4 +13,8 @@ export class BusinessService {
   verifyBusiness(id: number) {
     return this.http.get<any>(`${this.url}/verify/${id}`);
   }
+
+  getBusiness(id: string) {
+    return this.http.get<any>(`${this.url}/business/${id}`);
+  }
 }

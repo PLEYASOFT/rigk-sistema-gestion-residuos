@@ -31,6 +31,7 @@ export class SidebarComponent implements OnInit {
     Swal.fire({
       title: 'Ingrese Datos',
       html: '<input id="inp_id_business" type="number" placeholder="ID Empresa" class="form-control"><br><input id="inp_year" type="number" placeholder="AÑO Declaración" class="form-control">',
+      showCancelButton: true,
       preConfirm: async () => {
         const id_business = parseInt((document.getElementById('inp_id_business') as HTMLInputElement).value);
         const year = parseInt((document.getElementById('inp_year') as HTMLInputElement).value);

@@ -4,5 +4,7 @@
 
 :host
 {
-    width: 75% !important;
+
+    width: 90% !important;
+    padding: 1%;
 }
