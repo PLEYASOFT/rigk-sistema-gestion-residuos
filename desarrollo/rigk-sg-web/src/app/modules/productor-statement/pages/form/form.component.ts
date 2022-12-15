@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges, AfterViewChecked, OnDestroy } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ProductorService } from '../../../../core/services/productor.service';
+import { BusinessService } from '../../../../core/services/business.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
@@ -32,6 +33,8 @@ export class FormComponent implements OnInit, OnDestroy {
   isEdited = false;
 
   id_business: number = 0;
+  name_business: string = "";
+  rut_business: string = "";
   year_statement: number = 0;
   id_statement: number | null = null;
 
@@ -39,13 +42,16 @@ export class FormComponent implements OnInit, OnDestroy {
 
   constructor(private fb: FormBuilder,
     public productorService: ProductorService,
+    public businessService: BusinessService,
     private router: Router,
     private actived: ActivatedRoute) {
     this.actived.queryParams.subscribe(r => {
       this.id_business = r['id_business'];
       this.year_statement = r['year'];
     });
+    this.getNameBusiness();
   }
+
   ngOnDestroy(): void {
     if(!this.isSubmited) {
       this.saveDraft();
@@ -56,6 +62,25 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+  }
+
+  getNameBusiness() {
+    this.businessService.getBusiness(this.id_business.toString()).subscribe({
+      next: resp => {
+        if (resp.status) {
+          this.name_business = resp.status[0].NAME;
+          this.rut_business = resp.status[0].VAT;
+        }
+      },
+      error: r => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          text: r.msg,
+          title: '¡Ups!'
+        });
+      }
+    });
   }
 
   saveDraft() {
