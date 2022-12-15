@@ -30,7 +30,6 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
 
   isSubmited = false;
   isEdited = false;
-
   id_business: number = 0;
   year_statement: number = 0;
   id_statement: number | null = null;
@@ -106,7 +105,6 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         sum1 = sum1 + tmp_amount;
         this.actual_weight_one = this.actual_weight_one +  parseInt(r?.value);
         this.actual_amount_one = this.actual_amount_one +  parseInt(r?.amount);
-        console.log('value: ',r?.value,' amount: ', r?.amount,' sum1: ', sum1, 'actual_amount: ', this.actual_amount_one)
         if(r?.type_residue == r2?.type_residue ){
           
           (document.getElementById(`td_${r?.recyclability}`) as HTMLElement).innerHTML = this.actual_weight_one.toString();
@@ -123,14 +121,11 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
           sum1 = 0;
         }
       }
-
       else if(r.recyclability == 2)
       {
         sum2 = sum2 + tmp_amount;
         this.actual_weight_two = this.actual_weight_two +  parseInt(r?.value);
         this.actual_amount_two = this.actual_amount_two +  parseInt(r?.amount);
-        console.log('value: ',r?.value,' amount: ', r?.amount,' sum2: ', sum2, 'actual_amount: ', this.actual_amount_two)
-        
         if(r?.type_residue == r2?.type_residue ){
           
           (document.getElementById(`td_${r?.recyclability}`) as HTMLElement).innerHTML = this.actual_weight_two.toString();
@@ -153,11 +148,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         sum3 = sum3 + tmp_amount;
         this.actual_weight_three = this.actual_weight_three +  parseInt(r?.value);
         this.actual_amount_three = this.actual_amount_three +  parseInt(r?.amount);
-
-        console.log('value: ',r?.value,' amount: ', r?.amount,' sum3: ', sum3, 'actual_amount: ', this.actual_amount_three)
-        
         if(r?.type_residue == r2?.type_residue ){
-          
           (document.getElementById(`td_${r?.recyclability}`) as HTMLElement).innerHTML = this.actual_weight_three.toString();
           (document.getElementById(`td_amount_${r?.recyclability}`) as HTMLElement).innerHTML = '$'+this.actual_amount_three.toLocaleString("es-ES");
           (document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = tmp_weight.toString();
@@ -182,22 +173,16 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       (document.getElementById(`td_l_${r?.RECYCLABILITY}_${r?.PRECEDENCE}_${r?.HAZARD}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = r?.VALUE;
       const tmp_weight = (parseInt((document.getElementById(`l_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML) || 0) + parseInt(r?.VALUE);
       const tmp_amount = (parseInt((document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML) || 0) + parseInt(r?.AMOUNT);
-    
       if(r.RECYCLABILITY == 1)
       {
         sum1 = sum1 + tmp_amount;
         this.last_weight_one = this.last_weight_one +  parseInt(r?.VALUE);
         this.last_amount_one = this.last_amount_one +  parseInt(r?.AMOUNT);
-
-        console.log('VALUE: ',r?.VALUE,' AMOUNT: ', r?.AMOUNT,' sum1: ', sum1, 'l: ', this.last_amount_one)
-
         if(r?.TYPE_RESIDUE == r2?.TYPE_RESIDUE ){
-          
           (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_one.toString();
           (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = '$'+this.last_amount_one.toLocaleString("es-ES");
           (document.getElementById(`l_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = tmp_weight.toString();
           (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = '$'+(sum1.toLocaleString("es-ES"));
-
         }
         else{
           (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_one.toString();
@@ -213,15 +198,11 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         sum2 = sum2 + tmp_amount;
         this.last_weight_two = this.last_weight_two +  parseInt(r?.VALUE);
         this.last_amount_two = this.last_amount_two +  parseInt(r?.AMOUNT);
-
-        console.log('VALUE: ',r?.VALUE,' AMOUNT: ', r?.AMOUNT,' sum2: ', sum2, 'l: ', this.last_amount_two)
         if(r?.TYPE_RESIDUE == r2?.TYPE_RESIDUE ){
-          
           (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_two.toString();
           (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = '$'+this.last_amount_two.toLocaleString("es-ES");
           (document.getElementById(`l_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = tmp_weight.toString();
           (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = '$'+(sum2.toLocaleString("es-ES"));
-
         }
         else{
           (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_two.toString();
@@ -230,23 +211,18 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
           (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = '$'+(sum2.toLocaleString("es-ES"));
           sum2 = 0;
         }
-        }
+      }
 
       else if(r.RECYCLABILITY == 3)
       {
-        
         sum3 = sum3 + tmp_amount;
         this.last_weight_three = this.last_weight_three +  parseInt(r?.VALUE);
         this.last_amount_three = this.last_amount_three +  parseInt(r?.AMOUNT);
-
-        console.log('VALUE: ',r?.VALUE,' AMOUNT: ', r?.AMOUNT,' sum3: ', sum3, 'l: ', this.last_amount_three)
-        if(r?.TYPE_RESIDUE == r2?.TYPE_RESIDUE ){
-          
+        if(r?.TYPE_RESIDUE == r2?.TYPE_RESIDUE ){         
           (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_three.toString();
           (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = '$'+this.last_amount_three.toLocaleString("es-ES");
           (document.getElementById(`l_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = tmp_weight.toString();
           (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = '$'+(sum3.toLocaleString("es-ES"));
-
         }
         else{
           (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_three.toString();
@@ -276,12 +252,10 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
 
     for (let i = 1; i <= 3; i++) {
       for(let j = 1; j <= 5; j++){
-        
       const tmp_weight = (parseInt((document.getElementById(`actual_weight_${i}_${j}`) as HTMLElement).innerHTML) || 0);
       const tmp_l_weight = (parseInt((document.getElementById(`l_weight_${i}_${j}`) as HTMLElement).innerHTML) || 0);
       const tmp_amount = parseInt((document.getElementById(`actual_amount_${i}_${j}`) as HTMLElement).innerHTML.replace(/[$.]/g,'')) ;
       const tmp_l_amount = parseInt((document.getElementById(`l_amount_${i}_${j}`) as HTMLElement).innerHTML.replace(/[$.]/g,'')) ;
-      
       if(tmp_l_weight != 0){
         (document.getElementById(`diff_weight_${i}_${j}`) as HTMLElement).innerHTML = ((( tmp_weight - tmp_l_weight) / tmp_l_weight) * 100).toFixed(2)+'%';
       }
@@ -301,10 +275,8 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       else{
         (document.getElementById(`diff_amount_${i}_${j}`) as HTMLElement).innerHTML ='0%';
       }
-      
       }
     }
-    
     (document.getElementById(`td_diff_weight_1`) as HTMLElement).innerHTML = this.diff_weight_one.toString()+'%';
     (document.getElementById(`td_diff_weight_2`) as HTMLElement).innerHTML = this.diff_weight_two.toString()+'%';
     (document.getElementById(`td_diff_weight_3`) as HTMLElement).innerHTML = this.diff_weight_three.toString()+'%';
@@ -315,14 +287,10 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
 
   tableToExcel() {
     const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(
-      this.table.nativeElement
+      this.table.nativeElement, {raw: true}
     );
-
-    console.log(ws)
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-
-
     /* save to file */
     XLSX.writeFile(wb, "Tabla-Resumen.xlsx");
   }

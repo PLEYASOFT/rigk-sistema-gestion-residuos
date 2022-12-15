@@ -31,23 +31,32 @@ export class ProfileComponent implements OnInit {
 
   btnrecovery() {
     const { actual, password, repeatPassword } = this.formData.value;
-    this.authService.modifyPassword(password, repeatPassword, actual).subscribe(resp => {
-      if (resp.status) {
-        Swal.fire({
-          title: "Cambio de contraseña",
-          text: "La contraseña fue cambiada exitosamente",
-          icon: "success",
-        })
-        this.router.navigate(['/auth/login']);
-      }
-      else {
-        Swal.fire({
-          title: "Validar información",
-          text: resp.msg,
-          icon: "error",
-        });
-        this.formData.reset();
-      }
+    this.authService.modifyPassword(password, repeatPassword, actual).subscribe({
+      next: resp => {
+        if (resp.status) {
+          Swal.fire({
+            title: "Cambio de contraseña",
+            text: "La contraseña fue cambiada exitosamente",
+            icon: "success",
+          })
+          this.router.navigate(['/auth/login']);
+        }
+        else {
+          Swal.fire({
+            title: "Validar información",
+            text: resp.msg,
+            icon: "error",
+          });
+          this.formData.reset();
+        }
+      },
+    error: err => {
+      Swal.fire({
+        title: 'Formato inválido',
+        text: 'Contraseña debe contener al menos 8 caracteres',
+        icon: 'error'
+      })
+    }
     });
   }
 

@@ -2,20 +2,18 @@
 <div class="d-md-flex justify-content-end">
     <a class="btn" (click)="tableToExcel()" >Exportar Excel <i class="fa fa-file-excel-o fa-fw fa-lg" aria-hidden="true"></i></a>
 </div>
-<div class="w-100">
-    
+<div class="table-responsive mb-4">
     <!-- inicio Consulta de Declaración -->
     <section >
-        
-
         <div class="row w-100">
             <!-- Columna 1 -->
-            <div id = "table" #table1 class="w-100" >
-                <div  *ngFor=" let t of tablas; let i = index" class="w-100">
+            <div id = "table" #table1 class="w-100">
+                 <div  *ngFor=" let t of tablas; let i = index" class="w-100">
                     <!-- Tabla Desktop -->
                     <table class="table table-even table-section table-borderless table-border table-radius d-lg-table w-100">
+                        
                         <thead>
-                            <tr class="text-center w-100">
+                            <tr class="text-center w-100" >
                                 <th class="text-start">Material</th>
                                 <th colspan="2">Prim. Peligroso</th>
                                 <th colspan="2">Prim. No Peligroso</th>
@@ -56,8 +54,8 @@
                                 <td id= "l_weight_{{i+1}}_{{x+1}}" class="bg-red-light">0</td>
                                 <td id="actual_weight_{{i+1}}_{{x+1}}">0</td>
                                 <td id="diff_weight_{{i+1}}_{{x+1}}" class="bg-gray color-green ">0%</td>
-                                <td id= "l_amount_{{i+1}}_{{x+1}}" class="bg-red-light">0</td>
-                                <td id="actual_amount_{{i+1}}_{{x+1}}">0</td>
+                                <td id= "l_amount_{{i+1}}_{{x+1}}" class="bg-red-light">$0</td>
+                                <td id="actual_amount_{{i+1}}_{{x+1}}">$0</td>
                                 <td id="diff_amount_{{i+1}}_{{x+1}}" class="bg-gray color-green ">0%</td>
                             </tr>
                         </tbody>
@@ -67,17 +65,13 @@
                                 <td id ="td_l_{{i+1}}">0</td>
                                 <td id ="td_{{i+1}}">0</td>
                                 <td id ="td_diff_weight_{{i+1}}">0</td>
-                                <td id ="td_l_amount_{{i+1}}">0</td>
-                                <td id ="td_amount_{{i+1}}">0</td>
+                                <td id ="td_l_amount_{{i+1}}">$0</td>
+                                <td id ="td_amount_{{i+1}}">$0</td>
                                 <td id ="td_diff_amount_{{i+1}}">0</td>
                             </tr>
-                        </tfoot>
+                        </tfoot>        
                     </table>
-
-                    
                 </div>
-
-                
             </div>
             <!-- Tabla Mobile -->
             <!-- <div class="mb-4 mb-lg-0">
@@ -498,10 +492,9 @@
             </div>-->
             <!-- Fin Tabla Mobile -->
         </div>
-
-        
-
+        <!--<div style="visibility: hidden">
+            <p>Se pueden visualizar los datos resumen que fueron ingresados anteriormente en la declaración, además existe la posibilidad de visualizar el resumen en formato .xlsx dando click en "Exportar Excel". Si todo está bien, puede continuar con la declaración presionando "Siguiente".   </p>
+        </div> -->
     </section>
     <!-- fin Consulta de Declaración -->
-
 </div>
