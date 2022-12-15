@@ -13,7 +13,6 @@ export class ProfileComponent implements OnInit {
   userData: any | null;
   pos = "right";
   horaIngreso = new Date();
-  msg = '';
 
   formData: FormGroup = this.fb.group({
     actual: ['', [Validators.required]],
@@ -34,31 +33,31 @@ export class ProfileComponent implements OnInit {
     const { actual, password, repeatPassword } = this.formData.value;
     this.authService.modifyPassword(password, repeatPassword, actual).subscribe({
       next: resp => {
-      if (resp.status) {
-        Swal.fire({
-          title: "Cambio de contraseña",
-          text: "La contraseña fue cambiada exitosamente",
-          icon: "success",
-        })
-        this.router.navigate(['/auth/login']);
-      }
-      else {
-        Swal.fire({
-          title: "Validar información",
-          text: resp.msg,
-          icon: "error",
-        });
-        this.formData.reset();
-      }
-  },
-  error: err => {
-    this.msg = err.msg;
-    Swal.fire({
-      title: 'Formato inválido',
-      text: 'Contraseña debe contener al menos 8 caracteres',
-      icon: 'error'
-    })
-  }});
+        if (resp.status) {
+          Swal.fire({
+            title: "Cambio de contraseña",
+            text: "La contraseña fue cambiada exitosamente",
+            icon: "success",
+          })
+          this.router.navigate(['/auth/login']);
+        }
+        else {
+          Swal.fire({
+            title: "Validar información",
+            text: resp.msg,
+            icon: "error",
+          });
+          this.formData.reset();
+        }
+      },
+    error: err => {
+      Swal.fire({
+        title: 'Formato inválido',
+        text: 'Contraseña debe contener al menos 8 caracteres',
+        icon: 'error'
+      })
+    }
+    });
   }
 
   displayModifyPassword() {

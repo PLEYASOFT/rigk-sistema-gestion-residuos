@@ -1,13 +1,10 @@
-
 <!-- Excel -->
 <div class="d-md-flex justify-content-end">
     <a class="btn" (click)="tableToExcel()" >Exportar Excel <i class="fa fa-file-excel-o fa-fw fa-lg" aria-hidden="true"></i></a>
 </div>
 <div class="table-responsive mb-4">
-    
     <!-- inicio Consulta de Declaración -->
     <section >
-
         <div class="row w-100">
             <!-- Columna 1 -->
             <div id = "table" #table1 class="w-100">
@@ -72,14 +69,9 @@
                                 <td id ="td_amount_{{i+1}}">$0</td>
                                 <td id ="td_diff_amount_{{i+1}}">0</td>
                             </tr>
-                        </tfoot>
-                        
-                        
+                        </tfoot>        
                     </table>
-
-                    
                 </div>
-                
             </div>
             <!-- Tabla Mobile -->
             <!-- <div class="mb-4 mb-lg-0">
@@ -503,8 +495,6 @@
         <!--<div style="visibility: hidden">
             <p>Se pueden visualizar los datos resumen que fueron ingresados anteriormente en la declaración, además existe la posibilidad de visualizar el resumen en formato .xlsx dando click en "Exportar Excel". Si todo está bien, puede continuar con la declaración presionando "Siguiente".   </p>
         </div> -->
-        
     </section>
     <!-- fin Consulta de Declaración -->
-
 </div>
