@@ -53,7 +53,7 @@ class statementProductorDao {
         for (let i = 0; i < detail.length; i++) {
             const { precedence, hazard, recyclability, type_residue, value, amount } = detail[i];
             if (detail[i].id) {
-                await conn?.execute("UPDATE detail_statement_form SET VALUE = ? WHERE ID=?", [value, detail[i].id]);
+                await conn?.execute("UPDATE detail_statement_form SET VALUE = ?, AMOUNT=? WHERE ID=?", [value, amount, detail[i].id]);
             } else {
                 await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, precedence, hazard, recyclability, type_residue, value, amount]).catch(err => console.log(err));
             }
