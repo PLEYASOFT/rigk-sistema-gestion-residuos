@@ -53,7 +53,6 @@ export class FormComponent implements OnInit, OnDestroy {
     sessionStorage.removeItem('id_statement');
     sessionStorage.removeItem('detailForm');
     sessionStorage.removeItem('detailLastForm');
-
   }
 
   ngOnInit(): void {
