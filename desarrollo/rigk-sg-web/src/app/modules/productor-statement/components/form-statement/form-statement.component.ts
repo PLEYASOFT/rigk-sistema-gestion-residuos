@@ -217,7 +217,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     } else if (recyclability == 2 && type_residue <= 3) {
       amount = this.currencyPipe.transform(Math.round(((this.rates[3].clp) * sum)), '', 'symbol', '1.0-0')!.toString();
     } else {
-      amount = 0;
+      amount = this.currencyPipe.transform("0", '', 'symbol', '1.0-0')!.toString();
     }
     sessionStorage.setItem('detailForm', JSON.stringify(this.detailForm));
 
