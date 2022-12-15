@@ -1,3 +1,4 @@
+import { CurrencyPipe } from '@angular/common';
 import { AfterViewChecked, AfterViewInit, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -70,7 +71,8 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   constructor(private fb: FormBuilder,
     public productorService: ProductorService,
     private router: Router,
-    private actived: ActivatedRoute) {
+    private actived: ActivatedRoute,
+    private currencyPipe: CurrencyPipe) {
     this.actived.queryParams.subscribe(r => {
       this.id_business = r['id_business'];
       this.year_statement = r['year'];
@@ -98,8 +100,6 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       (document.getElementById(`td_${r?.recyclability}_${r?.precedence}_${r?.hazard}_${r?.type_residue}`) as HTMLElement).innerHTML = r?.value;
       const tmp_weight = (parseInt((document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML) || 0) + parseInt(r?.value);
       const tmp_amount = (parseInt((document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML) || 0) + parseInt(r?.amount);
-      console.log('R ',r)
-      console.log('R2 ',r2)
       if(r.recyclability == 1)
       {
         sum1 = sum1 + tmp_amount;
@@ -108,16 +108,16 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         if(r?.type_residue == r2?.type_residue ){
           
           (document.getElementById(`td_${r?.recyclability}`) as HTMLElement).innerHTML = this.actual_weight_one.toString();
-          (document.getElementById(`td_amount_${r?.recyclability}`) as HTMLElement).innerHTML = '$'+this.actual_amount_one.toLocaleString("es-ES");
+          (document.getElementById(`td_amount_${r?.recyclability}`) as HTMLElement).innerHTML =  this.currencyPipe.transform(this.actual_amount_one.toString(), '', 'symbol', '1.0-0')!.toString();
           (document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = tmp_weight.toString();
-          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = '$'+(sum1.toLocaleString("es-ES"));
+          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = this.currencyPipe.transform(sum1.toString(), '', 'symbol', '1.0-0')!.toString();
 
         }
         else{
           (document.getElementById(`td_${r?.recyclability}`) as HTMLElement).innerHTML = this.actual_weight_one.toString();
-          (document.getElementById(`td_amount_${r?.recyclability}`) as HTMLElement).innerHTML = '$'+this.actual_amount_one.toLocaleString("es-ES");
+          (document.getElementById(`td_amount_${r?.recyclability}`) as HTMLElement).innerHTML =  this.currencyPipe.transform(this.actual_amount_one.toString(), '', 'symbol', '1.0-0')!.toString();
           (document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = tmp_weight.toString();
-          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = '$'+(sum1.toLocaleString("es-ES"));
+          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = this.currencyPipe.transform(sum1.toString(), '', 'symbol', '1.0-0')!.toString();
           sum1 = 0;
         }
       }
@@ -129,16 +129,16 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         if(r?.type_residue == r2?.type_residue ){
           
           (document.getElementById(`td_${r?.recyclability}`) as HTMLElement).innerHTML = this.actual_weight_two.toString();
-          (document.getElementById(`td_amount_${r?.recyclability}`) as HTMLElement).innerHTML = '$'+this.actual_amount_two.toLocaleString("es-ES");
+          (document.getElementById(`td_amount_${r?.recyclability}`) as HTMLElement).innerHTML = this.currencyPipe.transform(this.actual_amount_two.toString(), '', 'symbol', '1.0-0')!.toString();
           (document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = tmp_weight.toString();
-          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = '$'+(sum2.toLocaleString("es-ES"));
+          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = this.currencyPipe.transform(sum2.toString(), '', 'symbol', '1.0-0')!.toString();
 
         }
         else{
           (document.getElementById(`td_${r?.recyclability}`) as HTMLElement).innerHTML = this.actual_weight_two.toString();
-          (document.getElementById(`td_amount_${r?.recyclability}`) as HTMLElement).innerHTML = '$'+this.actual_amount_two.toLocaleString("es-ES");
+          (document.getElementById(`td_amount_${r?.recyclability}`) as HTMLElement).innerHTML = this.currencyPipe.transform(this.actual_amount_two.toString(), '', 'symbol', '1.0-0')!.toString();
           (document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = tmp_weight.toString();
-          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = '$'+(sum2.toLocaleString("es-ES"));
+          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = this.currencyPipe.transform(sum2.toString(), '', 'symbol', '1.0-0')!.toString();
           sum2 = 0;
         }
       }
@@ -150,16 +150,16 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         this.actual_amount_three = this.actual_amount_three +  parseInt(r?.amount);
         if(r?.type_residue == r2?.type_residue ){
           (document.getElementById(`td_${r?.recyclability}`) as HTMLElement).innerHTML = this.actual_weight_three.toString();
-          (document.getElementById(`td_amount_${r?.recyclability}`) as HTMLElement).innerHTML = '$'+this.actual_amount_three.toLocaleString("es-ES");
+          (document.getElementById(`td_amount_${r?.recyclability}`) as HTMLElement).innerHTML = this.currencyPipe.transform(this.actual_amount_three.toString(), '', 'symbol', '1.0-0')!.toString();
           (document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = tmp_weight.toString();
-          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = '$'+(sum3.toLocaleString("es-ES"));
+          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = this.currencyPipe.transform(sum3.toString(), '', 'symbol', '1.0-0')!.toString();
 
         }
         else{
           (document.getElementById(`td_${r?.recyclability}`) as HTMLElement).innerHTML = this.actual_weight_three.toString();
-          (document.getElementById(`td_amount_${r?.recyclability}`) as HTMLElement).innerHTML = '$'+this.actual_amount_three.toLocaleString("es-ES");
+          (document.getElementById(`td_amount_${r?.recyclability}`) as HTMLElement).innerHTML = this.currencyPipe.transform(this.actual_amount_three.toString(), '', 'symbol', '1.0-0')!.toString();
           (document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = tmp_weight.toString();
-          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = '$'+(sum3.toLocaleString("es-ES"));
+          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = this.currencyPipe.transform(sum3.toString(), '', 'symbol', '1.0-0')!.toString();
           sum3 = 0;
         }
       }
@@ -180,15 +180,15 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         this.last_amount_one = this.last_amount_one +  parseInt(r?.AMOUNT);
         if(r?.TYPE_RESIDUE == r2?.TYPE_RESIDUE ){
           (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_one.toString();
-          (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = '$'+this.last_amount_one.toLocaleString("es-ES");
+          (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.currencyPipe.transform(this.last_amount_one.toString(), '', 'symbol', '1.0-0')!.toString();
           (document.getElementById(`l_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = tmp_weight.toString();
-          (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = '$'+(sum1.toLocaleString("es-ES"));
+          (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = this.currencyPipe.transform(sum1.toString(), '', 'symbol', '1.0-0')!.toString();
         }
         else{
           (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_one.toString();
-          (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = '$'+this.last_amount_one.toLocaleString("es-ES");
+          (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.currencyPipe.transform(this.last_amount_one.toString(), '', 'symbol', '1.0-0')!.toString();
           (document.getElementById(`l_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = tmp_weight.toString();
-          (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = '$'+(sum1.toLocaleString("es-ES"));
+          (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = this.currencyPipe.transform(sum1.toString(), '', 'symbol', '1.0-0')!.toString();
           sum1 = 0;
         }
       }
@@ -200,15 +200,15 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         this.last_amount_two = this.last_amount_two +  parseInt(r?.AMOUNT);
         if(r?.TYPE_RESIDUE == r2?.TYPE_RESIDUE ){
           (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_two.toString();
-          (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = '$'+this.last_amount_two.toLocaleString("es-ES");
+          (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.currencyPipe.transform(this.last_amount_two.toString(), '', 'symbol', '1.0-0')!.toString();
           (document.getElementById(`l_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = tmp_weight.toString();
-          (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = '$'+(sum2.toLocaleString("es-ES"));
+          (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = this.currencyPipe.transform(sum2.toString(), '', 'symbol', '1.0-0')!.toString();
         }
         else{
           (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_two.toString();
-          (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = '$'+this.last_amount_two.toLocaleString("es-ES");
+          (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.currencyPipe.transform(this.last_amount_two.toString(), '', 'symbol', '1.0-0')!.toString();
           (document.getElementById(`l_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = tmp_weight.toString();
-          (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = '$'+(sum2.toLocaleString("es-ES"));
+          (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = this.currencyPipe.transform(sum2.toString(), '', 'symbol', '1.0-0')!.toString();
           sum2 = 0;
         }
       }
@@ -220,15 +220,15 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         this.last_amount_three = this.last_amount_three +  parseInt(r?.AMOUNT);
         if(r?.TYPE_RESIDUE == r2?.TYPE_RESIDUE ){         
           (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_three.toString();
-          (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = '$'+this.last_amount_three.toLocaleString("es-ES");
+          (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.currencyPipe.transform(this.last_amount_three.toString(), '', 'symbol', '1.0-0')!.toString();
           (document.getElementById(`l_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = tmp_weight.toString();
-          (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = '$'+(sum3.toLocaleString("es-ES"));
+          (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = this.currencyPipe.transform(sum3.toString(), '', 'symbol', '1.0-0')!.toString();
         }
         else{
           (document.getElementById(`td_l_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.last_weight_three.toString();
-          (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = '$'+this.last_amount_three.toLocaleString("es-ES");
+          (document.getElementById(`td_l_amount_${r?.RECYCLABILITY}`) as HTMLElement).innerHTML = this.currencyPipe.transform(this.last_amount_three.toString(), '', 'symbol', '1.0-0')!.toString();
           (document.getElementById(`l_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = tmp_weight.toString();
-          (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = '$'+(sum3.toLocaleString("es-ES"));
+          (document.getElementById(`l_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML = this.currencyPipe.transform(sum3.toString(), '', 'symbol', '1.0-0')!.toString();
           sum3 = 0;
         } 
       }
