@@ -12,6 +12,7 @@ export class LoginComponent implements OnInit {
 
   error = false;
   msg = '';
+  rol:any = '';
 
   formData: FormGroup = this.fb.group({
     user: ['', [Validators.required, Validators.email]],
@@ -39,6 +40,7 @@ export class LoginComponent implements OnInit {
     const { user, password } = this.formData.value;
     this.authService.login(user,password).subscribe({
       next: resp=> {
+        console.log(resp.body)
         if (!resp.body.status) {
           this.error = true;
           this.msg = resp.body.msg;
@@ -46,7 +48,13 @@ export class LoginComponent implements OnInit {
           const horaIngreso = new Date();
           sessionStorage.setItem('user', JSON.stringify(resp.body.data.user));
           sessionStorage.setItem('horaIngreso',horaIngreso.toString());
-          this.router.navigate(['/productor']);
+          this.rol = JSON.parse(sessionStorage.getItem('user')!);
+          if(this.rol.ROL_NAME == 'Productor'){
+            this.router.navigate(['/productor']);
+          }
+          else if(this.rol.ROL_NAME == 'Admin'){
+            this.router.navigate(['/mantenedor']);
+          }
         }
       },
       error: err => {

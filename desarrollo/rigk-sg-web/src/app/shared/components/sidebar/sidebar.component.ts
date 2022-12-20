@@ -12,11 +12,19 @@ import { ProductorService } from '../../../core/services/productor.service';
 export class SidebarComponent implements OnInit {
   @Input() isVisible = true;
 
-  menu = [
+  userData: any | null;
+
+  menuProductor = [
     { title: "Inicio", path: "#/productor/home", icon: "fa-home" },
     { title: "Mi Perfil", path: "#/productor/profile", icon: "fa-user" },
     { title: "Registro de declaración", path: "#/productor/form", icon: "fa-file-text" },
     { title: "Consulta de declaración", path: "#/productor/statements", icon: "fa-search" },
+
+  ];
+
+  menuAdmin = [
+    { title: "Inicio", path: "#/mantenedor/home", icon: "fa-home" },
+    { title: "Empresas", path: "#/mantenedor/business", icon: "fa-file-text" }
 
   ];
 
@@ -25,6 +33,8 @@ export class SidebarComponent implements OnInit {
     private productorService: ProductorService) { }
 
   ngOnInit(): void {
+    
+    this.userData = JSON.parse(sessionStorage.getItem('user')!);
   }
 
   hideSidebar() {
