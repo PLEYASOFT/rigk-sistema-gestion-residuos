@@ -72,14 +72,21 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
       timerProgressBar: true,
       showConfirmButton: false
     });
-    this.getDraftStatement();
-    this.getValueStatementByYear();
     Swal.showLoading();
     this.ratesService.getCLP.subscribe({
       next: r => {
         this.rates = r.data;
+        this.getDraftStatement();
+        this.getValueStatementByYear();
       },
       error: error => {
+        Swal.close();
+        Swal.fire({
+          title: '¡Ups!',
+          icon: 'error',
+          text: 'No se logró obtener el valor de la UF',
+          showConfirmButton: true
+        });
         console.log(error);
       }
     });
@@ -118,18 +125,30 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
             this.router.navigate(['/productor/home']);
           }
           this.id_statement = resp.data.header.ID;
+          sessionStorage.setItem('isEdited', 'true');
           sessionStorage.setItem('id_statement', this.id_statement?.toString() || 'null');
           for (let i = 0; i < resp.data.detail.length; i++) {
             const r = resp.data.detail[i];
             const obj = this.toLowerKeys(r);
-            this.detailForm.push(obj);
+            if (r?.VALUE == 0) continue;
+
             (document.getElementById(`inp_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}_${r?.PRECEDENCE}_${r?.HAZARD}`) as HTMLInputElement).value = r?.VALUE;
             const tmp_weight = (parseFloat((document.getElementById(`actual_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value) || 0) + parseFloat(r?.VALUE);
-            const target = (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value.replace("$","").replace(",","");
-            const tmp_amount:number = (parseFloat(target) || 0) + parseFloat(r?.AMOUNT);
-            
+            let amount = 0;
+            if (r.RECYCLABILITY == 1 && r.TYPE_RESIDUE <= 3) {
+              amount = r?.VALUE * this.rates[r.TYPE_RESIDUE - 1].clp;
+            } else if (r.RECYCLABILITY == 2 && r.TYPE_RESIDUE <= 3) {
+              amount = r?.VALUE * this.rates[3].clp
+            } else {
+              amount = 0;
+            }
+            const target = (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value.replace("$", "").replace(",", "");
+            const tmp_amount: number = (parseFloat(target) || 0) + amount;
+            obj['amount'] = amount;
+            this.detailForm.push(obj);
+
             (document.getElementById(`actual_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = tmp_weight.toString();
-            (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = this.currencyPipe.transform(tmp_amount, '', 'symbol', '1.0-0')||"";
+            (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = this.currencyPipe.transform(tmp_amount, '', 'symbol', '1.0-0') || "";
           }
           sessionStorage.setItem('detailForm', JSON.stringify(this.detailForm));
         }
@@ -198,7 +217,6 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
         amount = 0;
       }
       this.detailForm[index].amount = amount;
-
     } else {
       sum += value;
       if (recyclability == 1 && type_residue <= 3) {
@@ -209,7 +227,6 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
         amount = 0;
       }
       this.detailForm.push({ precedence, hazard, value, type_residue, amount, recyclability });
-
     }
 
     if (recyclability == 1 && type_residue <= 3) {
