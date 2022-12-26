@@ -24,7 +24,8 @@ export class SidebarComponent implements OnInit {
 
   menuAdmin = [
     { title: "Inicio", path: "#/mantenedor/home", icon: "fa-home" },
-    { title: "Empresas", path: "#/mantenedor/business", icon: "fa-file-text" }
+    { title: "Mi Perfil", path: "#/mantenedor/profile", icon: "fa-user" },
+    { title: "Mantener Empresas", path: "#/mantenedor/business", icon: "fa-file-text" }
 
   ];
 
@@ -35,6 +36,7 @@ export class SidebarComponent implements OnInit {
   ngOnInit(): void {
     
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
+    
   }
 
   hideSidebar() {

@@ -1,0 +1,78 @@
+<section class="mi-perfil">
+    <h1>Mi Perfil</h1>
+
+    <div class="box box-mi-perfil mb-5 d-flex align-items-start">
+        <img src="assets/images/foto-usuario-h.png" alt="" class="rounded-circle img-fluid me-4 mb-3 mb-md-0" width="100" height="100">
+        <ul class="list list-data list-data-title-green column-md-2 gap-0 list-unstyled">
+            <li>
+                <span class="list-data__title">Nombre Usuario</span>
+                <span class="list-data__text">{{userData.FIRST_NAME}} {{userData.LAST_NAME}}</span>
+            </li>
+            <li>
+                <span class="list-data__title">Perfil</span>
+                <span class="list-data__text">{{userData.ROL_NAME}}</span>
+            </li>
+            <li>
+                <span class="list-data__title">Institución</span>
+                <span class="list-data__text">{{userData.BUSINESS}}</span>
+            </li>
+            <li>
+                <span class="list-data__title">Fecha/ Hora ingreso</span>
+                <span class="list-data__text">{{horaIngreso | date:'dd/MM/yyyy HH:mm:ss'}}</span>
+            </li>
+        </ul>
+    </div>
+
+    <h2 class="color-verde">Acciones</h2>
+   
+    <ul class="list list-links list-unstyled">
+        <div class="accordion accordion-flush" id="accordionPanelsStayOpenExample">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                
+                <li (click)=" displayModifyPassword()" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne"><a><span>Cambio de contraseña</span> <i class="fa fa-chevron-{{pos}}" aria-hidden="true"></i></a></li>
+    
+              </h2>
+              <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse " aria-labelledby="panelsStayOpen-headingOne">
+                <div class="accordion-body">
+                    <form class="form-recovery"
+          autocomplete="off"
+          [formGroup]="formData">
+        <div class="mb-4">
+        <div class="input-group">
+                <button class="input-group-text input-group-text-left">
+                    <i class="fa fa-lock fa-fw" aria-hidden="true"></i>
+                </button>
+                <input type="password" class="form-control" id="password" formControlName="actual" placeholder="Contraseña actual"/>
+        </div>
+        </div>
+        <div class="mb-4">
+            <div class="input-group">
+                <button class="input-group-text input-group-text-left">
+                    <i class="fa fa-lock fa-fw" aria-hidden="true"></i>
+                </button>
+                <input type="password" class="form-control" id="password" formControlName="password" placeholder="Nueva contraseña"/>
+            </div>
+        </div>
+        <div class="mb-4">
+            <div class="input-group">
+                <button class="input-group-text input-group-text-left">
+                    <i class="fa fa-lock fa-fw" aria-hidden="true"></i>
+                </button>
+                <input type="password" class="form-control" id="repeatPassword" formControlName="repeatPassword" placeholder="Repetir contraseña">
+            </div>
+        </div>
+        <div class="mb-4">
+            <button type="button" (click)="btnrecovery()" class="btn btn-primary btn-fa w-100 "> Enviar <i class="fa fa-long-arrow-right fa-fw" aria-hidden="true"></i></button>
+        </div>
+    </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        <!-- <li><a href="#"><span>Cambio de contraseña</span> <i class="fa fa-chevron-right" aria-hidden="true" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne"></i></a></li> -->
+        <!-- <li><a href="#"><span>Lorem ipsum dolor sit amet</span> <i class="fa fa-chevron-right" aria-hidden="true"></i></a></li>
+        <li><a href="#"><span>Cum sociis natoque</span> <i class="fa fa-chevron-right" aria-hidden="true"></i></a></li> -->
+    </ul>
+    
+</section>
