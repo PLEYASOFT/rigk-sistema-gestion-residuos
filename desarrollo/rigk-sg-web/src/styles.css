@@ -60,6 +60,9 @@
 .bg-red-light {
   background-color: #fae5e2 !important;
 }
+.bg-grey-light {
+  background-color: #E7E7E7 !important;
+}
 
 .text-decoration-none {
   text-decoration: none;
@@ -14836,7 +14839,6 @@ body.shrink #content {
 .box-login {
   margin: 80px 0;
   background-color: rgba(255, 255, 255, 0.25);
-  padding: 60px 40px;
 }
 @media (min-width: 768px) {
   .box-login {

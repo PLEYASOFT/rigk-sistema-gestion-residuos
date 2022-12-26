@@ -7,7 +7,7 @@ import { RatesTsService } from '../../../../core/services/rates.ts.service';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  types = ['EyE reciclables cartón', 'EyE reciclable de metal', 'EyE de plástico', 'EyE no reciclables', 'EyE reutilizables', 'EyE de madera'];
+  types = ['EyE reciclables de papel/cartón', 'EyE reciclables de metal', 'EyE reciclables de plásticos', 'EyE no reciclables'];
   year = new Date().getFullYear();
   rates: any[] = []
   constructor(public ratesService: RatesTsService) { }

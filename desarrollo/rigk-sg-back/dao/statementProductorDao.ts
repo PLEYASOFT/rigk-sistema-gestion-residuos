@@ -1,6 +1,14 @@
 import mysqlcon from '../db';
 
 class statementProductorDao {
+    public async getDeclaretionsByUser(user: string) {
+        const conn = mysqlcon.getConnection();
+
+        const statements = await conn?.execute("SELECT * FROM header_statement_form WHERE CREATED_BY = ?", [user]).then((res) => res[0]).catch(error => { undefined });
+
+        conn?.end();
+        return {statements};
+    }
 
     public async getDeclaretionByYear(business: string, year: string, isDraft: number) {
         let res_header: any;

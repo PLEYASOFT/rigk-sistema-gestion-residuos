@@ -2,6 +2,23 @@ import { Request, Response } from 'express';
 import statementDao from '../dao/statementProductorDao';
 
 class StatementProductorLogic {
+    public async getStatementsByUser(req: Request, res: Response) {
+        const { user } = req.params;
+        try {
+            const { statements } = await statementDao.getDeclaretionsByUser(user);
+            res.status(200).json({
+                status: false,
+                    data: statements,
+                    msg: ""
+            });
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
     public async getStatmentByYear(req: Request, res: Response) {
         const { year, business, draft } = req.params;
         try {
