@@ -1,500 +1,185 @@
+Tabla Resumen Ejercicio {{year_statement}} ( proyectado con datos de POM {{year_statement - 1}})
 <!-- Excel -->
 <div class="d-md-flex justify-content-end">
     <a class="btn" (click)="tableToExcel()" >Exportar Excel <i class="fa fa-file-excel-o fa-fw fa-lg" aria-hidden="true"></i></a>
 </div>
+
+
 <div class="table-responsive mb-4">
     <!-- inicio Consulta de Declaración -->
+    
     <section >
+        
         <div class="row w-100">
+
+            
             <!-- Columna 1 -->
             <div id = "table" #table1 class="w-100">
-                 <div  *ngFor=" let t of tablas; let i = index" class="w-100" style="overflow-x: scroll">
+                
+                 <div  class="w-100" style="overflow-x: scroll">
                     <!-- Tabla Desktop -->
-                    <table class="table table-even table-section table-borderless table-border table-radius d-lg-table w-100">
-                        
+                    <table class="table table-even table-section table-borderless table-align-middle table-border table-radius d-lg-table table-statement">
                         <thead>
-                            <tr class="text-center w-100" >
-                                <th class="text-start">Material</th>
-                                <th colspan="2">Prim. Peligroso</th>
-                                <th colspan="2">Prim. No Peligroso</th>
-                                <th colspan="2">Secundario</th>
-                                <th colspan="2">Terciario</th>
-                                <th colspan="3">Peso total (ton)</th>
-                                <th colspan="3">Monto</th>
+                            <tr>
+                                <th colspan="13" style="margin-bottom: 100px;">Resumen Materiales {{year_statement - 1}} (Ton)</th>
                             </tr>
                         </thead>
-                        <tbody >
-                            <tr class="text-center bg-green-light-2 w-100">
-                                <td class="fw-bold text-start">{{t}}</td>
-                                <td class="color-red" width="7%">{{year_statement - 1}}</td>
-                                <td width="7%">{{year_statement}}</td>
-                                <td class="color-red" width="7%">{{year_statement - 1}}</td>
-                                <td width="7%">{{year_statement}}</td>
-                                <td class="color-red" width="7%">{{year_statement - 1}}</td>
-                                <td width="7%">{{year_statement}}</td>
-                                <td class="color-red" width="7%">{{year_statement - 1}}</td>
-                                <td width="7%">{{year_statement}}</td>
-                                <td class="color-red" width="7%">{{year_statement - 1}}</td>
-                                <td width="7%">{{year_statement}}</td>
-                                <td class="color-red" width="7%">Dif. (%)</td>
-                                <td class="color-red" width="7%">{{year_statement - 1}}</td>
-                                <td width="7%">{{year_statement}}</td>
-                                <td class="color-red" width="7%">Dif. (%)</td>
+                        <p></p>
+                        <thead>
+                            <tr class="text-center w-100" >
+                                <th style="background-color: rgb(157, 221, 191);color: black;">Material</th>
+                                <th style="background-color: rgb(157, 221, 191);color: black;">Reciclables</th>
+                                <th style="background-color: rgb(157, 221, 191);color: black;">No reciclables</th>
+                                <th style="background-color: rgb(157, 221, 191);color: black;">Retornable / Reutilizable</th>
+                                <th style="background-color: rgb(157, 221, 191);color: black;">Total por categoría</th>
+                                <th style="background-color: rgb(157, 221, 191);color: black;">Dif.{{year_statement-2}}/{{year_statement-1}}(%)</th>
+                                <th style="background-color: rgb(157, 221, 191);color: black;">Total Corregido por dif.</th>
                             </tr>
+                        </thead>
+                        
+                        <tbody >
                             <tr class="text-end w-100" *ngFor="let r of residuos; let x = index">
                                 <td class="text-start">{{r}}</td>
-                                <td class="bg-red-light " id ="td_l_{{i+1}}_1_1_{{x+1}}" >0</td>
-                                <td id="td_{{i+1}}_1_1_{{x+1}}">0</td>
-                                <td class="bg-red-light " id ="td_l_{{i+1}}_1_2_{{x+1}}" >0</td>
-                                <td id="td_{{i+1}}_1_2_{{x+1}}">0</td>
-                                <td class="bg-red-light " id = "td_l_{{i+1}}_2_1_{{x+1}}">0</td>
-                                <td id="td_{{i+1}}_2_1_{{x+1}}">0</td>
-                                <td class="bg-red-light " id = "td_l_{{i+1}}_3_1_{{x+1}}">0</td>
-                                <td id="td_{{i+1}}_3_1_{{x+1}}">0</td>
-                                <td id= "l_weight_{{i+1}}_{{x+1}}" class="bg-red-light">0</td>
-                                <td id="actual_weight_{{i+1}}_{{x+1}}">0</td>
-                                <td id="diff_weight_{{i+1}}_{{x+1}}" class="bg-gray color-green ">0%</td>
-                                <td id= "l_amount_{{i+1}}_{{x+1}}" class="bg-red-light">$0</td>
-                                <td id="actual_amount_{{i+1}}_{{x+1}}">$0</td>
-                                <td id="diff_amount_{{i+1}}_{{x+1}}" class="bg-gray color-green ">0%</td>
+                                <td id="actual_weight_1_{{x+1}}">0</td>
+                                <td id="actual_weight_2_{{x+1}}">0</td>
+                                <td id="actual_weight_3_{{x+1}}">0</td>
+                                <td style="background-color: rgb(217, 217, 217);" id="total_category_weight_{{x}}">0</td>
+                                <td id="diff_category_{{x}}">0</td>
+                                <td style="background-color: rgb(217, 217, 217);" id="diff_corregido_weight_{{x}}">$0</td>
                             </tr>
                         </tbody>
+                        
                         <tfoot>
                             <tr class="text-end w-100">
-                                <td class="text-start" colspan="9">Total (Peso / Monto)</td>
-                                <td id ="td_l_{{i+1}}">0</td>
-                                <td id ="td_{{i+1}}">0</td>
-                                <td id ="td_diff_weight_{{i+1}}">0</td>
-                                <td id ="td_l_amount_{{i+1}}">$0</td>
-                                <td id ="td_amount_{{i+1}}">$0</td>
-                                <td id ="td_diff_amount_{{i+1}}">0</td>
+                                <td style="background-color: rgb(157, 221, 191);color: black;" class="text-start" colspan="4">Total (Peso)</td>
+                                <td style="background-color: rgb(157, 221, 191);color: black;" id ="total_ton">0</td>
+                                <td style="background-color: rgb(157, 221, 191);color: black;" id ="diff_ton">0</td>
+                                <td style="background-color: rgb(157, 221, 191);color: black;" id ="total_diff_corregido_weight">0</td>
                             </tr>
                         </tfoot>        
                     </table>
                 </div>
             </div>
-            <!-- Tabla Mobile -->
-            <!-- <div class="mb-4 mb-lg-0">
-                
-                <table class="table table-even table-section table-borderless table-align-middle table-border table-radius d-lg-none mb-0">
-                    <thead>
-                        <tr>
-                            <th>Material</th>
-                            <th colspan="2" class="text-center">Prim. Peligroso</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="bg-green-light-2 text-center">
-                            <td width="50%" class="text-start fw-bold">Reciclable</td>
-                            <td width="25%" class="color-red">{{year_statement - 1}}</td>
-                            <td width="25%">{{year_statement}}</td>
-                        </tr>
-                        <tr class="text-end">
-                            <td class="text-start">Papel cartón</td>
-                            <td class="bg-red-light"></td>
-                            <td></td>
-                        </tr>
-                        <tr class="text-end">
-                            <td class="text-start">Metal</td>
-                            <td class="bg-red-light"></td>
-                            <td></td>
-                        </tr>
-                        <tr class="text-end">
-                            <td class="text-start">Plástico</td>
-                            <td class="bg-red-light"></td>
-                            <td></td>
-                        </tr>
-                        <tr class="bg-green-light-2 text-center">
-                            <td class="text-start fw-bold">Reciclable</td>
-                            <td class="color-red">{{year_statement - 1}}</td>
-                            <td>{{year_statement}}</td>
-                        </tr>
-                        <tr class="text-end">
-                            <td class="text-start">Plástico</td>
-                            <td class="bg-red-light"></td>
-                            <td></td>
-                            <tr class="text-end">
-                        <td class="text-start">Madera</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-gray color-green">+9,89%</td>
-                    </tr>
-
-                    <tr class="text-end">
-                        <td class="text-start">Otro/Env.Compuesto</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-gray color-green">+9,89%</td>
-                    </tr>
-                    </tbody>
-                    <tfoot>
-                        <td colspan="3"></td>
-                    </tfoot>
-                </table>
-                
-                <table class="table table-even table-section table-borderless table-align-middle table-border d-lg-none mb-0">
-                    <thead>
-                        <tr class="text-end">
-                        <td class="text-start">Madera</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-gray color-green">+9,89%</td>
-                    </tr>
-                    <tr class="text-end">
-                        <td class="text-start">Otro/Env.Compuesto</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-gray color-green">+9,89%</td>
-                    </tr>
-                        <tr>
-
-                            <th>Material</th>
-                            <th colspan="2" class="text-center">Prim. No Peligroso</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="bg-green-light-2 text-center">
-                            <td width="50%" class="text-start fw-bold">Reciclable</td>
-                            <td width="25%" class="color-red">{{year_statement - 1}}</td>
-                            <td width="25%">{{year_statement}}</td>
-                        </tr>
-                        <tr class="text-end">
-                            <td class="text-start">Papel cartón</td>
-                            <td class="bg-red-light">2,543</td>
-                            <td>2,600</td>
-                        </tr>
-                        <tr class="text-end">
-                            <td class="text-start">Metal</td>
-                            <td class="bg-red-light"></td>
-                            <td></td>
-                        </tr>
-                        <tr class="text-end">
-                            <td class="text-start">Plástico</td>
-                            <td class="bg-red-light">0,364</td>
-                            <td>0,400</td>
-                        </tr>
-                        <tr class="bg-green-light-2 text-center">
-                            <td class="text-start fw-bold">Reciclable</td>
-                            <td class="color-red">{{year_statement - 1}}</td>
-                            <td>{{year_statement}}</td>
-                        </tr>
-                        <tr class="text-end">
-                            <td class="text-start">Plástico</td>
-                            <td class="bg-red-light"></td>
-                            <td></td>
-                            <tr class="text-end">
-                        <td class="text-start">Madera</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-gray color-green">+9,89%</td>
-                    </tr>
-
-                    <tr class="text-end">
-                        <td class="text-start">Otro/Env.Compuesto</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-gray color-green">+9,89%</td>
-                    </tr>
-                    </tbody>
-                    <tfoot>
-                        <td colspan="3"></td>
-                    </tfoot>
-                </table>
-                
-                <table class="table table-even table-section table-borderless table-align-middle table-border d-lg-none mb-0">
-                    <thead>
-                        <tr class="text-end">
-                        <td class="text-start">Madera</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-gray color-green">+9,89%</td>
-                    </tr>
-                    <tr class="text-end">
-                        <td class="text-start">Otro/Env.Compuesto</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-gray color-green">+9,89%</td>
-                    </tr>
-                        <tr>
-
-                            <th>Material</th>
-                            <th colspan="2" class="text-center">Secundario</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="bg-green-light-2 text-center">
-                            <td width="50%" class="text-start fw-bold">Reciclable</td>
-                            <td width="25%" class="color-red">{{year_statement - 1}}</td>
-                            <td width="25%">{{year_statement}}</td>
-                        </tr>
-                        <tr class="text-end">
-                            <td class="text-start">Papel cartón</td>
-                            <td class="bg-red-light"></td>
-                            <td></td>
-                        </tr>
-                        <tr class="text-end">
-                            <td class="text-start">Metal</td>
-                            <td class="bg-red-light">0,145</td>
-                            <td>0,150</td>
-                        </tr>
-                        <tr class="text-end">
-                            <td class="text-start">Plástico</td>
-                            <td class="bg-red-light"></td>
-                            <td></td>
-                        </tr>
-                        <tr class="bg-green-light-2 text-center">
-                            <td class="text-start fw-bold">Reciclable</td>
-                            <td class="color-red">{{year_statement - 1}}</td>
-                            <td>{{year_statement}}</td>
-                        </tr>
-                        <tr class="text-end">
-                            <td class="text-start">Plástico</td>
-                            <td class="bg-red-light">2,175</td>
-                            <td>2,250</td>
-                            <tr class="text-end">
-                        <td class="text-start">Madera</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-gray color-green">+9,89%</td>
-                    </tr>
-
-                    <tr class="text-end">
-                        <td class="text-start">Otro/Env.Compuesto</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-gray color-green">+9,89%</td>
-                    </tr>
-                    </tbody>
-                    <tfoot>
-                        <td colspan="3"></td>
-                    </tfoot>
-                </table>
-                
-                <table class="table table-even table-section table-borderless table-align-middle table-border d-lg-none mb-0">
-                    <thead>
-                        <tr class="text-end">
-                        <td class="text-start">Madera</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-gray color-green">+9,89%</td>
-                    </tr>
-                    <tr class="text-end">
-                        <td class="text-start">Otro/Env.Compuesto</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-gray color-green">+9,89%</td>
-                    </tr>
-                        <tr>
-
-                            <th colspan="4">Peso total (ton)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="bg-green-light-2 text-center">
-                            <td class="text-start fw-bold">Reciclable</td>
-                            <td class="color-red">{{year_statement - 1}}</td>
-                            <td>{{year_statement}}</td>
-                            <td class="color-red">Dif. (%)</td>
-                        </tr>
-                        <tr class="text-end">
-                            <td class="text-start">Papel cartón</td>
-                            <td class="bg-red-light">2,543</td>
-                            <td>2,600</td>
-                            <td class="bg-gray color-green">+2,24%</td>
-                        </tr>
-                        <tr class="text-end">
-                            <td class="text-start">Metal</td>
-                            <td class="bg-red-light">0,145</td>
-                            <td>0,150</td>
-                            <td class="bg-gray color-green">+3,45%</td>
-                        </tr>
-                        <tr class="text-end">
-                            <td class="text-start">Plástico</td>
-                            <td class="bg-red-light">0,364</td>
-                            <td>0,400</td>
-                            <td class="bg-gray color-green">+9,89%</td>
-                        </tr>
-                        <tr class="bg-green-light-2 text-center">
-                            <td class="text-start fw-bold">Reciclable</td>
-                            <td class="color-red">{{year_statement - 1}}</td>
-                            <td>{{year_statement}}</td>
-                            <td class="color-red">Dif. (%)</td>
-                        </tr>
-                        <tr class="text-end">
-                            <td class="text-start">Plástico
-                                <tr class="text-end">
-                        <td class="text-start">Madera</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-gray color-green">+9,89%</td>
-                    </tr>
-
-                    <tr class="text-end">
-                        <td class="text-start">Otro/Env.Compuesto</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-gray color-green">+9,89%</td>
-                    </tr>
-                            </td>
-                            <td class="bg-red-light">2,175</td>
-                            <td>2,250</td>
-                            <td class="bg-gray color-green">+3,45%</td>
-                        </tr>
-                    </tbody>
-                    <tfoot class="text-end">
-                        <td class="text-start">Total (ton)</td>
-                        <td>5,227</td>
-                        <td>5,400</td>
-                        <td>+3,31%</td>
-                        <tr class="text-end">
-                        <td class="text-start">Madera</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-gray color-green">+9,89%</td>
-                    </tr>
-                    <tr class="text-end">
-                        <td class="text-start">Otro/Env.Compuesto</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light"></td>
-                        <td></td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-red-light">0,364</td>
-                        <td>0,400</td>
-                        <td class="bg-gray color-green">+9,89%</td>
-                    </tr>
-                    </tfoot>
-                </table>
-
-            </div>-->
-            <!-- Fin Tabla Mobile -->
         </div>
-        <!--<div style="visibility: hidden">
-            <p>Se pueden visualizar los datos resumen que fueron ingresados anteriormente en la declaración, además existe la posibilidad de visualizar el resumen en formato .xlsx dando click en "Exportar Excel". Si todo está bien, puede continuar con la declaración presionando "Siguiente".   </p>
-        </div> -->
+
+        <p></p>
+        <tr>
+            <td colspan="13">
+            <i class="fa fa-info-circle fa-fw fa-lg color-green" aria-hidden="true">
+
+            </i> Los datos ingresados corresponden al total de materiales por categoría puestos en el mercado el año anterior al del ejercicio, es decir, datos del {{year_statement - 1}} como proyección del {{year_statement}}.
+            <br><br>En el primer año de ejercicio (2023) no hay corrección de lo proyectado vs datos reales debido a que no existen datos históricos</td>
+        </tr>
+        <p></p>
+
+        <div class="row w-100">
+
+            
+            <!-- Columna 1 -->
+            <div id = "table" #table1 class="w-100">
+                
+                 <div  class="w-100" style="overflow-x: scroll">
+                    <!-- Tabla Desktop -->
+                    <table class="table table-even table-section table-borderless table-align-middle table-border table-radius d-lg-table table-statement">
+                        <thead>
+                            <tr>
+                                <th colspan="13" style="margin-bottom: 100px;">Resumen de costos (UF) {{year_statement}}</th>
+                            </tr>
+                        </thead>
+                        <p></p>
+                        <thead>
+                            <tr class="text-center w-100" >
+                                <th style="background-color: rgb(157, 221, 191);color: black;" >Material</th>
+                                <th style="background-color: rgb(157, 221, 191);color: black;">Reciclables</th>
+                                <th style="background-color: rgb(157, 221, 191);color: black;">No reciclables</th>
+                                <th style="background-color: rgb(157, 221, 191);color: black;">Retornable / Reutilizable</th>
+                                <th style="background-color: rgb(157, 221, 191);color: black;">Total por categoría UF</th>
+                                <th style="background-color: rgb(157, 221, 191);color: black;">Total corregido UF</th>
+                                <th style="background-color: rgb(157, 221, 191);color: black;">Total Bruto (CLP$) + IVA</th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody >
+                            <tr class="text-end w-100" *ngFor="let r of residuos; let x = index">
+                                <td class="text-start">{{r}}</td>
+                                <td id="actual_amount_1_{{x+1}}">0</td>
+                                <td id="actual_amount_2_{{x+1}}">0</td>
+                                <td id="actual_amount_3_{{x+1}}">0</td>
+                                <td style="background-color: rgb(217, 217, 217);" id="total_category_amount_{{x}}">0</td>
+                                <td id="diff_corregido_amount_{{x}}">0</td>
+                                <td style="background-color: rgb(217, 217, 217);" id ="uf_clp_{{x}}" >$0</td>
+                            </tr>
+                        </tbody>
+                        
+                        <tfoot>
+                            <tr class="text-end w-100">
+                                <td style="background-color: rgb(157, 221, 191);color: black;"class="text-start" colspan="4">Total (UF)</td>
+                                <td style="background-color: rgb(157, 221, 191);color: black;"id ="total_amount">0</td>
+                                <td style="background-color: rgb(157, 221, 191);color: black;"id ="total_diff_corregido_amount">0</td>
+                                <td style="background-color: rgb(157, 221, 191);color: black;"id ="total_uf_clp">0</td>
+                            </tr>
+                        </tfoot>        
+                    </table>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        La factura se enviará con el valor de la UF al momento de enviar enviar la declaración.
+        <p></p>
+
+        
+
+
+        <div id="mi-tabla" style="overflow-x: scroll;">
+            <!-- Tabla Desktop -->
+            <table class="table table-even table-section table-borderless table-align-middle table-border table-radius d-lg-table table-statement">
+                <thead>
+                    <tr>
+                        <th colspan="2">POM declarado {{year_statement}} (Ton)</th>
+                    </tr>
+                </thead>
+                <p></p>
+                <thead>
+                    <tr class="text-center w-100" >
+                        <th style="background-color: rgb(157, 221, 191);color: black;">Material</th>
+                        <th style="background-color: rgb(157, 221, 191);color: black;">POM     </th>
+                    </tr>
+                </thead>
+                
+                <tbody >
+                        <td class="text-start">POM Total</td>
+                        <td style="text-align: center;" id ="pom_total">0</td>
+                </tbody>        
+            </table>
+        </div>
+        
+        <p></p>
+        <p></p>
+        <div id="mi-tabla" style="overflow-x: scroll;">
+            <!-- Tabla Desktop -->
+            <table class="table table-even table-section table-borderless table-align-middle table-border table-radius d-lg-table table-statement">
+                <thead>
+                    <tr>
+                        <th colspan="2">Costo total {{year_statement}} (UF)</th>
+                    </tr>
+                </thead>
+                <p></p>
+                <thead>
+                    <tr class="text-center w-100" >
+                        <th style="background-color: rgb(157, 221, 191);color: black;">Material</th>
+                        <th style="background-color: rgb(157, 221, 191);color: black;">Total UF</th>
+                    </tr>
+                </thead>
+                
+                <tbody >
+                        <td class="text-start">Costo Total</td>
+                        <td style="text-align: center;" id ="amount_total">0</td>
+                </tbody>       
+            </table>
+        </div>
     </section>
+
+    
     <!-- fin Consulta de Declaración -->
 </div>
+

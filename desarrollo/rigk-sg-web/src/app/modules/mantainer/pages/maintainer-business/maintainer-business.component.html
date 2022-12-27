@@ -1,0 +1,53 @@
+
+<div class="table-responsive mb-4">
+    <!-- inicio Consulta de Declaración -->
+    <section >
+        <div class="row w-100">
+            <!-- Columna 1 -->
+            <div id = "table" #table1 class="w-100">
+                 <div  *ngFor=" let t of tablas; let i = index" class="w-100" style="overflow-x: scroll">
+                    <!-- Tabla Desktop -->
+                    <table class="table table-even table-section table-borderless table-border table-radius d-lg-table w-100">
+                        
+                        <thead>
+                            <tr class="text-center w-100" >
+                                <th >ID</th>
+                                <th >NOMBRE</th>
+                                <th >RUT</th>
+                                <th >DIRECCIÓN</th>
+                                <th >TELÉFONO</th>
+                                <th >E-MAIL</th>
+                                <th >NOMBRE ACCOUNT MANAGER</th>
+                                <th >APELLIDO ACCOUNT MANAGER</th>
+                                <th >NOMBRE CONTACTO FACTURACIÓN</th>
+                                <th >EMAIL CONTACTO FACTURACIÓN</th>
+                                <th >TELÉFONO CONTACTO FACTURACIÓN</th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <tr class="text-end w-100" *ngFor="let r of residuos; let x = index">
+                                <td class="text-start">{{r}}</td>
+                                <td >0</td>
+                                <td >0</td>
+                                <td >0</td>
+                                <td >0</td>
+                                <td >0</td>
+                                <td >$0</td>
+                                <td >0</td>
+                                <td >0</td>
+                                <td >0</td>
+                                <td >$0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="btn btn-primary red-button" >Eliminar</button>
+                    <button class="btn btn-primary" >Modificar</button>
+                </div>
+            </div>
+        </div>
+        <!--<div style="visibility: hidden">
+            <p>Se pueden visualizar los datos resumen que fueron ingresados anteriormente en la declaración, además existe la posibilidad de visualizar el resumen en formato .xlsx dando click en "Exportar Excel". Si todo está bien, puede continuar con la declaración presionando "Siguiente".   </p>
+        </div> -->
+    </section>
+    <!-- fin Consulta de Declaración -->
+</div>
