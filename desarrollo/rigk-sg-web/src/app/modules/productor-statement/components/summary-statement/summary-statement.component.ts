@@ -26,7 +26,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     'Otro/Env. Compuesto'
   ];
   /**
-   * END BORRAr
+   * END BORRAR
    */
 
   isSubmited = false;
