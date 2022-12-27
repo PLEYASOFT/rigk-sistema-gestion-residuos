@@ -40,6 +40,22 @@ class RatesLogic {
             });
         }
     }
+
+    public async getUfDay(req: Request, res: Response) {
+        const now = new Date();
+        const date = now.toISOString().split("T")[0];
+        try {
+            const uf = await ratesDao.getUF(date);
+            res.json({status:true,data:uf});
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+
+    }
 }
 
 const ratesLogic = new RatesLogic();

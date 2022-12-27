@@ -13,6 +13,11 @@ const routes: Routes = [
     loadChildren: () => import('./modules/productor-statement/productor-statement.module').then(m=>m.ProductorStatementModule),
   },
   {
+    path: 'mantenedor',
+    //canActivate: [AuthGuard],
+    loadChildren: () => import('./modules/mantainer/mantainer.module').then(m=>m.MantainerModule)
+  },
+  {
     path: '**',
     redirectTo: 'auth',
     pathMatch: 'full'

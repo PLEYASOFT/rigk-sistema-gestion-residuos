@@ -1,0 +1,13 @@
+.list-process__dot {
+    cursor: pointer;
+}
+
+:host
+{
+    width: 100% !important;
+    padding: 1%;
+}
+
+.red-button {
+    background-color: red;
+  }

@@ -15,4 +15,7 @@ export class RatesTsService {
   get getCLP() {
     return this.http.get<any>(`${this.url}/clp`);
   }
+  get getUF() {
+    return this.http.get<any>(`${this.url}/uf`);
+  }
 }
