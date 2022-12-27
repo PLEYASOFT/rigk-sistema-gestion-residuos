@@ -5,16 +5,13 @@ Tabla Resumen Ejercicio {{year_statement}} ( proyectado con datos de POM {{year_
 </div>
 
 
-<div class="table-responsive mb-4">
+<div #table1 class="table-responsive mb-4">
     <!-- inicio Consulta de Declaración -->
     
     <section >
-        
         <div class="row w-100">
-
-            
             <!-- Columna 1 -->
-            <div id = "table" #table1 class="w-100">
+            <div  class="w-100">
                 
                  <div  class="w-100" style="overflow-x: scroll">
                     <!-- Tabla Desktop -->
@@ -48,7 +45,6 @@ Tabla Resumen Ejercicio {{year_statement}} ( proyectado con datos de POM {{year_
                                 <td style="background-color: rgb(217, 217, 217);" id="diff_corregido_weight_{{x}}">$0</td>
                             </tr>
                         </tbody>
-                        
                         <tfoot>
                             <tr class="text-end w-100">
                                 <td style="background-color: rgb(157, 221, 191);color: black;" class="text-start" colspan="4">Total (Peso)</td>
@@ -61,23 +57,17 @@ Tabla Resumen Ejercicio {{year_statement}} ( proyectado con datos de POM {{year_
                 </div>
             </div>
         </div>
-
         <p></p>
         <tr>
             <td colspan="13">
             <i class="fa fa-info-circle fa-fw fa-lg color-green" aria-hidden="true">
-
             </i> Los datos ingresados corresponden al total de materiales por categoría puestos en el mercado el año anterior al del ejercicio, es decir, datos del {{year_statement - 1}} como proyección del {{year_statement}}.
             <br><br>En el primer año de ejercicio (2023) no hay corrección de lo proyectado vs datos reales debido a que no existen datos históricos</td>
         </tr>
         <p></p>
-
         <div class="row w-100">
-
-            
             <!-- Columna 1 -->
             <div id = "table" #table1 class="w-100">
-                
                  <div  class="w-100" style="overflow-x: scroll">
                     <!-- Tabla Desktop -->
                     <table class="table table-even table-section table-borderless table-align-middle table-border table-radius d-lg-table table-statement">
@@ -98,7 +88,6 @@ Tabla Resumen Ejercicio {{year_statement}} ( proyectado con datos de POM {{year_
                                 <th style="background-color: rgb(157, 221, 191);color: black;">Total Bruto (CLP$) + IVA</th>
                             </tr>
                         </thead>
-                        
                         <tbody >
                             <tr class="text-end w-100" *ngFor="let r of residuos; let x = index">
                                 <td class="text-start">{{r}}</td>
@@ -110,7 +99,6 @@ Tabla Resumen Ejercicio {{year_statement}} ( proyectado con datos de POM {{year_
                                 <td style="background-color: rgb(217, 217, 217);" id ="uf_clp_{{x}}" >$0</td>
                             </tr>
                         </tbody>
-                        
                         <tfoot>
                             <tr class="text-end w-100">
                                 <td style="background-color: rgb(157, 221, 191);color: black;"class="text-start" colspan="4">Total (UF)</td>
@@ -126,9 +114,6 @@ Tabla Resumen Ejercicio {{year_statement}} ( proyectado con datos de POM {{year_
         <p></p>
         La factura se enviará con el valor de la UF al momento de enviar enviar la declaración.
         <p></p>
-
-        
-
 
         <div id="mi-tabla" style="overflow-x: scroll;">
             <!-- Tabla Desktop -->
@@ -147,8 +132,10 @@ Tabla Resumen Ejercicio {{year_statement}} ( proyectado con datos de POM {{year_
                 </thead>
                 
                 <tbody >
+                    <tr class="text-center w-100">
                         <td class="text-start">POM Total</td>
-                        <td style="text-align: center;" id ="pom_total">0</td>
+                        <td id ="pom_total">0</td>
+                    </tr>
                 </tbody>        
             </table>
         </div>
@@ -172,8 +159,10 @@ Tabla Resumen Ejercicio {{year_statement}} ( proyectado con datos de POM {{year_
                 </thead>
                 
                 <tbody >
+                    <tr class="text-center w-100">
                         <td class="text-start">Costo Total</td>
-                        <td style="text-align: center;" id ="amount_total">0</td>
+                        <td id ="amount_total">0</td>
+                    </tr>
                 </tbody>       
             </table>
         </div>

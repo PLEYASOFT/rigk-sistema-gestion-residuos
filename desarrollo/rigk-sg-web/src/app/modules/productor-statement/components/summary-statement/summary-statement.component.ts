@@ -85,14 +85,12 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     
     this.generateForm();
+    console.log(this.last_weight, this.actual_weight)
     this.generateDiff();
   }
 
   ngOnInit(): void {
-    this.ratesService.getUF.subscribe(result => {
-      console.log(result)
-      console.log(result.data);
-    });
+    
   }
 
   generateForm(){
@@ -261,9 +259,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       (document.getElementById(`diff_corregido_weight_${i}`) as HTMLElement).innerHTML = ((parseFloat((document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML) + 
                                                                                         (parseFloat((document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML) *
                                                                                         (dif[i]))).toFixed(2)).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      this.total_diff_corregido= this.total_diff_corregido + (parseFloat((document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML) + 
-                                                              (parseFloat((document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML) *
-                                                              (dif[i])));
+      this.total_diff_corregido= this.total_diff_corregido + parseFloat((document.getElementById(`diff_corregido_weight_${i}`) as HTMLElement).innerHTML.replace(/[,]/g,'.').replace(/\B(?=(\d{3})+(?!\d))/g, ""));
       (document.getElementById(`total_diff_corregido_weight`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       (document.getElementById(`pom_total`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
@@ -275,9 +271,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       (document.getElementById(`diff_corregido_amount_${i}`) as HTMLElement).innerHTML = ((parseFloat((document.getElementById(`total_category_amount_${i}`) as HTMLElement).innerHTML) + 
                                                                                         (parseFloat((document.getElementById(`total_category_amount_${i}`) as HTMLElement).innerHTML) *
                                                                                         (dif[i]))).toFixed(2)).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      this.total_diff_corregido= this.total_diff_corregido + (parseFloat((document.getElementById(`total_category_amount_${i}`) as HTMLElement).innerHTML) + 
-                                                                                        (parseFloat((document.getElementById(`total_category_amount_${i}`) as HTMLElement).innerHTML) *
-                                                                                        (dif[i])));
+      this.total_diff_corregido= this.total_diff_corregido + parseFloat((document.getElementById(`diff_corregido_amount_${i}`) as HTMLElement).innerHTML.replace(/[,]/g,'.').replace(/\B(?=(\d{3})+(?!\d))/g, ""));
       (document.getElementById(`total_diff_corregido_amount`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       (document.getElementById(`amount_total`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
@@ -286,17 +280,15 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     this.total_diff_corregido = 0;
     this.ratesService.getUF.subscribe(uf => {
 
-
       for(let i = 0; i<5;i++){
         let uf_corregido = parseFloat((document.getElementById(`diff_corregido_amount_${i}`) as HTMLElement).innerHTML.replace(/[,]/g,'.'));
         (document.getElementById(`uf_clp_${i}`) as HTMLElement).innerHTML = (uf_corregido * uf.data * 1.19).toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        this.total_diff_corregido= this.total_diff_corregido + (uf_corregido * uf.data * 1.19);
+        this.total_diff_corregido= this.total_diff_corregido + parseFloat((uf_corregido * uf.data * 1.19).toFixed(2));
         (document.getElementById(`total_uf_clp`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       }
 
     });
     
-
     //Corrección datos
 
     for(let i = 0; i<5;i++){
