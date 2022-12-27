@@ -4,6 +4,7 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductorService } from 'src/app/core/services/productor.service';
 import * as XLSX from 'xlsx';
+import { RatesTsService } from '../../../../core/services/rates.ts.service';
 
 @Component({
   selector: 'app-summary-statement',
@@ -54,7 +55,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   actual_amount = 0;
   last_amount = 0;
   total_diff_corregido = 0;
-
+  uf = 0;
 
    tonSum1 = Array.from({length: 5}, () => 0);
    tonSum2 = Array.from({length: 5}, () => 0);
@@ -75,7 +76,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     public productorService: ProductorService,
     private router: Router,
     private actived: ActivatedRoute,
-    private currencyPipe: CurrencyPipe) {
+    public ratesService: RatesTsService) {
     this.actived.queryParams.subscribe(r => {
       this.id_business = r['id_business'];
       this.year_statement = r['year'];
@@ -88,7 +89,10 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    
+    this.ratesService.getUF.subscribe(result => {
+      console.log(result)
+      console.log(result.data);
+    });
   }
 
   generateForm(){
@@ -277,6 +281,21 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       (document.getElementById(`total_diff_corregido_amount`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       (document.getElementById(`amount_total`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
+
+    //Valor corregido UF a CLP
+    this.total_diff_corregido = 0;
+    this.ratesService.getUF.subscribe(uf => {
+
+
+      for(let i = 0; i<5;i++){
+        let uf_corregido = parseFloat((document.getElementById(`diff_corregido_amount_${i}`) as HTMLElement).innerHTML.replace(/[,]/g,'.'));
+        (document.getElementById(`uf_clp_${i}`) as HTMLElement).innerHTML = (uf_corregido * uf.data * 1.19).toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        this.total_diff_corregido= this.total_diff_corregido + (uf_corregido * uf.data * 1.19);
+        (document.getElementById(`total_uf_clp`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      }
+
+    });
+    
 
     //Corrección datos
 
