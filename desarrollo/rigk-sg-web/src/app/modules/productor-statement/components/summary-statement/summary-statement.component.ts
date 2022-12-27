@@ -108,15 +108,15 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
 
         
         if (Number.isInteger(this.tonSum1[r?.type_residue-1])) {
-          result = this.tonSum1[r?.type_residue-1].toString();  // result = "10"
+          result = this.tonSum1[r?.type_residue-1].toString();  
         } else {
-          result = this.tonSum1[r?.type_residue-1].toFixed(2);  // result = "10.57"
+          result = this.tonSum1[r?.type_residue-1].toFixed(2);  
         }
 
         if (Number.isInteger(this.costoSum1[r?.type_residue-1])) {
-          resultAmount = this.costoSum1[r?.type_residue-1].toString();  // result = "10"
+          resultAmount = this.costoSum1[r?.type_residue-1].toString();  
         } else {
-          resultAmount = this.costoSum1[r?.type_residue-1].toFixed(2);  // result = "10.57"
+          resultAmount = this.costoSum1[r?.type_residue-1].toFixed(2);  
         }
 
           (document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -131,15 +131,15 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         this.actual_amount = this.actual_amount +  parseFloat(r?.amount);
 
         if (Number.isInteger(this.tonSum2[r?.type_residue-1])) {
-          result = this.tonSum2[r?.type_residue-1].toString();  // result = "10"
+          result = this.tonSum2[r?.type_residue-1].toString();  
         } else {
-          result = this.tonSum2[r?.type_residue-1].toFixed(2);  // result = "10.57"
+          result = this.tonSum2[r?.type_residue-1].toFixed(2);  
         }
 
         if (Number.isInteger(this.costoSum2[r?.type_residue-1])) {
-          resultAmount = this.costoSum2[r?.type_residue-1].toString();  // result = "10"
+          resultAmount = this.costoSum2[r?.type_residue-1].toString();  
         } else {
-          resultAmount = this.costoSum2[r?.type_residue-1].toFixed(2);  // result = "10.57"
+          resultAmount = this.costoSum2[r?.type_residue-1].toFixed(2);  
         }
           (document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
           (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = resultAmount.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -152,15 +152,15 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         this.actual_weight = this.actual_weight +  parseFloat(r?.value);
         this.actual_amount = this.actual_amount +  parseFloat(r?.amount);
         if (Number.isInteger(this.tonSum3[r?.type_residue-1])) {
-          result = this.tonSum3[r?.type_residue-1].toString();  // result = "10"
+          result = this.tonSum3[r?.type_residue-1].toString();  
         } else {
-          result = this.tonSum3[r?.type_residue-1].toFixed(2);  // result = "10.57"
+          result = this.tonSum3[r?.type_residue-1].toFixed(2);  
         }
 
         if (Number.isInteger(this.costoSum3[r?.type_residue-1])) {
-          resultAmount = this.costoSum3[r?.type_residue-1].toString();  // result = "10"
+          resultAmount = this.costoSum3[r?.type_residue-1].toString();  
         } else {
-          resultAmount = this.costoSum3[r?.type_residue-1].toFixed(2);  // result = "10.57"
+          resultAmount = this.costoSum3[r?.type_residue-1].toFixed(2);  
         }
           (document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
           (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = resultAmount.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -170,15 +170,15 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
 
     for(let i = 0; i<5;i++){
       if (Number.isInteger((this.tonSum1[i] +this.tonSum2[i]+this.tonSum3[i]))) {
-        result = (this.tonSum1[i] +this.tonSum2[i]+this.tonSum3[i]).toString();  // result = "10"
+        result = (this.tonSum1[i] +this.tonSum2[i]+this.tonSum3[i]).toString();  
       } else {
-        result = (this.tonSum1[i] +this.tonSum2[i]+this.tonSum3[i]).toFixed(2);  // result = "10.57"
+        result = (this.tonSum1[i] +this.tonSum2[i]+this.tonSum3[i]).toFixed(2);  
       }
 
       if (Number.isInteger((this.costoSum1[i] +this.costoSum2[i]+this.costoSum3[i]))) {
-        resultAmount = (this.costoSum1[i] +this.costoSum2[i]+this.costoSum3[i]).toString();  // result = "10"
+        resultAmount = (this.costoSum1[i] +this.costoSum2[i]+this.costoSum3[i]).toString();  
       } else {
-        resultAmount = (this.costoSum1[i] +this.costoSum2[i]+this.costoSum3[i]).toFixed(2);  // result = "10.57"
+        resultAmount = (this.costoSum1[i] +this.costoSum2[i]+this.costoSum3[i]).toFixed(2);  
       }
 
       (document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML = result;
@@ -187,15 +187,15 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     }
 
     if (Number.isInteger(this.actual_weight)) {
-      result = this.actual_weight.toString();  // result = "10"
+      result = this.actual_weight.toString();  
     } else {
-      result = this.actual_weight.toFixed(2);  // result = "10.57"
+      result = this.actual_weight.toFixed(2);  
     }
 
     if (Number.isInteger(this.actual_amount)) {
-      resultAmount = this.actual_amount.toString();  // result = "10"
+      resultAmount = this.actual_amount.toString();  
     } else {
-      resultAmount = this.actual_amount.toFixed(2);  // result = "10.57"
+      resultAmount = this.actual_amount.toFixed(2);  
     }
     (document.getElementById(`total_ton`) as HTMLElement).innerHTML = result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, "."); 
     (document.getElementById(`total_amount`) as HTMLElement).innerHTML = resultAmount.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -261,7 +261,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
                                                               (parseFloat((document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML) *
                                                               (dif[i])));
       (document.getElementById(`total_diff_corregido_weight`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      
+      (document.getElementById(`pom_total`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
     
 
@@ -275,6 +275,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
                                                                                         (parseFloat((document.getElementById(`total_category_amount_${i}`) as HTMLElement).innerHTML) *
                                                                                         (dif[i])));
       (document.getElementById(`total_diff_corregido_amount`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      (document.getElementById(`amount_total`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
     //Corrección datos

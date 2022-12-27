@@ -147,10 +147,8 @@ Tabla Resumen Ejercicio {{year_statement}} ( proyectado con datos de POM {{year_
                 </thead>
                 
                 <tbody >
-                    <tr class="text-end w-100" *ngFor="let r of residuos; let x = index">
-                        <td class="text-start">{{r}}</td>
-                        <td id="actual_amount_1_{{x+1}}">0</td>
-                    </tr>
+                        <td class="text-start">POM Total</td>
+                        <td id ="pom_total">0</td>
                 </tbody>        
             </table>
         </div>
@@ -174,10 +172,8 @@ Tabla Resumen Ejercicio {{year_statement}} ( proyectado con datos de POM {{year_
                 </thead>
                 
                 <tbody >
-                    <tr class="text-end w-100" *ngFor="let r of residuos; let x = index">
-                        <td class="text-start">{{r}}</td>
-                        <td id="actual_amount_1_{{x+1}}">0</td>
-                    </tr>
+                        <td class="text-start">Costo Total</td>
+                        <td id ="amount_total">0</td>
                 </tbody>       
             </table>
         </div>
