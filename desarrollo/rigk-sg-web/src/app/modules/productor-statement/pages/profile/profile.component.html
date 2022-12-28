@@ -1,12 +1,6 @@
 <div class="container mt-4">
     <section class="mi-perfil">
         <h1>Mi Perfil</h1>
-        <div style="text-align: right;">
-            <p>
-                <span class="list-data__title"><b>Fecha/ Hora ingreso</b></span>:
-                <span class="list-data__text">{{horaIngreso | date: 'dd-MM-yyyy H:mm:s'}}</span>
-            </p>
-        </div>
 
         <div class="box box-mi-perfil mb-5 d-flex align-items-start">
             <img src="assets/images/foto-usuario-h.png" alt="" class="rounded-circle img-fluid me-4 mb-3 mb-md-0"
@@ -24,6 +18,11 @@
                     <span class="list-data__title">Teléfono</span>
                     <span class="list-data__text">{{userData.PHONE}}</span>
                 </li>
+                
+                <li>
+                    <span class="list-data__title">Correo</span>
+                    <span class="list-data__text">{{userData.EMAIL}}</span>
+                </li>
                 <li>
                     <span class="list-data__title">Institución</span>
                     <span class="list-data__text">{{userData.BUSINESS}}</span>
@@ -33,10 +32,13 @@
                     <span class="list-data__title">Cargo</span>
                     <span class="list-data__text">{{userData.POSITION}}</span>
                 </li>
-
                 <li>
                     <span class="list-data__title">Teléfono Oficina</span>
                     <span class="list-data__text">{{userData.PHONE_OFFICE}}</span>
+                </li>
+                <li>
+                    <span class="list-data__title"><b>Fecha/ Hora ingreso</b></span>
+                <span class="list-data__text">{{horaIngreso | date: 'dd-MM-yyyy H:mm:s'}}</span>
                 </li>
             </ul>
         </div>
