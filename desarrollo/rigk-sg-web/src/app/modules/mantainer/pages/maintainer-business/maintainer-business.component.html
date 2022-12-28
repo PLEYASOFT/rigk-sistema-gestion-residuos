@@ -5,7 +5,7 @@
         <div class="row w-100">
             <!-- Columna 1 -->
             <div id = "table" #table1 class="w-100">
-                 <div  *ngFor=" let t of tablas; let i = index" class="w-100" style="overflow-x: scroll">
+                 <div class="w-100" style="overflow-x: scroll">
                     <!-- Tabla Desktop -->
                     <table class="table table-even table-section table-borderless table-border table-radius d-lg-table w-100">
                         
@@ -22,26 +22,37 @@
                                 <th >NOMBRE CONTACTO FACTURACIÓN</th>
                                 <th >EMAIL CONTACTO FACTURACIÓN</th>
                                 <th >TELÉFONO CONTACTO FACTURACIÓN</th>
+                                <th ></th>
+                                <th ></th>
                             </tr>
                         </thead>
                         <tbody >
-                            <tr class="text-end w-100" *ngFor="let r of residuos; let x = index">
-                                <td class="text-start">{{r}}</td>
-                                <td >0</td>
-                                <td >0</td>
-                                <td >0</td>
-                                <td >0</td>
-                                <td >0</td>
-                                <td >$0</td>
-                                <td >0</td>
-                                <td >0</td>
-                                <td >0</td>
-                                <td >$0</td>
+                            <tr class="text-end w-100" *ngFor="let r of name_business; let x = index">
+                                <td >{{id_business[x]}}</td>
+                                <td >{{name_business[x]}}</td>
+                                <td >{{rut[x]}}</td>
+                                <td >{{loc_address[x]}}</td>
+                                <td >{{phone[x]}}</td>
+                                <td >{{email[x]}}</td>
+                                <td >{{am_first_name[x]}}</td>
+                                <td >{{am_last_name[x]}}</td>
+                                <td >{{invoice_name[x]}}</td>
+                                <td >{{invoice_email[x]}}</td>
+                                <td >{{invoice_phone[x]}}</td>
+                                <td > 
+                                    <div class="btn-group">
+                                        <button class="btn btn-success btn-sm">Modificar</button>
+                                    </div>
+                                </td>
+                                <td > 
+                                    <div class="btn-group">
+                                        <button class="btn btn-danger btn-sm">Eliminar</button>
+                                    </div>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
-                    <button class="btn btn-primary red-button" >Eliminar</button>
-                    <button class="btn btn-primary" >Modificar</button>
+                    <button class="btn btn-primary">Agregar Empresa</button>
                 </div>
             </div>
         </div>
@@ -51,3 +62,4 @@
     </section>
     <!-- fin Consulta de Declaración -->
 </div>
+

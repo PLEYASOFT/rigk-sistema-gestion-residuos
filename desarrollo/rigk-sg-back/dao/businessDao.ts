@@ -27,6 +27,20 @@ class BusinessDao {
         conn.end();
         return business;
     }
+
+    public async getAllBusiness() {
+        const conn = mysqlcon.getConnection()!;
+        const business: any = await conn.query("SELECT * FROM business").then(res => res[0]).catch(erro => undefined);
+
+        console.log("Es ... " + business.length);
+
+        if (business == null || business.length == 0) {
+            return false;
+        }
+
+        conn.end();
+        return business;
+    }
 }
 
 const businessDao = new BusinessDao();
