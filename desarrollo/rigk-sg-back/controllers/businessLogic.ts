@@ -37,7 +37,6 @@ class BusinessLogic {
 
         try {
             const business = await businessDao.getAllBusiness();
-            console.log(business)
             res.status(200).json({status: business, data:{}, msg: ''});
         } catch (err) {
             console.log(err);
