@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { BusinessService } from 'src/app/core/services/business.service';
 import { ProductorService } from 'src/app/core/services/productor.service';
+import { RatesTsService } from '../../../../core/services/rates.ts.service';
 
 @Component({
   selector: 'app-send-statement',
@@ -27,9 +28,11 @@ export class SendStatementComponent implements OnInit {
 
   amount_current_year: number = 0;
   amount_previous_year: number = 0;
+  uf: number = 0.0;
 
   constructor(public businessService: BusinessService,
     public productorService: ProductorService,
+    public rateService: RatesTsService,
     private router: Router,
     private actived: ActivatedRoute) {
     this.actived.queryParams.subscribe(r => {
@@ -39,8 +42,14 @@ export class SendStatementComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.getUf();
     this.getBusiness();
     this.getAmountDiff();
+  }
+  getUf() {
+    this.rateService.getUF.subscribe(r=>{
+      this.uf = r.data;
+    })
   }
 
   getBusiness() {
@@ -81,7 +90,7 @@ export class SendStatementComponent implements OnInit {
             for (let i = 0; i < resp.data.detail.length; i++) {
               const reg = resp.data.detail[i];
               if (reg.AMOUNT != 0) {
-                this.amount_previous_year = this.amount_previous_year + reg.AMOUNT;
+                this.amount_previous_year = this.amount_previous_year + (parseFloat(reg.AMOUNT)*this.uf);
               }
             }
           }
@@ -104,7 +113,7 @@ export class SendStatementComponent implements OnInit {
             for (let i = 0; i < resp.data.detail.length; i++) {
               const reg = resp.data.detail[i];
               if (reg.AMOUNT != 0) {
-                this.amount_current_year = this.amount_current_year + reg.AMOUNT;
+                this.amount_current_year = this.amount_current_year + (parseFloat(reg.AMOUNT.toFixed(2))*this.uf);
               }
             }
           }
