@@ -108,13 +108,11 @@ export class SendStatementComponent implements OnInit {
 
     this.productorService.getValueStatementByYear(this.id_business, this.year_statement, 1).subscribe({
       next: resp => {
-        console.log(resp)
         if (resp.status) {
           if (resp.data.detail.length > 0) {
             for (let i = 0; i < resp.data.detail.length; i++) {
               const reg = resp.data.detail[i];
               if (reg.AMOUNT != 0) {
-                console.log("aa",reg.AMOUNT.toFixed(2), this.uf)
                 this.amount_current_year = this.amount_current_year + (parseFloat(reg.AMOUNT.toFixed(2))*this.uf);
               }
             }
