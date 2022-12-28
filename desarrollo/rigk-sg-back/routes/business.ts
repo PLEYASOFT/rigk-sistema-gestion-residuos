@@ -7,5 +7,6 @@ const router = Router();
 
 router.get('/verify/:id', [validarJWT, verifyParameters], businessLogic.verifyId);
 router.get('/business/:id', [validarJWT, verifyParameters], businessLogic.getBusiness);
+router.get('/business', [validarJWT, verifyParameters], businessLogic.getAllBusiness);
 
 export default router;
