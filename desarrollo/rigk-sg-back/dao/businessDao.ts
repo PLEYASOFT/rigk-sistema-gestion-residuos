@@ -17,13 +17,20 @@ class BusinessDao {
     public async getBusiness(id: string) {
         const conn = mysqlcon.getConnection()!;
         const business: any = await conn.query("SELECT ID, NAME, VAT, LOC_ADDRESS, PHONE, EMAIL, AM_FIRST_NAME, AM_LAST_NAME, INVOICE_NAME, INVOICE_EMAIL, INVOICE_PHONE FROM business WHERE ID = ?", [id]).then(res => res[0]).catch(erro => undefined);
-
-        console.log("Es ... " + business.length);
-
         if (business == null || business.length == 0) {
             return false;
         }
 
+        conn.end();
+        return business;
+    }
+
+    public async getAllBusiness() {
+        const conn = mysqlcon.getConnection()!;
+        const business: any = await conn.query("SELECT * FROM business").then(res => res[0]).catch(erro => undefined);
+        if (business == null || business.length == 0) {
+            return false;
+        }
         conn.end();
         return business;
     }
