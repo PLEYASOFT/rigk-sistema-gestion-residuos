@@ -10,5 +10,16 @@
 
 .red-button {
     background-color: red;
-  }
+}
 
+.popup {
+    position: absolute;
+    top: calc(60% + 10px); /* Colocamos la ventana emergente debajo del botón */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 1px solid rgb(17, 165, 128);
+    padding: 20px;
+    width: 800px;
+    border-radius: 10px;
+  }

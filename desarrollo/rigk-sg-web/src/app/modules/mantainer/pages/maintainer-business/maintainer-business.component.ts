@@ -10,18 +10,9 @@ import Swal from 'sweetalert2';
 })
 export class MaintainerBusinessComponent implements OnInit {
 
-  tablas = ['Reciclable', 'No Reciclable', 'Retornables / Reutilizados'];
-  residuos = [
-    'Papel Cartón',
-    'Metal',
-    'Plástico',
-    'Madera**',
-    'Otro/Env. Compuesto'
-  ];
-
-
-  year_statement: number = 0;
-
+  popupVisible = false;
+  nombre = '';
+  rut2 = '';
   id_business: string [] = [];
   name_business: string [] = [];
   rut: string [] = [];
@@ -44,16 +35,6 @@ export class MaintainerBusinessComponent implements OnInit {
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
     this.getAllBusiness();
-    console.log(this.name_business)
-    console.log(this.rut )
-    console.log(this.loc_address)
-    console.log(this.phone )
-    console.log(this.email)
-    console.log(this.am_first_name)
-    console.log(this.am_last_name)
-    console.log(this.invoice_name)
-    console.log(this.invoice_email)
-    console.log(this.invoice_phone)
   }
 
   getAllBusiness() {

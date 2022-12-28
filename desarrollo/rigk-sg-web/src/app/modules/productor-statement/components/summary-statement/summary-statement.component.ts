@@ -83,14 +83,11 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     });
   }
   ngAfterViewInit(): void {
-    
     this.generateForm();
-    console.log(this.last_weight, this.actual_weight)
     this.generateDiff();
   }
 
   ngOnInit(): void {
-    
   }
 
   generateForm(){
@@ -226,7 +223,6 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         this.last_amount = this.last_amount +  parseFloat(r?.AMOUNT);
       }
     }
-    
   }
 
   generateDiff()
