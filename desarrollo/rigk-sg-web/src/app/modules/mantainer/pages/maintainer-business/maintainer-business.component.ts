@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { BusinessService } from 'src/app/core/services/business.service';
 import { ProductorService } from 'src/app/core/services/productor.service';
 import Swal from 'sweetalert2';
@@ -10,6 +13,19 @@ import Swal from 'sweetalert2';
 })
 export class MaintainerBusinessComponent implements OnInit {
 
+  formData: FormGroup = this.fb.group({
+    nombre : ['', [Validators.required]],
+    rut : ['', [Validators.required, Validators.minLength(3)]],
+    direccion : ['', [Validators.required, Validators.minLength(3)]],
+    telefono  : ['', [Validators.required]],
+    email : ['', [Validators.required, Validators.minLength(3)]],
+    nombreAccountManager  : ['', [Validators.required, Validators.minLength(3)]],
+    apellidoAccountManager   : ['', [Validators.required]],
+    nombreContactoFacturacion  : ['', [Validators.required, Validators.minLength(3)]],
+    emailContactoFacturacion   : ['', [Validators.required, Validators.minLength(3)]],
+    telefonoContactoFacturacion    : ['', [Validators.required, Validators.minLength(3)]]
+  });
+  pos = "right";
   popupVisible = false;
   nombre = '';
   rut2 = '';
@@ -29,8 +45,11 @@ export class MaintainerBusinessComponent implements OnInit {
   amount_previous_year: number = 0;
   userData: any | null;
 
-  constructor(public businessService: BusinessService,
-    public productorService: ProductorService) { }
+  constructor(private fb: FormBuilder,
+    private authService: AuthService,
+    public businessService: BusinessService,
+    public productorService: ProductorService,
+    private router: Router) { }
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
@@ -67,5 +86,44 @@ export class MaintainerBusinessComponent implements OnInit {
         });
       }
     });
+  }
+
+  btnrecovery() {
+    const { actual, password, repeatPassword } = this.formData.value;
+    this.authService.modifyPassword(password, repeatPassword, actual).subscribe({
+      next: resp => {
+        if (resp.status) {
+          Swal.fire({
+            title: "Cambio de contraseña",
+            text: "La contraseña fue cambiada exitosamente",
+            icon: "success",
+          })
+          this.router.navigate(['/mantenedor/home']);
+        }
+        else {
+          Swal.fire({
+            title: "Validar información",
+            text: resp.msg,
+            icon: "error",
+          });
+          this.formData.reset();
+        }
+      },
+    error: err => {
+      Swal.fire({
+        title: 'Formato inválido',
+        text: 'Contraseña debe contener al menos 8 caracteres',
+        icon: 'error'
+      })
+    }
+    });
+  }
+
+  displayModifyPassword() {
+    if (this.pos == "right") {
+      this.pos = "down";
+    } else {
+      this.pos = "right";
+    }
   }
 }

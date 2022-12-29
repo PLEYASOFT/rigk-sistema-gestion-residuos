@@ -52,8 +52,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <button class="btn btn-primary">Agregar Empresa</button>
-                    <button class="btn btn-primary" (click)="popupVisible = !popupVisible">Abrir ventana emergente</button>
+                    <!--<button class="btn btn-primary" (click)="popupVisible = !popupVisible">Agregar Empresa</button>-->
 
                         <div class="popup" *ngIf="popupVisible">
                             <!-- Aquí va el contenido de la ventana emergente -->
@@ -112,4 +111,76 @@
     </section>
     <!-- fin Consulta de Declaración -->
 </div>
-  
+
+<ul class="list list-links list-unstyled">
+    <div class="accordion accordion-flush" id="accordionPanelsStayOpenExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+            
+            <button class="btn btn-primary" (click)=" displayModifyPassword()" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne">Agregar Empresa</button>
+
+          </h2>
+          <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse " aria-labelledby="panelsStayOpen-headingOne">
+            <div class="accordion-body">
+                <form class="form-recovery"
+                    autocomplete="off"
+                    [formGroup]="formData">
+                    <div class="mb-4">
+                        <div class="input-group">
+                            <input type="nombre" class="form-control" id="nombre" formControlName="nombre" placeholder="Nombre"/>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="input-group">
+                            <input type="rut" class="form-control" id="rut" formControlName="rut" placeholder="Rut"/>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="input-group">
+                            <input type="direccion" class="form-control" id="direccion" formControlName="direccion" placeholder="Dirección">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="input-group">
+                            <input type="telefono" class="form-control" id="telefono" formControlName="telefono" placeholder="Teléfono">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="input-group">
+                            <input type="email" class="form-control" id="email" formControlName="email" placeholder="E-mail">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="input-group">
+                            <input type="nombreAccountManager" class="form-control" id="nombreAccountManager" formControlName="nombreAccountManager" placeholder="Nombre Account Manager">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="input-group">
+                            <input type="apellidoAccountManager" class="form-control" id="apellidoAccountManager" formControlName="apellidoAccountManager" placeholder="Apellido Account Manager">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="input-group">
+                            <input type="nombreContactoFacturacion" class="form-control" id="nombreContactoFacturacion" formControlName="nombreContactoFacturacion" placeholder="Nombre contacto facturación">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="input-group">
+                            <input type="emailContactoFacturacion" class="form-control" id="emailContactoFacturacion" formControlName="emailContactoFacturacion" placeholder="Email contacto facturación">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="input-group">
+                            <input type="telefonoContactoFacturacion" class="form-control" id="telefonoContactoFacturacion" formControlName="telefonoContactoFacturacion" placeholder="Teléfono contacto facturación">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <button type="button" (click)="btnrecovery()" class="btn btn-primary btn-fa w-100 "> Enviar <i class="fa fa-long-arrow-right fa-fw" aria-hidden="true"></i></button>
+                    </div>
+                </form>
+            </div>
+          </div>
+        </div>
+      </div>
+</ul>
