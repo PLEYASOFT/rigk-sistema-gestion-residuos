@@ -14,21 +14,22 @@ import Swal from 'sweetalert2';
 export class MaintainerBusinessComponent implements OnInit {
 
   formData: FormGroup = this.fb.group({
-    nombre : ['', [Validators.required]],
+    id_business: ['', [Validators.required]],
+    name_business : ['', [Validators.required]],
     rut : ['', [Validators.required, Validators.minLength(3)]],
-    direccion : ['', [Validators.required, Validators.minLength(3)]],
-    telefono  : ['', [Validators.required]],
+    loc_address : ['', [Validators.required, Validators.minLength(3)]],
+    phone  : ['', [Validators.required]],
     email : ['', [Validators.required, Validators.minLength(3)]],
-    nombreAccountManager  : ['', [Validators.required, Validators.minLength(3)]],
-    apellidoAccountManager   : ['', [Validators.required]],
-    nombreContactoFacturacion  : ['', [Validators.required, Validators.minLength(3)]],
-    emailContactoFacturacion   : ['', [Validators.required, Validators.minLength(3)]],
-    telefonoContactoFacturacion    : ['', [Validators.required, Validators.minLength(3)]]
+    am_first_name  : ['', [Validators.required, Validators.minLength(3)]],
+    am_last_name   : ['', [Validators.required]],
+    invoice_name  : ['', [Validators.required, Validators.minLength(3)]],
+    invoice_email   : ['', [Validators.required, Validators.minLength(3)]],
+    invoice_phone    : ['', [Validators.required, Validators.minLength(3)]]
   });
-  pos = "right";
   popupVisible = false;
-  nombre = '';
-  rut2 = '';
+  popupModify = false;
+  id = '';
+  index = 0;
   id_business: string [] = [];
   name_business: string [] = [];
   rut: string [] = [];
@@ -41,15 +42,10 @@ export class MaintainerBusinessComponent implements OnInit {
   invoice_email: string [] = [];
   invoice_phone: string [] = [];
 
-  amount_current_year: number = 0;
-  amount_previous_year: number = 0;
   userData: any | null;
 
   constructor(private fb: FormBuilder,
-    private authService: AuthService,
-    public businessService: BusinessService,
-    public productorService: ProductorService,
-    private router: Router) { }
+    public businessService: BusinessService) { }
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
@@ -57,9 +53,19 @@ export class MaintainerBusinessComponent implements OnInit {
   }
 
   getAllBusiness() {
+    this.id_business= [];
+    this.name_business= [];
+    this.rut= [];
+    this.loc_address= [];
+    this.phone= [];
+    this.email= [];
+    this.am_first_name= [];
+    this.am_last_name= [];
+    this.invoice_name= [];
+    this.invoice_email= [];
+    this.invoice_phone= [];
     this.businessService.getAllBusiness().subscribe({
       next: resp => {
-        console.log(resp.status[0]);
         if (resp.status) {
           for(let i = 0; i < resp.status.length; i++)
           {
@@ -88,17 +94,23 @@ export class MaintainerBusinessComponent implements OnInit {
     });
   }
 
-  btnrecovery() {
-    const { actual, password, repeatPassword } = this.formData.value;
-    this.authService.modifyPassword(password, repeatPassword, actual).subscribe({
+  btnAddBusiness() {
+    
+    const { name_business, rut, loc_address,phone,  
+    email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone} = this.formData.value;
+    
+    console.log(this.formData.value)
+    this.businessService.postBusiness(name_business, rut, loc_address, phone, email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone).subscribe({
       next: resp => {
+        console.log(resp)
         if (resp.status) {
           Swal.fire({
-            title: "Cambio de contraseña",
+            title: "Empresa agregada",
             text: "La contraseña fue cambiada exitosamente",
             icon: "success",
           })
-          this.router.navigate(['/mantenedor/home']);
+          this.popupVisible=false;
+          this.getAllBusiness();
         }
         else {
           Swal.fire({
@@ -119,11 +131,83 @@ export class MaintainerBusinessComponent implements OnInit {
     });
   }
 
-  displayModifyPassword() {
-    if (this.pos == "right") {
-      this.pos = "down";
-    } else {
-      this.pos = "right";
+
+  btnDeleteBusiness(id_business:any) {
+    
+    Swal.fire({
+      title: '¿Estás seguro que quieres eliminar la empresa?',
+      showDenyButton: true,
+      confirmButtonText: 'Confirmar',
+      denyButtonText: `Cancelar`,}).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          this.businessService.deleteBusiness(id_business).subscribe({
+            next: resp => {
+              console.log(resp)
+              
+              if (resp.status) {
+                Swal.fire({
+                  title: "Empresa Eliminada",
+                  text: "",
+                  icon: "error",
+                })
+                this.getAllBusiness();
+                //this.router.navigate(['/mantenedor/home']);
+              }
+              else {
+                Swal.fire({
+                  title: "Validar información",
+                  text: resp.msg,
+                  icon: "error",
+                });
+              }
+            },
+          error: err => {
+            Swal.fire({
+              title: 'Formato inválido',
+              text: 'Contraseña debe contener al menos 8 caracteres',
+              icon: 'error'
+            })
+          }
+          });
+        } 
+      })
+  }
+
+  btnUpdateBusiness(id_business:any) {
+    
+    const { name_business, rut, loc_address,phone,  
+    email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone} = this.formData.value;
+    
+    console.log(this.formData.value)
+    this.businessService.updateBusiness(id_business,name_business, rut, loc_address, phone, email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone).subscribe({
+      next: resp => {
+        console.log(resp)
+        if (resp.status) {
+          Swal.fire({
+            title: "Empresa Modificada",
+            text: "La contraseña fue cambiada exitosamente",
+            icon: "success",
+          })
+          this.popupModify=false;
+          this.getAllBusiness();
+        }
+        else {
+          Swal.fire({
+            title: "Validar información",
+            text: resp.msg,
+            icon: "error",
+          });
+          this.formData.reset();
+        }
+      },
+    error: err => {
+      Swal.fire({
+        title: 'Formato inválido',
+        text: 'Contraseña debe contener al menos 8 caracteres',
+        icon: 'error'
+      })
     }
+    });
   }
 }
