@@ -126,12 +126,12 @@
                             </div>
                                 <!-- Otros campos del formulario -->
                                 <button type="submit" class="btn btn-primary" style="width: 150px;margin-left: 400px;" (click)="btnAddBusiness()" >Aceptar</button>
-                                <button type="button" class="btn btn-secondary buttonRight" style="width: 150px;"(click)="popupVisible = !popupVisible">Cancelar</button>
+                                <button type="button" class="btn btn-secondary buttonRight" style="width: 150px;"(click)="popupVisible = !popupVisible; this.formData.reset()">Cancelar</button>
                               </form>
                         </div>
                         <div class="dark-background " *ngIf="popupModify">
                             <!-- Aquí va el contenido de la ventana emergente -->
-                            <form #miFormulario="ngForm" class="popup"
+                            <form #miFormulari02="ngForm" class="popup"
                             autocomplete="off"
                             [formGroup]="formData">
                             <div class="mb-4">
@@ -186,7 +186,7 @@
                             </div>
                                 <!-- Otros campos del formulario -->
                                 <button type="submit" class="btn btn-primary" style="width: 150px;margin-left: 400px;" (click)="btnUpdateBusiness(id)" >Aceptar</button>
-                                <button type="button" class="btn btn-secondary buttonRight" style="width: 150px;"(click)="popupModify = !popupModify">Cancelar</button>
+                                <button type="button" class="btn btn-secondary buttonRight" style="width: 150px;"(click)="popupModify = !popupModify; this.formData.reset()">Cancelar</button>
                               </form>
                         </div>
                         
