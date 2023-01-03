@@ -14267,7 +14267,7 @@ body {
   background-position: right;
   background-repeat: repeat-y;
   background-size: cover;
-  /*background-image: url(./assets/images/c-bar.svg);*/
+  /* background-image: url(./assets/images/c-bar.svg); */
   position: relative;
   bottom: -32px;
 }
@@ -14278,7 +14278,7 @@ body {
   background-position: right;
   background-repeat: repeat-y;
   background-size: cover;
-  /*background-image: url(./assets/images/c-bar.svg);*/
+  /* background-image: url(./assets./images/c-bar.svg); */
   position: absolute;
   bottom: 0;
 }
@@ -14392,6 +14392,10 @@ p {
   .body-login {
     background-position: 1% 100%;
   }
+}
+.body-login .form-login .btn,
+.body-login .form-login .form-control {
+  font-size: 18px;
 }
 
 @media (min-width: 768px) {
@@ -14839,6 +14843,7 @@ body.shrink #content {
 .box-login {
   margin: 80px 0;
   background-color: rgba(255, 255, 255, 0.25);
+  padding: 60px 40px;
 }
 @media (min-width: 768px) {
   .box-login {
@@ -14847,6 +14852,7 @@ body.shrink #content {
 }
 .box-login a {
   color: #ffffff;
+  font-size: 18px;
 }
 .box-login .btn-fa {
   position: relative;
@@ -14857,9 +14863,9 @@ body.shrink #content {
   top: 3px;
   background-color: #ffffff;
   color: #07a47b;
-  width: 26px;
+  width: 32px;
   border-radius: 100px;
-  padding: 6px 0;
+  padding: 7px 0;
 }
 .box-inicio {
   background-color: #212529;
