@@ -75,16 +75,18 @@
                             autocomplete="off"
                             [formGroup]="formData">
                             <div class="mb-4">
+                                <label for="name_business" style="color: rgb(0, 138, 92);"><strong>Nombre de la empresa</strong></label>
                                 <div class="input-group">
-                                    <input type="name_business" class="form-control" id="name_business" formControlName="name_business" placeholder="Nombre"/>
+                                    <input type="name_business" class="form-control" id="name_business" formControlName="name_business"  placeholder="Nombre"/>
                                 </div>
                                 <div *ngIf="formData.controls['name_business'].errors && formData.controls['name_business'].touched" class="text-danger pl-0">
                                     <p *ngIf="formData.controls['name_business'].errors['required']">El nombre de la empresa es requerido.</p>
                                 </div>
                             </div>
                             <div class="mb-4">
+                                <label for="rut" style="color: rgb(0, 138, 92);"><strong>Rut de la empresa</strong></label>
                                 <div class="input-group">
-                                    <input type="rut" class="form-control" id="rut" formControlName="rut" placeholder="Rut"/>
+                                    <input type="rut" class="form-control" id="rut" formControlName="rut" placeholder="Rut" />
                                 </div>
                                 <div *ngIf="formData.controls['rut'].errors && formData.controls['rut'].touched" class="text-danger pl-0">
                                     <p *ngIf="formData.controls['rut'].errors['required']">El rut de la empresa es requerido.</p>
@@ -92,23 +94,26 @@
                                 </div>
                             </div>
                             <div class="mb-4">
+                                <label for="loc_address" style="color: rgb(0, 138, 92);"><strong>Direcciónde la empresa</strong></label>
                                 <div class="input-group">
-                                    <input type="loc_address" class="form-control" id="loc_address" formControlName="loc_address" placeholder="Dirección">
+                                    <input type="loc_address" class="form-control" id="loc_address" formControlName="loc_address" placeholder="Dirección" >
                                 </div>
                                 <div *ngIf="formData.controls['loc_address'].errors && formData.controls['loc_address'].touched" class="text-danger pl-0">
                                     <p *ngIf="formData.controls['loc_address'].errors['required']">La dirección de la empresa es requerida.</p>
                                 </div>
                             </div>
                             <div class="mb-4">
+                                <label for="phone" style="color: rgb(0, 138, 92);"><strong>Teléfono/Celular de la empresa</strong></label>
                                 <div class="input-group">
-                                    <input type="phone" class="form-control" id="phone" formControlName="phone" placeholder="Teléfono">
+                                    <input type="phone" class="form-control" id="phone" formControlName="phone" placeholder="Teléfono/Celular">
                                 </div>
                                 <div *ngIf="formData.controls['phone'].errors && formData.controls['phone'].touched" class="text-danger pl-0">
-                                    <p *ngIf="formData.controls['phone'].errors['required']">El número de celular de la empresa es requerido (9 dígitos).</p>
-                                    <p *ngIf="formData.controls['phone'].errors['pattern']">El formato del teléfono es inválido (9 dígitos).</p>
+                                    <p *ngIf="formData.controls['phone'].errors['required']">El número de Teléfono/Celular de la empresa es requerido (9 dígitos).</p>
+                                    <p *ngIf="formData.controls['phone'].errors['pattern']">El formato del Teléfono/Celular es inválido (9 dígitos).</p>
                                 </div>
                             </div>
                             <div class="mb-4">
+                                <label for="email" style="color: rgb(0, 138, 92);"><strong>Correo de la empresa</strong></label>
                                 <div class="input-group">
                                     <input type="email" class="form-control" id="email" formControlName="email" placeholder="E-mail">
                                 </div>
@@ -118,6 +123,7 @@
                                 </div>
                             </div>
                             <div class="mb-4">
+                                <label for="am_first_name" style="color: rgb(0, 138, 92);"><strong>Nombre Account Manager</strong></label>
                                 <div class="input-group">
                                     <input type="am_first_name" class="form-control" id="am_first_name" formControlName="am_first_name" placeholder="Nombre Account Manager">
                                 </div>
@@ -126,6 +132,7 @@
                                 </div>
                             </div>
                             <div class="mb-4">
+                                <label for="am_last_name" style="color: rgb(0, 138, 92);"><strong>Apellido Account Manager</strong></label>
                                 <div class="input-group">
                                     <input type="am_last_name" class="form-control" id="am_last_name" formControlName="am_last_name" placeholder="Apellido Account Manager">
                                 </div>
@@ -134,6 +141,7 @@
                                 </div>
                             </div>
                             <div class="mb-4">
+                                <label for="invoice_name" style="color: rgb(0, 138, 92);"><strong>Nombre contacto facturación</strong></label>
                                 <div class="input-group">
                                     <input type="invoice_name" class="form-control" id="invoice_name" formControlName="invoice_name" placeholder="Nombre contacto facturación">
                                 </div>
@@ -142,8 +150,9 @@
                                 </div>
                             </div>
                             <div class="mb-4">
+                                <label for="invoice_email" style="color: rgb(0, 138, 92);"><strong>Correo contacto facturación</strong></label>
                                 <div class="input-group">
-                                    <input type="invoice_email" class="form-control" id="invoice_email" formControlName="invoice_email" placeholder="Email contacto facturación">
+                                    <input type="invoice_email" class="form-control" id="invoice_email" formControlName="invoice_email" placeholder="Correo contacto facturación">
                                 </div>
                                 <div *ngIf="formData.controls['invoice_email'].errors && formData.controls['invoice_email'].touched" class="text-danger pl-0">
                                     <p *ngIf="formData.controls['invoice_email'].errors['required']">El email contacto de facturación es requerido (ejemplo@correo.com).</p>
@@ -151,12 +160,13 @@
                                 </div>
                             </div>
                             <div class="mb-4">
+                                <label for="invoice_phone" style="color: rgb(0, 138, 92);"><strong>Teléfono/Celular contacto facturación</strong></label>
                                 <div class="input-group">
-                                    <input type="invoice_phone" class="form-control" id="invoice_phone" formControlName="invoice_phone" placeholder="Teléfono contacto facturación">
+                                    <input type="invoice_phone" class="form-control" id="invoice_phone" formControlName="invoice_phone" placeholder="Teléfono/Celular contacto facturación">
                                 </div>
                                 <div *ngIf="formData.controls['invoice_phone'].errors && formData.controls['invoice_phone'].touched" class="text-danger pl-0">
-                                    <p *ngIf="formData.controls['invoice_phone'].errors['required']">El teléfono contacto de facturación es requerido (9 dígitos).</p>
-                                    <p *ngIf="formData.controls['invoice_phone'].errors['pattern']">El formato del teléfono contacto de facturación es inválido (9 dígitos).</p>
+                                    <p *ngIf="formData.controls['invoice_phone'].errors['required']">El telefono de facturación es requerido (9 dígitos).</p>
+                                    <p *ngIf="formData.controls['invoice_phone'].errors['pattern']">El formato del teléfono es inválido (9 dígitos).</p>
                                 </div>
                             </div>
                                 <!-- Otros campos del formulario -->
@@ -170,6 +180,7 @@
                             autocomplete="off"
                             [formGroup]="formData">
                             <div class="mb-4">
+                                <label for="name_business" style="color: rgb(0, 138, 92);"><strong>Nombre de la empresa</strong></label>
                                 <div class="input-group">
                                     <input type="name_business" class="form-control" id="name_business" formControlName="name_business"  placeholder="Nombre" [(ngModel)]="name_business[index]"/>
                                 </div>
@@ -178,6 +189,7 @@
                                 </div>
                             </div>
                             <div class="mb-4">
+                                <label for="rut" style="color: rgb(0, 138, 92);"><strong>Rut de la empresa</strong></label>
                                 <div class="input-group">
                                     <input type="rut" class="form-control" id="rut" formControlName="rut" placeholder="Rut" [(ngModel)]="rut[index]"/>
                                 </div>
@@ -187,6 +199,7 @@
                                 </div>
                             </div>
                             <div class="mb-4">
+                                <label for="loc_address" style="color: rgb(0, 138, 92);"><strong>Direcciónde la empresa</strong></label>
                                 <div class="input-group">
                                     <input type="loc_address" class="form-control" id="loc_address" formControlName="loc_address" placeholder="Dirección" [(ngModel)]="loc_address[index]">
                                 </div>
@@ -195,15 +208,17 @@
                                 </div>
                             </div>
                             <div class="mb-4">
+                                <label for="phone" style="color: rgb(0, 138, 92);"><strong>Teléfono/Celular de la empresa</strong></label>
                                 <div class="input-group">
-                                    <input type="phone" class="form-control" id="phone" formControlName="phone" placeholder="Teléfono" [(ngModel)]="phone[index]">
+                                    <input type="phone" class="form-control" id="phone" formControlName="phone" placeholder="Teléfono/Celular" [(ngModel)]="phone[index]">
                                 </div>
                                 <div *ngIf="formData.controls['phone'].errors && formData.controls['phone'].touched" class="text-danger pl-0">
-                                    <p *ngIf="formData.controls['phone'].errors['required']">El número de celular de la empresa es requerido (9 dígitos).</p>
-                                    <p *ngIf="formData.controls['phone'].errors['pattern']">El formato del teléfono es inválido (9 dígitos).</p>
+                                    <p *ngIf="formData.controls['phone'].errors['required']">El número de Teléfono/Celular de la empresa es requerido (9 dígitos).</p>
+                                    <p *ngIf="formData.controls['phone'].errors['pattern']">El formato del Teléfono/Celular es inválido (9 dígitos).</p>
                                 </div>
                             </div>
                             <div class="mb-4">
+                                <label for="email" style="color: rgb(0, 138, 92);"><strong>Correo de la empresa</strong></label>
                                 <div class="input-group">
                                     <input type="email" class="form-control" id="email" formControlName="email" placeholder="E-mail" [(ngModel)]="email[index]">
                                 </div>
@@ -213,6 +228,7 @@
                                 </div>
                             </div>
                             <div class="mb-4">
+                                <label for="am_first_name" style="color: rgb(0, 138, 92);"><strong>Nombre Account Manager</strong></label>
                                 <div class="input-group">
                                     <input type="am_first_name" class="form-control" id="am_first_name" formControlName="am_first_name" placeholder="Nombre Account Manager" [(ngModel)]="am_first_name[index]">
                                 </div>
@@ -221,6 +237,7 @@
                                 </div>
                             </div>
                             <div class="mb-4">
+                                <label for="am_last_name" style="color: rgb(0, 138, 92);"><strong>Apellido Account Manager</strong></label>
                                 <div class="input-group">
                                     <input type="am_last_name" class="form-control" id="am_last_name" formControlName="am_last_name" placeholder="Apellido Account Manager" [(ngModel)]="am_last_name[index]">
                                 </div>
@@ -229,6 +246,7 @@
                                 </div>
                             </div>
                             <div class="mb-4">
+                                <label for="invoice_name" style="color: rgb(0, 138, 92);"><strong>Nombre contacto facturación</strong></label>
                                 <div class="input-group">
                                     <input type="invoice_name" class="form-control" id="invoice_name" formControlName="invoice_name" placeholder="Nombre contacto facturación" [(ngModel)]="invoice_name[index]">
                                 </div>
@@ -237,8 +255,9 @@
                                 </div>
                             </div>
                             <div class="mb-4">
+                                <label for="invoice_email" style="color: rgb(0, 138, 92);"><strong>Correo contacto facturación</strong></label>
                                 <div class="input-group">
-                                    <input type="invoice_email" class="form-control" id="invoice_email" formControlName="invoice_email" placeholder="Email contacto facturación" [(ngModel)]="invoice_email[index]">
+                                    <input type="invoice_email" class="form-control" id="invoice_email" formControlName="invoice_email" placeholder="Correo contacto facturación" [(ngModel)]="invoice_email[index]">
                                 </div>
                                 <div *ngIf="formData.controls['invoice_email'].errors && formData.controls['invoice_email'].touched" class="text-danger pl-0">
                                     <p *ngIf="formData.controls['invoice_email'].errors['required']">El email contacto de facturación es requerido (ejemplo@correo.com).</p>
@@ -246,8 +265,9 @@
                                 </div>
                             </div>
                             <div class="mb-4">
+                                <label for="invoice_phone" style="color: rgb(0, 138, 92);"><strong>Teléfono/Celular contacto facturación</strong></label>
                                 <div class="input-group">
-                                    <input type="invoice_phone" class="form-control" id="invoice_phone" formControlName="invoice_phone" placeholder="Teléfono contacto facturación" [(ngModel)]="invoice_phone[index]">
+                                    <input type="invoice_phone" class="form-control" id="invoice_phone" formControlName="invoice_phone" placeholder="Teléfono/Celular contacto facturación" [(ngModel)]="invoice_phone[index]">
                                 </div>
                                 <div *ngIf="formData.controls['invoice_phone'].errors && formData.controls['invoice_phone'].touched" class="text-danger pl-0">
                                     <p *ngIf="formData.controls['invoice_phone'].errors['required']">El telefono de facturación es requerido (9 dígitos).</p>
