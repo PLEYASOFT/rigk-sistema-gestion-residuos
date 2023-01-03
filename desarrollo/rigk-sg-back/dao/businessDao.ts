@@ -46,7 +46,6 @@ class BusinessDao {
         const conn = mysqlcon.getConnection()!;
         const res: any = await conn.query("DELETE FROM business WHERE id = ?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
-        console.log(res)
         return res
     }
 
