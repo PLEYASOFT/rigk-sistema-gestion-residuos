@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AuthService } from 'src/app/core/services/auth.service';
 import { BusinessService } from 'src/app/core/services/business.service';
-import { ProductorService } from 'src/app/core/services/productor.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -14,17 +11,16 @@ import Swal from 'sweetalert2';
 export class MaintainerBusinessComponent implements OnInit {
 
   formData: FormGroup = this.fb.group({
-    id_business: ['', [Validators.required]],
-    name_business : ['', [Validators.required]],
-    rut : ['', [Validators.required, Validators.minLength(3)]],
-    loc_address : ['', [Validators.required, Validators.minLength(3)]],
-    phone  : ['', [Validators.required]],
-    email : ['', [Validators.required, Validators.minLength(3)]],
-    am_first_name  : ['', [Validators.required, Validators.minLength(3)]],
-    am_last_name   : ['', [Validators.required]],
-    invoice_name  : ['', [Validators.required, Validators.minLength(3)]],
-    invoice_email   : ['', [Validators.required, Validators.minLength(3)]],
-    invoice_phone    : ['', [Validators.required, Validators.minLength(3)]]
+    name_business : ['', [Validators.required]], // Campo requerido
+    rut : ['', [Validators.required, Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$')]], // Campo requerido y con formato de RUT
+    loc_address : ['', [Validators.required]], // Campo requerido
+    phone : ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]], // Campo requerido y con formato de número de teléfono
+    email : ['', [Validators.required, Validators.email]], // Campo requerido y con formato de correo electrónico
+    am_first_name : ['', [Validators.required]], // Campo requerido
+    am_last_name : ['', [Validators.required]], // Campo requerido
+    invoice_name : ['', [Validators.required]], // Campo requerido
+    invoice_email : ['', [Validators.required, Validators.email]], // Campo requerido y con formato de correo electrónico
+    invoice_phone : ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]] // Campo requerido y con formato de número de teléfono
   });
   popupVisible = false;
   popupModify = false;
@@ -98,33 +94,34 @@ export class MaintainerBusinessComponent implements OnInit {
     
     const { name_business, rut, loc_address,phone,  
     email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone} = this.formData.value;
+
+    if (this.formData.invalid) {
+      Swal.fire({
+        title: "Validar información",
+        text: 'Debe completar todos los campos',
+        icon: "error",
+      });
+      this.getAllBusiness();
+      return;
+    }
     
-    console.log(this.formData.value)
     this.businessService.postBusiness(name_business, rut, loc_address, phone, email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone).subscribe({
       next: resp => {
-        console.log(resp)
-        if (resp.status) {
+        if(resp.status){
           Swal.fire({
             title: "Empresa agregada",
-            text: "La contraseña fue cambiada exitosamente",
+            text: "La empresfue agregada exitosamente",
             icon: "success",
           })
           this.popupVisible=false;
           this.getAllBusiness();
-        }
-        else {
-          Swal.fire({
-            title: "Validar información",
-            text: resp.msg,
-            icon: "error",
-          });
           this.formData.reset();
         }
       },
     error: err => {
       Swal.fire({
-        title: 'Formato inválido',
-        text: 'Contraseña debe contener al menos 8 caracteres',
+        title: 'Error',
+        text: 'Error al agregar la empresa',
         icon: 'error'
       })
     }
@@ -139,12 +136,9 @@ export class MaintainerBusinessComponent implements OnInit {
       showDenyButton: true,
       confirmButtonText: 'Confirmar',
       denyButtonText: `Cancelar`,}).then((result) => {
-        /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
           this.businessService.deleteBusiness(id_business).subscribe({
             next: resp => {
-              console.log(resp)
-              
               if (resp.status) {
                 Swal.fire({
                   title: "Empresa Eliminada",
@@ -152,7 +146,6 @@ export class MaintainerBusinessComponent implements OnInit {
                   icon: "error",
                 })
                 this.getAllBusiness();
-                //this.router.navigate(['/mantenedor/home']);
               }
               else {
                 Swal.fire({
@@ -165,7 +158,7 @@ export class MaintainerBusinessComponent implements OnInit {
           error: err => {
             Swal.fire({
               title: 'Formato inválido',
-              text: 'Contraseña debe contener al menos 8 caracteres',
+              text: '',
               icon: 'error'
             })
           }
@@ -179,32 +172,31 @@ export class MaintainerBusinessComponent implements OnInit {
     const { name_business, rut, loc_address,phone,  
     email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone} = this.formData.value;
     
-    console.log(this.formData.value)
+    if (this.formData.invalid) {
+      Swal.fire({
+        title: "Validar información",
+        text: 'Debe completar todos los campos',
+        icon: "error",
+      });
+      return;
+    }
+
     this.businessService.updateBusiness(id_business,name_business, rut, loc_address, phone, email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone).subscribe({
       next: resp => {
-        console.log(resp)
         if (resp.status) {
           Swal.fire({
             title: "Empresa Modificada",
-            text: "La contraseña fue cambiada exitosamente",
+            text: "",
             icon: "success",
           })
           this.popupModify=false;
           this.getAllBusiness();
         }
-        else {
-          Swal.fire({
-            title: "Validar información",
-            text: resp.msg,
-            icon: "error",
-          });
-          this.formData.reset();
-        }
       },
     error: err => {
       Swal.fire({
-        title: 'Formato inválido',
-        text: 'Contraseña debe contener al menos 8 caracteres',
+        title: 'Error',
+        text: '',
         icon: 'error'
       })
     }

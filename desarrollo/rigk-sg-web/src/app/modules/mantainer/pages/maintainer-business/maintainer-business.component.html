@@ -78,54 +78,89 @@
                                 <div class="input-group">
                                     <input type="name_business" class="form-control" id="name_business" formControlName="name_business" placeholder="Nombre"/>
                                 </div>
+                                <div *ngIf="formData.controls['name_business'].errors && formData.controls['name_business'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['name_business'].errors['required']">El nombre de la empresa es requerido.</p>
+                                </div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <input type="rut" class="form-control" id="rut" formControlName="rut" placeholder="Rut"/>
+                                </div>
+                                <div *ngIf="formData.controls['rut'].errors && formData.controls['rut'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['rut'].errors['required']">El rut de la empresa es requerido.</p>
+                                    <p *ngIf="formData.controls['rut'].errors['pattern']">El formato del RUT es inválido (Sin puntos y con guión).</p>
                                 </div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <input type="loc_address" class="form-control" id="loc_address" formControlName="loc_address" placeholder="Dirección">
                                 </div>
+                                <div *ngIf="formData.controls['loc_address'].errors && formData.controls['loc_address'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['loc_address'].errors['required']">La dirección de la empresa es requerida.</p>
+                                </div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <input type="phone" class="form-control" id="phone" formControlName="phone" placeholder="Teléfono">
+                                </div>
+                                <div *ngIf="formData.controls['phone'].errors && formData.controls['phone'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['phone'].errors['required']">El número de celular de la empresa es requerido (9 dígitos).</p>
+                                    <p *ngIf="formData.controls['phone'].errors['pattern']">El formato del teléfono es inválido (9 dígitos).</p>
                                 </div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <input type="email" class="form-control" id="email" formControlName="email" placeholder="E-mail">
                                 </div>
+                                <div *ngIf="formData.controls['email'].errors && formData.controls['email'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['email'].errors['required']">El correo de la empresa es requerido (ejemplo@correo.com).</p>
+                                    <p *ngIf="formData.controls['email'].errors['email']">El formato del correo es inválido (ejemplo@correo.com).</p>
+                                </div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <input type="am_first_name" class="form-control" id="am_first_name" formControlName="am_first_name" placeholder="Nombre Account Manager">
+                                </div>
+                                <div *ngIf="formData.controls['am_first_name'].errors && formData.controls['am_first_name'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['am_first_name'].errors['required']">El nombre del account manager es requerido.</p>
                                 </div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <input type="am_last_name" class="form-control" id="am_last_name" formControlName="am_last_name" placeholder="Apellido Account Manager">
                                 </div>
+                                <div *ngIf="formData.controls['am_last_name'].errors && formData.controls['am_last_name'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['am_last_name'].errors['required']">El apellido del account manager es requerido.</p>
+                                </div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <input type="invoice_name" class="form-control" id="invoice_name" formControlName="invoice_name" placeholder="Nombre contacto facturación">
+                                </div>
+                                <div *ngIf="formData.controls['invoice_name'].errors && formData.controls['invoice_name'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['invoice_name'].errors['required']">El nombre contacto de facturación es requerido.</p>
                                 </div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <input type="invoice_email" class="form-control" id="invoice_email" formControlName="invoice_email" placeholder="Email contacto facturación">
                                 </div>
+                                <div *ngIf="formData.controls['invoice_email'].errors && formData.controls['invoice_email'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['invoice_email'].errors['required']">El email contacto de facturación es requerido (ejemplo@correo.com).</p>
+                                    <p *ngIf="formData.controls['invoice_email'].errors['email']">El formato del correo es inválido (ejemplo@correo.com).</p>
+                                </div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <input type="invoice_phone" class="form-control" id="invoice_phone" formControlName="invoice_phone" placeholder="Teléfono contacto facturación">
                                 </div>
+                                <div *ngIf="formData.controls['invoice_phone'].errors && formData.controls['invoice_phone'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['invoice_phone'].errors['required']">El teléfono contacto de facturación es requerido (9 dígitos).</p>
+                                    <p *ngIf="formData.controls['invoice_phone'].errors['pattern']">El formato del teléfono contacto de facturación es inválido (9 dígitos).</p>
+                                </div>
                             </div>
                                 <!-- Otros campos del formulario -->
-                                <button type="submit" class="btn btn-primary" style="width: 150px;margin-left: 400px;" (click)="btnAddBusiness()" >Aceptar</button>
+                                <button type="submit" class="btn btn-primary" style="width: 150px;margin-left: 400px;"(click)="btnAddBusiness()" >Aceptar</button>
                                 <button type="button" class="btn btn-secondary buttonRight" style="width: 150px;"(click)="popupVisible = !popupVisible; this.formData.reset()">Cancelar</button>
                               </form>
                         </div>
@@ -138,55 +173,89 @@
                                 <div class="input-group">
                                     <input type="name_business" class="form-control" id="name_business" formControlName="name_business"  placeholder="Nombre" [(ngModel)]="name_business[index]"/>
                                 </div>
+                                <div *ngIf="formData.controls['name_business'].errors && formData.controls['name_business'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['name_business'].errors['required']">El nombre de la empresa es requerido.</p>
+                                </div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <input type="rut" class="form-control" id="rut" formControlName="rut" placeholder="Rut" [(ngModel)]="rut[index]"/>
+                                </div>
+                                <div *ngIf="formData.controls['rut'].errors && formData.controls['rut'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['rut'].errors['required']">El rut de la empresa es requerido.</p>
+                                    <p *ngIf="formData.controls['rut'].errors['pattern']">El formato del RUT es inválido (Sin puntos y con guión).</p>
                                 </div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <input type="loc_address" class="form-control" id="loc_address" formControlName="loc_address" placeholder="Dirección" [(ngModel)]="loc_address[index]">
                                 </div>
+                                <div *ngIf="formData.controls['loc_address'].errors && formData.controls['loc_address'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['loc_address'].errors['required']">La dirección de la empresa es requerida.</p>
+                                </div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <input type="phone" class="form-control" id="phone" formControlName="phone" placeholder="Teléfono" [(ngModel)]="phone[index]">
+                                </div>
+                                <div *ngIf="formData.controls['phone'].errors && formData.controls['phone'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['phone'].errors['required']">El número de celular de la empresa es requerido (9 dígitos).</p>
+                                    <p *ngIf="formData.controls['phone'].errors['pattern']">El formato del teléfono es inválido (9 dígitos).</p>
                                 </div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <input type="email" class="form-control" id="email" formControlName="email" placeholder="E-mail" [(ngModel)]="email[index]">
                                 </div>
+                                <div *ngIf="formData.controls['email'].errors && formData.controls['email'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['email'].errors['required']">El correo de la empresa es requerido (ejemplo@correo.com).</p>
+                                    <p *ngIf="formData.controls['email'].errors['email']">El formato del correo es inválido (ejemplo@correo.com).</p>
+                                </div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <input type="am_first_name" class="form-control" id="am_first_name" formControlName="am_first_name" placeholder="Nombre Account Manager" [(ngModel)]="am_first_name[index]">
+                                </div>
+                                <div *ngIf="formData.controls['am_first_name'].errors && formData.controls['am_first_name'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['am_first_name'].errors['required']">El nombre del account manager es requerido.</p>
                                 </div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <input type="am_last_name" class="form-control" id="am_last_name" formControlName="am_last_name" placeholder="Apellido Account Manager" [(ngModel)]="am_last_name[index]">
                                 </div>
+                                <div *ngIf="formData.controls['am_last_name'].errors && formData.controls['am_last_name'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['am_last_name'].errors['required']">El apellido del account manager es requerido.</p>
+                                </div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <input type="invoice_name" class="form-control" id="invoice_name" formControlName="invoice_name" placeholder="Nombre contacto facturación" [(ngModel)]="invoice_name[index]">
+                                </div>
+                                <div *ngIf="formData.controls['invoice_name'].errors && formData.controls['invoice_name'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['invoice_name'].errors['required']">El nombre contacto de facturación es requerido.</p>
                                 </div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <input type="invoice_email" class="form-control" id="invoice_email" formControlName="invoice_email" placeholder="Email contacto facturación" [(ngModel)]="invoice_email[index]">
                                 </div>
+                                <div *ngIf="formData.controls['invoice_email'].errors && formData.controls['invoice_email'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['invoice_email'].errors['required']">El email contacto de facturación es requerido (ejemplo@correo.com).</p>
+                                    <p *ngIf="formData.controls['invoice_email'].errors['email']">El formato del correo es inválido (ejemplo@correo.com).</p>
+                                </div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <input type="invoice_phone" class="form-control" id="invoice_phone" formControlName="invoice_phone" placeholder="Teléfono contacto facturación" [(ngModel)]="invoice_phone[index]">
                                 </div>
+                                <div *ngIf="formData.controls['invoice_phone'].errors && formData.controls['invoice_phone'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['invoice_phone'].errors['required']">El telefono de facturación es requerido (9 dígitos).</p>
+                                    <p *ngIf="formData.controls['invoice_phone'].errors['pattern']">El formato del teléfono es inválido (9 dígitos).</p>
+                                </div>
                             </div>
-                                <!-- Otros campos del formulario -->
-                                <button type="submit" class="btn btn-primary" style="width: 150px;margin-left: 400px;" (click)="btnUpdateBusiness(id)" >Aceptar</button>
-                                <button type="button" class="btn btn-secondary buttonRight" style="width: 150px;"(click)="popupModify = !popupModify; this.formData.reset()">Cancelar</button>
+                                <button type="button" class="btn btn-primary" style="width: 150px;margin-left: 400px;" (click)="btnUpdateBusiness(id)" >Aceptar</button>
+                                <button type="button" class="btn btn-secondary buttonRight" style="width: 150px;"(click)="popupModify = !popupModify; this.formData.reset();getAllBusiness()">Cancelar</button>
                               </form>
                         </div>
                         

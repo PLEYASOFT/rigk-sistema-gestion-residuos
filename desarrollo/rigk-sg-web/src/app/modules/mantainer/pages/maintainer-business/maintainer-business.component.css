@@ -24,6 +24,12 @@
     border-radius: 10px;
 }
 
+@media (max-width: 768px) {
+    .popup {
+      width: 100%;
+    }
+  }
+
 .buttonRight {
   position: absolute;
   right: 40px;
