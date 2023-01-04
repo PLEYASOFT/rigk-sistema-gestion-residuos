@@ -189,6 +189,7 @@ export class MaintainerBusinessComponent implements OnInit {
             text: "",
             icon: "success",
           })
+          this.formData.reset();
           this.popupModify=false;
           this.getAllBusiness();
         }
