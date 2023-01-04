@@ -55,25 +55,29 @@ export class SidebarComponent implements OnInit {
         const year = parseInt((document.getElementById('inp_year') as HTMLInputElement).value);
         const actual = new Date().getFullYear();
         if ((year >= 1000 && year <= 9999) && year <= actual && id_business > 0) {
-          await this.businessService.verifyBusiness(id_business).subscribe(r => {
-            if (r.status) {
-              this.productorService.verifyDraft(id_business, year).subscribe(r => {
-                if (!r.status) {
-                  this.router.navigate(['/productor/form'], { queryParams: { year, id_business } });
-                } else {
-                  Swal.fire({
-                    icon: 'info',
-                    title: '¡Oops!',
-                    text: 'Ya existe declaración enviada'
-                  });
-                }
-              });
-            } else {
-              Swal.fire({
-                icon: 'error',
-                title: '¡Oops!',
-                text: 'Usuario no pertenece a empresa'
-              });
+          await this.businessService.verifyBusiness(id_business).subscribe({
+            next: r => {
+              if (r.status) {
+                this.productorService.verifyDraft(id_business, year).subscribe({
+                  next: e => {
+                    if (!e.status) {
+                      this.router.navigate(['/productor/form'], { queryParams: { year, id_business } });
+                    } else {
+                      Swal.fire({
+                        icon: 'info',
+                        title: '¡Oops!',
+                        text: 'Ya existe declaración enviada'
+                      });
+                    }
+                  }
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: '¡Oops!',
+                  text: 'Usuario no pertenece a empresa'
+                });
+              }
             }
           });
         } else {

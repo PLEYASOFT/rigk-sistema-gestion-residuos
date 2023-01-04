@@ -4,7 +4,7 @@ class statementProductorDao {
     public async getDeclaretionsByUser(user: string) {
         const conn = mysqlcon.getConnection();
 
-        const statements = await conn?.execute("SELECT * FROM header_statement_form WHERE CREATED_BY = ?", [user]).then((res) => res[0]).catch(error => { undefined });
+        const statements = await conn?.execute("SELECT header_statement_form.*, business.NAME as NAME_BUSINESS, SUM(detail_statement_form.VALUE * detail_statement_form.AMOUNT) as AMOUNT  FROM header_statement_form INNER JOIN business ON business.id = header_statement_form.ID_BUSINESS INNER JOIN detail_statement_form ON detail_statement_form.ID_HEADER = header_statement_form.ID WHERE CREATED_BY = ? GROUP BY header_statement_form.ID", [user]).then((res) => res[0]).catch(error => { undefined });
 
         conn?.end();
         return {statements};
@@ -21,7 +21,7 @@ class statementProductorDao {
             return false;
         }
 
-        res_header = await conn?.execute("SELECT * FROM header_statement_form WHERE ID_BUSINESS = ? AND YEAR_STATEMENT = ? AND STATE = ? ORDER BY ID DESC", [business, year, Math.abs(isDraft - 1)]).then((res) => res[0]).catch(error => { undefined });
+        res_header = await conn?.execute("SELECT header_statement_form.*, business.name as BUSINESS_NAME FROM header_statement_form INNER JOIN business on business.ID = header_statement_form.ID_BUSINESS WHERE ID_BUSINESS = ? AND YEAR_STATEMENT = ? AND STATE = ? ORDER BY ID DESC", [business, year, Math.abs(isDraft - 1)]).then((res) => res[0]).catch(error => { undefined });
         if (res_header.length == 0) {
             return false;
         }
@@ -93,6 +93,13 @@ class statementProductorDao {
             conn?.end();
             return isOk
         }
+    }
+    public async getDetailById(id:any, year: any) {
+        const conn = mysqlcon.getConnection();
+        const table0 = await conn?.execute("SELECT SUM(VALUE) as VALUE, TYPE_RESIDUE, RECYCLABILITY FROM detail_statement_form INNER JOIN header_statement_form ON header_statement_form.ID = detail_statement_form.ID_HEADER WHERE ID_BUSINESS = ? AND YEAR_STATEMENT=? GROUP BY TYPE_RESIDUE, RECYCLABILITY", [id, year]).then((res) => res[0]).catch(error => { undefined });
+        // const res_detail = await conn?.execute("SELECT * FROM detail_statement_form WHERE ID_HEADER = ?", [id_statement]).then((res) => res[0]).catch(error => { undefined });
+        conn?.end();
+        return table0;
     }
 }
 
