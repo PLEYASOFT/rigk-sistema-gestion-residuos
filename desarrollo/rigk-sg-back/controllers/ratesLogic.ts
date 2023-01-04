@@ -19,7 +19,7 @@ class RatesLogic {
     public async getRatesCLP(req: Request, res: Response) {
         const now = new Date();
         const date = now.toISOString().split("T")[0];
-        const year = (now.getFullYear()+1).toString();
+        const year = (now.getFullYear()).toString();
         try {
             const uf = await ratesDao.getUF(date);
             const rates_resp = await ratesDao.ratesID(year);
