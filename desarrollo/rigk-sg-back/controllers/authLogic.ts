@@ -149,9 +149,11 @@ class AuthLogic {
         const last_name = req.body.last_name
         const password = req.body.password;
         const phone = req.body.phone;
+        const phone_office = req.body.phone_office;
+        const position = req.body.position;
         try{   
             let passwordHash = bcrypt.hashSync(password, 8);
-            const result = await authDao.register(user,first_name,last_name,passwordHash, phone);
+            const result = await authDao.register(user,first_name,last_name,passwordHash, phone,phone_office, position);
             res.status(200).json({status:true, msg:'Has creado usuario', data: {}})
             }
         catch(err){
