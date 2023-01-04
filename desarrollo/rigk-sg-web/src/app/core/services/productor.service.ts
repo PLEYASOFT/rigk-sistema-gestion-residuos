@@ -17,6 +17,9 @@ export class ProductorService {
   getValueStatementByYear(id_business: any, year: number, isDraft: number) {
     return this.http.get<any>(`${this.url}/${id_business}/year/${year}/isDraft/${isDraft}`);
   }
+  get getStatementByUser() {
+    return this.http.get<any>(`${this.url}/byUser`);
+  }
   updateStateStatement(id_header: any, state: any) {
     return this.http.put<any>(`${this.url}/${id_header}/state/${state}`, {});
   }
@@ -27,4 +30,7 @@ export class ProductorService {
     return this.http.get<any>(`${this.url}/draft/${id_business}/year/${year}`);
   }
 
+  downloadPDF(id_business: any, year: any) {
+    window.open(`${this.url}/pdf/${id_business}/year/${year}`);
+  }
 }

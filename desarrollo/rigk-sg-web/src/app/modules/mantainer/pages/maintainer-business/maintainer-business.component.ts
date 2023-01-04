@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AuthService } from 'src/app/core/services/auth.service';
 import { BusinessService } from 'src/app/core/services/business.service';
-import { ProductorService } from 'src/app/core/services/productor.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -14,21 +11,21 @@ import Swal from 'sweetalert2';
 export class MaintainerBusinessComponent implements OnInit {
 
   formData: FormGroup = this.fb.group({
-    nombre : ['', [Validators.required]],
-    rut : ['', [Validators.required, Validators.minLength(3)]],
-    direccion : ['', [Validators.required, Validators.minLength(3)]],
-    telefono  : ['', [Validators.required]],
-    email : ['', [Validators.required, Validators.minLength(3)]],
-    nombreAccountManager  : ['', [Validators.required, Validators.minLength(3)]],
-    apellidoAccountManager   : ['', [Validators.required]],
-    nombreContactoFacturacion  : ['', [Validators.required, Validators.minLength(3)]],
-    emailContactoFacturacion   : ['', [Validators.required, Validators.minLength(3)]],
-    telefonoContactoFacturacion    : ['', [Validators.required, Validators.minLength(3)]]
+    name_business : ['', [Validators.required]], // Campo requerido
+    rut : ['', [Validators.required, Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$')]], // Campo requerido y con formato de RUT
+    loc_address : ['', [Validators.required]], // Campo requerido
+    phone : ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]], // Campo requerido y con formato de número de teléfono
+    email : ['', [Validators.required, Validators.email]], // Campo requerido y con formato de correo electrónico
+    am_first_name : ['', [Validators.required]], // Campo requerido
+    am_last_name : ['', [Validators.required]], // Campo requerido
+    invoice_name : ['', [Validators.required]], // Campo requerido
+    invoice_email : ['', [Validators.required, Validators.email]], // Campo requerido y con formato de correo electrónico
+    invoice_phone : ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]] // Campo requerido y con formato de número de teléfono
   });
-  pos = "right";
   popupVisible = false;
-  nombre = '';
-  rut2 = '';
+  popupModify = false;
+  id = '';
+  index = 0;
   id_business: string [] = [];
   name_business: string [] = [];
   rut: string [] = [];
@@ -41,15 +38,10 @@ export class MaintainerBusinessComponent implements OnInit {
   invoice_email: string [] = [];
   invoice_phone: string [] = [];
 
-  amount_current_year: number = 0;
-  amount_previous_year: number = 0;
   userData: any | null;
 
   constructor(private fb: FormBuilder,
-    private authService: AuthService,
-    public businessService: BusinessService,
-    public productorService: ProductorService,
-    private router: Router) { }
+    public businessService: BusinessService) { }
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
@@ -57,9 +49,19 @@ export class MaintainerBusinessComponent implements OnInit {
   }
 
   getAllBusiness() {
+    this.id_business= [];
+    this.name_business= [];
+    this.rut= [];
+    this.loc_address= [];
+    this.phone= [];
+    this.email= [];
+    this.am_first_name= [];
+    this.am_last_name= [];
+    this.invoice_name= [];
+    this.invoice_email= [];
+    this.invoice_phone= [];
     this.businessService.getAllBusiness().subscribe({
       next: resp => {
-        console.log(resp.status[0]);
         if (resp.status) {
           for(let i = 0; i < resp.status.length; i++)
           {
@@ -88,42 +90,117 @@ export class MaintainerBusinessComponent implements OnInit {
     });
   }
 
-  btnrecovery() {
-    const { actual, password, repeatPassword } = this.formData.value;
-    this.authService.modifyPassword(password, repeatPassword, actual).subscribe({
+  btnAddBusiness() {
+    
+    const { name_business, rut, loc_address,phone,  
+    email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone} = this.formData.value;
+
+    if (this.formData.invalid) {
+      Swal.fire({
+        title: "Validar información",
+        text: 'Debe completar todos los campos',
+        icon: "error",
+      });
+      this.getAllBusiness();
+      return;
+    }
+    
+    this.businessService.postBusiness(name_business, rut, loc_address, phone, email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone).subscribe({
       next: resp => {
-        if (resp.status) {
+        if(resp.status){
           Swal.fire({
-            title: "Cambio de contraseña",
-            text: "La contraseña fue cambiada exitosamente",
+            title: "Empresa agregada",
+            text: "La empresfue agregada exitosamente",
             icon: "success",
           })
-          this.router.navigate(['/mantenedor/home']);
-        }
-        else {
-          Swal.fire({
-            title: "Validar información",
-            text: resp.msg,
-            icon: "error",
-          });
+          this.popupVisible=false;
+          this.getAllBusiness();
           this.formData.reset();
         }
       },
     error: err => {
       Swal.fire({
-        title: 'Formato inválido',
-        text: 'Contraseña debe contener al menos 8 caracteres',
+        title: 'Error',
+        text: 'Error al agregar la empresa',
         icon: 'error'
       })
     }
     });
   }
 
-  displayModifyPassword() {
-    if (this.pos == "right") {
-      this.pos = "down";
-    } else {
-      this.pos = "right";
+
+  btnDeleteBusiness(id_business:any) {
+    
+    Swal.fire({
+      title: '¿Estás seguro que quieres eliminar la empresa?',
+      showDenyButton: true,
+      confirmButtonText: 'Confirmar',
+      denyButtonText: `Cancelar`,}).then((result) => {
+        if (result.isConfirmed) {
+          this.businessService.deleteBusiness(id_business).subscribe({
+            next: resp => {
+              if (resp.status) {
+                Swal.fire({
+                  title: "Empresa Eliminada",
+                  text: "",
+                  icon: "error",
+                })
+                this.getAllBusiness();
+              }
+              else {
+                Swal.fire({
+                  title: "Validar información",
+                  text: resp.msg,
+                  icon: "error",
+                });
+              }
+            },
+          error: err => {
+            Swal.fire({
+              title: 'Formato inválido',
+              text: '',
+              icon: 'error'
+            })
+          }
+          });
+        } 
+      })
+  }
+
+  btnUpdateBusiness(id_business:any) {
+    
+    const { name_business, rut, loc_address,phone,  
+    email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone} = this.formData.value;
+    
+    if (this.formData.invalid) {
+      Swal.fire({
+        title: "Validar información",
+        text: 'Debe completar todos los campos',
+        icon: "error",
+      });
+      return;
     }
+
+    this.businessService.updateBusiness(id_business,name_business, rut, loc_address, phone, email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone).subscribe({
+      next: resp => {
+        if (resp.status) {
+          Swal.fire({
+            title: "Empresa Modificada",
+            text: "",
+            icon: "success",
+          })
+          this.formData.reset();
+          this.popupModify=false;
+          this.getAllBusiness();
+        }
+      },
+    error: err => {
+      Swal.fire({
+        title: 'Error',
+        text: '',
+        icon: 'error'
+      })
+    }
+    });
   }
 }
