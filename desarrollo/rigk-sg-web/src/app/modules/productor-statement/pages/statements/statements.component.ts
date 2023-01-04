@@ -24,10 +24,8 @@ export class StatementsComponent implements OnInit {
 
   loadStatements() {
     this.productorService.getStatementByUser.subscribe(r => {
-      console.log(r);
       if (r.status) {
         (r.data as any[]).forEach(e => {
-          console.log(e);
           if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
             this.business_name.push(e.NAME_BUSINESS);
           }
@@ -35,7 +33,6 @@ export class StatementsComponent implements OnInit {
             this.years.push(e.YEAR_STATEMENT)
           }
         });
-        console.log("aa", this.business_name);
         this.dbStatements = r.data;
         this.db = this.dbStatements.slice(0, 10);
       }
@@ -74,7 +71,6 @@ export class StatementsComponent implements OnInit {
   next() {
     if ((this.pos) * 10 > this.dbStatements.length) return;
     this.pos++;
-    console.log(this.pos);
     this.db = this.dbStatements.slice((this.pos - 1) * 10, (this.pos) * 10);
   }
   previus() {
