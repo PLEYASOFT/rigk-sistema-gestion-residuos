@@ -47,7 +47,6 @@ export class MaintainerBusinessComponent implements OnInit {
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
     this.getAllBusiness();
-    console.log(getCheckDigit('19283992'))
   }
 
   getAllBusiness() {
