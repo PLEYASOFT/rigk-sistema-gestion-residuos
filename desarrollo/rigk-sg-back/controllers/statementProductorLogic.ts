@@ -153,7 +153,7 @@ class StatementProductorLogic {
             let enr = 0;
             let pomnr = 0;
 
-            const rates: any[] = await ratesDao.ratesID("2022");
+            const rates: any[] = await ratesDao.ratesID(year);
             const uf: any = await ratesDao.getUF((new Date()).toISOString().split("T")[0]);
 
             ep = (rates.find(r => r.type == 1))?.price||0;
