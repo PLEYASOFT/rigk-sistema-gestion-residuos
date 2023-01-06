@@ -16,8 +16,8 @@
 
     <div class="box box-form mb-4">
         <div class="row align-items-end">
-            <div class="col-12 col-xl-2 mb-3 mb-xl-0">
-                <label class="form-label">Nombre Empresa:</label>
+            <div class="col-12 col-xl-4 mb-3 mb-xl-0">
+                <label class="form-label">Empresa:</label>
                 <div class="input-group">
                     <select id="f_name" class="form-select">
                         <option value="-1" selected>Todos</option>
@@ -28,7 +28,7 @@
             <div class="col-12 col-xl-1 text-xl-center mb-3 mb-xl-0">
                 <div class="mb-xl-2">y/o</div>
             </div>
-            <div class="col-12 col-xl-4 mb-5 mb-xl-0">
+            <div class="col-12 col-xl-3 mb-5 mb-xl-0">
                 <label class="form-label">Año:</label>
                 <div class="input-group">
                     <select id="f_year" class="form-select">
@@ -37,10 +37,10 @@
                     </select>
                 </div>
             </div>
-            <div class="col-12 col-xl-5 mb-3 mb-xl-0">
+            <div class="col-12 col-xl-4 mb-3 mb-xl-0">
                 <div class="row">
                     <div class="col-6">
-                        <button class="btn btn-primary col-12" (click)="filter()">Mostrar Resultado</button>
+                        <button class="btn btn-primary col-12" (click)="filter()">Mostrar</button>
                     </div>
                     <!-- <div class="col-6">
                         <a class="btn btn-primary col-12" (click)="reset()">Restablecer</a>
@@ -69,7 +69,7 @@
                     <td>{{s.NAME_BUSINESS}}</td>
                     <td>{{s.YEAR_STATEMENT}}</td>
                     <td>{{s.STATE == 1 ? 'Enviada': 'Borrador'}}</td>
-                    <td>{{s.AMOUNT.toFixed(2)}}</td>
+                    <td>{{s.AMOUNT.toFixed(2).replace(".",",")}}</td>
                     <td>{{s.UPDATED_AT | date: 'dd-MM-yyyy H:m:s'}}</td>
                     <td class="text-center text-nowrap">
                         <!-- <a href="#"><i class="fa fa-file-text-o fa-fw fa-lg color-blue" aria-hidden="true"></i></a> -->
