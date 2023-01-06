@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { BusinessService } from 'src/app/core/services/business.service';
 import Swal from 'sweetalert2';
+import {  validate, clean, format, getCheckDigit } from 'rut.js'
 
 @Component({
   selector: 'app-maintainer-business',
@@ -12,7 +13,7 @@ export class MaintainerBusinessComponent implements OnInit {
 
   formData: FormGroup = this.fb.group({
     name_business : ['', [Validators.required]], // Campo requerido
-    rut : ['', [Validators.required, Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$')]], // Campo requerido y con formato de RUT
+    rut : ['', [Validators.required, Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$'),this.verifyRut] ], // Campo requerido y con formato de RUT
     loc_address : ['', [Validators.required]], // Campo requerido
     phone : ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]], // Campo requerido y con formato de número de teléfono
     email : ['', [Validators.required, Validators.email]], // Campo requerido y con formato de correo electrónico
@@ -202,5 +203,14 @@ export class MaintainerBusinessComponent implements OnInit {
       })
     }
     });
+  }
+
+  verifyRut(control: FormControl) {
+    const rut = control.value;
+    if (validate(rut)) {
+      return null;  // el RUT es válido, no hay errores
+    } else {
+      return { rut: true };  // el RUT es inválido, retorna un error
+    }
   }
 }
