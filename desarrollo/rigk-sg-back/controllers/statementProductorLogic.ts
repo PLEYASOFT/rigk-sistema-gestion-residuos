@@ -156,10 +156,10 @@ class StatementProductorLogic {
             const rates: any[] = await ratesDao.ratesID(year);
             const uf: any = await ratesDao.getUF((new Date()).toISOString().split("T")[0]);
 
-            ep = (rates.find(r => r.type == 1)).price;
-            eme = (rates.find(r => r.type == 2)).price;
-            epl = (rates.find(r => r.type == 3)).price;
-            enr = (rates.find(r => r.type == 4)).price;
+            ep = (rates.find(r => r.type == 1))?.price||0;
+            eme = (rates.find(r => r.type == 2))?.price||0;
+            epl = (rates.find(r => r.type == 3))?.price||0;
+            enr = (rates.find(r => r.type == 4))?.price||0;
 
             const declaretion: any = await statementDao.getDeclaretionByYear(id, year, 0);
             const { detail, header } = declaretion;
@@ -199,7 +199,6 @@ class StatementProductorLogic {
                     switch (t.TYPE_RESIDUE) {
                         case 1:
                             pr += t.VALUE
-                            console.log(pr)
                             break;
                         case 2:
                             mer += t.VALUE;
@@ -264,10 +263,10 @@ class StatementProductorLogic {
                 }
             }
 
-            const diff_p = pr / lrp;
-            const diff_me = mer / lrme;
-            const diff_pl = plr / lrpl;
-            const diff_nr = (pnr + menr + plnr) / lnr;
+            const diff_p  = parseFloat((((pr / lrp) == Infinity ? 0:pr / lrp)).toFixed(2));
+            const diff_me = parseFloat((((mer / lrme) == Infinity ? 0:mer / lrme)).toFixed(2));
+            const diff_pl = parseFloat((((plr / lrpl) == Infinity ? 0:plr / lrpl)).toFixed(2));
+            const diff_nr = parseFloat(((((pnr + menr + plnr) / lnr)==Infinity ? 0:(pnr + menr + plnr) / lnr)).toFixed(2));
 
             const PizZip = require("pizzip");
             const Docxtemplater = require("docxtemplater");
@@ -297,63 +296,65 @@ class StatementProductorLogic {
                 pr,
                 pnr,
                 preu,
-                ptt: (pr + pnr + preu),
+                ptt: (pr + pnr + preu).toFixed(2).replace(".",","),
 
                 mer,
                 menr,
                 mereu,
-                mett: (mer + menr + mereu),
+                mett: (mer + menr + mereu).toFixed(2).replace(".",","),
 
                 plr,
                 plnr,
                 plreu,
-                pltt: (plr + plnr + plreu),
+                pltt: (plr + plnr + plreu).toFixed(2).replace(".",","),
 
                 mar,
                 manr,
                 mareu,
-                matt: (mar + manr + mareu),
+                matt: (mar + manr + mareu).toFixed(2).replace(".",","),
 
                 or,
                 onr,
                 oreu,
-                ott: (or + onr + oreu),
+                ott: (or + onr + oreu).toFixed(2).replace(".",","),
 
-                ttr: (pr + mer + plr + mar + or),
-                ttnr: (pnr + menr + plnr + manr + onr),
-                ttreu: (preu + mereu + plreu + mareu + oreu),
-                ttotal: (pr + pnr + preu) + (mer + menr + mereu) + (plr + plnr + plreu) + (mar + manr + mareu) + (or + onr + oreu),
+                ttr: (pr + mer + plr + mar + or).toFixed(2).replace(".",","),
+                ttnr: (pnr + menr + plnr + manr + onr).toFixed(2).replace(".",","),
+                ttreu: (preu + mereu + plreu + mareu + oreu).toFixed(2).replace(".",","),
+                ttotal: ((pr + pnr + preu) + (mer + menr + mereu) + (plr + plnr + plreu) + (mar + manr + mareu) + (or + onr + oreu)).toFixed(2).replace(".",","),
 
-                ep,
-                pomp: (pr),
-                eppomp: (ep * pr).toFixed(2),
+                ep: ep.toString().replace(".",","),
+                pomp: (pr).toFixed(2).replace(".",","),
+                eppomp: (ep * pr).toFixed(2).replace(".",","),
 
-                eme,
-                pomme: (mer),
-                emepomme: (eme * mer).toFixed(2),
+                eme: eme.toString().replace(".",","),
+                pomme: (mer).toFixed(2).replace(".",","),
+                emepomme: (eme * mer).toFixed(2).replace(".",","),
 
-                epl,
-                pompl: (plr),
-                eplpompl: (plr * epl).toFixed(2),
+                epl: epl.toString().replace(".",","),
+                pompl: (plr).toFixed(2).replace(".",","),
+                eplpompl: (plr * epl).toFixed(2).replace(".",","),
 
-                enr,
-                pomnr: (pnr + menr + manr + onr + plnr),
-                enrpomnr: ((pnr + menr + plnr + manr + onr) * enr),
-                ett: (ep + eme + epl + enr),
-                pmptt: (pr + mer + plr + mar + or),
-                eppomptt: ((ep * pr) + (eme * mer) + (plr * epl)).toFixed(2),
+                enr: enr.toString().replace(".",","),
+                pomnr: (pnr + menr + plnr).toFixed(2).replace(".",","),
+                enrpomnr: ((pnr + menr + plnr) * enr).toFixed(2).replace(".",","),
+                ett: "",
+                pmptt: (pr + mer + plr+pnr+menr+plnr).toFixed(2).replace(".",","),
+                eppomptt: ((ep * pr) + (eme * mer) + (plr * epl)+((pnr + menr + plnr) * enr)).toFixed(2).replace(".",","),
 
-                dp: (((ep * pr) * diff_p) || 0).toFixed(2),
-                dme: (((eme * mer) * diff_me) || 0).toFixed(2),
-                dpl: ((((plr * epl) * diff_pl) || 0).toFixed(2)),
-                dnr: ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0).toFixed(2),
-                dtt: (((ep * pr) * diff_p) || 0) + (((eme * mer) * diff_me) || 0) + ((((plr * epl) * diff_pl) || 0) + (((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0),
+                dp: (((ep * pr) * diff_p) || 0).toFixed(2).replace(".",","),
+                dme: (((eme * mer) * diff_me) || 0).toFixed(2).replace(".",","),
+                dpl: ((((plr * epl) * diff_pl) || 0).toFixed(2).replace(".",",")),
+                dnr: ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0).toFixed(2).replace(".",","),
+                dtt: (parseFloat((((ep * pr) * diff_p) || 0).toFixed(2)) + parseFloat((((eme * mer) * diff_me) || 0).toFixed(2)) + parseFloat(((((plr * epl) * diff_pl) || 0).toFixed(2))) + parseFloat((((pnr + menr + plnr + manr + onr) * enr) * diff_nr ||0).toFixed(2))).toFixed(2).replace(".",","),
 
-                tp: ((((ep * pr) * diff_p) || 0) + (ep * pr)).toFixed(2),
-                tme: ((((eme * mer) * diff_me) || 0) + (eme * mer)).toFixed(2),
-                tpl: ((((plr * epl) * diff_pl) || 0)) + (plr * epl).toFixed(2),
-                tnr: ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr + manr + onr) * enr).toFixed(2),
-                tt: (((((ep * pr) * diff_p) || 0) + (ep * pr)) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + ((((plr * epl) * diff_pl) || 0)) + (plr * epl) + ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr + manr + onr) * enr)).toFixed(2)
+                tp: (((((ep * pr) * diff_p) || 0) + (ep * pr))).toFixed(2).replace(".",","),
+                tme: ((((eme * mer) * diff_me) || 0) + (eme * mer)).toFixed(2).replace(".",","),
+                tpl: (((((plr * epl) * diff_pl) || 0)) + (plr * epl)).toFixed(2).replace(".",","),
+                tnr: (((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr) * enr)).toFixed(2).replace(".",","),
+                // tt: (((((ep * pr) * diff_p) || 0) + (ep * pr)) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + ((((plr * epl) * diff_pl) || 0)) + (plr * epl) + ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr + manr + onr) * enr)).toFixed(2).replace(".",",")
+                // tt: (((parseFloat((((ep * pr) * diff_p) || 0).toFixed(2)) + (ep * pr)))+(parseFloat((((eme * mer) * diff_p) || 0).toFixed(2)) + (eme * mer))+(parseFloat((((plr * epl) * diff_p) || 0).toFixed(2)) + (plr * epl))+(parseFloat((((pnr + menr + plnr + manr + onr) * enr) * diff_nr ||0).toFixed(2)) + ((pnr + menr + plnr) * enr))).toFixed(2).replace(".",","),
+                tt: (parseFloat((parseFloat((((ep * pr) * diff_p) || 0).toFixed(2)) + parseFloat((((eme * mer) * diff_me) || 0).toFixed(2)) + parseFloat(((((plr * epl) * diff_pl) || 0).toFixed(2))) + parseFloat((((pnr + menr + plnr + manr + onr) * enr) * diff_nr ||0).toFixed(2))).toFixed(2)) + parseFloat(((ep * pr) + (eme * mer) + (plr * epl)+((pnr + menr + plnr) * enr)).toFixed(2))).toFixed(2).replace(".",",")
 
             });
             const buf = doc.getZip().generate({

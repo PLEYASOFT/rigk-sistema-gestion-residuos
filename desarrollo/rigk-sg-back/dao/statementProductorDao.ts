@@ -4,7 +4,7 @@ class statementProductorDao {
     public async getDeclaretionsByUser(user: string) {
         const conn = mysqlcon.getConnection();
 
-        const statements = await conn?.execute("SELECT header_statement_form.*, business.NAME as NAME_BUSINESS, SUM(detail_statement_form.VALUE * detail_statement_form.AMOUNT) as AMOUNT  FROM header_statement_form INNER JOIN business ON business.id = header_statement_form.ID_BUSINESS INNER JOIN detail_statement_form ON detail_statement_form.ID_HEADER = header_statement_form.ID WHERE CREATED_BY = ? GROUP BY header_statement_form.ID", [user]).then((res) => res[0]).catch(error => { undefined });
+        const statements = await conn?.execute("SELECT header_statement_form.*, business.NAME as NAME_BUSINESS, SUM(detail_statement_form.AMOUNT) as AMOUNT  FROM header_statement_form INNER JOIN business ON business.id = header_statement_form.ID_BUSINESS INNER JOIN detail_statement_form ON detail_statement_form.ID_HEADER = header_statement_form.ID WHERE CREATED_BY = ? GROUP BY header_statement_form.ID", [user]).then((res) => res[0]).catch(error => { undefined });
 
         conn?.end();
         return {statements};
