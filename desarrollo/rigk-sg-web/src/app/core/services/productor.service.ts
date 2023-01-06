@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, of } from 'rxjs';
 
 @Injectable({
@@ -29,8 +29,10 @@ export class ProductorService {
   verifyDraft(id_business: any, year: any) {
     return this.http.get<any>(`${this.url}/draft/${id_business}/year/${year}`);
   }
-
+  
   downloadPDF(id_business: any, year: any) {
-    window.open(`${this.url}/pdf/${id_business}/year/${year}`);
+    let headers = new HttpHeaders();
+    headers = headers.set('Accept', 'application/pdf');
+    return this.http.get<any>(`${this.url}/pdf/${id_business}/year/${year}`,{ headers: headers, responseType: 'blob' as 'json' });
   }
 }

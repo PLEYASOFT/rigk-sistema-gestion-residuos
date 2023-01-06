@@ -20,7 +20,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     'Papel Cartón',
     'Metal',
     'Plástico',
-    'Madera**',
+    'Madera',
     'Otro/Env. Compuesto'
   ];
   /**
@@ -126,9 +126,9 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
         diff_3 = 0;
       }
       
-      amount_1 += parseFloat((document.getElementById(`actual_amount_1_${i}`) as HTMLInputElement).value) || 0;
-      amount_2 += parseFloat((document.getElementById(`actual_amount_2_${i}`) as HTMLInputElement).value) || 0;
-      amount_3 += parseFloat((document.getElementById(`actual_amount_3_${i}`) as HTMLInputElement).value) || 0;
+      amount_1 += parseFloat((document.getElementById(`actual_amount_1_${i}`) as HTMLInputElement).value.replace(",",".")) || 0;
+      amount_2 += parseFloat((document.getElementById(`actual_amount_2_${i}`) as HTMLInputElement).value.replace(",",".")) || 0;
+      amount_3 += parseFloat((document.getElementById(`actual_amount_3_${i}`) as HTMLInputElement).value.replace(",",".")) || 0;
 
       weight_1 += parseFloat((document.getElementById(`actual_weight_1_${i}`) as HTMLInputElement).value.replace(",",".")) || 0;
       weight_2 += parseFloat((document.getElementById(`actual_weight_2_${i}`) as HTMLInputElement).value.replace(",",".")) || 0;
@@ -281,6 +281,8 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     const last_weight = parseFloat((document.getElementById(`last_weight_${recyclability}_${type_residue}`) as HTMLElement).innerHTML);
     const diff = (((sum - last_weight) / last_weight) * 100);
     (document.getElementById(`actual_dif_${recyclability}_${type_residue}`) as HTMLInputElement).value = `${diff == Infinity ? 100 : parseInt(diff.toFixed(2).replace(".",",")) || 0}%`;
+    this.calculateDiff();
+
   }
 
   getValueStatementByYear() {

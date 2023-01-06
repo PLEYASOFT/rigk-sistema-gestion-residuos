@@ -156,10 +156,10 @@ class StatementProductorLogic {
             const rates: any[] = await ratesDao.ratesID(year);
             const uf: any = await ratesDao.getUF((new Date()).toISOString().split("T")[0]);
 
-            ep = (rates.find(r => r.type == 1)).price;
-            eme = (rates.find(r => r.type == 2)).price;
-            epl = (rates.find(r => r.type == 3)).price;
-            enr = (rates.find(r => r.type == 4)).price;
+            ep = (rates.find(r => r.type == 1))?.price||0;
+            eme = (rates.find(r => r.type == 2))?.price||0;
+            epl = (rates.find(r => r.type == 3))?.price||0;
+            enr = (rates.find(r => r.type == 4))?.price||0;
 
             const declaretion: any = await statementDao.getDeclaretionByYear(id, year, 0);
             const { detail, header } = declaretion;
@@ -199,7 +199,6 @@ class StatementProductorLogic {
                     switch (t.TYPE_RESIDUE) {
                         case 1:
                             pr += t.VALUE
-                            console.log(pr)
                             break;
                         case 2:
                             mer += t.VALUE;
@@ -264,10 +263,10 @@ class StatementProductorLogic {
                 }
             }
 
-            const diff_p = pr / lrp;
-            const diff_me = mer / lrme;
-            const diff_pl = plr / lrpl;
-            const diff_nr = (pnr + menr + plnr) / lnr;
+            const diff_p = ((pr / lrp) == Infinity ? 0:pr / lrp);
+            const diff_me = ((mer / lrme) == Infinity ? 0:mer / lrme);
+            const diff_pl = ((plr / lrpl) == Infinity ? 0:plr / lrpl);
+            const diff_nr = (((pnr + menr + plnr) / lnr)==Infinity ? 0:(pnr + menr + plnr) / lnr);
 
             const PizZip = require("pizzip");
             const Docxtemplater = require("docxtemplater");

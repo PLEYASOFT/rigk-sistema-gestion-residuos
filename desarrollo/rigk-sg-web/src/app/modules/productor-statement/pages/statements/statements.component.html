@@ -51,7 +51,7 @@
     </div>
 
     <div class="table-responsive">
-        <table class="table table-even table-section table-borderless table-radius d-none d-lg-table">
+        <table class="table table-even table-section table-borderless table-radius">
             <thead class="vertical-middle">
                 <tr>
                     <th>ID Empresa</th>
@@ -69,7 +69,7 @@
                     <td>{{s.NAME_BUSINESS}}</td>
                     <td>{{s.YEAR_STATEMENT}}</td>
                     <td>{{s.STATE == 1 ? 'Enviada': 'Borrador'}}</td>
-                    <td>{{s.AMOUNT}}</td>
+                    <td>{{s.AMOUNT.toFixed(2)}}</td>
                     <td>{{s.UPDATED_AT | date: 'dd-MM-yyyy H:m:s'}}</td>
                     <td class="text-center text-nowrap">
                         <!-- <a href="#"><i class="fa fa-file-text-o fa-fw fa-lg color-blue" aria-hidden="true"></i></a> -->
@@ -84,14 +84,11 @@
     <!-- Pagination -->
     <nav aria-label="Navegación resultados">
         <ul class="pagination">
-            <li><button class="btn btn-primary"  (click)="setArrayFromNumber(1)">Primero</button></li>
+            <li><button class="btn btn-primary"  (click)="pagTo(0)">Primero</button></li>
             <li><button class="btn btn-primary" (click)="previus()" >Anterior</button></li>
-            <li><button class="border btn btn-sm btn-primary" (click)="setArrayFromNumber(1)">1</button></li>
-            <li><button class="border btn btn-sm btn-primary" (click)="setArrayFromNumber(2)">2</button></li>
-            <li><button class="border btn btn-sm btn-primary" (click)="setArrayFromNumber(3)">3</button></li>
-            <li><button class="border btn btn-sm btn-primary" (click)="setArrayFromNumber(4)">4</button></li>
+            <li *ngFor="let in of setArrayFromNumber(); let i = index"><button class="border btn btn-sm btn-primary" (click)="pagTo(i)">{{i+1}}</button></li>
             <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
-            <li><button class="btn btn-primary" (click)="setArrayFromNumber(4)">Último</button></li>
+            <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
         </ul>
     </nav>
 
