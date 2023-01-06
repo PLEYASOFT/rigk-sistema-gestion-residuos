@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductorService } from '../../../../core/services/productor.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-statements',
@@ -82,7 +83,18 @@ export class StatementsComponent implements OnInit {
     this.db = this.dbStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
   }
   downloadPDF(id: any, year: any) {
-    this.productorService.downloadPDF(id, year);
+    Swal.fire({
+      title: 'Espere',
+      text: 'Generando PDF',
+      showConfirmButton: false
+    });
+    Swal.showLoading();
+    this.productorService.downloadPDF(id, year).subscribe(r=>{
+      const file = new Blob([r], {type: 'application/pdf'});
+      const fileURL = URL.createObjectURL(file);
+      window.open(fileURL, '_blank', 'width=1000, height=800');
+      Swal.close();
+    });
   }
   setArrayFromNumber() {
     return new Array(this.cant);
