@@ -111,7 +111,7 @@ export class MaintainerBusinessComponent implements OnInit {
         if(resp.status){
           Swal.fire({
             title: "Empresa agregada",
-            text: "La empresfue agregada exitosamente",
+            text: "La empres fue agregada exitosamente",
             icon: "success",
           })
           this.popupVisible=false;
