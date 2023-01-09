@@ -84,11 +84,10 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   saveDraft() {
-    const edited = sessionStorage.getItem('isEdited') || false;
-    if(!edited) return;
-    
+    const edited = sessionStorage.getItem('isEdited') || false;    
     this.id_statement = parseInt(sessionStorage.getItem('id_statement')!) || null;
-    const detail = JSON.parse(sessionStorage.getItem('detailForm')!) || [];
+    const tmp = sessionStorage.getItem('detailForm');
+    const detail = JSON.parse(tmp ? tmp : "[]");
     let flagZero = true;
     for (let i = 0; i < detail.length; i++) {
       const reg = detail[i];
@@ -111,15 +110,21 @@ export class FormComponent implements OnInit, OnDestroy {
         type_residue: 1,
         value: 0,
         amount: 0
-      })
+      });
       Swal.fire({
         icon: 'question',
         title: '¿Formulario vacio?',
         text: 'El formulario tiene todos los valores en cero. ¿Estas seguro de guardar borrador?',
         showConfirmButton: true,
-        showCancelButton: true
+        showCancelButton: true,
+        cancelButtonText:'Cancelar',
+        confirmButtonText: 'Guardar'
       }).then(r => {
         if (r.isConfirmed) {
+          if(!edited) {
+            this.hour = new Date();
+            return;
+          }
           Swal.fire({
             title: 'Guardando Datos',
             text: `Se están guardando datos`,
