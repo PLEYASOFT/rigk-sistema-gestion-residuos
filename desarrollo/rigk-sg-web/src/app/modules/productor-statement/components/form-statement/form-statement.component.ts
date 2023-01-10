@@ -177,14 +177,14 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
             } else {
               amount = 0;
             }
-            const target = (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value.replace("$", "").replace(",", "");
+            const target = (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value.replace("$", "").replace(",", ".");
             const tmp_amount: number = (parseFloat(target) || 0) + amount;
             obj['amount'] = amount;
             this.detailForm.push(obj);
 
             (document.getElementById(`actual_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = tmp_weight.toString().replace(".",",");
             (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = tmp_amount.toFixed(2).replace(".",",") || "";
-            this.calculateDiff();
+            // this.calculateDiff();
           }
           sessionStorage.setItem('detailForm', JSON.stringify(this.detailForm));
         }
