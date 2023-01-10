@@ -30,6 +30,16 @@
     }
   }
 
+.btnLeft {
+    margin-left: 400px;
+}
+
+@media (max-width: 768px) {
+    .btnLeft {
+      margin-left: 0px;
+    }
+}
+
 .buttonRight {
   position: absolute;
   right: 40px;

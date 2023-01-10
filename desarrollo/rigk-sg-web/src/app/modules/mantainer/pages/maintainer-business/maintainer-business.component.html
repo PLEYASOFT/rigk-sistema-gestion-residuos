@@ -91,6 +91,7 @@
                                 <div *ngIf="formData.controls['rut'].errors && formData.controls['rut'].touched" class="text-danger pl-0">
                                     <p *ngIf="formData.controls['rut'].errors['required']">El rut de la empresa es requerido.</p>
                                     <p *ngIf="formData.controls['rut'].errors['pattern']">El formato del RUT es inválido (Sin puntos y con guión).</p>
+                                    <p *ngIf="formData.controls['rut'].errors['rut']">El digito verificador es incorrecto.</p>
                                 </div>
                             </div>
                             <div class="mb-4">
@@ -170,7 +171,7 @@
                                 </div>
                             </div>
                                 <!-- Otros campos del formulario -->
-                                <button type="submit" class="btn btn-primary" style="width: 150px;margin-left: 400px;"(click)="btnAddBusiness()" [disabled]="miFormulario.invalid">Aceptar</button>
+                                <button type="submit" class="btn btn-primary btnLeft" style="width: 150px;"(click)="btnAddBusiness()" [disabled]="miFormulario.invalid">Aceptar</button>
                                 <button type="button" class="btn btn-secondary buttonRight" style="width: 150px;"(click)="popupVisible = !popupVisible; this.formData.reset()">Cancelar</button>
                               </form>
                         </div>
@@ -275,7 +276,7 @@
                                     <p *ngIf="formData.controls['invoice_phone'].errors['pattern']">El formato del teléfono es inválido (9 dígitos).</p>
                                 </div>
                             </div>
-                                <button type="button" class="btn btn-primary" style="width: 150px;margin-left: 400px;" (click)="btnUpdateBusiness(id)" [disabled]="miFormulari02.invalid" >Aceptar</button>
+                                <button type="button" class="btn btn-primary btnLeft" style="width: 150px;" (click)="btnUpdateBusiness(id)" [disabled]="miFormulari02.invalid" >Aceptar</button>
                                 <button type="button" class="btn btn-secondary buttonRight" style="width: 150px;"(click)="popupModify = !popupModify; this.formData.reset();getAllBusiness()">Cancelar</button>
                               </form>
                         </div>
@@ -286,3 +287,4 @@
     </section>
     <!-- fin Consulta de Declaración -->
 </div>
+
