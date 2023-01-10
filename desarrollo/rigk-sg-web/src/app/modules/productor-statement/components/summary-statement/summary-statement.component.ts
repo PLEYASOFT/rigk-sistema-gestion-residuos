@@ -97,7 +97,6 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     let resultAmount: string;
     for (let i = 0; i < this.detailForm.length; i++) {
       const r = this.detailForm[i];
-      console.log(parseInt(r?.value));
       if(r.recyclability == 1)
       {
         this.tonSum1[r?.type_residue-1] = this.tonSum1[r?.type_residue-1] + parseFloat(r?.value);
@@ -278,11 +277,13 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
 
       for(let i = 0; i<5;i++){
         let uf_corregido = parseFloat((document.getElementById(`diff_corregido_amount_${i}`) as HTMLElement).innerHTML.replace(/[,]/g,'.'));
-        (document.getElementById(`uf_clp_${i}`) as HTMLElement).innerHTML = (uf_corregido * uf.data * 1.19).toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        this.total_diff_corregido= this.total_diff_corregido + parseFloat((uf_corregido * uf.data * 1.19).toFixed(2));
-        (document.getElementById(`total_uf_clp`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        (document.getElementById(`uf_clp_${i}`) as HTMLElement).innerHTML = '$'+(uf_corregido * uf.data * 1.19).toFixed(0).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        this.total_diff_corregido= this.total_diff_corregido + parseFloat((uf_corregido * uf.data * 1.19).toFixed(0));
+        (document.getElementById(`total_uf_clp`) as HTMLElement).innerHTML = '$'+this.total_diff_corregido.toFixed(0).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       }
 
+      sessionStorage.setItem('totalCLP','$'+this.total_diff_corregido.toFixed(0).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, "."));
+      sessionStorage.setItem('porcentajeDiff',(document.getElementById(`diff_ton`) as HTMLElement).innerHTML);
     });
     
     //Corrección datos
