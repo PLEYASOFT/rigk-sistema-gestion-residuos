@@ -26,6 +26,7 @@ export class StatementsComponent implements OnInit {
   loadStatements() {
     this.productorService.getStatementByUser.subscribe(r => {
       if (r.status) {
+        r.data = r.data.sort(((a:any, b:any) => b.YEAR_STATEMENT - a.YEAR_STATEMENT));
         (r.data as any[]).forEach(e => {
 
           if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
@@ -73,12 +74,12 @@ export class StatementsComponent implements OnInit {
     this.db = this.dbStatements.slice((i * 10), (i + 1) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
   }
   next() {
-    if (this.pos >= this.cant - 1) return;
+    if (this.pos >= this.cant) return;
     this.pos++;
     this.db = this.dbStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
   }
   previus() {
-    if (this.pos - 1 < 0 || this.pos >= this.cant) return;
+    if (this.pos-1 <= 0 || this.pos >= this.cant+1) return;
     this.pos--;
     this.db = this.dbStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
   }
