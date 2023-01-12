@@ -233,6 +233,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
       }
       if (r.type_residue == type_residue && r.precedence == precedence && r.hazard == hazard && r.recyclability == recyclability) {
         tmp = r;
+        console.log("first")
       }
     }
     if (this.detailForm.length == 0) {
