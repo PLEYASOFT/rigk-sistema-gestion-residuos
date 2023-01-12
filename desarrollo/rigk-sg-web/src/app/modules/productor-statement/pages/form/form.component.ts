@@ -54,7 +54,7 @@ export class FormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if(!this.isSubmited) {
-      this.saveDraft();
+      //this.saveDraft();
     }
     sessionStorage.removeItem('id_statement');
     sessionStorage.removeItem('detailForm');
@@ -137,6 +137,8 @@ export class FormComponent implements OnInit, OnDestroy {
               this.hour = new Date();
               if (r.status) {
                 sessionStorage.setItem('id_statement', r.data);
+                sessionStorage.removeItem('detailForm');
+                sessionStorage.removeItem('detailLastForm');
                 Swal.close()
               }
             });
@@ -153,11 +155,17 @@ export class FormComponent implements OnInit, OnDestroy {
         }
       });
     } else {
+      if(!edited) {
+        this.hour = new Date();
+        return;
+      }
       if (this.id_statement == null) {
         this.productorService.saveForm({ header, detail }).subscribe(r => {
           this.hour = new Date();
           if (r.status) {
             sessionStorage.setItem('id_statement', r.data);
+            sessionStorage.removeItem('detailForm');
+            sessionStorage.removeItem('detailLastForm');
           }
         });
       } else {
