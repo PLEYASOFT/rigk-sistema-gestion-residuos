@@ -25,7 +25,7 @@ export class SendStatementComponent implements OnInit {
   invoice_name: string = "";
   invoice_email: string = "";
   invoice_phone: string = "";
-  amountString: string = "";
+  amountString: string = "$0";
 
   amount_current_year: number = 0;
   amount_previous_year: number = 0;
