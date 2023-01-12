@@ -93,7 +93,6 @@ export class FormComponent implements OnInit, OnDestroy {
     let flagZero = true;
     for (let i = 0; i < detail.length; i++) {
       const reg = detail[i];
-      console.log(reg);
       if (reg.value != 0) {
         flagZero = false;
       }
@@ -104,12 +103,11 @@ export class FormComponent implements OnInit, OnDestroy {
       state: false,
       id_statement: this.id_statement
     };
-
-    
     
     if (flagZero) {
       
-      detail.push();
+      detail.push({ precedence:1, hazard:1, recyclability:1, type_residue:1, value:0, amount:0});
+      
       Swal.fire({
         icon: 'question',
         title: '¿Formulario vacio?',

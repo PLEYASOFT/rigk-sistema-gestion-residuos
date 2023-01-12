@@ -85,7 +85,7 @@ class statementProductorDao {
 
     public async haveDraft(business: string, year: string) {
         const conn = mysqlcon.getConnection();
-        const res: any = await conn?.execute("SELECT id FROM header_statement_form WHERE ID_BUSINESS=? AND YEAR_STATEMENT=? AND STATE=1, UPDATED_AT=now() ORDER BY ID DESC LIMIT 1", [business, year]).then((res) => res[0]).catch(error => undefined);
+        const res: any = await conn?.execute("SELECT id FROM header_statement_form WHERE ID_BUSINESS=? AND YEAR_STATEMENT=? AND STATE=1 ORDER BY ID DESC LIMIT 1", [business, year]).then((res) => res[0]).catch(error => undefined);
         let isOk = false;
         if (res != null && res != undefined && res.length > 0) {
             isOk = true;
