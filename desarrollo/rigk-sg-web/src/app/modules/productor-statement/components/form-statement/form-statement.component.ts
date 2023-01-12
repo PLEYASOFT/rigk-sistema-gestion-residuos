@@ -62,7 +62,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     });
   }
   ngOnDestroy(): void {
-    sessionStorage.removeItem('isEdited');
+    // sessionStorage.removeItem('isEdited');
   }
 
   ngOnInit(): void {
@@ -75,6 +75,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     Swal.showLoading();
     this.ratesService.getCLP.subscribe({
       next: r => {
+        console.log(r)
         this.rates = r.data;
         this.getDraftStatement();
         this.getValueStatementByYear();
@@ -211,6 +212,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
 
   updateValue(recyclability: any, type_residue: any, precedence: any, hazard: any, target: any) {
     sessionStorage.setItem('isEdited', "true");
+    console.log(this.rates)
     let tmp;
     let sum = 0;
     let amount: number | string = 0;
@@ -233,7 +235,6 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
       }
       if (r.type_residue == type_residue && r.precedence == precedence && r.hazard == hazard && r.recyclability == recyclability) {
         tmp = r;
-        console.log("first")
       }
     }
     if (this.detailForm.length == 0) {
@@ -245,6 +246,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
       sum = sum - { ...this.detailForm[index] }.value;
       this.detailForm[index].value = value;
       sum += parseFloat(this.detailForm[index].value);
+      
 
       if (recyclability == 1 && type_residue <= 3) {
         amount = value * this.rates[type_residue - 1].price;

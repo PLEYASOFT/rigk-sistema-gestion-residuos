@@ -51,10 +51,11 @@ export class FormComponent implements OnInit, OnDestroy {
     });
     this.getNameBusiness();
   }
+  
 
   ngOnDestroy(): void {
     if(!this.isSubmited) {
-      //this.saveDraft();
+      this.saveDraft();
     }
     sessionStorage.removeItem('id_statement');
     sessionStorage.removeItem('detailForm');
@@ -84,6 +85,7 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   saveDraft() {
+    
     const edited = sessionStorage.getItem('isEdited') || false;    
     this.id_statement = parseInt(sessionStorage.getItem('id_statement')!) || null;
     const tmp = sessionStorage.getItem('detailForm');
@@ -91,6 +93,7 @@ export class FormComponent implements OnInit, OnDestroy {
     let flagZero = true;
     for (let i = 0; i < detail.length; i++) {
       const reg = detail[i];
+      console.log(reg);
       if (reg.value != 0) {
         flagZero = false;
       }
@@ -102,15 +105,11 @@ export class FormComponent implements OnInit, OnDestroy {
       id_statement: this.id_statement
     };
 
+    
+    
     if (flagZero) {
-      detail.push({
-        precedence: 1,
-        hazard: 1,
-        recyclability: 1,
-        type_residue: 1,
-        value: 0,
-        amount: 0
-      });
+      
+      detail.push();
       Swal.fire({
         icon: 'question',
         title: '¿Formulario vacio?',
@@ -156,9 +155,11 @@ export class FormComponent implements OnInit, OnDestroy {
       });
     } else {
       if(!edited) {
+        console.log("aquiiii")
         this.hour = new Date();
         return;
       }
+      
       if (this.id_statement == null) {
         this.productorService.saveForm({ header, detail }).subscribe(r => {
           this.hour = new Date();
@@ -169,6 +170,7 @@ export class FormComponent implements OnInit, OnDestroy {
           }
         });
       } else {
+        
         this.productorService.updateValuesStatement(this.id_statement, detail, header).subscribe(r => {
           if (r.status) {
             this.hour = new Date();
