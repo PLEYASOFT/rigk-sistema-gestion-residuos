@@ -20,7 +20,7 @@ export class FormComponent implements OnInit, OnDestroy {
     'Metal',
     'Plástico',
     'Madera**',
-    'Otro/Env. Compuesto'
+    'Envases compuestos'
   ];
   /**
    * END BORRAr

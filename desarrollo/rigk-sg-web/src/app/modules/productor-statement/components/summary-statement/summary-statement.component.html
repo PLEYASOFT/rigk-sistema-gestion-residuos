@@ -1,4 +1,4 @@
-<h1> Tabla Resumen Ejercicio {{+year_statement + 1}} ( proyectado con datos de POM {{year_statement}}) </h1>
+<h1> Tabla Resumen Ejercicio {{+year_statement}} </h1>
 
 <!-- Excel -->
 <div class="d-md-flex justify-content-end">
@@ -10,7 +10,7 @@
         <div class="row w-100">
             <!-- Columna 1 -->
             <div  class="w-100">
-                 <div  class="w-100" style="overflow-x: scroll">
+                 <div  class="w-100 table-responsive-md" >
                     <!-- Tabla Desktop -->
                     <table class="table table-even table-section table-borderless table-align-middle table-border table-radius d-lg-table table-statement">
                         <thead>
@@ -21,13 +21,13 @@
                         <p></p>
                         <thead>
                             <tr class="text-center w-100" >
-                                <th style="background-color: rgb(7, 164, 123);color: black;">Material</th>
-                                <th style="background-color: rgb(7, 164, 123);color: black;">Reciclables</th>
-                                <th style="background-color: rgb(7, 164, 123);color: black;">No reciclables</th>
-                                <th style="background-color: rgb(7, 164, 123);color: black;">Retornable / Reutilizable</th>
-                                <th style="background-color: rgb(7, 164, 123);color: black;">Total por categoría</th>
-                                <th style="background-color: rgb(7, 164, 123);color: black;">Dif.{{year_statement-1}}/{{year_statement}}(%)</th>
-                                <th style="background-color: rgb(7, 164, 123);color: black;">Total Corregido por dif.</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Material</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Reciclables</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">No reciclables</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Retornable / Reutilizable</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Total por categoría</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Dif.{{year_statement-1}}/{{year_statement}}(%)</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Total Corregido</th>
                             </tr>
                         </thead>
                         
@@ -44,10 +44,10 @@
                         </tbody>
                         <tfoot>
                             <tr class="text-end w-100">
-                                <td style="background-color: rgb(7, 164, 123);color: black;" class="text-start" colspan="4">Total (Peso)</td>
-                                <td style="background-color: rgb(7, 164, 123);color: black;" id ="total_ton">0</td>
-                                <td style="background-color: rgb(7, 164, 123);color: black;" id ="diff_ton">0</td>
-                                <td style="background-color: rgb(7, 164, 123);color: black;" id ="total_diff_corregido_weight">0</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;" class="text-start" colspan="4">Total (Peso)</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;" id ="total_ton">0</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;" id ="diff_ton">0</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;" id ="total_diff_corregido_weight">0</td>
                             </tr>
                         </tfoot>        
                     </table>
@@ -57,15 +57,13 @@
         <p></p>
         <tr>
             <td colspan="13">
-            <i class="fa fa-info-circle fa-fw fa-lg color-green" aria-hidden="true">
-            </i> Los datos ingresados corresponden al total de materiales por categoría puestos en el mercado el año anterior al del ejercicio, es decir, datos del {{year_statement}} como proyección del {{+year_statement+1}}.
-            <br><br>En el primer año de ejercicio (2023) no hay corrección de lo proyectado vs datos reales debido a que no existen datos históricos</td>
+            En el primer año de ejercicio (2023) no hay corrección de lo proyectado vs datos reales debido a que no existen datos históricos</td>
         </tr>
         <p></p>
         <div class="row w-100">
             <!-- Columna 1 -->
             <div id = "table" #table1 class="w-100">
-                 <div  class="w-100" style="overflow-x: scroll">
+                 <div  class="w-100 table-responsive-md" >
                     <!-- Tabla Desktop -->
                     <table class="table table-even table-section table-borderless table-align-middle table-border table-radius d-lg-table table-statement">
                         <thead>
@@ -76,13 +74,13 @@
                         <p></p>
                         <thead>
                             <tr class="text-center w-100" >
-                                <th style="background-color: rgb(7, 164, 123);color: black;" >Material</th>
-                                <th style="background-color: rgb(7, 164, 123);color: black;">Reciclables</th>
-                                <th style="background-color: rgb(7, 164, 123);color: black;">No reciclables</th>
-                                <th style="background-color: rgb(7, 164, 123);color: black;">Retornable / Reutilizable</th>
-                                <th style="background-color: rgb(7, 164, 123);color: black;">Total por categoría UF</th>
-                                <th style="background-color: rgb(7, 164, 123);color: black;">Total corregido UF</th>
-                                <th style="background-color: rgb(7, 164, 123);color: black;">Total Bruto (Cl$) + IVA</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;" >Material</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Reciclables</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">No reciclables</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Retornable / Reutilizable</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Total por categoría UF</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Total corregido UF</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Total Bruto (CLP) + IVA</th>
                             </tr>
                         </thead>
                         <tbody >
@@ -98,10 +96,10 @@
                         </tbody>
                         <tfoot>
                             <tr class="text-end w-100">
-                                <td style="background-color: rgb(7, 164, 123);color: black;"class="text-start" colspan="4">Total (Costo)</td>
-                                <td style="background-color: rgb(7, 164, 123);color: black;"id ="total_amount">0</td>
-                                <td style="background-color: rgb(7, 164, 123);color: black;"id ="total_diff_corregido_amount">0</td>
-                                <td style="background-color: rgb(7, 164, 123);color: black;"id ="total_uf_clp">$0</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;"class="text-start" colspan="4">Total (Costo)</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;"id ="total_amount">0</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;"id ="total_diff_corregido_amount">0</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;"id ="total_uf_clp">$0</td>
                             </tr>
                         </tfoot>        
                     </table>
@@ -122,8 +120,8 @@
                 <p></p>
                 <thead>
                     <tr class="text-center w-100" >
-                        <th style="background-color: rgb(7, 164, 123);color: black;">Material</th>
-                        <th style="background-color: rgb(7, 164, 123);color: black;">POM     </th>
+                        <th style="background-color: rgb(8, 148, 110);color: white;">Material</th>
+                        <th style="background-color: rgb(8, 148, 110);color: white;">POM     </th>
                     </tr>
                 </thead>
                 <tbody >
@@ -147,8 +145,8 @@
                 <p></p>
                 <thead>
                     <tr class="text-center w-100" >
-                        <th style="background-color: rgb(7, 164, 123);color: black;">Material</th>
-                        <th style="background-color: rgb(7, 164, 123);color: black;">Total UF</th>
+                        <th style="background-color: rgb(8, 148, 110);color: white;">Material</th>
+                        <th style="background-color: rgb(8, 148, 110);color: white;">Total UF</th>
                     </tr>
                 </thead>
                 <tbody >
