@@ -54,7 +54,12 @@ export class SidebarComponent implements OnInit {
         const id_business = parseInt((document.getElementById('inp_id_business') as HTMLInputElement).value);
         const year = parseInt((document.getElementById('inp_year') as HTMLInputElement).value);
         const actual = new Date().getFullYear();
-        if ((year >= 1000 && year <= 9999) && year <= actual && id_business > 0) {
+        if( !(year < actual && id_business > 0))
+        {
+          Swal.showValidationMessage(`Solo se aceptan antes del año ${actual - 1}`);
+          return;
+        }
+        if ((year >= 1000 && year <= 9999) && year < actual && id_business > 0) {
           await this.businessService.verifyBusiness(id_business).subscribe({
             next: r => {
               if (r.status) {
