@@ -154,8 +154,7 @@ class StatementProductorLogic {
             let pomnr = 0;
 
             const rates: any[] = await ratesDao.ratesID(year);
-            const uf: any = await ratesDao.getUF((new Date()).toISOString().split("T")[0]);
-
+            
             ep = (rates.find(r => r.type == 1))?.price||0;
             eme = (rates.find(r => r.type == 2))?.price||0;
             epl = (rates.find(r => r.type == 3))?.price||0;
@@ -164,6 +163,7 @@ class StatementProductorLogic {
             const declaretion: any = await statementDao.getDeclaretionByYear(id, year, 0);
             const { detail, header } = declaretion;
             const last_detail: any = await statementDao.getDetailById(id, parseInt(year) - 1);
+            const uf: any = await ratesDao.getUF((new Date(header.UPDATED_AT)).toISOString().split("T")[0]);
 
             let lrp = 0;
             let lrme = 0;
@@ -282,9 +282,11 @@ class StatementProductorLogic {
                 paragraphLoop: true,
                 linebreaks: true,
             });
-            const fixed = ((((((ep * pr) * diff_p) || 0) + (ep * pr)) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + ((((plr * epl) * diff_pl) || 0)) + (plr * epl) + ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr + manr + onr) * enr)) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
-            const neto = (((ep * pr) + (eme * mer) + (plr * epl)) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
-            const total = ((((((ep * pr) * diff_p) || 0) + (ep * pr)) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + ((((plr * epl) * diff_pl) || 0)) + (plr * epl) + ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr + manr + onr) * enr)) * uf * 1.19).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            // const fixed = ((((((ep * pr) * diff_p) || 0) + (ep * pr)) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + ((((plr * epl) * diff_pl) || 0)) + (plr * epl) + ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr + manr + onr) * enr)) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            const neto = (((ep * pr) + (eme * mer) + (plr * epl) +((pnr + menr + plnr) * enr)) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            const fixed = (parseFloat(((((((ep * pr) * diff_p) || 0) + (ep * pr)))+((((eme * mer) * diff_me) || 0) + (eme * mer))+(((((plr * epl) * diff_pl) || 0)) + (plr * epl))+(((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr) * enr))) + neto) *uf ).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            // const total = ((((((ep * pr) * diff_p) || 0) + (ep * pr)) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + ((((plr * epl) * diff_pl) || 0)) + (plr * epl) + ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr + manr + onr) * enr)) * uf * 1.19).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            const total = (parseFloat(((((((ep * pr) * diff_p) || 0) + (ep * pr)))+((((eme * mer) * diff_me) || 0) + (eme * mer))+(((((plr * epl) * diff_pl) || 0)) + (plr * epl))+(((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr) * enr))) + neto) *uf*1.19 ).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
             doc.render({
                 neto,
                 fixed,

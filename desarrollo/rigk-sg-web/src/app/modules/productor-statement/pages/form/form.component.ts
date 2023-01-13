@@ -20,7 +20,7 @@ export class FormComponent implements OnInit, OnDestroy {
     'Metal',
     'Plástico',
     'Madera**',
-    'Otro/Env. Compuesto'
+    'Envases compuestos'
   ];
   /**
    * END BORRAr
@@ -84,6 +84,7 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   saveDraft() {
+    
     const edited = sessionStorage.getItem('isEdited') || false;    
     this.id_statement = parseInt(sessionStorage.getItem('id_statement')!) || null;
     const tmp = sessionStorage.getItem('detailForm');
@@ -101,16 +102,11 @@ export class FormComponent implements OnInit, OnDestroy {
       state: false,
       id_statement: this.id_statement
     };
-
+    
     if (flagZero) {
-      detail.push({
-        precedence: 1,
-        hazard: 1,
-        recyclability: 1,
-        type_residue: 1,
-        value: 0,
-        amount: 0
-      });
+      
+      detail.push({ precedence:1, hazard:1, recyclability:1, type_residue:1, value:0, amount:0});
+      
       Swal.fire({
         icon: 'question',
         title: '¿Formulario vacio?',
@@ -137,6 +133,8 @@ export class FormComponent implements OnInit, OnDestroy {
               this.hour = new Date();
               if (r.status) {
                 sessionStorage.setItem('id_statement', r.data);
+                sessionStorage.removeItem('detailForm');
+                sessionStorage.removeItem('detailLastForm');
                 Swal.close()
               }
             });
@@ -153,14 +151,22 @@ export class FormComponent implements OnInit, OnDestroy {
         }
       });
     } else {
+      if(!edited) {
+        this.hour = new Date();
+        return;
+      }
+      
       if (this.id_statement == null) {
         this.productorService.saveForm({ header, detail }).subscribe(r => {
           this.hour = new Date();
           if (r.status) {
             sessionStorage.setItem('id_statement', r.data);
+            sessionStorage.removeItem('detailForm');
+            sessionStorage.removeItem('detailLastForm');
           }
         });
       } else {
+        
         this.productorService.updateValuesStatement(this.id_statement, detail, header).subscribe(r => {
           if (r.status) {
             this.hour = new Date();
