@@ -5,7 +5,6 @@ class statementProductorDao {
         const conn = mysqlcon.getConnection();
 
         const statements = await conn?.execute("SELECT header_statement_form.*, business.NAME as NAME_BUSINESS, SUM(detail_statement_form.AMOUNT) as AMOUNT  FROM header_statement_form INNER JOIN business ON business.id = header_statement_form.ID_BUSINESS INNER JOIN detail_statement_form ON detail_statement_form.ID_HEADER = header_statement_form.ID WHERE ID_BUSINESS in (SELECT ID_BUSINESS FROM user_business WHERE ID_USER=?) GROUP BY header_statement_form.ID", [user]).then((res) => res[0]).catch(error => { undefined });
-        console.log(statements);
         conn?.end();
         return {statements};
     }
@@ -43,20 +42,23 @@ class statementProductorDao {
             id_header = resp.insertId;
         }
 
-        for (let i = 0; i < detail.length; i++) {
-            const { precedence, hazard, recyclability, type_residue, value, amount } = detail[i];
-            if (detail[i].id) {
-                await conn?.execute("UPDATE detail_statement_form SET VALUE = ? WHERE ID=?", [value, detail[i].id]);
-            } else {
-                await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, precedence, hazard, recyclability, type_residue, value, amount]).catch(err => console.log(err));
+        if(detail.length>0){
+            for (let i = 0; i < detail.length; i++) {
+                const { precedence, hazard, recyclability, type_residue, value, amount } = detail[i];
+                if (detail[i].id) {
+                    await conn?.execute("UPDATE detail_statement_form SET VALUE = ? WHERE ID=?", [value, detail[i].id]);
+                } else {
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, precedence, hazard, recyclability, type_residue, value, amount]).catch(err => console.log(err));
+                }
             }
         }
+
         conn?.end();
         return { id_header: id_header };
     }
     public async updateValueStatement(id_header: any, detail: any[]) {
         const conn = mysqlcon.getConnection();
-        // await conn?.execute("UPDATE header_statement_form SET STATE = true WHERE id = ?", [id_header]).then((res) => res[0]).catch(error => undefined);
+        await conn?.execute("UPDATE header_statement_form SET UPDATED_AT=now() WHERE id = ?", [id_header]).then((res) => res[0]).catch(error => undefined);
 
         for (let i = 0; i < detail.length; i++) {
             const { precedence, hazard, recyclability, type_residue, value, amount } = detail[i];
@@ -73,7 +75,7 @@ class statementProductorDao {
 
     public async changeStateHeader(state: boolean, id: number) {
         const conn = mysqlcon.getConnection();
-        const tmp = await conn?.execute("UPDATE header_statement_form SET STATE = ? WHERE id = ?", [state, id]).then((res) => res[0]).catch(error => undefined);
+        const tmp = await conn?.execute("UPDATE header_statement_form SET STATE = ?, UPDATED_AT=now() WHERE id = ?", [state, id]).then((res) => res[0]).catch(error => undefined);
         if (tmp == undefined) {
             return false;
         }

@@ -21,12 +21,13 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     'Metal',
     'Plástico',
     'Madera',
-    'Otro/Env. Compuesto'
+    'Envases compuestos'
   ];
   /**
    * END BORRAr
    */
 
+  showOtherEnvInNoRecyclableTable: boolean = false;
   isSubmited = false;
   isEdited = false;
 
@@ -62,7 +63,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     });
   }
   ngOnDestroy(): void {
-    sessionStorage.removeItem('isEdited');
+    // sessionStorage.removeItem('isEdited');
   }
 
   ngOnInit(): void {

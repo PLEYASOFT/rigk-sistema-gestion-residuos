@@ -24,7 +24,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     'Metal',
     'Plástico',
     'Madera',
-    'Otro/Env. Compuesto'
+    'Envases compuestos'
   ];
   /**
    * END BORRAR
