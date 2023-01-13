@@ -152,7 +152,6 @@ export class FormComponent implements OnInit, OnDestroy {
       });
     } else {
       if(!edited) {
-        console.log("aquiiii")
         this.hour = new Date();
         return;
       }
