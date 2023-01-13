@@ -7,7 +7,7 @@
     <table class="table table-even table-section table-borderless table-align-middle table-border table-radius table-statement">
         <thead>
             <tr>
-                <th colspan="13">Declaración REP {{t}} año {{year_statement}} en toneladas.</th>
+                <th colspan="13">Declaración REP {{t}} año {{year_statement}} en toneladas</th>
             </tr>
         </thead>
         <tbody>
@@ -37,24 +37,18 @@
                     <ng-template [ngIf]="r !== 'Envases compuestos' || (r === 'Envases compuestos' && t === 'EyE No Reciclables')">
                         <td>{{r}}</td>
                         <td  id="inp_l_{{i+1}}_{{(x+1)}}_1_2" class="bg-grey-light">0</td>
-                <td > <input value="0" id="inp_{{i+1}}_{{(x+1)}}_1_2" type="text" min="0" class="form-control"
-                        (change)="updateValue((i+1),(x+1),1,2,$event.target)"> </td>
-                <td  id="inp_l_{{i+1}}_{{(x+1)}}_1_1" class="bg-grey-light">0</td>
-                <td > <input value="0" id="inp_{{i+1}}_{{(x+1)}}_1_1" type="text" min="0"
-                        class="form-control form-control-sm" (change)="updateValue((i+1),(x+1),1,1,$event.target)">
-                </td>
-                <td  id="inp_l_{{i+1}}_{{(x+1)}}_2_1" class="bg-grey-light">0</td>
-                <td > <input value="0" id="inp_{{i+1}}_{{(x+1)}}_2_1" type="text" min="0"
-                        class="form-control form-control-sm" (change)="updateValue((i+1),(x+1),2,1,$event.target)">
-                </td>
-                <td  id="last_weight_{{i+1}}_{{x+1}}" class="bg-grey-light">0</td>
-                <td > <input value="0" readonly id="actual_weight_{{i+1}}_{{x+1}}" type="text"
-                        class="form-control form-control-sm"> </td>
-                <td > <input value="0" readonly id="actual_dif_{{i+1}}_{{x+1}}" type="text"
-                        class="form-control form-control-sm"> </td>
-                <td > <input value="0" readonly id="actual_amount_{{i+1}}_{{x+1}}" type="text"
-                        class="form-control form-control-sm"> </td>
-                          
+                        <td > <input value="0" id="inp_{{i+1}}_{{(x+1)}}_1_2" type="text" min="0" class="form-control"
+                            (change)="updateValue((i+1),(x+1),1,2,$event.target)"> </td>
+                        <td id="inp_l_{{i+1}}_{{(x+1)}}_1_1" class="bg-grey-light">0</td>
+                        <td > <input value="0" id="inp_{{i+1}}_{{(x+1)}}_1_1" type="text" min="0"
+                            class="form-control form-control-sm" (change)="updateValue((i+1),(x+1),1,1,$event.target)"></td>
+                        <td  id="inp_l_{{i+1}}_{{(x+1)}}_2_1" class="bg-grey-light">0</td>
+                        <td > <input value="0" id="inp_{{i+1}}_{{(x+1)}}_2_1" type="text" min="0"
+                            class="form-control form-control-sm" (change)="updateValue((i+1),(x+1),2,1,$event.target)"></td>
+                        <td id="last_weight_{{i+1}}_{{x+1}}" class="bg-grey-light">0</td>
+                        <td ><input  value="0" id="actual_weight_{{i+1}}_{{x+1}}" readonly style = 'border: none; background-color: transparent; text-align: center;'></td>
+                        <td ><input  value="0" id="actual_dif_{{i+1}}_{{x+1}}" readonly style = 'border: none; background-color: transparent; text-align: center;'></td>
+                        <td ><input  value="0" id="actual_amount_{{i+1}}_{{x+1}}" readonly style = 'border: none; background-color: transparent; text-align: center;'> </td>  
                     </ng-template>
                     
                     <ng-template [ngIf]="!(r !== 'Envases compuestos' || (r === 'Envases compuestos' && t === 'EyE No Reciclables'))">

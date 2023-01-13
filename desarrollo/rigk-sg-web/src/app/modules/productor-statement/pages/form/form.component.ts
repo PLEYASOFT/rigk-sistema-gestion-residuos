@@ -51,7 +51,6 @@ export class FormComponent implements OnInit, OnDestroy {
     });
     this.getNameBusiness();
   }
-  
 
   ngOnDestroy(): void {
     if(!this.isSubmited) {

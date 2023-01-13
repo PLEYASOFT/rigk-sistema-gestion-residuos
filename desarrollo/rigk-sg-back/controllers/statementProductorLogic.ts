@@ -155,7 +155,6 @@ class StatementProductorLogic {
 
             const rates: any[] = await ratesDao.ratesID(year);
             
-
             ep = (rates.find(r => r.type == 1))?.price||0;
             eme = (rates.find(r => r.type == 2))?.price||0;
             epl = (rates.find(r => r.type == 3))?.price||0;
