@@ -20,7 +20,7 @@ export class FormComponent implements OnInit, OnDestroy {
     'Metal',
     'Plástico',
     'Madera**',
-    'Otro/Env. Compuesto'
+    'Envases compuestos'
   ];
   /**
    * END BORRAr
@@ -51,7 +51,6 @@ export class FormComponent implements OnInit, OnDestroy {
     });
     this.getNameBusiness();
   }
-  
 
   ngOnDestroy(): void {
     if(!this.isSubmited) {
@@ -153,7 +152,6 @@ export class FormComponent implements OnInit, OnDestroy {
       });
     } else {
       if(!edited) {
-        console.log("aquiiii")
         this.hour = new Date();
         return;
       }

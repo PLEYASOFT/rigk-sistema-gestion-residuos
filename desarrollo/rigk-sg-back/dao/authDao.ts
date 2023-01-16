@@ -72,9 +72,9 @@ class AuthDao {
 
     }
 
-    async register(EMAIL: string, FIRST_NAME: string, LAST_NAME: string, PASSWORD: string, PHONE: string) {
+    async register(EMAIL: string, FIRST_NAME: string, LAST_NAME: string, PASSWORD: string, PHONE: string,PHONE_OFFICE:string, POSITION:string) {
         const conn = mysqlcon.getConnection()!;
-        const res: any = await conn.query("INSERT INTO user(EMAIL,FIRST_NAME,LAST_NAME, PASSWORD,PHONE, STATE, SALT) VALUES (?,?,?,?,?,?,'ABC')", [EMAIL, FIRST_NAME, LAST_NAME, PASSWORD, PHONE,1]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const res: any = await conn.query("INSERT INTO user(EMAIL,FIRST_NAME,LAST_NAME, PASSWORD,PHONE, STATE, SALT,PHONE_OFFICE,POSITION) VALUES (?,?,?,?,?,?,'ABC',?,?)", [EMAIL, FIRST_NAME, LAST_NAME, PASSWORD, PHONE,1,PHONE_OFFICE,POSITION]).then((res) => res[0]).catch(error => [{ undefined }]);
         const res_1: any = await conn.query("INSERT INTO user_rol(USER_ID,ROL_ID) VALUES (?,?)", [res.insertId]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         return res

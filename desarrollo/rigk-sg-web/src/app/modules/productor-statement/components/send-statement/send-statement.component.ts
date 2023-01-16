@@ -25,10 +25,13 @@ export class SendStatementComponent implements OnInit {
   invoice_name: string = "";
   invoice_email: string = "";
   invoice_phone: string = "";
+  amountString: string = "$0";
 
   amount_current_year: number = 0;
   amount_previous_year: number = 0;
   uf: number = 0.0;
+  totalCLP:string = "";
+  porcentajeDiff:string = "";
 
   constructor(public businessService: BusinessService,
     public productorService: ProductorService,
@@ -45,6 +48,8 @@ export class SendStatementComponent implements OnInit {
     this.getUf();
     this.getBusiness();
     this.getAmountDiff();
+    this.totalCLP = sessionStorage.getItem('totalCLP')!
+    this.porcentajeDiff = sessionStorage.getItem('porcentajeDiff')!
   }
   getUf() {
     this.rateService.getUF.subscribe(r=>{
@@ -85,6 +90,7 @@ export class SendStatementComponent implements OnInit {
 
     this.productorService.getValueStatementByYear(this.id_business, this.year_statement - 1, 0).subscribe({
       next: resp => {
+        
         if (resp.status) {
           if (resp.data.detail.length > 0) {
             for (let i = 0; i < resp.data.detail.length; i++) {
@@ -93,6 +99,8 @@ export class SendStatementComponent implements OnInit {
                 this.amount_previous_year = this.amount_previous_year + (parseFloat(reg.AMOUNT)*this.uf);
               }
             }
+            this.amount_previous_year = this.amount_previous_year*parseFloat(this.porcentajeDiff) * 0.01*1.19;
+            this.amountString = "$" + this.amount_previous_year.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
           }
         }
       },
@@ -113,9 +121,10 @@ export class SendStatementComponent implements OnInit {
             for (let i = 0; i < resp.data.detail.length; i++) {
               const reg = resp.data.detail[i];
               if (reg.AMOUNT != 0) {
-                this.amount_current_year = this.amount_current_year + (parseFloat(reg.AMOUNT.toFixed(2))*this.uf);
+                this.amount_current_year = this.amount_current_year + (parseFloat(reg.AMOUNT)*this.uf);
               }
             }
+            this.amount_current_year = this.amount_current_year*parseFloat(this.porcentajeDiff) * 0.01*1.19
           }
         }
       },

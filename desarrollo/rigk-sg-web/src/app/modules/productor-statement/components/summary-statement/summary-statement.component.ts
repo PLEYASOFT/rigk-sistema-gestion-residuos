@@ -23,8 +23,8 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     'Papel Cartón',
     'Metal',
     'Plástico',
-    'Madera**',
-    'Otro/Env. Compuesto'
+    'Madera',
+    'Envases compuestos'
   ];
   /**
    * END BORRAr
@@ -83,16 +83,11 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     });
   }
   ngAfterViewInit(): void {
-    
     this.generateForm();
     this.generateDiff();
   }
 
   ngOnInit(): void {
-    this.ratesService.getUF.subscribe(result => {
-      console.log(result)
-      console.log(result.data);
-    });
   }
 
   generateForm(){
@@ -102,7 +97,6 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     let resultAmount: string;
     for (let i = 0; i < this.detailForm.length; i++) {
       const r = this.detailForm[i];
-      console.log(parseInt(r?.value));
       if(r.recyclability == 1)
       {
         this.tonSum1[r?.type_residue-1] = this.tonSum1[r?.type_residue-1] + parseFloat(r?.value);
@@ -228,7 +222,6 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         this.last_amount = this.last_amount +  parseFloat(r?.AMOUNT);
       }
     }
-    
   }
 
   generateDiff()
@@ -261,9 +254,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       (document.getElementById(`diff_corregido_weight_${i}`) as HTMLElement).innerHTML = ((parseFloat((document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML) + 
                                                                                         (parseFloat((document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML) *
                                                                                         (dif[i]))).toFixed(2)).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      this.total_diff_corregido= this.total_diff_corregido + (parseFloat((document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML) + 
-                                                              (parseFloat((document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML) *
-                                                              (dif[i])));
+      this.total_diff_corregido= this.total_diff_corregido + parseFloat((document.getElementById(`diff_corregido_weight_${i}`) as HTMLElement).innerHTML.replace(/[,]/g,'.').replace(/\B(?=(\d{3})+(?!\d))/g, ""));
       (document.getElementById(`total_diff_corregido_weight`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       (document.getElementById(`pom_total`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
@@ -275,9 +266,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       (document.getElementById(`diff_corregido_amount_${i}`) as HTMLElement).innerHTML = ((parseFloat((document.getElementById(`total_category_amount_${i}`) as HTMLElement).innerHTML) + 
                                                                                         (parseFloat((document.getElementById(`total_category_amount_${i}`) as HTMLElement).innerHTML) *
                                                                                         (dif[i]))).toFixed(2)).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      this.total_diff_corregido= this.total_diff_corregido + (parseFloat((document.getElementById(`total_category_amount_${i}`) as HTMLElement).innerHTML) + 
-                                                                                        (parseFloat((document.getElementById(`total_category_amount_${i}`) as HTMLElement).innerHTML) *
-                                                                                        (dif[i])));
+      this.total_diff_corregido= this.total_diff_corregido + parseFloat((document.getElementById(`diff_corregido_amount_${i}`) as HTMLElement).innerHTML.replace(/[,]/g,'.').replace(/\B(?=(\d{3})+(?!\d))/g, ""));
       (document.getElementById(`total_diff_corregido_amount`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       (document.getElementById(`amount_total`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
@@ -286,17 +275,17 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     this.total_diff_corregido = 0;
     this.ratesService.getUF.subscribe(uf => {
 
-
       for(let i = 0; i<5;i++){
         let uf_corregido = parseFloat((document.getElementById(`diff_corregido_amount_${i}`) as HTMLElement).innerHTML.replace(/[,]/g,'.'));
-        (document.getElementById(`uf_clp_${i}`) as HTMLElement).innerHTML = (uf_corregido * uf.data * 1.19).toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        this.total_diff_corregido= this.total_diff_corregido + (uf_corregido * uf.data * 1.19);
-        (document.getElementById(`total_uf_clp`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        (document.getElementById(`uf_clp_${i}`) as HTMLElement).innerHTML = '$'+(uf_corregido * uf.data * 1.19).toFixed(0).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        this.total_diff_corregido= this.total_diff_corregido + parseFloat((uf_corregido * uf.data * 1.19).toFixed(0));
+        (document.getElementById(`total_uf_clp`) as HTMLElement).innerHTML = '$'+this.total_diff_corregido.toFixed(0).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       }
 
+      sessionStorage.setItem('totalCLP','$'+this.total_diff_corregido.toFixed(0).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, "."));
+      sessionStorage.setItem('porcentajeDiff',(document.getElementById(`diff_ton`) as HTMLElement).innerHTML);
     });
     
-
     //Corrección datos
 
     for(let i = 0; i<5;i++){
