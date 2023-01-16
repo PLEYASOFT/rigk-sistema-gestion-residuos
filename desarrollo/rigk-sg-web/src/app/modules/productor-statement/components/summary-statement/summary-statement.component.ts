@@ -57,19 +57,21 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   total_diff_corregido = 0;
   uf = 0;
 
-   tonSum1 = Array.from({length: 5}, () => 0);
-   tonSum2 = Array.from({length: 5}, () => 0);
-   tonSum3 = Array.from({length: 5}, () => 0);
-   l_tonSum1 = Array.from({length: 5}, () => 0);
-   l_tonSum2 = Array.from({length: 5}, () => 0);
-   l_tonSum3 = Array.from({length: 5}, () => 0);
+  tonSums = {
+    tonSum1: Array.from({length: 5}, () => 0),
+    tonSum2: Array.from({length: 5}, () => 0),
+    tonSum3: Array.from({length: 5}, () => 0),
+    l_tonSum1: Array.from({length: 5}, () => 0),
+    l_tonSum2: Array.from({length: 5}, () => 0),
+    l_tonSum3: Array.from({length: 5}, () => 0)
+  }
 
-   costoSum1 = Array.from({length: 5}, () => 0);
-   costoSum2 = Array.from({length: 5}, () => 0);
-   costoSum3 = Array.from({length: 5}, () => 0);
-   l_costoSum1 = Array.from({length: 5}, () => 0);
-   l_costoSum2 = Array.from({length: 5}, () => 0);
-   l_costoSum3 = Array.from({length: 5}, () => 0);
+  costoSum1 = Array.from({length: 5}, () => 0);
+  costoSum2 = Array.from({length: 5}, () => 0);
+  costoSum3 = Array.from({length: 5}, () => 0);
+  l_costoSum1 = Array.from({length: 5}, () => 0);
+  l_costoSum2 = Array.from({length: 5}, () => 0);
+  l_costoSum3 = Array.from({length: 5}, () => 0);
 
 
   constructor(private fb: FormBuilder,
@@ -99,16 +101,16 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       const r = this.detailForm[i];
       if(r.recyclability == 1)
       {
-        this.tonSum1[r?.type_residue-1] = this.tonSum1[r?.type_residue-1] + parseFloat(r?.value);
+        this.tonSums.tonSum1[r?.type_residue-1] = this.tonSums.tonSum1[r?.type_residue-1] + parseFloat(r?.value);
         this.costoSum1[r?.type_residue-1] = this.costoSum1[r?.type_residue-1] + parseFloat(r?.amount);
         this.actual_weight = this.actual_weight +  parseFloat(r?.value);
         this.actual_amount = this.actual_amount +  parseFloat(r?.amount);
 
         
-        if (Number.isInteger(this.tonSum1[r?.type_residue-1])) {
-          result = this.tonSum1[r?.type_residue-1].toString();  
+        if (Number.isInteger(this.tonSums.tonSum1[r?.type_residue-1])) {
+          result = this.tonSums.tonSum1[r?.type_residue-1].toString();  
         } else {
-          result = this.tonSum1[r?.type_residue-1].toFixed(2);  
+          result = this.tonSums.tonSum1[r?.type_residue-1].toFixed(2);  
         }
 
         if (Number.isInteger(this.costoSum1[r?.type_residue-1])) {
@@ -123,15 +125,15 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       }
       else if(r.recyclability == 2)
       {
-        this.tonSum2[r?.type_residue-1] = this.tonSum2[r?.type_residue-1] + parseFloat(r?.value);
+        this.tonSums.tonSum2[r?.type_residue-1] = this.tonSums.tonSum2[r?.type_residue-1] + parseFloat(r?.value);
         this.costoSum2[r?.type_residue-1] = this.costoSum2[r?.type_residue-1] + parseFloat(r?.amount);
         this.actual_weight = this.actual_weight +  parseFloat(r?.value);
         this.actual_amount = this.actual_amount +  parseFloat(r?.amount);
 
-        if (Number.isInteger(this.tonSum2[r?.type_residue-1])) {
-          result = this.tonSum2[r?.type_residue-1].toString();  
+        if (Number.isInteger(this.tonSums.tonSum2[r?.type_residue-1])) {
+          result = this.tonSums.tonSum2[r?.type_residue-1].toString();  
         } else {
-          result = this.tonSum2[r?.type_residue-1].toFixed(2);  
+          result = this.tonSums.tonSum2[r?.type_residue-1].toFixed(2);  
         }
 
         if (Number.isInteger(this.costoSum2[r?.type_residue-1])) {
@@ -145,14 +147,14 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
 
       else if(r.recyclability == 3)
       {
-        this.tonSum3[r?.type_residue-1] = this.tonSum3[r?.type_residue-1] + parseFloat(r?.value);
+        this.tonSums.tonSum3[r?.type_residue-1] = this.tonSums.tonSum3[r?.type_residue-1] + parseFloat(r?.value);
         this.costoSum3[r?.type_residue-1] = this.costoSum3[r?.type_residue-1] + parseFloat(r?.amount);
         this.actual_weight = this.actual_weight +  parseFloat(r?.value);
         this.actual_amount = this.actual_amount +  parseFloat(r?.amount);
-        if (Number.isInteger(this.tonSum3[r?.type_residue-1])) {
-          result = this.tonSum3[r?.type_residue-1].toString();  
+        if (Number.isInteger(this.tonSums.tonSum3[r?.type_residue-1])) {
+          result = this.tonSums.tonSum3[r?.type_residue-1].toString();  
         } else {
-          result = this.tonSum3[r?.type_residue-1].toFixed(2);  
+          result = this.tonSums.tonSum3[r?.type_residue-1].toFixed(2);  
         }
 
         if (Number.isInteger(this.costoSum3[r?.type_residue-1])) {
@@ -167,10 +169,10 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     }
 
     for(let i = 0; i<5;i++){
-      if (Number.isInteger((this.tonSum1[i] +this.tonSum2[i]+this.tonSum3[i]))) {
-        result = (this.tonSum1[i] +this.tonSum2[i]+this.tonSum3[i]).toString();  
+      if (Number.isInteger((this.tonSums.tonSum1[i] +this.tonSums.tonSum2[i]+this.tonSums.tonSum3[i]))) {
+        result = (this.tonSums.tonSum1[i] +this.tonSums.tonSum2[i]+this.tonSums.tonSum3[i]).toString();  
       } else {
-        result = (this.tonSum1[i] +this.tonSum2[i]+this.tonSum3[i]).toFixed(2);  
+        result = (this.tonSums.tonSum1[i] +this.tonSums.tonSum2[i]+this.tonSums.tonSum3[i]).toFixed(2);  
       }
 
       if (Number.isInteger((this.costoSum1[i] +this.costoSum2[i]+this.costoSum3[i]))) {
@@ -202,7 +204,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       const r = this.detailLastForm[i];
       if(r.RECYCLABILITY == 1)
       {
-        this.l_tonSum1[r?.TYPE_RESIDUE-1] = this.l_tonSum1[r?.TYPE_RESIDUE-1] + parseFloat(r?.VALUE);
+        this.tonSums.l_tonSum1[r?.TYPE_RESIDUE-1] = this.tonSums.l_tonSum1[r?.TYPE_RESIDUE-1] + parseFloat(r?.VALUE);
         this.l_costoSum1[r?.TYPE_RESIDUE-1] = this.l_costoSum1[r?.TYPE_RESIDUE-1] + parseFloat(r?.VALUE);
         this.last_weight = this.last_weight +  parseFloat(r?.VALUE);
         this.last_amount = this.last_amount +  parseFloat(r?.AMOUNT);
@@ -210,14 +212,14 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
 
       else if(r.RECYCLABILITY == 2)
       {
-        this.l_tonSum2[r?.TYPE_RESIDUE-1] = this.l_tonSum2[r?.TYPE_RESIDUE-1] + parseFloat(r?.VALUE);
+        this.tonSums.l_tonSum2[r?.TYPE_RESIDUE-1] = this.tonSums.l_tonSum2[r?.TYPE_RESIDUE-1] + parseFloat(r?.VALUE);
         this.last_weight = this.last_weight +  parseFloat(r?.VALUE);
         this.last_amount = this.last_amount +  parseFloat(r?.AMOUNT);
       }
 
       else if(r.RECYCLABILITY == 3)
       {
-        this.l_tonSum3[r?.TYPE_RESIDUE-1] = this.l_tonSum3[r?.TYPE_RESIDUE-1] + parseFloat(r?.VALUE);
+        this.tonSums.l_tonSum3[r?.TYPE_RESIDUE-1] = this.tonSums.l_tonSum3[r?.TYPE_RESIDUE-1] + parseFloat(r?.VALUE);
         this.last_weight = this.last_weight +  parseFloat(r?.VALUE);
         this.last_amount = this.last_amount +  parseFloat(r?.AMOUNT);
       }
@@ -229,11 +231,11 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     let dif = Array.from({length: 5}, () => 0);
     //Diferencias por tipo de residuo
     for(let i = 0; i<5;i++){
-      if((this.l_tonSum1[i] +this.l_tonSum2[i]+this.l_tonSum3[i]) != 0 && (this.tonSum1[i] +this.tonSum2[i]+this.tonSum3[i]) != 0 ){
-        (document.getElementById(`diff_category_${i}`) as HTMLElement).innerHTML = ((((this.tonSum1[i] +this.tonSum2[i]+this.tonSum3[i]) - (this.l_tonSum1[i] +this.l_tonSum2[i]+
-                                                                                    this.l_tonSum3[i])) / (this.l_tonSum1[i] +this.l_tonSum2[i]+this.l_tonSum3[i]) * 100).toFixed(2)) + '%';
-        dif[i] = ((this.tonSum1[i] +this.tonSum2[i]+this.tonSum3[i]) - (this.l_tonSum1[i] +this.l_tonSum2[i]+
-          this.l_tonSum3[i])) / (this.l_tonSum1[i] +this.l_tonSum2[i]+this.l_tonSum3[i]);
+      if((this.tonSums.l_tonSum1[i] +this.tonSums.l_tonSum2[i]+this.tonSums.l_tonSum3[i]) != 0 && (this.tonSums.tonSum1[i] +this.tonSums.tonSum2[i]+this.tonSums.tonSum3[i]) != 0 ){
+        (document.getElementById(`diff_category_${i}`) as HTMLElement).innerHTML = ((((this.tonSums.tonSum1[i] +this.tonSums.tonSum2[i]+this.tonSums.tonSum3[i]) - (this.tonSums.tonSum1[i] +this.tonSums.l_tonSum2[i]+
+                                                                                    this.tonSums.l_tonSum3[i])) / (this.tonSums.l_tonSum1[i] +this.tonSums.l_tonSum2[i]+this.tonSums.l_tonSum3[i]) * 100).toFixed(2)) + '%';
+        dif[i] = ((this.tonSums.tonSum1[i] +this.tonSums.tonSum2[i]+this.tonSums.tonSum3[i]) - (this.tonSums.l_tonSum1[i] +this.tonSums.l_tonSum2[i]+
+          this.tonSums.l_tonSum3[i])) / (this.tonSums.l_tonSum1[i] +this.tonSums.l_tonSum2[i]+this.tonSums.l_tonSum3[i]);
       }
       else{
         (document.getElementById(`diff_category_${i}`) as HTMLElement).innerHTML = '0%'
@@ -250,11 +252,11 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     }
 
     //Valor corregido Peso
+    let dif_aux = 0;
     for(let i = 0; i<5;i++){
-      (document.getElementById(`diff_corregido_weight_${i}`) as HTMLElement).innerHTML = ((parseFloat((document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML) + 
-                                                                                        (parseFloat((document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML) *
-                                                                                        (dif[i]))).toFixed(2)).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      this.total_diff_corregido= this.total_diff_corregido + parseFloat((document.getElementById(`diff_corregido_weight_${i}`) as HTMLElement).innerHTML.replace(/[,]/g,'.').replace(/\B(?=(\d{3})+(?!\d))/g, ""));
+      dif_aux = parseFloat((document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML) + (parseFloat((document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML) * (dif[i]));
+      (document.getElementById(`diff_corregido_weight_${i}`) as HTMLElement).innerHTML = ((dif_aux).toFixed(2)).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      this.total_diff_corregido= this.total_diff_corregido + dif_aux;
       (document.getElementById(`total_diff_corregido_weight`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       (document.getElementById(`pom_total`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
