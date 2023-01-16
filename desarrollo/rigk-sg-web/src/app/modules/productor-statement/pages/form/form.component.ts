@@ -133,9 +133,9 @@ export class FormComponent implements OnInit, OnDestroy {
             this.productorService.saveForm({ header, detail }).subscribe(r => {
               this.hour = new Date();
               if (r.status) {
-                sessionStorage.setItem('id_statement', r.data);
-                sessionStorage.removeItem('detailForm');
-                sessionStorage.removeItem('detailLastForm');
+                // sessionStorage.setItem('id_statement', r.data);
+                // sessionStorage.removeItem('detailForm');
+                // sessionStorage.removeItem('detailLastForm');
                 Swal.close()
               }
             });
@@ -162,9 +162,9 @@ export class FormComponent implements OnInit, OnDestroy {
         this.productorService.saveForm({ header, detail }).subscribe(r => {
           this.hour = new Date();
           if (r.status) {
-            sessionStorage.setItem('id_statement', r.data);
-            sessionStorage.removeItem('detailForm');
-            sessionStorage.removeItem('detailLastForm');
+            // sessionStorage.setItem('id_statement', r.data);
+            // sessionStorage.removeItem('detailForm');
+            // sessionStorage.removeItem('detailLastForm');
           }
         });
       } else {

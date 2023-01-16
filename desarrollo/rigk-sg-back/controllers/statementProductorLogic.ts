@@ -264,10 +264,10 @@ class StatementProductorLogic {
                 }
             }
 
-            const diff_p  = parseFloat((((pr / lrp) == Infinity ? 0:pr / lrp)).toFixed(2));
-            const diff_me = parseFloat((((mer / lrme) == Infinity ? 0:mer / lrme)).toFixed(2));
-            const diff_pl = parseFloat((((plr / lrpl) == Infinity ? 0:plr / lrpl)).toFixed(2));
-            const diff_nr = parseFloat(((((pnr + menr + plnr) / lnr)==Infinity ? 0:(pnr + menr + plnr) / lnr)).toFixed(2));
+            const diff_p  = parseFloat((((pr / lrp) == Infinity ? 0:(pr / lrp)-1)).toFixed(2));
+            const diff_me = parseFloat((((mer / lrme) == Infinity ? 0:(mer / lrme)-1)).toFixed(2));
+            const diff_pl = parseFloat((((plr / lrpl) == Infinity ? 0:(plr / lrpl)-1)).toFixed(2));
+            const diff_nr = parseFloat(((((pnr + menr + plnr) / lnr)==Infinity ? 0:((pnr + menr + plnr) / lnr)-1)).toFixed(2));
 
             const PizZip = require("pizzip");
             const Docxtemplater = require("docxtemplater");
