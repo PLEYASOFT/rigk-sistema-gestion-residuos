@@ -58,6 +58,8 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   ajuste = Array.from({length: 5}, () => 0);
   costoAnual = Array.from({length: 5}, () => 0);
   sumaAmount = 0;
+  sumaAjuste = 0;
+  amountAnual = 0;
 
   constructor(private fb: FormBuilder,
     public productorService: ProductorService,
@@ -197,9 +199,13 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
           document.getElementById(`amount_corregido_${i}`)!.innerHTML = (clp.data[i].price * this.ajuste[i]).toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
           document.getElementById(`total_category_amount_${i}`)!.innerHTML = ( parseFloat((clp.data[i].price * this.costoAnual[i]).toFixed(2)) + parseFloat((clp.data[i].price * this.ajuste[i]).toFixed(2)) ).toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
           this.sumaAmount = this.sumaAmount + parseFloat((clp.data[i].price * this.costoAnual[i]).toFixed(2)) + parseFloat((clp.data[i].price * this.ajuste[i]).toFixed(2));
-          this.dif[i] = parseFloat(document.getElementById(`amount_anual_${i}`)!.innerHTML) + parseFloat(document.getElementById(`amount_corregido_${i}`)!.innerHTML);
+          this.dif[i] = clp.data[i].price * this.costoAnual[i] + clp.data[i].price * this.ajuste[i];
+          this.sumaAjuste = this.sumaAjuste + clp.data[i].price * this.ajuste[i];
+          this.amountAnual = this.amountAnual + clp.data[i].price * this.costoAnual[i];
         }
         // Se regresa un observable para la segunda suscripción
+        document.getElementById(`anual_amount`)!.innerHTML = this.amountAnual.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        document.getElementById(`ajuste_amount`)!.innerHTML = this.sumaAjuste.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         document.getElementById(`total_amount`)!.innerHTML = this.sumaAmount.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         document.getElementById(`amount_total`)!.innerHTML = document.getElementById(`total_amount`)!.innerHTML 
         return this.ratesService.getUF;
@@ -214,7 +220,6 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       }
       document.getElementById(`total_uf_clp`)!.innerHTML = '$'+ this.sumaAmount.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     });
-
   }
 
   tableToExcel() {

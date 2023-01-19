@@ -24,7 +24,7 @@
                                 <th style="background-color: rgb(8, 148, 110);color: white;">Subcategoría</th>
                                 <th style="background-color: rgb(8, 148, 110);color: white;">{{year_statement - 1}}</th>
                                 <th style="background-color: rgb(8, 148, 110);color: white;">{{year_statement}}</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Ajuste no reciclables</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Ajuste {{year_statement - 1}} vs {{year_statement}} (TON)</th>
                                 <th style="background-color: rgb(8, 148, 110);color: white;">Total por categoría</th>
                             </tr>
                         </thead>
@@ -82,17 +82,21 @@
                         </thead>
                         <tbody >
                             <tr class="text-end w-100" *ngFor="let r of residuos; let x = index">
+                                <ng-container *ngIf="r !== 'Retornables'">
                                 <td class="text-start">{{r}}</td>
                                 <td id="actual_amount_{{x}}">0</td>
                                 <td id="amount_anual_{{x}}">0</td>
                                 <td id="amount_corregido_{{x}}">0</td>
                                 <td style="background-color: rgb(217, 217, 217);" id="total_category_amount_{{x}}">0</td>
                                 <td style="background-color: rgb(217, 217, 217);" id ="uf_clp_{{x}}" >$0</td>
+                                </ng-container>
                             </tr>
                         </tbody>
                         <tfoot>
                             <tr class="text-end w-100">
-                                <td style="background-color: rgb(8, 148, 110);color: white;"class="text-start" colspan="4">Total (Costo)</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;"class="text-start" colspan="2">Total (Costo)</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;"id ="anual_amount">0</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;"id ="ajuste_amount">0</td>
                                 <td style="background-color: rgb(8, 148, 110);color: white;"id ="total_amount">0</td>
                                 <td style="background-color: rgb(8, 148, 110);color: white;"id ="total_uf_clp">$0</td>
                             </tr>
