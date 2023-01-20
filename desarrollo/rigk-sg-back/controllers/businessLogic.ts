@@ -80,7 +80,7 @@ class BusinessLogic {
 
     async updateBusiness(req: any, res: Response) {
         const { name, vat, loc_address, email, phone, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business } = req.body;
-        const { id } = req.params; 
+        const { id } = req.params;
         try {
             const business = await businessDao.updateBusiness(id, name, vat, loc_address, phone, email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business);
             res.status(200).json({ status: business, data: {}, msg: '' });
