@@ -26,7 +26,7 @@
                         
                         <thead>
                             <tr class="text-center w-100" >
-                                <th >ID</th>
+                                <th >CÓDIGO EMPRESA</th>
                                 <th >NOMBRE</th>
                                 <th >RUT</th>
                                 <th >DIRECCIÓN</th>
@@ -37,13 +37,14 @@
                                 <th >NOMBRE CONTACTO FACTURACIÓN</th>
                                 <th >EMAIL CONTACTO FACTURACIÓN</th>
                                 <th >TELÉFONO CONTACTO FACTURACIÓN</th>
+                                <th >GIRO</th>
                                 <th ></th>
                                 <th ></th>
                             </tr>
                         </thead>
                         <tbody >
                             <tr class="text-end w-100" *ngFor="let r of name_business; let x = index">
-                                <td >{{id_business[x]}}</td>
+                                <td >{{code_business[x]}}</td>
                                 <td >{{name_business[x]}}</td>
                                 <td >{{rut[x]}}</td>
                                 <td >{{loc_address[x]}}</td>
@@ -54,6 +55,7 @@
                                 <td >{{invoice_name[x]}}</td>
                                 <td >{{invoice_email[x]}}</td>
                                 <td >{{invoice_phone[x]}}</td>
+                                <td >{{giro[x]}}</td>
                                 <td > 
                                     <div class="btn-group">
                                         <button class="btn btn-success btn-sm" (click)="popupModify = !popupModify; id = id_business[x]; index = x">Modificar</button>
@@ -75,6 +77,15 @@
                             autocomplete="off"
                             [formGroup]="formData">
                             <div class="mb-4">
+                                <label for="code_business" style="color: rgb(0, 138, 92);"><strong>Código de la empresa</strong></label>
+                                <div class="input-group">
+                                    <input type="code_business" class="form-control" id="code_business" formControlName="code_business"  placeholder="Código de la empresa">
+                                </div>
+                                <div *ngIf="formData.controls['code_business'].errors && formData.controls['code_business'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['code_business'].errors['required']">El código de la empresa es requerido.</p>
+                                </div>
+                            </div>
+                            <div class="mb-4">
                                 <label for="name_business" style="color: rgb(0, 138, 92);"><strong>Nombre de la empresa</strong></label>
                                 <div class="input-group">
                                     <input type="name_business" class="form-control" id="name_business" formControlName="name_business"  placeholder="Nombre"/>
@@ -95,7 +106,7 @@
                                 </div>
                             </div>
                             <div class="mb-4">
-                                <label for="loc_address" style="color: rgb(0, 138, 92);"><strong>Direcciónde la empresa</strong></label>
+                                <label for="loc_address" style="color: rgb(0, 138, 92);"><strong>Dirección de la empresa</strong></label>
                                 <div class="input-group">
                                     <input type="loc_address" class="form-control" id="loc_address" formControlName="loc_address" placeholder="Dirección" >
                                 </div>
@@ -170,8 +181,17 @@
                                     <p *ngIf="formData.controls['invoice_phone'].errors['pattern']">El formato del teléfono es inválido (9 dígitos).</p>
                                 </div>
                             </div>
+                            <div class="mb-4">
+                                <label for="giro" style="color: rgb(0, 138, 92);"><strong>Giro empresa</strong></label>
+                                <div class="input-group">
+                                    <input type="giro" class="form-control" id="giro" formControlName="giro" placeholder="Giro Empresa">
+                                </div>
+                                <div *ngIf="formData.controls['giro'].errors && formData.controls['giro'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['giro'].errors['required']">El telefono de facturación es requerido (9 dígitos).</p>
+                                </div>
+                            </div>
                                 <!-- Otros campos del formulario -->
-                                <button type="submit" class="btn btn-primary btnLeft" style="width: 150px;"(click)="btnAddBusiness()" [disabled]="miFormulario.invalid">Aceptar</button>
+                                <button type="submit" class="btn btn-primary" style="width: 150px;margin-left: 400px;"(click)="btnAddBusiness()" [disabled]="miFormulario.invalid">Aceptar</button>
                                 <button type="button" class="btn btn-secondary buttonRight" style="width: 150px;"(click)="popupVisible = !popupVisible; this.formData.reset()">Cancelar</button>
                               </form>
                         </div>
@@ -180,6 +200,15 @@
                             <form #miFormulari02="ngForm" class="popup"
                             autocomplete="off"
                             [formGroup]="formData">
+                            <div class="mb-4">
+                                <label for="code_business" style="color: rgb(0, 138, 92);"><strong>Código de la empresa</strong></label>
+                                <div class="input-group">
+                                    <input type="code_business" class="form-control" id="code_business" formControlName="code_business"  placeholder="Código de la empresa" [(ngModel)]="code_business[index]">
+                                </div>
+                                <div *ngIf="formData.controls['code_business'].errors && formData.controls['code_business'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['code_business'].errors['required']">El código de la empresa es requerido.</p>
+                                </div>
+                            </div>
                             <div class="mb-4">
                                 <label for="name_business" style="color: rgb(0, 138, 92);"><strong>Nombre de la empresa</strong></label>
                                 <div class="input-group">
@@ -201,7 +230,7 @@
                                 </div>
                             </div>
                             <div class="mb-4">
-                                <label for="loc_address" style="color: rgb(0, 138, 92);"><strong>Direcciónde la empresa</strong></label>
+                                <label for="loc_address" style="color: rgb(0, 138, 92);"><strong>Dirección de la empresa</strong></label>
                                 <div class="input-group">
                                     <input type="loc_address" class="form-control" id="loc_address" formControlName="loc_address" placeholder="Dirección" [(ngModel)]="loc_address[index]">
                                 </div>
@@ -276,7 +305,16 @@
                                     <p *ngIf="formData.controls['invoice_phone'].errors['pattern']">El formato del teléfono es inválido (9 dígitos).</p>
                                 </div>
                             </div>
-                                <button type="button" class="btn btn-primary btnLeft" style="width: 150px;" (click)="btnUpdateBusiness(id)" [disabled]="miFormulari02.invalid" >Aceptar</button>
+                            <div class="mb-4">
+                                <label for="giro" style="color: rgb(0, 138, 92);"><strong>Giro empresa</strong></label>
+                                <div class="input-group">
+                                    <input type="giro" class="form-control" id="giro" formControlName="giro" placeholder="Giro Empresa"  [(ngModel)]="giro[index]">
+                                </div>
+                                <div *ngIf="formData.controls['giro'].errors && formData.controls['giro'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['giro'].errors['required']">El telefono de facturación es requerido (9 dígitos).</p>
+                                </div>
+                            </div>
+                                <button type="button" class="btn btn-primary" style="width: 150px;margin-left: 400px;" (click)="btnUpdateBusiness(id)" [disabled]="miFormulari02.invalid" >Aceptar</button>
                                 <button type="button" class="btn btn-secondary buttonRight" style="width: 150px;"(click)="popupModify = !popupModify; this.formData.reset();getAllBusiness()">Cancelar</button>
                               </form>
                         </div>
@@ -287,4 +325,3 @@
     </section>
     <!-- fin Consulta de Declaración -->
 </div>
-
