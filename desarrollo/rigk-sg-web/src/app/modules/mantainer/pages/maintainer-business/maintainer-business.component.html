@@ -177,7 +177,7 @@
                                     <input type="invoice_phone" class="form-control" id="invoice_phone" formControlName="invoice_phone" placeholder="Teléfono/Celular contacto facturación">
                                 </div>
                                 <div *ngIf="formData.controls['invoice_phone'].errors && formData.controls['invoice_phone'].touched" class="text-danger pl-0">
-                                    <p *ngIf="formData.controls['invoice_phone'].errors['required']">El telefono de facturación es requerido (9 dígitos).</p>
+                                    <p *ngIf="formData.controls['invoice_phone'].errors['required']">El teléfono de facturación es requerido (9 dígitos).</p>
                                     <p *ngIf="formData.controls['invoice_phone'].errors['pattern']">El formato del teléfono es inválido (9 dígitos).</p>
                                 </div>
                             </div>
@@ -187,7 +187,7 @@
                                     <input type="giro" class="form-control" id="giro" formControlName="giro" placeholder="Giro Empresa">
                                 </div>
                                 <div *ngIf="formData.controls['giro'].errors && formData.controls['giro'].touched" class="text-danger pl-0">
-                                    <p *ngIf="formData.controls['giro'].errors['required']">El telefono de facturación es requerido (9 dígitos).</p>
+                                    <p *ngIf="formData.controls['giro'].errors['required']">El teléfono de facturación es requerido (9 dígitos).</p>
                                 </div>
                             </div>
                                 <!-- Otros campos del formulario -->
@@ -301,7 +301,7 @@
                                     <input type="invoice_phone" class="form-control" id="invoice_phone" formControlName="invoice_phone" placeholder="Teléfono/Celular contacto facturación" [(ngModel)]="invoice_phone[index]">
                                 </div>
                                 <div *ngIf="formData.controls['invoice_phone'].errors && formData.controls['invoice_phone'].touched" class="text-danger pl-0">
-                                    <p *ngIf="formData.controls['invoice_phone'].errors['required']">El telefono de facturación es requerido (9 dígitos).</p>
+                                    <p *ngIf="formData.controls['invoice_phone'].errors['required']">El teléfono de facturación es requerido (9 dígitos).</p>
                                     <p *ngIf="formData.controls['invoice_phone'].errors['pattern']">El formato del teléfono es inválido (9 dígitos).</p>
                                 </div>
                             </div>
@@ -311,7 +311,7 @@
                                     <input type="giro" class="form-control" id="giro" formControlName="giro" placeholder="Giro Empresa"  [(ngModel)]="giro[index]">
                                 </div>
                                 <div *ngIf="formData.controls['giro'].errors && formData.controls['giro'].touched" class="text-danger pl-0">
-                                    <p *ngIf="formData.controls['giro'].errors['required']">El telefono de facturación es requerido (9 dígitos).</p>
+                                    <p *ngIf="formData.controls['giro'].errors['required']">El teléfono de facturación es requerido (9 dígitos).</p>
                                 </div>
                             </div>
                                 <button type="button" class="btn btn-primary" style="width: 150px;margin-left: 400px;" (click)="btnUpdateBusiness(id)" [disabled]="miFormulari02.invalid" >Aceptar</button>
