@@ -1,7 +1,7 @@
-import { CurrencyPipe } from '@angular/common';
-import { AfterViewChecked, AfterViewInit, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { concatMap } from 'rxjs';
 import { ProductorService } from 'src/app/core/services/productor.service';
 import * as XLSX from 'xlsx';
 import { RatesTsService } from '../../../../core/services/rates.ts.service';
@@ -15,20 +15,15 @@ import { RatesTsService } from '../../../../core/services/rates.ts.service';
 export class SummaryStatementComponent implements OnInit, AfterViewInit {
 
   @ViewChild("table1") table!: ElementRef;
-  /**
-   * BORRAR
-   */
+
   tablas = ['Reciclable', 'No Reciclable', 'Retornables / Reutilizados'];
   residuos = [
-    'Papel Cartón',
-    'Metal',
-    'Plástico',
-    'Madera',
-    'Envases compuestos'
+    'Papel/Cartón Reciclable',
+    'Metal Reciclable',
+    'Plástico Reciclable',
+    'No Reciclables *',
+    'Retornables'
   ];
-  /**
-   * END BORRAR
-   */
 
   isSubmited = false;
   isEdited = false;
@@ -46,35 +41,28 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   });
 
   detailForm: any[] = [];
-
   headLastForm: any = {};
   detailLastForm: any[] = [];
 
-  actual_weight = 0;
-  last_weight = 0;
-  actual_amount = 0;
-  last_amount = 0;
-  total_diff_corregido = 0;
-  uf = 0;
+  tonSums = {
+    tonSum  : Array.from({length: 5}, () => 0),
+    l_tonSum: Array.from({length: 5}, () => 0)
+  }
 
-   tonSum1 = Array.from({length: 5}, () => 0);
-   tonSum2 = Array.from({length: 5}, () => 0);
-   tonSum3 = Array.from({length: 5}, () => 0);
-   l_tonSum1 = Array.from({length: 5}, () => 0);
-   l_tonSum2 = Array.from({length: 5}, () => 0);
-   l_tonSum3 = Array.from({length: 5}, () => 0);
-
-   costoSum1 = Array.from({length: 5}, () => 0);
-   costoSum2 = Array.from({length: 5}, () => 0);
-   costoSum3 = Array.from({length: 5}, () => 0);
-   l_costoSum1 = Array.from({length: 5}, () => 0);
-   l_costoSum2 = Array.from({length: 5}, () => 0);
-   l_costoSum3 = Array.from({length: 5}, () => 0);
-
+  tonNoReciclable = 0;
+  tonRetornable = 0;
+  l_tonNoReciclable = 0;
+  l_tonRetornable = 0;
+  result: string = "";
+  dif = Array.from({length: 5}, () => 0);
+  ajuste = Array.from({length: 5}, () => 0);
+  costoAnual = Array.from({length: 5}, () => 0);
+  sumaAmount = 0;
+  sumaAjuste = 0;
+  amountAnual = 0;
 
   constructor(private fb: FormBuilder,
     public productorService: ProductorService,
-    private router: Router,
     private actived: ActivatedRoute,
     public ratesService: RatesTsService) {
     this.actived.queryParams.subscribe(r => {
@@ -84,7 +72,6 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   }
   ngAfterViewInit(): void {
     this.generateForm();
-    this.generateDiff();
   }
 
   ngOnInit(): void {
@@ -93,207 +80,146 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   generateForm(){
     this.detailLastForm = JSON.parse(sessionStorage.getItem("detailLastForm")! ) ;
     this.detailForm = JSON.parse(sessionStorage.getItem('detailForm')! ) ;
-    let result: string;
-    let resultAmount: string;
     for (let i = 0; i < this.detailForm.length; i++) {
       const r = this.detailForm[i];
       if(r.recyclability == 1)
       {
-        this.tonSum1[r?.type_residue-1] = this.tonSum1[r?.type_residue-1] + parseFloat(r?.value);
-        this.costoSum1[r?.type_residue-1] = this.costoSum1[r?.type_residue-1] + parseFloat(r?.amount);
-        this.actual_weight = this.actual_weight +  parseFloat(r?.value);
-        this.actual_amount = this.actual_amount +  parseFloat(r?.amount);
+        this.tonSums.tonSum[r?.type_residue-1] = this.tonSums.tonSum[r?.type_residue-1] + parseFloat(r?.value);
+        this.result = this.verifyNumber(this.tonSums.tonSum[r?.type_residue-1]);
 
-        
-        if (Number.isInteger(this.tonSum1[r?.type_residue-1])) {
-          result = this.tonSum1[r?.type_residue-1].toString();  
-        } else {
-          result = this.tonSum1[r?.type_residue-1].toFixed(2);  
-        }
-
-        if (Number.isInteger(this.costoSum1[r?.type_residue-1])) {
-          resultAmount = this.costoSum1[r?.type_residue-1].toString();  
-        } else {
-          resultAmount = this.costoSum1[r?.type_residue-1].toFixed(2);  
-        }
-
-          (document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = resultAmount.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
+        if(r?.type_residue == 1 || r?.type_residue == 2 || r?.type_residue == 3){
+          document.getElementById(`actual_weight_${r?.type_residue}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          this.costoAnual[r?.type_residue-1] = parseFloat(this.result);
+          }
       }
       else if(r.recyclability == 2)
       {
-        this.tonSum2[r?.type_residue-1] = this.tonSum2[r?.type_residue-1] + parseFloat(r?.value);
-        this.costoSum2[r?.type_residue-1] = this.costoSum2[r?.type_residue-1] + parseFloat(r?.amount);
-        this.actual_weight = this.actual_weight +  parseFloat(r?.value);
-        this.actual_amount = this.actual_amount +  parseFloat(r?.amount);
+        this.tonNoReciclable = this.tonNoReciclable + parseFloat(r?.value);
+        this.result = this.verifyNumber(this.tonNoReciclable);
 
-        if (Number.isInteger(this.tonSum2[r?.type_residue-1])) {
-          result = this.tonSum2[r?.type_residue-1].toString();  
-        } else {
-          result = this.tonSum2[r?.type_residue-1].toFixed(2);  
+        document.getElementById(`actual_weight_4`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        this.costoAnual[3] = parseFloat(this.result);
         }
-
-        if (Number.isInteger(this.costoSum2[r?.type_residue-1])) {
-          resultAmount = this.costoSum2[r?.type_residue-1].toString();  
-        } else {
-          resultAmount = this.costoSum2[r?.type_residue-1].toFixed(2);  
-        }
-          (document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = resultAmount.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      }
 
       else if(r.recyclability == 3)
       {
-        this.tonSum3[r?.type_residue-1] = this.tonSum3[r?.type_residue-1] + parseFloat(r?.value);
-        this.costoSum3[r?.type_residue-1] = this.costoSum3[r?.type_residue-1] + parseFloat(r?.amount);
-        this.actual_weight = this.actual_weight +  parseFloat(r?.value);
-        this.actual_amount = this.actual_amount +  parseFloat(r?.amount);
-        if (Number.isInteger(this.tonSum3[r?.type_residue-1])) {
-          result = this.tonSum3[r?.type_residue-1].toString();  
-        } else {
-          result = this.tonSum3[r?.type_residue-1].toFixed(2);  
+        this.tonRetornable = this.tonRetornable + parseFloat(r?.value);
+        this.result = this.verifyNumber(this.tonRetornable);
+
+        document.getElementById(`actual_weight_5`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        this.costoAnual[4] = parseFloat(this.result);
         }
-
-        if (Number.isInteger(this.costoSum3[r?.type_residue-1])) {
-          resultAmount = this.costoSum3[r?.type_residue-1].toString();  
-        } else {
-          resultAmount = this.costoSum3[r?.type_residue-1].toFixed(2);  
-        }
-          (document.getElementById(`actual_weight_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-          (document.getElementById(`actual_amount_${r?.recyclability}_${r?.type_residue}`) as HTMLElement).innerHTML = resultAmount.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-      }
     }
-
-    for(let i = 0; i<5;i++){
-      if (Number.isInteger((this.tonSum1[i] +this.tonSum2[i]+this.tonSum3[i]))) {
-        result = (this.tonSum1[i] +this.tonSum2[i]+this.tonSum3[i]).toString();  
-      } else {
-        result = (this.tonSum1[i] +this.tonSum2[i]+this.tonSum3[i]).toFixed(2);  
-      }
-
-      if (Number.isInteger((this.costoSum1[i] +this.costoSum2[i]+this.costoSum3[i]))) {
-        resultAmount = (this.costoSum1[i] +this.costoSum2[i]+this.costoSum3[i]).toString();  
-      } else {
-        resultAmount = (this.costoSum1[i] +this.costoSum2[i]+this.costoSum3[i]).toFixed(2);  
-      }
-
-      (document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML = result;
-      
-      (document.getElementById(`total_category_amount_${i}`) as HTMLElement).innerHTML = resultAmount;
-    }
-
-    if (Number.isInteger(this.actual_weight)) {
-      result = this.actual_weight.toString();  
-    } else {
-      result = this.actual_weight.toFixed(2);  
-    }
-
-    if (Number.isInteger(this.actual_amount)) {
-      resultAmount = this.actual_amount.toString();  
-    } else {
-      resultAmount = this.actual_amount.toFixed(2);  
-    }
-    (document.getElementById(`total_ton`) as HTMLElement).innerHTML = result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, "."); 
-    (document.getElementById(`total_amount`) as HTMLElement).innerHTML = resultAmount.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
     for (let i = 0; i < this.detailLastForm.length; i++) {
       const r = this.detailLastForm[i];
       if(r.RECYCLABILITY == 1)
       {
-        this.l_tonSum1[r?.TYPE_RESIDUE-1] = this.l_tonSum1[r?.TYPE_RESIDUE-1] + parseFloat(r?.VALUE);
-        this.l_costoSum1[r?.TYPE_RESIDUE-1] = this.l_costoSum1[r?.TYPE_RESIDUE-1] + parseFloat(r?.VALUE);
-        this.last_weight = this.last_weight +  parseFloat(r?.VALUE);
-        this.last_amount = this.last_amount +  parseFloat(r?.AMOUNT);
+
+        this.tonSums.l_tonSum[r?.TYPE_RESIDUE-1] = this.tonSums.l_tonSum[r?.TYPE_RESIDUE-1] + parseFloat(r?.VALUE);
+        this.result = this.verifyNumber(this.tonSums.l_tonSum[r?.TYPE_RESIDUE-1]);
+
+        if(r?.TYPE_RESIDUE == 1 || r?.TYPE_RESIDUE == 2 || r?.TYPE_RESIDUE == 3){
+          document.getElementById(`last_weight_${r?.TYPE_RESIDUE}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          }
       }
 
       else if(r.RECYCLABILITY == 2)
       {
-        this.l_tonSum2[r?.TYPE_RESIDUE-1] = this.l_tonSum2[r?.TYPE_RESIDUE-1] + parseFloat(r?.VALUE);
-        this.last_weight = this.last_weight +  parseFloat(r?.VALUE);
-        this.last_amount = this.last_amount +  parseFloat(r?.AMOUNT);
-      }
+        this.l_tonNoReciclable = this.l_tonNoReciclable + parseFloat(r?.VALUE);
+        this.result = this.verifyNumber(this.l_tonNoReciclable);
+
+        document.getElementById(`last_weight_4`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
 
       else if(r.RECYCLABILITY == 3)
       {
-        this.l_tonSum3[r?.TYPE_RESIDUE-1] = this.l_tonSum3[r?.TYPE_RESIDUE-1] + parseFloat(r?.VALUE);
-        this.last_weight = this.last_weight +  parseFloat(r?.VALUE);
-        this.last_amount = this.last_amount +  parseFloat(r?.AMOUNT);
-      }
-    }
-  }
+        this.l_tonRetornable = this.l_tonRetornable + parseFloat(r?.VALUE);
+        this.result = this.verifyNumber(this.l_tonRetornable);
 
-  generateDiff()
-  {
-    let dif = Array.from({length: 5}, () => 0);
-    //Diferencias por tipo de residuo
-    for(let i = 0; i<5;i++){
-      if((this.l_tonSum1[i] +this.l_tonSum2[i]+this.l_tonSum3[i]) != 0 && (this.tonSum1[i] +this.tonSum2[i]+this.tonSum3[i]) != 0 ){
-        (document.getElementById(`diff_category_${i}`) as HTMLElement).innerHTML = ((((this.tonSum1[i] +this.tonSum2[i]+this.tonSum3[i]) - (this.l_tonSum1[i] +this.l_tonSum2[i]+
-                                                                                    this.l_tonSum3[i])) / (this.l_tonSum1[i] +this.l_tonSum2[i]+this.l_tonSum3[i]) * 100).toFixed(2)) + '%';
-        dif[i] = ((this.tonSum1[i] +this.tonSum2[i]+this.tonSum3[i]) - (this.l_tonSum1[i] +this.l_tonSum2[i]+
-          this.l_tonSum3[i])) / (this.l_tonSum1[i] +this.l_tonSum2[i]+this.l_tonSum3[i]);
+        document.getElementById(`last_weight_5`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+    }
+    for(let i = 1; i<= 5; i++){
+      if(i <= 3){
+        this.result =  this.verifyNumber(this.tonSums.tonSum[i-1] -  this.tonSums.l_tonSum[i-1]);
+        document.getElementById(`ajuste_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        this.ajuste[i-1] = parseFloat(this.result);
+        
+        if(this.tonSums.l_tonSum[i-1] == 0){
+          document.getElementById(`total_category_weight_${i}`)!.innerHTML = '0';
+        }
+        else{
+          this.result = this.verifyNumber(this.tonSums.tonSum[i-1] + (this.tonSums.tonSum[i-1] -  this.tonSums.l_tonSum[i-1]));
+          document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          this.sumaAmount = this.sumaAmount + parseFloat(this.result);
+        }
+      }
+      else if( i == 4){
+        this.result =  this.verifyNumber(this.tonNoReciclable -  this.l_tonNoReciclable);
+        document.getElementById(`ajuste_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        this.ajuste[i-1] = parseFloat(this.result);
+
+        if(this.tonNoReciclable == 0){
+          document.getElementById(`total_category_weight_${i}`)!.innerHTML = '0';
+        }
+        else{
+          this.result = this.verifyNumber(this.tonNoReciclable + (this.tonNoReciclable -  this.l_tonNoReciclable));
+          document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          this.sumaAmount = this.sumaAmount + parseFloat(this.result);
+        }
+        
       }
       else{
-        (document.getElementById(`diff_category_${i}`) as HTMLElement).innerHTML = '0%'
+        this.result =  this.verifyNumber(this.tonRetornable -  this.l_tonRetornable);
+        document.getElementById(`ajuste_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        this.ajuste[i-1] = parseFloat(this.result);
+
+        if(this.tonRetornable == 0){
+          document.getElementById(`total_category_weight_${i}`)!.innerHTML = '0';
+        }
+        else{
+          this.result = this.verifyNumber(this.tonRetornable + (this.tonRetornable -  this.l_tonRetornable));
+          document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          this.sumaAmount = this.sumaAmount + parseFloat(this.result);
+        }
       }
     }
 
-    //Diferencia peso total año anterior y actual
-    
-    if(this.actual_weight != 0 &&this.last_weight != 0 ){
-      (document.getElementById(`diff_ton`) as HTMLElement).innerHTML = ((((this.actual_weight - this.last_weight)/ this.last_weight)*100).toFixed(2)) + '%';
-    }
-    else{
-      (document.getElementById(`diff_ton`) as HTMLElement).innerHTML = '0%'
-    }
+    document.getElementById(`total_ton`)!.innerHTML = this.verifyNumber(this.sumaAmount).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    document.getElementById(`pom_total`)!.innerHTML = document.getElementById(`total_ton`)!.innerHTML 
 
-    //Valor corregido Peso
-    for(let i = 0; i<5;i++){
-      (document.getElementById(`diff_corregido_weight_${i}`) as HTMLElement).innerHTML = ((parseFloat((document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML) + 
-                                                                                        (parseFloat((document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML) *
-                                                                                        (dif[i]))).toFixed(2)).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      this.total_diff_corregido= this.total_diff_corregido + parseFloat((document.getElementById(`diff_corregido_weight_${i}`) as HTMLElement).innerHTML.replace(/[,]/g,'.').replace(/\B(?=(\d{3})+(?!\d))/g, ""));
-      (document.getElementById(`total_diff_corregido_weight`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      (document.getElementById(`pom_total`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
-    
-
-    //Valor corregido UF
-    this.total_diff_corregido = 0;
-    for(let i = 0; i<5;i++){
-      (document.getElementById(`diff_corregido_amount_${i}`) as HTMLElement).innerHTML = ((parseFloat((document.getElementById(`total_category_amount_${i}`) as HTMLElement).innerHTML) + 
-                                                                                        (parseFloat((document.getElementById(`total_category_amount_${i}`) as HTMLElement).innerHTML) *
-                                                                                        (dif[i]))).toFixed(2)).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      this.total_diff_corregido= this.total_diff_corregido + parseFloat((document.getElementById(`diff_corregido_amount_${i}`) as HTMLElement).innerHTML.replace(/[,]/g,'.').replace(/\B(?=(\d{3})+(?!\d))/g, ""));
-      (document.getElementById(`total_diff_corregido_amount`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      (document.getElementById(`amount_total`) as HTMLElement).innerHTML = this.total_diff_corregido.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
-
-    //Valor corregido UF a CLP
-    this.total_diff_corregido = 0;
-    this.ratesService.getUF.subscribe(uf => {
-
-      for(let i = 0; i<5;i++){
-        let uf_corregido = parseFloat((document.getElementById(`diff_corregido_amount_${i}`) as HTMLElement).innerHTML.replace(/[,]/g,'.'));
-        (document.getElementById(`uf_clp_${i}`) as HTMLElement).innerHTML = '$'+(uf_corregido * uf.data * 1.19).toFixed(0).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        this.total_diff_corregido= this.total_diff_corregido + parseFloat((uf_corregido * uf.data * 1.19).toFixed(0));
-        (document.getElementById(`total_uf_clp`) as HTMLElement).innerHTML = '$'+this.total_diff_corregido.toFixed(0).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    this.ratesService.getCLP.pipe(
+      concatMap(clp => {
+        this.sumaAmount = 0;
+        // Procesamiento de los datos de la primera suscripción
+        for(let i = 0; i< 4; i++){
+          document.getElementById(`actual_amount_${i}`)!.innerHTML = clp.data[i].price.toString();
+          document.getElementById(`amount_anual_${i}`)!.innerHTML = (clp.data[i].price * this.costoAnual[i]).toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          document.getElementById(`amount_corregido_${i}`)!.innerHTML = (clp.data[i].price * this.ajuste[i]).toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          document.getElementById(`total_category_amount_${i}`)!.innerHTML = ( parseFloat((clp.data[i].price * this.costoAnual[i]).toFixed(2)) + parseFloat((clp.data[i].price * this.ajuste[i]).toFixed(2)) ).toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          this.sumaAmount = this.sumaAmount + parseFloat((clp.data[i].price * this.costoAnual[i]).toFixed(2)) + parseFloat((clp.data[i].price * this.ajuste[i]).toFixed(2));
+          this.dif[i] = clp.data[i].price * this.costoAnual[i] + clp.data[i].price * this.ajuste[i];
+          this.sumaAjuste = this.sumaAjuste + clp.data[i].price * this.ajuste[i];
+          this.amountAnual = this.amountAnual + clp.data[i].price * this.costoAnual[i];
+        }
+        // Se regresa un observable para la segunda suscripción
+        document.getElementById(`anual_amount`)!.innerHTML = this.amountAnual.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        document.getElementById(`ajuste_amount`)!.innerHTML = this.sumaAjuste.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        document.getElementById(`total_amount`)!.innerHTML = this.sumaAmount.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        document.getElementById(`amount_total`)!.innerHTML = document.getElementById(`total_amount`)!.innerHTML 
+        return this.ratesService.getUF;
+      }),
+    )
+    .subscribe(uf => {
+      // Procesamiento de los datos de la segunda suscripción
+      this.sumaAmount = 0;
+      for(let i = 0; i< 4; i++){
+        this.sumaAmount = parseInt((this.sumaAmount + this.dif[i]*uf.data*1.19).toFixed(0));
+        document.getElementById(`uf_clp_${i}`)!.innerHTML = '$'+ (this.dif[i]*uf.data*1.19).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       }
-
-      sessionStorage.setItem('totalCLP','$'+this.total_diff_corregido.toFixed(0).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, "."));
-      sessionStorage.setItem('porcentajeDiff',(document.getElementById(`diff_ton`) as HTMLElement).innerHTML);
+      document.getElementById(`total_uf_clp`)!.innerHTML = '$'+ this.sumaAmount.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     });
-    
-    //Corrección datos
-
-    for(let i = 0; i<5;i++){
-
-      (document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML = (document.getElementById(`total_category_weight_${i}`) as HTMLElement).innerHTML.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      
-      (document.getElementById(`total_category_amount_${i}`) as HTMLElement).innerHTML = (document.getElementById(`total_category_amount_${i}`) as HTMLElement).innerHTML.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
   }
 
   tableToExcel() {
@@ -304,5 +230,14 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
     /* save to file */
     XLSX.writeFile(wb, "Tabla-Resumen.xlsx");
+  }
+
+  verifyNumber(number: number)
+  {
+    if (Number.isInteger(number)) {
+      return number.toString();  
+    } else {
+      return number.toFixed(2);  
+    }
   }
 }
