@@ -15,12 +15,12 @@ class statementProductorDao {
 
         const conn = mysqlcon.getConnection();
 
-        const res_business: any = await conn?.execute("SELECT * FROM business WHERE ID = ?", [business]).then((res) => res[0]).catch(error => { undefined });
+        const res_business: any = await conn?.execute("SELECT * FROM business WHERE CODE_BUSINESS = ?", [business]).then((res) => res[0]).catch(error => { undefined });
         if (res_business.length == 0) {
             return false;
         }
 
-        res_header = await conn?.execute("SELECT header_statement_form.*, business.name as BUSINESS_NAME FROM header_statement_form INNER JOIN business on business.ID = header_statement_form.ID_BUSINESS WHERE ID_BUSINESS = ? AND YEAR_STATEMENT = ? AND STATE = ? ORDER BY ID DESC", [business, year, Math.abs(isDraft - 1)]).then((res) => res[0]).catch(error => { undefined });
+        res_header = await conn?.execute("SELECT header_statement_form.*, business.name as BUSINESS_NAME FROM header_statement_form INNER JOIN business on business.ID = header_statement_form.ID_BUSINESS WHERE ID_BUSINESS = ? AND YEAR_STATEMENT = ? AND STATE = ? ORDER BY ID DESC", [res_business[0].ID, year, Math.abs(isDraft - 1)]).then((res) => res[0]).catch(error => { undefined });
         if (res_header.length == 0) {
             return false;
         }
@@ -85,7 +85,7 @@ class statementProductorDao {
 
     public async haveDraft(business: string, year: string) {
         const conn = mysqlcon.getConnection();
-        const res: any = await conn?.execute("SELECT id FROM header_statement_form WHERE ID_BUSINESS=? AND YEAR_STATEMENT=? AND STATE=1 ORDER BY ID DESC LIMIT 1", [business, year]).then((res) => res[0]).catch(error => undefined);
+        const res: any = await conn?.execute("SELECT id FROM header_statement_form WHERE ID_BUSINESS=(SELECT ID FROM business WHRE CODE_BUSINESS=?) AND YEAR_STATEMENT=? AND STATE=1 ORDER BY ID DESC LIMIT 1", [business, year]).then((res) => res[0]).catch(error => undefined);
         let isOk = false;
         if (res != null && res != undefined && res.length > 0) {
             isOk = true;

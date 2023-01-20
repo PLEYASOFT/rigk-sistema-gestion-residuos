@@ -282,6 +282,18 @@ class StatementProductorLogic {
                 paragraphLoop: true,
                 linebreaks: true,
             });
+            const val1 = pr-lrp;
+            const val2 = mer-lrme;
+            const val3 = plr-lrp;
+            const val4 = ((pnr + menr + plnr)).toFixed(2).replace(".", ",");
+            
+            const val11 = val1+pr;
+            const val22 = val2+mer;
+            const val33 = val3+plr;
+            const val44 = val4+(pnr + menr + plnr);
+
+            const eval1 = val1
+
             // const fixed = ((((((ep * pr) * diff_p) || 0) + (ep * pr)) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + ((((plr * epl) * diff_pl) || 0)) + (plr * epl) + ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr + manr + onr) * enr)) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
             const neto = (((ep * pr) + (eme * mer) + (plr * epl) + ((pnr + menr + plnr) * enr)) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
             const fixed = (parseFloat(((((((ep * pr) * diff_p) || 0) + (ep * pr))) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + (((((plr * epl) * diff_pl) || 0)) + (plr * epl)) + (((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr) * enr))) + neto) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
@@ -299,6 +311,20 @@ class StatementProductorLogic {
                 pnr,
                 preu,
                 ptt: (pr + pnr + preu).toFixed(2).replace(".", ","),
+
+                val1,
+                val2,
+                val3,
+                val4,
+
+                val11,
+                val22,
+                val33,
+                val44,
+                valtt: val11+val22+val33+val44,
+
+
+                eval11: val1+(ep*pr),
 
                 mer,
                 menr,

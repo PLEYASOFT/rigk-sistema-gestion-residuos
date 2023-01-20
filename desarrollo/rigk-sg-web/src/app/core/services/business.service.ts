@@ -10,7 +10,7 @@ export class BusinessService {
 
   constructor(private http: HttpClient) { }
 
-  verifyBusiness(id: number) {
+  verifyBusiness(id: string) {
     return this.http.get<any>(`${this.url}/verify/${id}`);
   }
 
