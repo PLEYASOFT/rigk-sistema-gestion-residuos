@@ -316,16 +316,12 @@ class StatementProductorLogic {
                 val2,
                 val3,
                 val4,
-
                 val11,
                 val22,
                 val33,
                 val44,
                 valtt: val11+val22+val33+val44,
-
-
                 eval11: val1+(ep*pr),
-
                 mer,
                 menr,
                 mereu,
