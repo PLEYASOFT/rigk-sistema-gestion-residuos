@@ -333,7 +333,6 @@ class StatementProductorLogic {
                 eval2,
                 eval3,
                 eval4,
-
                 val11,
                 val22,
                 val33,
@@ -350,7 +349,8 @@ class StatementProductorLogic {
                 lrme,
                 lrpl,
                 lnr,
-
+                valtt: val11+val22+val33+val44,
+                eval11: val1+(ep*pr),
                 mer,
                 menr,
                 mereu,

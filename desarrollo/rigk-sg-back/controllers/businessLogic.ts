@@ -49,10 +49,10 @@ class BusinessLogic {
 
     async postBusiness(req: any, res: Response) {
 
-        const { name, vat, loc_address, email, phone, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business } = req.body;
+        const { name, vat, loc_address, email, phone, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business, giro } = req.body;
 
         try {
-            const business = await businessDao.postBusiness(name, vat, loc_address, phone, email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business);
+            const business = await businessDao.postBusiness(name, vat, loc_address, phone, email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business,giro);
             res.status(200).json({ status: business, data: {}, msg: '' });
         } catch (err) {
             console.log(err);
@@ -79,10 +79,10 @@ class BusinessLogic {
     }
 
     async updateBusiness(req: any, res: Response) {
-        const { name, vat, loc_address, email, phone, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business } = req.body;
+        const { name, vat, loc_address, email, phone, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business,giro } = req.body;
         const { id } = req.params;
         try {
-            const business = await businessDao.updateBusiness(id, name, vat, loc_address, phone, email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business);
+            const business = await businessDao.updateBusiness(id, name, vat, loc_address, phone, email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business,giro);
             res.status(200).json({ status: business, data: {}, msg: '' });
         } catch (err) {
             console.log(err);
