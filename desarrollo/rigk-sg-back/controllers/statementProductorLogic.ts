@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import e, { Request, Response } from 'express';
 import statementDao from '../dao/statementProductorDao';
 import ratesDao from '../dao/ratesDao';
 
@@ -154,7 +154,6 @@ class StatementProductorLogic {
             let pomnr = 0;
 
             const rates: any[] = await ratesDao.ratesID(year);
-
             ep = (rates.find(r => r.type == 1))?.price || 0;
             eme = (rates.find(r => r.type == 2))?.price || 0;
             epl = (rates.find(r => r.type == 3))?.price || 0;
@@ -162,7 +161,7 @@ class StatementProductorLogic {
 
             const declaretion: any = await statementDao.getDeclaretionByYear(id, year, 0);
             const { detail, header } = declaretion;
-            const last_detail: any = await statementDao.getDetailById(id, parseInt(year) - 1);
+            const last_detail: any = await statementDao.getDetailById(id, (parseInt(year) - 1));
             const uf: any = await ratesDao.getUF((new Date(header.UPDATED_AT)).toISOString().split("T")[0]);
 
             let lrp = 0;
@@ -274,7 +273,7 @@ class StatementProductorLogic {
             const path = require("path");
 
             const content = fs.readFileSync(
-                path.resolve('files/templates', "plantillav1.docx"),
+                path.resolve('files/templates', "plantillav2.docx"),
                 "binary"
             );
             const zip = new PizZip(content);
@@ -282,15 +281,41 @@ class StatementProductorLogic {
                 paragraphLoop: true,
                 linebreaks: true,
             });
+            const val1 = (pr - lrp).toFixed(2);
+            const val2 = (mer - lrme).toFixed(2);
+            const val3 = (plr - lrp).toFixed(2);
+            const val4 = (pnr + menr + plnr).toFixed(2);
+
+            const val11 = (parseFloat(val1) + pr).toFixed(2);
+            const val22 = (parseFloat(val2) + mer).toFixed(2);
+            const val33 = (parseFloat(val3) + plr).toFixed(2);
+            const val44 = (parseFloat(val4) + (pnr + menr + plnr)).toFixed(2);
+
+            const eval1 = (parseFloat(val1) * ep).toFixed(2);
+            const eval2 = (parseFloat(val2) * eme).toFixed(2);
+            const eval3 = (parseFloat(val3) * epl).toFixed(2);
+            const eval4 = (parseFloat(val4) * enr).toFixed(2);
+
+            const eval11 = (parseFloat(eval1) + (ep * pr)).toFixed(2);
+            const eval22 = (parseFloat(eval2) + (eme * mer)).toFixed(2);
+            const eval33 = (parseFloat(eval3) + (plr * epl)).toFixed(2);
+            const eval44 = (parseFloat(eval4) + ((pnr + menr + plnr) * enr)).toFixed(2);
+
             // const fixed = ((((((ep * pr) * diff_p) || 0) + (ep * pr)) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + ((((plr * epl) * diff_pl) || 0)) + (plr * epl) + ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr + manr + onr) * enr)) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
-            const neto = (((ep * pr) + (eme * mer) + (plr * epl) + ((pnr + menr + plnr) * enr)) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
-            const fixed = (parseFloat(((((((ep * pr) * diff_p) || 0) + (ep * pr))) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + (((((plr * epl) * diff_pl) || 0)) + (plr * epl)) + (((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr) * enr))) + neto) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            const neto0 = (((ep * pr) + (eme * mer) + (plr * epl) + ((pnr + menr + plnr) * enr)) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            // const fixed = (parseFloat(((((((ep * pr) * diff_p) || 0) + (ep * pr))) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + (((((plr * epl) * diff_pl) || 0)) + (plr * epl)) + (((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr) * enr))) + neto) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            const fixed = 0;
+            const neto = ((parseFloat(eval11) + parseFloat(eval22) + parseFloat(eval33) + parseFloat(eval44)) * uf);
+            const iva = neto * 0.19;
             // const total = ((((((ep * pr) * diff_p) || 0) + (ep * pr)) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + ((((plr * epl) * diff_pl) || 0)) + (plr * epl) + ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr + manr + onr) * enr)) * uf * 1.19).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
-            const total = (parseFloat(((((((ep * pr) * diff_p) || 0) + (ep * pr))) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + (((((plr * epl) * diff_pl) || 0)) + (plr * epl)) + (((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr) * enr))) + neto) * uf * 1.19).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            // const total = (parseFloat(((((((ep * pr) * diff_p) || 0) + (ep * pr))) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + (((((plr * epl) * diff_pl) || 0)) + (plr * epl)) + (((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr) * enr))) + neto) * uf * 1.19).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            const total = 0;
+
             doc.render({
-                neto,
+                neto: neto.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' }),
                 fixed,
-                total,
+                iva: iva.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' }),
+                total: (neto + iva).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' }),
                 business_name: header.BUSINESS_NAME,
                 year,
                 lyear: parseInt(year) - 1,
@@ -300,6 +325,32 @@ class StatementProductorLogic {
                 preu,
                 ptt: (pr + pnr + preu).toFixed(2).replace(".", ","),
 
+                val1,
+                val2,
+                val3,
+                val4,
+                eval1,
+                eval2,
+                eval3,
+                eval4,
+                val11,
+                val22,
+                val33,
+                val44,
+                //valtt: (parseFloat(val11) + parseFloat(val22) + parseFloat(val33) + parseFloat(val44)).toFixed(2),
+
+
+                //eval11,
+                eval22,
+                eval33,
+                eval44,
+                evaltt: (parseFloat(eval11) + parseFloat(eval22) + parseFloat(eval33) + parseFloat(eval44)).toFixed(2),
+                lrp,
+                lrme,
+                lrpl,
+                lnr,
+                valtt: val11+val22+val33+val44,
+                eval11: val1+(ep*pr),
                 mer,
                 menr,
                 mereu,

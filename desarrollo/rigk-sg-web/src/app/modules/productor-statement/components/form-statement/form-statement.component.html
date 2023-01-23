@@ -1,10 +1,12 @@
 <div>
-    <p>Identifique las cantidades de envases (EyE) desagregados puestos por primera vez en el mercado nacional (enajenados, comercializados bajo marca propia o importados para uso profesional) en el año anterior.</p>
+    <p>Identifique las cantidades de envases (EyE) desagregados puestos por primera vez en el mercado nacional
+        (enajenados, comercializados bajo marca propia o importados para uso profesional) en el año anterior.</p>
 </div>
 
 <div class="table-responsive mb-4" *ngFor="let t of tablas; let i = index">
     <!-- DESKTOP -->
-    <table class="table table-even table-section table-borderless table-align-middle table-border table-radius table-statement">
+    <table
+        class="table table-even table-section table-borderless table-align-middle table-border table-radius table-statement">
         <thead>
             <tr>
                 <th colspan="13">Declaración REP {{t}} año {{year_statement}} en toneladas</th>
@@ -17,7 +19,7 @@
                 <td colspan="2">Primarios Peligrosos</td>
                 <td colspan="2">Secundarios/Terciarios</td>
                 <td colspan="2">Peso Total</td>
-                <td>Dif. {{year_statement -1}} vs {{year_statement}} (%)</td>
+                <td>Dif. {{year_statement -1}} vs {{year_statement}} (ton)</td>
                 <td>Monto (UF)</td>
             </tr>
             <tr class="text-center bg-green-light-2">
@@ -33,50 +35,59 @@
                 <td width="7%">{{year_statement}}</td>
             </tr>
             <tr class="text-end" *ngFor="let r of residuos; let x = index">
-                <ng-container  >
-                    <ng-template [ngIf]="r !== 'Envases compuestos' || (r === 'Envases compuestos' && t === 'EyE No Reciclables')">
+                <ng-container>
+                    <ng-template
+                        [ngIf]="r !== 'Envases compuestos' || (r === 'Envases compuestos' && t === 'EyE No Reciclables')">
                         <td>{{r}}</td>
-                        <td  id="inp_l_{{i+1}}_{{(x+1)}}_1_2" class="bg-grey-light">0</td>
-                        <td > <input value="0" id="inp_{{i+1}}_{{(x+1)}}_1_2" type="text" min="0" class="form-control"
-                            (change)="updateValue((i+1),(x+1),1,2,$event.target)"> </td>
+                        <td id="inp_l_{{i+1}}_{{(x+1)}}_1_2" class="bg-grey-light">0</td>
+                        <td> <input value="0" id="inp_{{i+1}}_{{(x+1)}}_1_2" type="text" min="0" class="form-control"
+                                (change)="updateValue((i+1),(x+1),1,2,$event.target)"> </td>
                         <td id="inp_l_{{i+1}}_{{(x+1)}}_1_1" class="bg-grey-light">0</td>
-                        <td > <input value="0" id="inp_{{i+1}}_{{(x+1)}}_1_1" type="text" min="0"
-                            class="form-control form-control-sm" (change)="updateValue((i+1),(x+1),1,1,$event.target)"></td>
-                        <td  id="inp_l_{{i+1}}_{{(x+1)}}_2_1" class="bg-grey-light">0</td>
-                        <td > <input value="0" id="inp_{{i+1}}_{{(x+1)}}_2_1" type="text" min="0"
-                            class="form-control form-control-sm" (change)="updateValue((i+1),(x+1),2,1,$event.target)"></td>
+                        <td> <input value="0" id="inp_{{i+1}}_{{(x+1)}}_1_1" type="text" min="0"
+                                class="form-control form-control-sm"
+                                (change)="updateValue((i+1),(x+1),1,1,$event.target)"></td>
+                        <td id="inp_l_{{i+1}}_{{(x+1)}}_2_1" class="bg-grey-light">0</td>
+                        <td> <input value="0" id="inp_{{i+1}}_{{(x+1)}}_2_1" type="text" min="0"
+                                class="form-control form-control-sm"
+                                (change)="updateValue((i+1),(x+1),2,1,$event.target)"></td>
                         <td id="last_weight_{{i+1}}_{{x+1}}" class="bg-grey-light">0</td>
-                        <td ><input  value="0" id="actual_weight_{{i+1}}_{{x+1}}" readonly style = 'border: none; background-color: transparent; text-align: center;'></td>
-                        <td ><input  value="0" id="actual_dif_{{i+1}}_{{x+1}}" readonly style = 'border: none; background-color: transparent; text-align: center;'></td>
-                        <td ><input  value="0" id="actual_amount_{{i+1}}_{{x+1}}" readonly style = 'border: none; background-color: transparent; text-align: center;'> </td>  
+                        <td><input value="0" id="actual_weight_{{i+1}}_{{x+1}}" readonly
+                                style='border: none; background-color: transparent; text-align: center;'></td>
+                        <td><input value="0" id="actual_dif_{{i+1}}_{{x+1}}" readonly type="text"
+                                style='border: none; background-color: transparent; text-align: center;'></td>
+                        <td><input value="0" id="actual_amount_{{i+1}}_{{x+1}}" readonly
+                                style='border: none; background-color: transparent; text-align: center;'> </td>
                     </ng-template>
-                    
-                    <ng-template [ngIf]="!(r !== 'Envases compuestos' || (r === 'Envases compuestos' && t === 'EyE No Reciclables'))">
-                        <td style="display: none;"  id="inp_l_{{i+1}}_{{(x+1)}}_1_2" class="bg-grey-light">0</td>
-                <td style="display: none;" > <input value="0" id="inp_{{i+1}}_{{(x+1)}}_1_2" type="text" min="0" class="form-control"
-                        (change)="updateValue((i+1),(x+1),1,2,$event.target)"> </td>
-                <td style="display: none;"  id="inp_l_{{i+1}}_{{(x+1)}}_1_1" class="bg-grey-light">0</td>
-                <td style="display: none;" > <input value="0" id="inp_{{i+1}}_{{(x+1)}}_1_1" type="text" min="0"
-                        class="form-control form-control-sm" (change)="updateValue((i+1),(x+1),1,1,$event.target)">
-                </td>
-                <td style="display: none;"  id="inp_l_{{i+1}}_{{(x+1)}}_2_1" class="bg-grey-light">0</td>
-                <td style="display: none;" > <input value="0" id="inp_{{i+1}}_{{(x+1)}}_2_1" type="text" min="0"
-                        class="form-control form-control-sm" (change)="updateValue((i+1),(x+1),2,1,$event.target)">
-                </td>
-                <td style="display: none;"  id="last_weight_{{i+1}}_{{x+1}}" class="bg-grey-light">0</td>
-                <td style="display: none;" > <input value="0" readonly id="actual_weight_{{i+1}}_{{x+1}}" type="text"
-                        class="form-control form-control-sm"> </td>
-                <td style="display: none;" > <input value="0" readonly id="actual_dif_{{i+1}}_{{x+1}}" type="text"
-                        class="form-control form-control-sm"> </td>
-                <td style="display: none;" > <input value="0" readonly id="actual_amount_{{i+1}}_{{x+1}}" type="text"
-                        class="form-control form-control-sm"> </td>
-                        
+
+                    <ng-template
+                        [ngIf]="!(r !== 'Envases compuestos' || (r === 'Envases compuestos' && t === 'EyE No Reciclables'))">
+                        <td style="display: none;" id="inp_l_{{i+1}}_{{(x+1)}}_1_2" class="bg-grey-light">0</td>
+                        <td style="display: none;"> <input value="0" id="inp_{{i+1}}_{{(x+1)}}_1_2" type="text" min="0"
+                                class="form-control" (change)="updateValue((i+1),(x+1),1,2,$event.target)"> </td>
+                        <td style="display: none;" id="inp_l_{{i+1}}_{{(x+1)}}_1_1" class="bg-grey-light">0</td>
+                        <td style="display: none;"> <input value="0" id="inp_{{i+1}}_{{(x+1)}}_1_1" type="text" min="0"
+                                class="form-control form-control-sm"
+                                (change)="updateValue((i+1),(x+1),1,1,$event.target)">
+                        </td>
+                        <td style="display: none;" id="inp_l_{{i+1}}_{{(x+1)}}_2_1" class="bg-grey-light">0</td>
+                        <td style="display: none;"> <input value="0" id="inp_{{i+1}}_{{(x+1)}}_2_1" type="text" min="0"
+                                class="form-control form-control-sm"
+                                (change)="updateValue((i+1),(x+1),2,1,$event.target)">
+                        </td>
+                        <td style="display: none;" id="last_weight_{{i+1}}_{{x+1}}" class="bg-grey-light">0</td>
+                        <td style="display: none;"> <input value="0" readonly id="actual_weight_{{i+1}}_{{x+1}}"
+                                type="text" class="form-control form-control-sm"> </td>
+                        <td style="display: none;"> <input value="0" readonly id="actual_dif_{{i+1}}_{{x+1}}"
+                                type="text" class="form-control form-control-sm"> </td>
+                        <td style="display: none;"> <input value="0" readonly id="actual_amount_{{i+1}}_{{x+1}}"
+                                type="text" class="form-control form-control-sm"> </td>
+
                     </ng-template>
                 </ng-container>
             </tr>
-            
+
         </tbody>
-        
+
         <tfoot>
             <tr>
                 <td colspan="7"></td>
@@ -96,14 +107,23 @@
         </tfoot>
     </table>
     <i *ngIf=" t === 'EyE Reciclables'" class="fa fa-info-circle fa-fw fa-lg color-green" aria-hidden="true">
-    </i><div *ngIf=" t === 'EyE Reciclables'">
-        Para el cumplimiento del año en curso se informan los EyE del año anterior, por ejemplo, el presente año se considera como año 1 pero se declara lo levantado del año anterior, en este caso corresponderá al año 0. El ajuste entre lo proyectado y los datos reales se realizará con los datos declarados en el ejercicio siguiente (para mayor entendimiento ver el tutorial en página de Preguntas Frecuentes. Este ajuste no aplica en el primer año ya que no existen datos históricos. 
-        
-    </div> 
+    </i>
+    <div *ngIf=" t === 'EyE Reciclables'">
+        Para el cumplimiento del año en curso se informan los EyE del año anterior, por ejemplo, el presente año se
+        considera como año 1 pero se declara lo levantado del año anterior, en este caso corresponderá al año 0. El
+        ajuste entre lo proyectado y los datos reales se realizará con los datos declarados en el ejercicio siguiente
+        (para mayor entendimiento ver el tutorial en página de Preguntas Frecuentes. Este ajuste no aplica en el primer
+        año ya que no existen datos históricos.
+
+    </div>
 
     <i *ngIf=" t === 'EyE No Reciclables'" class="fa fa-info-circle fa-fw fa-lg color-green" aria-hidden="true">
-    </i><div *ngIf=" t === 'EyE No Reciclables'">
-        Los Envases Compuestos pertenecen a una subcategoría definida si, al menos, un 85% de su masa correspondiere a un sólo material. En ese caso se declaran como el material mayoritario en la categoría correspondiente (reciclable, No reciclable) según sea el caso. En caso de que cada material del envase compuesto tenga una proporción menor al 85% se califica como Envase Compuesto y se considerará no reciclable.
+    </i>
+    <div *ngIf=" t === 'EyE No Reciclables'">
+        Los Envases Compuestos pertenecen a una subcategoría definida si, al menos, un 85% de su masa correspondiere a
+        un sólo material. En ese caso se declaran como el material mayoritario en la categoría correspondiente
+        (reciclable, No reciclable) según sea el caso. En caso de que cada material del envase compuesto tenga una
+        proporción menor al 85% se califica como Envase Compuesto y se considerará no reciclable).
 
-    </div> 
+    </div>
 </div>

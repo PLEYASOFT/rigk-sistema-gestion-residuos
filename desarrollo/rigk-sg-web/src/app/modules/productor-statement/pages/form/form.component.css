@@ -1,7 +1,3 @@
-.list-process__dot {
-    cursor: pointer;
-}
-
 :host
 {
     width: 90% !important;
