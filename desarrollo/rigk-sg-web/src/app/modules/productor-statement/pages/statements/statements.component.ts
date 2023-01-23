@@ -26,7 +26,7 @@ export class StatementsComponent implements OnInit {
   loadStatements() {
     this.productorService.getStatementByUser.subscribe(r => {
       if (r.status) {
-        r.data = r.data.sort(((a:any, b:any) => b.YEAR_STATEMENT - a.YEAR_STATEMENT));
+        r.data = r.data.sort(((a: any, b: any) => b.YEAR_STATEMENT - a.YEAR_STATEMENT));
         (r.data as any[]).forEach(e => {
 
           if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
@@ -79,9 +79,9 @@ export class StatementsComponent implements OnInit {
     this.db = this.dbStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
   }
   previus() {
-    if (this.pos-1 < 0 || this.pos >= this.cant+1) return;
+    if (this.pos - 1 < 0 || this.pos >= this.cant + 1) return;
     this.pos--;
-    this.db = this.dbStatements.slice((this.pos) * 10, (this.pos+1) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
+    this.db = this.dbStatements.slice((this.pos) * 10, (this.pos + 1) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
   }
   downloadPDF(id: any, year: any) {
     Swal.fire({
@@ -90,13 +90,13 @@ export class StatementsComponent implements OnInit {
       showConfirmButton: false
     });
     Swal.showLoading();
-    this.productorService.downloadPDF(id, year).subscribe(r=>{
-      const file = new Blob([r], {type: 'application/pdf'});
+    this.productorService.downloadPDF(id, year).subscribe(r => {
+      const file = new Blob([r], { type: 'application/pdf' });
       let link = document.createElement('a');
       link.href = window.URL.createObjectURL(file);
       link.download = `Reporte_${year}`;
       document.body.appendChild(link);
-      link.dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true, view: window}));
+      link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
       link.remove();
       window.URL.revokeObjectURL(link.href);
       Swal.close();
