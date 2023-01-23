@@ -48,18 +48,18 @@ export class SidebarComponent implements OnInit {
   async showDialog() {
     Swal.fire({
       title: 'Ingrese Datos',
-      html: '<input id="inp_id_business" type="number" placeholder="ID Empresa" class="form-control"><br><input id="inp_year" type="number" placeholder="AÑO Declaración" class="form-control">',
+      html: '<input id="inp_id_business" type="text" placeholder="ID Empresa" class="form-control"><br><input id="inp_year" type="number" placeholder="AÑO Declaración" class="form-control">',
       showCancelButton: true,
       preConfirm: async () => {
-        const id_business = parseInt((document.getElementById('inp_id_business') as HTMLInputElement).value);
+        const id_business = ((document.getElementById('inp_id_business') as HTMLInputElement).value);
         const year = parseInt((document.getElementById('inp_year') as HTMLInputElement).value);
         const actual = new Date().getFullYear();
-        if( !(year < actual && id_business > 0))
+        if( !(year < actual && id_business != ''))
         {
           Swal.showValidationMessage(`Solo se aceptan antes del año ${actual - 1}`);
           return;
         }
-        if ((year >= 1000 && year <= 9999) && year < actual && id_business > 0) {
+        if ((year >= 1000 && year <= 9999) && year < actual && id_business != '') {
           await this.businessService.verifyBusiness(id_business).subscribe({
             next: r => {
               if (r.status) {

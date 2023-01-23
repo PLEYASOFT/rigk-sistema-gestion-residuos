@@ -2,7 +2,7 @@ import Joi from 'joi';
 
 export const statementProductorFormScheme = Joi.object({
     header: Joi.object({
-        id_business: Joi.number()
+        id_business: Joi.string()
             .required(),
         year_statement: Joi.number()
             .min(1000)
@@ -30,7 +30,7 @@ export const statementProductorFormScheme = Joi.object({
 });
 
 export const statementByIdScheme = Joi.object({
-    business: Joi.number()
+    business: Joi.string()
         .required(),
     draft: Joi.number().required(),
     year: Joi.number()

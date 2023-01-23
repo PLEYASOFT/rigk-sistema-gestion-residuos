@@ -12,6 +12,7 @@ import {  validate, clean, format, getCheckDigit } from 'rut.js'
 export class MaintainerBusinessComponent implements OnInit {
 
   formData: FormGroup = this.fb.group({
+    code_business : ['', [Validators.required]], // Campo requerido
     name_business : ['', [Validators.required]], // Campo requerido
     rut : ['', [Validators.required, Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$'),this.verifyRut] ], // Campo requerido y con formato de RUT
     loc_address : ['', [Validators.required]], // Campo requerido
@@ -21,7 +22,8 @@ export class MaintainerBusinessComponent implements OnInit {
     am_last_name : ['', [Validators.required]], // Campo requerido
     invoice_name : ['', [Validators.required]], // Campo requerido
     invoice_email : ['', [Validators.required, Validators.email]], // Campo requerido y con formato de correo electrónico
-    invoice_phone : ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]] // Campo requerido y con formato de número de teléfono
+    invoice_phone : ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]], // Campo requerido y con formato de número de teléfono
+    giro: ['', [Validators.required]]
   });
   popupVisible = false;
   popupModify = false;
@@ -38,6 +40,8 @@ export class MaintainerBusinessComponent implements OnInit {
   invoice_name: string [] = [];
   invoice_email: string [] = [];
   invoice_phone: string [] = [];
+  code_business: string[] = [];
+  giro: string[] = [];
 
   userData: any | null;
 
@@ -61,6 +65,8 @@ export class MaintainerBusinessComponent implements OnInit {
     this.invoice_name= [];
     this.invoice_email= [];
     this.invoice_phone= [];
+    this.code_business= [];
+    this.giro= [];
     this.businessService.getAllBusiness().subscribe({
       next: resp => {
         if (resp.status) {
@@ -77,6 +83,8 @@ export class MaintainerBusinessComponent implements OnInit {
             this.invoice_name.push(resp.status[i].INVOICE_NAME) ;
             this.invoice_email.push(resp.status[i].INVOICE_EMAIL) ;
             this.invoice_phone.push(resp.status[i].INVOICE_PHONE) ;
+            this.code_business.push(resp.status[i].CODE_BUSINESS);
+            this.giro.push(resp.status[i].GIRO);
           }
         }
       },
@@ -94,7 +102,7 @@ export class MaintainerBusinessComponent implements OnInit {
   btnAddBusiness() {
     
     const { name_business, rut, loc_address,phone,  
-    email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone} = this.formData.value;
+    email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business,giro} = this.formData.value;
 
     if (this.formData.invalid) {
       Swal.fire({
@@ -106,7 +114,7 @@ export class MaintainerBusinessComponent implements OnInit {
       return;
     }
     
-    this.businessService.postBusiness(name_business, rut, loc_address, phone, email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone).subscribe({
+    this.businessService.postBusiness(name_business, rut, loc_address, phone, email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business,giro).subscribe({
       next: resp => {
         if(resp.status){
           Swal.fire({
@@ -171,7 +179,7 @@ export class MaintainerBusinessComponent implements OnInit {
   btnUpdateBusiness(id_business:any) {
     
     const { name_business, rut, loc_address,phone,  
-    email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone} = this.formData.value;
+    email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business,giro} = this.formData.value;
     
     if (this.formData.invalid) {
       Swal.fire({
@@ -182,7 +190,7 @@ export class MaintainerBusinessComponent implements OnInit {
       return;
     }
 
-    this.businessService.updateBusiness(id_business,name_business, rut, loc_address, phone, email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone).subscribe({
+    this.businessService.updateBusiness(id_business,name_business, rut, loc_address, phone, email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business,giro).subscribe({
       next: resp => {
         if (resp.status) {
           Swal.fire({
