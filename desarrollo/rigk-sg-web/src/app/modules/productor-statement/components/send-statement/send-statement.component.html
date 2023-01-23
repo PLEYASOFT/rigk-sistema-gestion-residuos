@@ -1,18 +1,25 @@
     <div id="content" class="w-100">
         <section class="consulta-declaracion">
             <div class="row">
-                <!-- Col 1/4 -->
+                <!-- Col 1/3 -->
                 <div class="col-12 col-lg-6 col-xl-4 d-flex">
                     <div class="box box-semiradius box-semiradius-secondary box-header mb-4 w-100">
-                        <h2 class="box-header-h1">Detalle Compañía</h2>
+                        <h2 class="box-header-h1">Información ProREP</h2>
                         <ul class="list list-data list-data-tit-text-col list-unstyled">
                             <li>
                                 <span class="list-data__title">
                                     <i class="fa fa-building fa-fw fa-lg" aria-hidden="true"></i>
                                 </span>
                                 <span class="list-data__text flex-grow-1 ps-0">
-                                    <strong>{{name_business}}</strong><br>
-                                    {{rut}}
+                                    <strong>Nombre SG:</strong><br>Corporación PROREP para la Gestión de Residuos
+                                </span>
+                            </li>
+                            <li>
+                                <span class="list-data__title">
+                                    <i class="fa fa-building fa-fw fa-lg" aria-hidden="true"></i>
+                                </span>
+                                <span class="list-data__text flex-grow-1 ps-0">
+                                    <strong>Rut:</strong><br>65.216.268-1
                                 </span>
                             </li>
                             <li>
@@ -20,15 +27,15 @@
                                     <i class="fa fa-map-marker fa-fw fa-lg" aria-hidden="true"></i>
                                 </span>
                                 <span class="list-data__text flex-grow-1 ps-0">
-                                    <strong>{{loc_address}}</strong>
+                                    <strong>Dirección:</strong><br>Avda. Andrés Bello 2777, of. 501, Las Condes, Santiago
                                 </span>
                             </li>
                             <li>
                                 <span class="list-data__title">
-                                    <i class="fa fa-phone fa-fw fa-lg" aria-hidden="true"></i>
+                                    <i class="fa fa-building fa-fw fa-lg" aria-hidden="true"></i>
                                 </span>
                                 <span class="list-data__text flex-grow-1 ps-0">
-                                    {{phone}}<br>
+                                    <strong>Giro:</strong><br>Gestión de Residuos de Envases y Embalajes no Domiciliarios
                                 </span>
                             </li>
                             <li>
@@ -36,23 +43,95 @@
                                     <i class="fa fa-envelope fa-fw fa-lg" aria-hidden="true"></i>
                                 </span>
                                 <span class="list-data__text flex-grow-1 ps-0">
-                                    {{email}}
+                                    <strong>Correo:</strong><br>admin@prorep.cl
+                                </span>
+                            </li>
+                            <li>
+                                <span class="list-data__title">
+                                    <i class="fa fa-building fa-fw fa-lg" aria-hidden="true"></i>
+                                </span>
+                                <span class="list-data__text flex-grow-1 ps-0">
+                                    <strong>Asunto:</strong><br>Pago cumplimiento Ley REP y nombre del socio 
+                                </span>
+                            </li>
+                            <li>
+                                <span class="list-data__title">
+                                    <i class="fa fa-user fa-fw fa-lg" aria-hidden="true"></i>
+                                </span>
+                                <span class="list-data__text flex-grow-1 ps-0">
+                                    <strong>Encargada de facturación:</strong><br>Lorena Calderón
+                                </span>
+                            </li>
+                            <li>
+                                <span class="list-data__title">
+                                    <i class="fa fa-building fa-fw fa-lg" aria-hidden="true"></i>
+                                </span>
+                                <span class="list-data__text flex-grow-1 ps-0">
+                                    <strong>Banco:</strong><br>Santander
+                                </span>
+                            </li>
+                            <li>
+                                <span class="list-data__title">
+                                    <i class="fa fa-building fa-fw fa-lg" aria-hidden="true"></i>
+                                </span>
+                                <span class="list-data__text flex-grow-1 ps-0">
+                                    <strong>Cuenta Corriente</strong><br>89412617
                                 </span>
                             </li>
                         </ul>
                     </div>
                 </div>
-                <!-- Col 2/4 -->
+                <!-- Col 2/3 -->
                 <div class="col-12 col-lg-6 col-xl-4 d-flex">
                     <div class="box box-semiradius box-semiradius-secondary box-header mb-4 w-100">
-                        <h2 class="box-header-h1">Gerente de cuenta</h2>
+                        <h2 class="box-header-h1">Información para Facturación</h2>
+                        <ul class="list list-data list-data-tit-text-col list-unstyled">
+                            <li>
+                                <span class="list-data__title">
+                                    <i class="fa fa-building fa-fw fa-lg" aria-hidden="true"></i>
+                                </span>
+                                <span class="list-data__text flex-grow-1 ps-0">
+                                    <strong>Nombre Empresa:</strong><br>{{name_business}}
+                                </span>
+                            </li>
+                            <li>
+                                <span class="list-data__title">
+                                    <i class="fa fa-building fa-fw fa-lg" aria-hidden="true"></i>
+                                </span>
+                                <span class="list-data__text flex-grow-1 ps-0">
+                                    <strong>Rut:</strong><br>{{rut}}
+                                </span>
+                            </li>
+                            <li>
+                                <span class="list-data__title">
+                                    <i class="fa fa-building fa-fw fa-lg" aria-hidden="true"></i>
+                                </span>
+                                <span class="list-data__text flex-grow-1 ps-0">
+                                    <strong>Giro:</strong><br>---
+                                </span>
+                            </li>
+                            <li>
+                                <span class="list-data__title">
+                                    <i class="fa fa-map-marker fa-fw fa-lg" aria-hidden="true"></i>
+                                </span>
+                                <span class="list-data__text flex-grow-1 ps-0">
+                                    <strong>Dirección:</strong><br>{{loc_address}}<br>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Col 3/3 -->
+                <div class="col-12 col-lg-6 col-xl-4 d-flex">
+                    <div class="box box-semiradius box-semiradius-secondary box-header mb-4 w-100">
+                        <h2 class="box-header-h1">Contraparte Finanzas</h2>
                         <ul class="list list-data list-data-tit-text-col list-unstyled">
                             <li>
                                 <span class="list-data__title">
                                     <i class="fa fa-user fa-fw fa-lg" aria-hidden="true"></i>
                                 </span>
                                 <span class="list-data__text flex-grow-1 ps-0">
-                                    <strong>{{am_first_name}} {{am_last_name}}</strong><br>
+                                    <strong>Nombre:</strong><br>{{invoice_name}}
                                 </span>
                             </li>
                             <li>
@@ -60,7 +139,7 @@
                                     <i class="fa fa-envelope fa-fw fa-lg" aria-hidden="true"></i>
                                 </span>
                                 <span class="list-data__text flex-grow-1 ps-0">
-                                    <strong>{{email}}</strong>
+                                    <strong>Correo:</strong><br>{{invoice_email}}
                                 </span>
                             </li>
                             <li>
@@ -68,48 +147,8 @@
                                     <i class="fa fa-phone fa-fw fa-lg" aria-hidden="true"></i>
                                 </span>
                                 <span class="list-data__text flex-grow-1 ps-0">
-                                    {{phone}}<br>
+                                    <strong>Teléfono:</strong><br>{{invoice_phone}}
                                 </span>
-                            </li>
-                            <li>
-                                <span class="list-data__title">
-                                    <i class="fa fa-map-marker fa-fw fa-lg" aria-hidden="true"></i>
-                                </span>
-                                <span class="list-data__text flex-grow-1 ps-0">
-                                    <strong>Dirección Administrador Cuenta</strong><br>
-                                    {{loc_address}}<br>
-                                </span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- Col 3/4 -->
-                <div class="col-12 col-lg-6 col-xl-4 d-flex">
-                    <div class="box box-semiradius box-semiradius-red box-header mb-4 w-100">
-                        <h2 class="box-header-h1">Diferencia con declaración anterior</h2>
-                        <ul class="list list-data list-data-tit-text-col list-unstyled">
-                            <li>
-                                <span class="list-data__title col-6">Año anterior</span>
-                                <span class="list-data__text">{{amountString}}</span>
-                            </li>
-                            <li>
-                                <span class="list-data__title col-6">Año actual</span>
-                                <span class="list-data__text">{{totalCLP}}</span>
-                            </li>
-                        </ul>
-                        <h3 class="box-header-h2">Detalle Facturación</h3>
-                        <ul class="list list-data list-data-tit-text-col list-unstyled">
-                            <li>
-                                <span class="list-data__title col-4">Nombre</span>
-                                <span class="list-data__text">{{invoice_name}}</span>
-                            </li>
-                            <li>
-                                <span class="list-data__title col-4">E-mail</span>
-                                <span class="list-data__text">{{invoice_email}}</span>
-                            </li>
-                            <li>
-                                <span class="list-data__title col-4">Teléfono</span>
-                                <span class="list-data__text">{{invoice_phone}}</span>
                             </li>
                         </ul>
                     </div>
