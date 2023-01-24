@@ -87,27 +87,29 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         this.tonSums.tonSum[r?.type_residue-1] = this.tonSums.tonSum[r?.type_residue-1] + parseFloat(r?.value);
         this.result = this.verifyNumber(this.tonSums.tonSum[r?.type_residue-1]);
 
-        if(r?.type_residue == 1 || r?.type_residue == 2 || r?.type_residue == 3){
+        if(r?.type_residue!=4){
           document.getElementById(`actual_weight_${r?.type_residue}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
           this.costoAnual[r?.type_residue-1] = parseFloat(this.result);
           }
       }
       else if(r.recyclability == 2)
       {
-        this.tonNoReciclable = this.tonNoReciclable + parseFloat(r?.value);
-        this.result = this.verifyNumber(this.tonNoReciclable);
-
-        document.getElementById(`actual_weight_4`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        this.costoAnual[3] = parseFloat(this.result);
+        if(r?.type_residue != 4){
+          this.tonNoReciclable = this.tonNoReciclable + parseFloat(r?.value);
+          this.result = this.verifyNumber(this.tonNoReciclable);
+          document.getElementById(`actual_weight_4`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          this.costoAnual[3] = parseFloat(this.result);
+        }
         }
 
       else if(r.recyclability == 3)
       {
-        this.tonRetornable = this.tonRetornable + parseFloat(r?.value);
-        this.result = this.verifyNumber(this.tonRetornable);
-
-        document.getElementById(`actual_weight_5`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        this.costoAnual[4] = parseFloat(this.result);
+        if(r?.type_residue!=4){
+          this.tonRetornable = this.tonRetornable + parseFloat(r?.value);
+          this.result = this.verifyNumber(this.tonRetornable);
+          document.getElementById(`actual_weight_5`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          this.costoAnual[4] = parseFloat(this.result);
+        }
         }
     }
 
@@ -147,7 +149,10 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         this.ajuste[i-1] = parseFloat(this.result);
         
         if(this.tonSums.l_tonSum[i-1] == 0){
-          document.getElementById(`total_category_weight_${i}`)!.innerHTML = '0';
+          document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          document.getElementById(`ajuste_${i}`)!.innerHTML = '0';
+          this.ajuste[i-1] = 0;
+          this.sumaAmount = this.sumaAmount + parseFloat(this.result);
         }
         else{
           this.result = this.verifyNumber(this.tonSums.tonSum[i-1] + (this.tonSums.tonSum[i-1] -  this.tonSums.l_tonSum[i-1]));
@@ -160,8 +165,11 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         document.getElementById(`ajuste_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         this.ajuste[i-1] = parseFloat(this.result);
 
-        if(this.tonNoReciclable == 0){
-          document.getElementById(`total_category_weight_${i}`)!.innerHTML = '0';
+        if(this.l_tonNoReciclable == 0){
+          document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          document.getElementById(`ajuste_${i}`)!.innerHTML = '0';
+          this.ajuste[i-1] = 0;
+          this.sumaAmount = this.sumaAmount + parseFloat(this.result);
         }
         else{
           this.result = this.verifyNumber(this.tonNoReciclable + (this.tonNoReciclable -  this.l_tonNoReciclable));
@@ -175,8 +183,11 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         document.getElementById(`ajuste_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         this.ajuste[i-1] = parseFloat(this.result);
 
-        if(this.tonRetornable == 0){
-          document.getElementById(`total_category_weight_${i}`)!.innerHTML = '0';
+        if(this.l_tonRetornable == 0){
+          document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          document.getElementById(`ajuste_${i}`)!.innerHTML = '0';
+          this.ajuste[i-1] = 0;
+          this.sumaAmount = this.sumaAmount + parseFloat(this.result);
         }
         else{
           this.result = this.verifyNumber(this.tonRetornable + (this.tonRetornable -  this.l_tonRetornable));
