@@ -20,9 +20,9 @@
         <div class="row w-100 ">
             <!-- Columna 1 -->
             <div id = "table" #table1 class="w-100 ">
-                 <div class="w-100 " style="overflow-x: scroll">
+                 <div class="w-100">
                     <!-- Tabla Desktop -->
-                    <table class="table table-even table-section table-borderless table-border table-radius d-lg-table w-100">
+                    <table class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table" >
                         
                         <thead>
                             <tr class="text-center w-100" >
@@ -71,9 +71,9 @@
                     </table>
                     <!--<button class="btn btn-primary" (click)="popupVisible = !popupVisible">Agregar Empresa</button>-->
 
-                        <div class="dark-background " *ngIf="popupVisible">
+                        <div class="dark-background " *ngIf="popupVisible" >
                             <!-- Aquí va el contenido de la ventana emergente -->
-                            <form #miFormulario="ngForm" class="popup"
+                            <form #miFormulario="ngForm" class="popup" style="overflow-y: scroll;scroll-behavior: smooth; height: 800px;"
                             autocomplete="off"
                             [formGroup]="formData">
                             <div class="mb-4">
@@ -197,7 +197,7 @@
                         </div>
                         <div class="dark-background " *ngIf="popupModify">
                             <!-- Aquí va el contenido de la ventana emergente -->
-                            <form #miFormulari02="ngForm" class="popup"
+                            <form #miFormulari02="ngForm" class="popup" style="overflow-y: scroll;scroll-behavior: smooth; height: 800px;"
                             autocomplete="off"
                             [formGroup]="formData">
                             <div class="mb-4">

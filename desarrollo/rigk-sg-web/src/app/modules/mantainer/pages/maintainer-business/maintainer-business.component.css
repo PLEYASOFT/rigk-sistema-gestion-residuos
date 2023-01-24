@@ -54,3 +54,11 @@
     background-color: rgba(0, 0, 0, 0.5); /* Color oscuro y transparencia */
     z-index: 1; /* Aseguramos que se muestre encima del contenido de la página */
 }
+
+.table-container {
+  word-wrap: break-word;
+  table-layout: fixed;
+  width: 100%;
+  height: auto;
+  overflow-x: hidden;
+}
