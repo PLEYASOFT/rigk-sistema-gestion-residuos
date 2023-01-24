@@ -325,6 +325,7 @@ class StatementProductorLogic {
                 preu: preu.toFixed(2).replace(".", ","),
                 ptt: (pr + pnr + preu).toFixed(2).replace(".", ","),
 
+
                 val1: val1.replace(".", ","),
                 val2: val2.replace(".", ","),
                 val3: val3.replace(".", ","),
@@ -350,7 +351,6 @@ class StatementProductorLogic {
                 lrme: lrme.toFixed(2).replace(".", ","),
                 lrpl: lrpl.toFixed(2).replace(".", ","),
                 lnr: lnr.toFixed(2).replace(".", ","),
-
                 mer,
                 menr,
                 mereu,

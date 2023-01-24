@@ -21,39 +21,38 @@
                         <p></p>
                         <thead>
                             <tr class="text-center w-100" >
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Material</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Reciclables</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">No reciclables</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Retornable / Reutilizable</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Subcategoría</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">{{year_statement - 1}}</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">{{year_statement}}</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Ajuste {{year_statement - 1}} vs {{year_statement}} (TON)</th>
                                 <th style="background-color: rgb(8, 148, 110);color: white;">Total por categoría</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Dif.{{year_statement-1}}/{{year_statement}}(%)</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Total Corregido</th>
                             </tr>
                         </thead>
                         
                         <tbody >
                             <tr class="text-end w-100" *ngFor="let r of residuos; let x = index">
                                 <td class="text-start">{{r}}</td>
-                                <td id="actual_weight_1_{{x+1}}">0</td>
-                                <td id="actual_weight_2_{{x+1}}">0</td>
-                                <td id="actual_weight_3_{{x+1}}">0</td>
-                                <td style="background-color: rgb(217, 217, 217);" id="total_category_weight_{{x}}">0</td>
-                                <td id="diff_category_{{x}}">0</td>
-                                <td style="background-color: rgb(217, 217, 217);" id="diff_corregido_weight_{{x}}">$0</td>
+                                <td id="last_weight_{{x+1}}">0</td>
+                                <td id="actual_weight_{{x+1}}">0</td>
+                                <td id="ajuste_{{x+1}}">0</td>
+                                <td style="background-color: rgb(217, 217, 217);" id="total_category_weight_{{x+1}}">0</td>
                             </tr>
                         </tbody>
                         <tfoot>
                             <tr class="text-end w-100">
                                 <td style="background-color: rgb(8, 148, 110);color: white;" class="text-start" colspan="4">Total (Peso)</td>
                                 <td style="background-color: rgb(8, 148, 110);color: white;" id ="total_ton">0</td>
-                                <td style="background-color: rgb(8, 148, 110);color: white;" id ="diff_ton">0</td>
-                                <td style="background-color: rgb(8, 148, 110);color: white;" id ="total_diff_corregido_weight">0</td>
                             </tr>
                         </tfoot>        
                     </table>
                 </div>
             </div>
         </div>
+        <tr>
+            <td colspan="13">
+               <span>*</span> No considera de madera no reciclable</td>
+               <span>*</span> No considera EyE de madera no reciclables</td>
+        </tr>
         <p></p>
         <tr>
             <td colspan="13">
@@ -74,31 +73,32 @@
                         <p></p>
                         <thead>
                             <tr class="text-center w-100" >
-                                <th style="background-color: rgb(8, 148, 110);color: white;" >Material</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Reciclables</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">No reciclables</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Retornable / Reutilizable</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Total por categoría UF</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Total corregido UF</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Subcategoría</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Ecotarifa {{+year_statement + 1}} (UF)</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Costo Anual {{year_statement}} (UF)</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Ajuste {{year_statement - 1}} vs {{year_statement}} (UF)</th>
+                                <th style="background-color: rgb(8, 148, 110);color: white;">Total corregido (UF)</th>
                                 <th style="background-color: rgb(8, 148, 110);color: white;">Total Bruto (CLP) + IVA</th>
                             </tr>
                         </thead>
                         <tbody >
                             <tr class="text-end w-100" *ngFor="let r of residuos; let x = index">
+                                <ng-container *ngIf="r !== 'Retornables'">
                                 <td class="text-start">{{r}}</td>
-                                <td id="actual_amount_1_{{x+1}}">0</td>
-                                <td id="actual_amount_2_{{x+1}}">0</td>
-                                <td id="actual_amount_3_{{x+1}}">0</td>
+                                <td id="actual_amount_{{x}}">0</td>
+                                <td id="amount_anual_{{x}}">0</td>
+                                <td id="amount_corregido_{{x}}">0</td>
                                 <td style="background-color: rgb(217, 217, 217);" id="total_category_amount_{{x}}">0</td>
-                                <td id="diff_corregido_amount_{{x}}">0</td>
                                 <td style="background-color: rgb(217, 217, 217);" id ="uf_clp_{{x}}" >$0</td>
+                                </ng-container>
                             </tr>
                         </tbody>
                         <tfoot>
                             <tr class="text-end w-100">
-                                <td style="background-color: rgb(8, 148, 110);color: white;"class="text-start" colspan="4">Total (Costo)</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;"class="text-start" colspan="2">Total (Costo)</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;"id ="anual_amount">0</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;"id ="ajuste_amount">0</td>
                                 <td style="background-color: rgb(8, 148, 110);color: white;"id ="total_amount">0</td>
-                                <td style="background-color: rgb(8, 148, 110);color: white;"id ="total_diff_corregido_amount">0</td>
                                 <td style="background-color: rgb(8, 148, 110);color: white;"id ="total_uf_clp">$0</td>
                             </tr>
                         </tfoot>        
@@ -106,8 +106,13 @@
                 </div>
             </div>
         </div>
+        <tr>
+            <td colspan="13">
+               <span>*</span> No considera de madera no reciclable</td>
+               <span>*</span> No considera EyE de madera no reciclables</td>
+        </tr>
         <p></p>
-        La factura se enviará con el valor de la UF al momento de enviar enviar la declaración.
+        La factura se enviará con el valor de la UF al momento de enviar la declaración.
         <p></p>
         <div id="mi-tabla">
             <!-- Tabla Desktop -->
