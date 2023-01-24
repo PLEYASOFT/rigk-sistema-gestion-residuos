@@ -104,12 +104,10 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
 
       else if(r.recyclability == 3)
       {
-        if(r?.type_residue!=4){
           this.tonRetornable = this.tonRetornable + parseFloat(r?.value);
           this.result = this.verifyNumber(this.tonRetornable);
           document.getElementById(`actual_weight_5`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
           this.costoAnual[4] = parseFloat(this.result);
-        }
         }
     }
 
