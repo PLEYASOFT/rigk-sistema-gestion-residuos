@@ -337,10 +337,8 @@ class StatementProductorLogic {
                 val22,
                 val33,
                 val44,
-                //valtt: (parseFloat(val11) + parseFloat(val22) + parseFloat(val33) + parseFloat(val44)).toFixed(2),
-
-
-                //eval11,
+                valtt: (parseFloat(val11) + parseFloat(val22) + parseFloat(val33) + parseFloat(val44)).toFixed(2),
+                eval11,
                 eval22,
                 eval33,
                 eval44,
@@ -349,8 +347,8 @@ class StatementProductorLogic {
                 lrme,
                 lrpl,
                 lnr,
-                valtt: val11+val22+val33+val44,
-                eval11: val1+(ep*pr),
+                //valtt: val11+val22+val33+val44,
+                //eval11: val1+(ep*pr),
                 mer,
                 menr,
                 mereu,

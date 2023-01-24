@@ -23,7 +23,7 @@ export class FormComponent implements OnInit, OnDestroy {
     'Envases compuestos'
   ];
   /**
-   * END BORRAr
+   * END BORRAR
    */
 
   position = 1;
