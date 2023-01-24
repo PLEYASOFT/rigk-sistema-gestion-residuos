@@ -281,10 +281,10 @@ class StatementProductorLogic {
                 paragraphLoop: true,
                 linebreaks: true,
             });
-            const val1 = (pr - lrp).toFixed(2);
-            const val2 = (mer - lrme).toFixed(2);
-            const val3 = (plr - lrp).toFixed(2);
-            const val4 = (pnr + menr + plnr).toFixed(2);
+            const val1 = lrp == 0 ? "0" : (pr - lrp).toFixed(2);
+            const val2 = lrme == 0 ? "0" : (mer - lrme).toFixed(2);
+            const val3 = lrp == 0 ? "0" : (plr - lrp).toFixed(2);
+            const val4 = lnr == 0 ? "0" : ((pnr + menr + plnr) - lnr).toFixed(2);
 
             const val11 = (parseFloat(val1) + pr).toFixed(2);
             const val22 = (parseFloat(val2) + mer).toFixed(2);
@@ -320,48 +320,48 @@ class StatementProductorLogic {
                 year,
                 lyear: parseInt(year) - 1,
                 date: dateFormat(new Date(), 'dd-mm-yyyy'),
-                pr,
-                pnr,
-                preu,
+                pr: pr.toFixed(2).replace(".", ","),
+                pnr: pnr.toFixed(2).replace(".", ","),
+                preu: preu.toFixed(2).replace(".", ","),
                 ptt: (pr + pnr + preu).toFixed(2).replace(".", ","),
 
-                val1,
-                val2,
-                val3,
-                val4,
-                eval1,
-                eval2,
-                eval3,
-                eval4,
-                val11,
-                val22,
-                val33,
-                val44,
-                valtt: (parseFloat(val11) + parseFloat(val22) + parseFloat(val33) + parseFloat(val44)).toFixed(2),
-                eval11,
-                eval22,
-                eval33,
-                eval44,
-                evaltt: (parseFloat(eval11) + parseFloat(eval22) + parseFloat(eval33) + parseFloat(eval44)).toFixed(2),
-                lrp,
-                lrme,
-                lrpl,
-                lnr,
-                //valtt: val11+val22+val33+val44,
-                //eval11: val1+(ep*pr),
+                val1: val1.replace(".", ","),
+                val2: val2.replace(".", ","),
+                val3: val3.replace(".", ","),
+                val4: val4.replace(".", ","),
+                eval1: eval1.replace(".", ","),
+                eval2: eval2.replace(".", ","),
+                eval3: eval3.replace(".", ","),
+                eval4: eval4.replace(".", ","),
+
+                val11: val11.replace('.', ','),
+                val22: val22.replace('.', ','),
+                val33: val33.replace('.', ','),
+                val44: val44.replace('.', ','),
+                valtt: (parseFloat(val11) + parseFloat(val22) + parseFloat(val33) + parseFloat(val44)).toFixed(2).replace(".", ","),
+
+                eval11: eval11.replace('.', ','),
+                eval22: eval22.replace('.', ','),
+                eval33: eval33.replace('.', ','),
+                eval44: eval44.replace('.', ','),
+                evaltt: (parseFloat(eval11) + parseFloat(eval22) + parseFloat(eval33) + parseFloat(eval44)).toFixed(2).replace(".", ","),
+                lrp: lrp.toFixed(2).replace(".", ","),
+                lrme: lrme.toFixed(2).replace(".", ","),
+                lrpl: lrpl.toFixed(2).replace(".", ","),
+                lnr: lnr.toFixed(2).replace(".", ","),
                 mer,
                 menr,
                 mereu,
                 mett: (mer + menr + mereu).toFixed(2).replace(".", ","),
 
-                plr,
-                plnr,
-                plreu,
+                plr: plr.toFixed(2).replace(".", ","),
+                plnr: plnr.toFixed(2).replace(".", ","),
+                plreu: plreu.toFixed(2).replace(".", ","),
                 pltt: (plr + plnr + plreu).toFixed(2).replace(".", ","),
 
-                mar,
-                manr,
-                mareu,
+                mar: mar.toFixed(2).replace(".", ","),
+                manr: manr.toFixed(2).replace(".", ","),
+                mareu: mareu.toFixed(2).replace(".", ","),
                 matt: (mar + manr + mareu).toFixed(2).replace(".", ","),
 
                 or,

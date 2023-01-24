@@ -65,7 +65,7 @@
             </thead>
             <tbody>
                 <tr *ngFor="let s of db">
-                    <td>{{s.ID_BUSINESS}}</td>
+                    <td>{{s.CODE_BUSINESS}}</td>
                     <td>{{s.NAME_BUSINESS}}</td>
                     <td>{{s.YEAR_STATEMENT}}</td>
                     <td>{{s.STATE == 1 ? 'Enviada': 'Borrador'}}</td>
@@ -86,7 +86,7 @@
         <ul class="pagination">
             <li><button class="btn btn-primary"  (click)="pagTo(0)">Primero</button></li>
             <li><button class="btn btn-primary" (click)="previus()" >Anterior</button></li>
-            <li *ngFor="let in of setArrayFromNumber(); let i = index"><button class="border btn btn-sm btn-primary" (click)="pagTo(i)">{{i+1}}</button></li>
+            <li *ngFor="let in of setArrayFromNumber(); let i = index"><button class="border btn btn-sm" [ngClass]="{ 'btn-info':pos==i, 'btn-primary': pos != i}" (click)="pagTo(i)">{{i+1}}</button></li>
             <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
             <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
         </ul>

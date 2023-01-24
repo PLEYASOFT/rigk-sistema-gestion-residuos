@@ -15,7 +15,7 @@ class statementProductorDao {
         
         const conn = mysqlcon.getConnection();
 
-        const res_business: any = await conn?.execute("SELECT * FROM business WHERE CODE_BUSINESS = ?", [business]).then((res) => res[0]).catch(error => { undefined });
+        const res_business: any = await conn?.execute("SELECT * FROM business WHERE CODE_BUSINESS = ?", [business]).then((res) => res[0]).catch(error => { console.log(error); return undefined });
         if (res_business.length == 0) {
             return false;
         }
@@ -34,11 +34,16 @@ class statementProductorDao {
         const { id_business, year_statement, state, created_by } = header;
         const conn = mysqlcon.getConnection();
         let id_header = 0;
+        const res_business: any = await conn?.execute("SELECT * FROM business WHERE CODE_BUSINESS = ?", [id_business]).then((res) => res[0]).catch(error => { console.log(error); return undefined });
+        if (res_business.length == 0) {
+            return {id_header: -1};
+        }
+        const business = res_business[0].ID;
 
         if (header.id_statement) {
             id_header = header.id_statement;
         } else {
-            const resp: any = await conn?.execute("INSERT INTO header_statement_form(ID_BUSINESS,YEAR_STATEMENT,STATE,CREATED_BY) VALUES (?,?,?,?)", [id_business, year_statement, state, created_by]).then(res => res[0]).catch(error => { console.log(error) });
+            const resp: any = await conn?.execute("INSERT INTO header_statement_form(ID_BUSINESS,YEAR_STATEMENT,STATE,CREATED_BY) VALUES (?,?,?,?)", [business, year_statement, state, created_by]).then(res => res[0]).catch(error => { console.log(error) });
             id_header = resp.insertId;
         }
 
