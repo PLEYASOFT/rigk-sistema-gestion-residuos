@@ -183,7 +183,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
             obj['amount'] = amount;
             this.detailForm.push(obj);
 
-            (document.getElementById(`actual_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = tmp_weight.toString().replace(".", ",");
+            (document.getElementById(`actual_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = tmp_weight.toFixed(2).replace(".", ",");
             (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = tmp_amount.toFixed(2).replace(".", ",") || "";
             this.calculateDiff();
           }
@@ -276,13 +276,13 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
 
     sessionStorage.setItem('detailForm', JSON.stringify(this.detailForm));
 
-    (document.getElementById(`actual_weight_${recyclability}_${type_residue}`) as HTMLInputElement).value = `${sum.toString().replace(".", ",")}`;
+    (document.getElementById(`actual_weight_${recyclability}_${type_residue}`) as HTMLInputElement).value = `${sum.toFixed(2).replace(".", ",")}`;
     (document.getElementById(`actual_amount_${recyclability}_${type_residue}`) as HTMLInputElement).value = parseFloat(amount).toFixed(2).replace(".", ",");
 
-    const last_weight = parseFloat((document.getElementById(`last_weight_${recyclability}_${type_residue}`) as HTMLElement).innerHTML);
+    const last_weight = parseFloat((document.getElementById(`last_weight_${recyclability}_${type_residue}`) as HTMLElement).innerHTML.replace(",","."));
     const diff = sum - last_weight;
-    (document.getElementById(`actual_dif_${recyclability}_${type_residue}`) as HTMLInputElement).value = `${diff == Infinity ? 100 : (diff.toFixed(2)) || 0} `;
-    // this.calculateDiff();
+    (document.getElementById(`actual_dif_${recyclability}_${type_residue}`) as HTMLInputElement).value = `${diff == Infinity ? 100 : (diff.toFixed(2).replace(".",",")) || 0} `;
+    this.calculateDiff();
   }
 
   getValueStatementByYear() {
@@ -307,8 +307,8 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
         Swal.close();
         this.detailLastForm?.forEach(r => {
           (document.getElementById(`inp_l_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}_${r?.PRECEDENCE}_${r?.HAZARD}`) as HTMLElement).innerHTML = r?.VALUE.toFixed(2).replace(".", ",");
-          const tmp_weight = (parseFloat((document.getElementById(`last_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML) || 0) + parseFloat(r?.VALUE);
-          (document.getElementById(`last_weight_${r?.RECYCLABILITY}_${r.TYPE_RESIDUE}`) as HTMLElement).innerHTML = tmp_weight.toString().replace(".", ",");
+          const tmp_weight = (parseFloat((document.getElementById(`last_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLElement).innerHTML.replace(",",".")) || 0) + parseFloat(r?.VALUE);
+          (document.getElementById(`last_weight_${r?.RECYCLABILITY}_${r.TYPE_RESIDUE}`) as HTMLElement).innerHTML = tmp_weight.toFixed(2).replace(".", ",");
         });
       },
       error: r => {

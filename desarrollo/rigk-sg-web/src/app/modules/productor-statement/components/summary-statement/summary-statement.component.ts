@@ -115,22 +115,23 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       const r = this.detailLastForm[i];
       if(r.RECYCLABILITY == 1)
       {
-
         this.tonSums.l_tonSum[r?.TYPE_RESIDUE-1] = this.tonSums.l_tonSum[r?.TYPE_RESIDUE-1] + parseFloat(r?.VALUE);
         this.result = this.verifyNumber(this.tonSums.l_tonSum[r?.TYPE_RESIDUE-1]);
 
-        if(r?.TYPE_RESIDUE == 1 || r?.TYPE_RESIDUE == 2 || r?.TYPE_RESIDUE == 3){
+        if(r?.TYPE_RESIDUE != 4){
           document.getElementById(`last_weight_${r?.TYPE_RESIDUE}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
           }
       }
 
       else if(r.RECYCLABILITY == 2)
       {
-        this.l_tonNoReciclable = this.l_tonNoReciclable + parseFloat(r?.VALUE);
-        this.result = this.verifyNumber(this.l_tonNoReciclable);
 
-        document.getElementById(`last_weight_4`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        if(r?.TYPE_RESIDUE != 4){
+          this.l_tonNoReciclable = this.l_tonNoReciclable + parseFloat(r?.VALUE);
+          this.result = this.verifyNumber(this.l_tonNoReciclable);
+          document.getElementById(`last_weight_4`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
+      }
 
       else if(r.RECYCLABILITY == 3)
       {
