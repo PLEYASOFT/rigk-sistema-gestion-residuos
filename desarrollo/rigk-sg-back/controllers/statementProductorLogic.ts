@@ -408,6 +408,7 @@ class StatementProductorLogic {
                 tt: (parseFloat((parseFloat((((ep * pr) * diff_p) || 0).toFixed(2)) + parseFloat((((eme * mer) * diff_me) || 0).toFixed(2)) + parseFloat(((((plr * epl) * diff_pl) || 0).toFixed(2))) + parseFloat((((pnr + menr + plnr + manr + onr) * enr) * diff_nr || 0).toFixed(2))).toFixed(2)) + parseFloat(((ep * pr) + (eme * mer) + (plr * epl) + ((pnr + menr + plnr) * enr)).toFixed(2))).toFixed(2).replace(".", ",")
 
             });
+            console.log("justo antes de generar");
             const buf = doc.getZip().generate({
                 type: "nodebuffer",
                 compression: "DEFLATE",
@@ -415,7 +416,7 @@ class StatementProductorLogic {
             fs.writeFileSync(path.resolve('files/templates', `plantilla_${header.ID}.docx`), buf);
             convertWordToPDF(header.ID, res);
         } catch (error) {
-            console.log(error)
+            console.log("error pos "+error)
             res.status(500).json({
                 status: false,
                 msg: "Algo salió mal"
