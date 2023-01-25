@@ -187,7 +187,7 @@ class StatementProductorLogic {
                             break;
                     }
                 }
-                if (lde.RECYCLABILITY == 2 && lde.TYPE <= 3) {
+                if (lde.RECYCLABILITY == 2 && (lde.TYPE <= 3 || lde.TYPE == 5)) {
                     lnr += lde.VALUE;
                 }
             }
@@ -265,7 +265,7 @@ class StatementProductorLogic {
             const diff_p = parseFloat((((pr / lrp) == Infinity ? 0 : (pr / lrp) - 1)).toFixed(2));
             const diff_me = parseFloat((((mer / lrme) == Infinity ? 0 : (mer / lrme) - 1)).toFixed(2));
             const diff_pl = parseFloat((((plr / lrpl) == Infinity ? 0 : (plr / lrpl) - 1)).toFixed(2));
-            const diff_nr = parseFloat(((((pnr + menr + plnr) / lnr) == Infinity ? 0 : ((pnr + menr + plnr) / lnr) - 1)).toFixed(2));
+            const diff_nr = parseFloat(((((pnr + menr + plnr+onr) / lnr) == Infinity ? 0 : ((pnr + menr + plnr+onr) / lnr) - 1)).toFixed(2));
 
             const PizZip = require("pizzip");
             const Docxtemplater = require("docxtemplater");
@@ -284,12 +284,12 @@ class StatementProductorLogic {
             const val1 = lrp == 0 ? "0" : (pr - lrp).toFixed(2);
             const val2 = lrme == 0 ? "0" : (mer - lrme).toFixed(2);
             const val3 = lrp == 0 ? "0" : (plr - lrp).toFixed(2);
-            const val4 = lnr == 0 ? "0" : ((pnr + menr + plnr) - lnr).toFixed(2);
+            const val4 = lnr == 0 ? "0" : ((pnr + menr + plnr+onr) - lnr).toFixed(2);
 
             const val11 = (parseFloat(val1) + pr).toFixed(2);
             const val22 = (parseFloat(val2) + mer).toFixed(2);
             const val33 = (parseFloat(val3) + plr).toFixed(2);
-            const val44 = (parseFloat(val4) + (pnr + menr + plnr)).toFixed(2);
+            const val44 = (parseFloat(val4) + (pnr + menr + plnr+onr)).toFixed(2);
 
             const eval1 = (parseFloat(val1) * ep).toFixed(2);
             const eval2 = (parseFloat(val2) * eme).toFixed(2);
@@ -299,16 +299,16 @@ class StatementProductorLogic {
             const eval11 = (parseFloat(eval1) + (ep * pr)).toFixed(2);
             const eval22 = (parseFloat(eval2) + (eme * mer)).toFixed(2);
             const eval33 = (parseFloat(eval3) + (plr * epl)).toFixed(2);
-            const eval44 = (parseFloat(eval4) + ((pnr + menr + plnr) * enr)).toFixed(2);
+            const eval44 = (parseFloat(eval4) + ((pnr + menr + plnr+onr) * enr)).toFixed(2);
 
             // const fixed = ((((((ep * pr) * diff_p) || 0) + (ep * pr)) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + ((((plr * epl) * diff_pl) || 0)) + (plr * epl) + ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr + manr + onr) * enr)) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
-            const neto0 = (((ep * pr) + (eme * mer) + (plr * epl) + ((pnr + menr + plnr) * enr)) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
-            // const fixed = (parseFloat(((((((ep * pr) * diff_p) || 0) + (ep * pr))) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + (((((plr * epl) * diff_pl) || 0)) + (plr * epl)) + (((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr) * enr))) + neto) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            const neto0 = (((ep * pr) + (eme * mer) + (plr * epl) + ((pnr + menr + plnr+onr) * enr)) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            // const fixed = (parseFloat(((((((ep * pr) * diff_p) || 0) + (ep * pr))) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + (((((plr * epl) * diff_pl) || 0)) + (plr * epl)) + (((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr+onr) * enr))) + neto) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
             const fixed = 0;
             const neto = ((parseFloat(eval11) + parseFloat(eval22) + parseFloat(eval33) + parseFloat(eval44)) * uf);
             const iva = neto * 0.19;
             // const total = ((((((ep * pr) * diff_p) || 0) + (ep * pr)) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + ((((plr * epl) * diff_pl) || 0)) + (plr * epl) + ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr + manr + onr) * enr)) * uf * 1.19).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
-            // const total = (parseFloat(((((((ep * pr) * diff_p) || 0) + (ep * pr))) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + (((((plr * epl) * diff_pl) || 0)) + (plr * epl)) + (((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr) * enr))) + neto) * uf * 1.19).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            // const total = (parseFloat(((((((ep * pr) * diff_p) || 0) + (ep * pr))) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + (((((plr * epl) * diff_pl) || 0)) + (plr * epl)) + (((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr+onr) * enr))) + neto) * uf * 1.19).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
             const total = 0;
 
             doc.render({
@@ -389,11 +389,11 @@ class StatementProductorLogic {
                 eplpompl: (plr * epl).toFixed(2).replace(".", ","),
 
                 enr: enr.toString().replace(".", ","),
-                pomnr: (pnr + menr + plnr).toFixed(2).replace(".", ","),
-                enrpomnr: ((pnr + menr + plnr) * enr).toFixed(2).replace(".", ","),
+                pomnr: (pnr + menr + plnr+onr).toFixed(2).replace(".", ","),
+                enrpomnr: ((pnr + menr + plnr+onr) * enr).toFixed(2).replace(".", ","),
                 ett: "",
                 pmptt: (pr + mer + plr + pnr + menr + plnr).toFixed(2).replace(".", ","),
-                eppomptt: ((ep * pr) + (eme * mer) + (plr * epl) + ((pnr + menr + plnr) * enr)).toFixed(2).replace(".", ","),
+                eppomptt: ((ep * pr) + (eme * mer) + (plr * epl) + ((pnr + menr + plnr+onr) * enr)).toFixed(2).replace(".", ","),
 
                 dp: (((ep * pr) * diff_p) || 0).toFixed(2).replace(".", ","),
                 dme: (((eme * mer) * diff_me) || 0).toFixed(2).replace(".", ","),
@@ -404,10 +404,10 @@ class StatementProductorLogic {
                 tp: (((((ep * pr) * diff_p) || 0) + (ep * pr))).toFixed(2).replace(".", ","),
                 tme: ((((eme * mer) * diff_me) || 0) + (eme * mer)).toFixed(2).replace(".", ","),
                 tpl: (((((plr * epl) * diff_pl) || 0)) + (plr * epl)).toFixed(2).replace(".", ","),
-                tnr: (((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr) * enr)).toFixed(2).replace(".", ","),
+                tnr: (((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr+onr) * enr)).toFixed(2).replace(".", ","),
                 // tt: (((((ep * pr) * diff_p) || 0) + (ep * pr)) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + ((((plr * epl) * diff_pl) || 0)) + (plr * epl) + ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr + manr + onr) * enr)).toFixed(2).replace(".",",")
-                // tt: (((parseFloat((((ep * pr) * diff_p) || 0).toFixed(2)) + (ep * pr)))+(parseFloat((((eme * mer) * diff_p) || 0).toFixed(2)) + (eme * mer))+(parseFloat((((plr * epl) * diff_p) || 0).toFixed(2)) + (plr * epl))+(parseFloat((((pnr + menr + plnr + manr + onr) * enr) * diff_nr ||0).toFixed(2)) + ((pnr + menr + plnr) * enr))).toFixed(2).replace(".",","),
-                tt: (parseFloat((parseFloat((((ep * pr) * diff_p) || 0).toFixed(2)) + parseFloat((((eme * mer) * diff_me) || 0).toFixed(2)) + parseFloat(((((plr * epl) * diff_pl) || 0).toFixed(2))) + parseFloat((((pnr + menr + plnr + manr + onr) * enr) * diff_nr || 0).toFixed(2))).toFixed(2)) + parseFloat(((ep * pr) + (eme * mer) + (plr * epl) + ((pnr + menr + plnr) * enr)).toFixed(2))).toFixed(2).replace(".", ",")
+                // tt: (((parseFloat((((ep * pr) * diff_p) || 0).toFixed(2)) + (ep * pr)))+(parseFloat((((eme * mer) * diff_p) || 0).toFixed(2)) + (eme * mer))+(parseFloat((((plr * epl) * diff_p) || 0).toFixed(2)) + (plr * epl))+(parseFloat((((pnr + menr + plnr + manr + onr) * enr) * diff_nr ||0).toFixed(2)) + ((pnr + menr + plnr+onr) * enr))).toFixed(2).replace(".",","),
+                tt: (parseFloat((parseFloat((((ep * pr) * diff_p) || 0).toFixed(2)) + parseFloat((((eme * mer) * diff_me) || 0).toFixed(2)) + parseFloat(((((plr * epl) * diff_pl) || 0).toFixed(2))) + parseFloat((((pnr + menr + plnr + manr + onr) * enr) * diff_nr || 0).toFixed(2))).toFixed(2)) + parseFloat(((ep * pr) + (eme * mer) + (plr * epl) + ((pnr + menr + plnr+onr) * enr)).toFixed(2))).toFixed(2).replace(".", ",")
 
             });
             const buf = doc.getZip().generate({
