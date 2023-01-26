@@ -173,7 +173,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
             let amount = 0;
             if (r.RECYCLABILITY == 1 && r.TYPE_RESIDUE <= 3) {
               amount = r?.VALUE * this.rates[r.TYPE_RESIDUE - 1].price;
-            } else if (r.RECYCLABILITY == 2 && r.TYPE_RESIDUE <= 3) {
+            } else if (r.RECYCLABILITY == 2 && (r.TYPE_RESIDUE <= 3 || r.TYPE_RESIDUE == 5)) {
               amount = r?.VALUE * this.rates[3].price
             } else {
               amount = 0;
@@ -248,7 +248,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
 
       if (recyclability == 1 && type_residue <= 3) {
         amount = value * this.rates[type_residue - 1].price;
-      } else if (recyclability == 2 && type_residue <= 3) {
+      } else if (recyclability == 2 && (type_residue <= 3 || type_residue == 5)) {
         amount = value * this.rates[3].price
       } else {
         amount = 0;
@@ -258,7 +258,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
       sum += value;
       if (recyclability == 1 && type_residue <= 3) {
         amount = value * this.rates[type_residue - 1].price;
-      } else if (recyclability == 2 && type_residue <= 3) {
+      } else if (recyclability == 2 && (type_residue <= 3 || type_residue == 5)) {
         amount = value * this.rates[3].price
       } else {
         amount = 0;
