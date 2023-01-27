@@ -43,8 +43,14 @@ class statementProductorDao {
         if (header.id_statement) {
             id_header = header.id_statement;
         } else {
-            const resp: any = await conn?.execute("INSERT INTO header_statement_form(ID_BUSINESS,YEAR_STATEMENT,STATE,CREATED_BY) VALUES (?,?,?,?)", [business, year_statement, state, created_by]).then(res => res[0]).catch(error => { console.log(error) });
-            id_header = resp.insertId;
+
+            const id: any = await conn?.execute("SELECT ID FROM header_statement_form WHERE ID_BUSINESS=? AND YEAR_STATEMENT=?", [business, year_statement]).then(res => res[0]).catch(error => { console.log(error) });
+            if(id[0]?.ID > 0) {
+                id_header = id[0].ID;
+            } else {
+                const resp: any = await conn?.execute("INSERT INTO header_statement_form(ID_BUSINESS,YEAR_STATEMENT,STATE,CREATED_BY) VALUES (?,?,?,?)", [business, year_statement, state, created_by]).then(res => res[0]).catch(error => { console.log(error) });
+                id_header = resp.insertId;
+            }
         }
 
         if(detail.length>0){
