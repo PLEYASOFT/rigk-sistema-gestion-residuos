@@ -90,7 +90,7 @@ class statementProductorDao {
 
     public async haveDraft(business: string, year: string) {
         const conn = mysqlcon.getConnection();
-        const res: any = await conn?.execute("SELECT id FROM header_statement_form WHERE ID_BUSINESS=(SELECT ID FROM business WHRE CODE_BUSINESS=?) AND YEAR_STATEMENT=? AND STATE=1 ORDER BY ID DESC LIMIT 1", [business, year]).then((res) => res[0]).catch(error => undefined);
+        const res: any = await conn?.execute("SELECT id FROM header_statement_form WHERE ID_BUSINESS=(SELECT ID FROM business WHERE CODE_BUSINESS=?) AND YEAR_STATEMENT=? AND STATE=1 ORDER BY ID DESC LIMIT 1", [business, year]).then((res) => res[0]).catch(error => undefined);
         let isOk = false;
         if (res != null && res != undefined && res.length > 0) {
             isOk = true;
@@ -103,7 +103,7 @@ class statementProductorDao {
     }
     public async getDetailById(id:any, year: any) {
         const conn = mysqlcon.getConnection();
-        const table0 = await conn?.execute("SELECT SUM(VALUE) as VALUE, TYPE_RESIDUE, RECYCLABILITY FROM detail_statement_form INNER JOIN header_statement_form ON header_statement_form.ID = detail_statement_form.ID_HEADER WHERE ID_BUSINESS = ? AND YEAR_STATEMENT=? GROUP BY TYPE_RESIDUE, RECYCLABILITY", [id, year]).then((res) => res[0]).catch(error => { undefined });
+        const table0 = await conn?.execute("SELECT SUM(VALUE) as VALUE, TYPE_RESIDUE, RECYCLABILITY FROM detail_statement_form INNER JOIN header_statement_form ON header_statement_form.ID = detail_statement_form.ID_HEADER WHERE ID_BUSINESS = (SELECT ID FROM business WHERE CODE_BUSINESS=?) AND YEAR_STATEMENT=? GROUP BY TYPE_RESIDUE, RECYCLABILITY", [id, year]).then((res) => res[0]).catch(error => { undefined });
         // const res_detail = await conn?.execute("SELECT * FROM detail_statement_form WHERE ID_HEADER = ?", [id_statement]).then((res) => res[0]).catch(error => { undefined });
         conn?.end();
         return table0;

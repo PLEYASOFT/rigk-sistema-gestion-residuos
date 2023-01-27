@@ -281,10 +281,10 @@ class StatementProductorLogic {
                 paragraphLoop: true,
                 linebreaks: true,
             });
-            const val1 = lrp == 0 ? "0" : (pr - lrp).toFixed(2);
-            const val2 = lrme == 0 ? "0" : (mer - lrme).toFixed(2);
-            const val3 = lrp == 0 ? "0" : (plr - lrp).toFixed(2);
-            const val4 = lnr == 0 ? "0" : ((pnr + menr + plnr+onr) - lnr).toFixed(2);
+            const val1 = lrp == 0 ? "0.00" : (pr - lrp).toFixed(2);
+            const val2 = lrme == 0 ? "0.00" : (mer - lrme).toFixed(2);
+            const val3 = lrpl == 0 ? "0.00" : (plr - lrpl).toFixed(2);
+            const val4 = lnr == 0 ? "0.00" : ((pnr + menr + plnr+onr) - lnr).toFixed(2);
 
             const val11 = (parseFloat(val1) + pr).toFixed(2);
             const val22 = (parseFloat(val2) + mer).toFixed(2);
