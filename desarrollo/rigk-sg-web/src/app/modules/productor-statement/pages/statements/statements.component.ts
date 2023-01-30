@@ -70,7 +70,7 @@ export class StatementsComponent implements OnInit {
     this.loadStatements();
   }
   pagTo(i: number) {
-    this.pos = i;
+    this.pos = i+1;
     this.db = this.dbStatements.slice((i * 10), (i + 1) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
   }
   next() {
