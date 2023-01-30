@@ -106,52 +106,22 @@ class StatementProductorLogic {
         const { id, year } = req.params;
 
         try {
-            //table 2
+            //table 1
             let pr = 0;
             let pnr = 0;
-            let preu = 0;
-            let ptt = 0;
 
             let mer = 0;
             let menr = 0;
-            let mereu = 0;
-            let mett = 0;
 
             let plr = 0;
             let plnr = 0;
-            let plreu = 0;
-            let pltt = 0;
-
-            let mar = 0;
-            let manr = 0;
-            let mareu = 0;
-            let matt = 0;
-
-            let or = 0;
             let onr = 0;
-            let oreu = 0;
-            let ott = 0;
 
-            let ttr = 0;
-            let ttnr = 0;
-            let ttreu = 0;
-            let tt = 0;
-
-            //table 1
+            //table 2
             let ep = 0;
-            let pomp = 0;
-            let eppomp = 0;
-
             let eme = 0;
-            let pomme = 0;
-            let emepomme = 0;
-
             let epl = 0;
-            let pompl = 0;
-            let eplpompl = 0;
-
             let enr = 0;
-            let pomnr = 0;
 
             const rates: any[] = await ratesDao.ratesID(year);
             ep = (rates.find(r => r.type == 1))?.price || 0;
@@ -171,6 +141,7 @@ class StatementProductorLogic {
 
             for (let i = 0; i < last_detail.length; i++) {
                 const lde = last_detail[i];
+                console.log(lde)
                 if (lde.RECYCLABILITY == 1) {
                     switch (lde.TYPE_RESIDUE) {
                         case 1:
@@ -187,8 +158,23 @@ class StatementProductorLogic {
                             break;
                     }
                 }
-                if (lde.RECYCLABILITY == 2 && (lde.TYPE <= 3 || lde.TYPE == 5)) {
-                    lnr += lde.VALUE;
+                if (lde.RECYCLABILITY == 2) {
+                    switch (lde.TYPE_RESIDUE) {
+                        case 1:
+                            lnr += lde.VALUE;
+                            break;
+                        case 2:
+                            lnr += lde.VALUE;
+                            break;
+                        case 3:
+                            lnr += lde.VALUE;
+                            break;
+                        case 5:
+                            lnr += lde.VALUE;
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
 
@@ -205,14 +191,7 @@ class StatementProductorLogic {
                         case 3:
                             plr += t.VALUE;
                             break;
-                        case 4:
-                            mar += t.VALUE;
-                            break;
-                        case 5:
-                            or += t.VALUE;
-                            break;
                         default:
-
                             break;
                     }
                 }
@@ -227,46 +206,14 @@ class StatementProductorLogic {
                         case 3:
                             plnr += t.VALUE;
                             break;
-                        case 4:
-                            manr += t.VALUE;
-                            break;
                         case 5:
                             onr += t.VALUE;
                             break;
                         default:
-
-                            break;
-                    }
-                }
-                if (t.RECYCLABILITY == 3) {
-                    switch (t.TYPE_RESIDUE) {
-                        case 1:
-                            preu += t.VALUE
-                            break;
-                        case 2:
-                            mereu += t.VALUE;
-                            break;
-                        case 3:
-                            plreu += t.VALUE;
-                            break;
-                        case 4:
-                            mareu += t.VALUE;
-                            break;
-                        case 5:
-                            oreu += t.VALUE;
-                            break;
-                        default:
-
                             break;
                     }
                 }
             }
-
-            const diff_p = parseFloat((((pr / lrp) == Infinity ? 0 : (pr / lrp) - 1)).toFixed(2));
-            const diff_me = parseFloat((((mer / lrme) == Infinity ? 0 : (mer / lrme) - 1)).toFixed(2));
-            const diff_pl = parseFloat((((plr / lrpl) == Infinity ? 0 : (plr / lrpl) - 1)).toFixed(2));
-            const diff_nr = parseFloat(((((pnr + menr + plnr+onr) / lnr) == Infinity ? 0 : ((pnr + menr + plnr+onr) / lnr) - 1)).toFixed(2));
-
             const PizZip = require("pizzip");
             const Docxtemplater = require("docxtemplater");
             const fs = require("fs");
@@ -281,15 +228,15 @@ class StatementProductorLogic {
                 paragraphLoop: true,
                 linebreaks: true,
             });
-            const val1 = lrp == 0 ? "0" : (pr - lrp).toFixed(2);
-            const val2 = lrme == 0 ? "0" : (mer - lrme).toFixed(2);
-            const val3 = lrp == 0 ? "0" : (plr - lrp).toFixed(2);
-            const val4 = lnr == 0 ? "0" : ((pnr + menr + plnr+onr) - lnr).toFixed(2);
+            const val1 = lrp == 0 ? "0.00" : (pr - lrp).toFixed(2);
+            const val2 = lrme == 0 ? "0.00" : (mer - lrme).toFixed(2);
+            const val3 = lrpl == 0 ? "0.00" : (plr - lrpl).toFixed(2);
+            const val4 = lnr == 0 ? "0.00" : ((pnr + menr + plnr + onr) - lnr).toFixed(2);
 
             const val11 = (parseFloat(val1) + pr).toFixed(2);
             const val22 = (parseFloat(val2) + mer).toFixed(2);
             const val33 = (parseFloat(val3) + plr).toFixed(2);
-            const val44 = (parseFloat(val4) + (pnr + menr + plnr+onr)).toFixed(2);
+            const val44 = (parseFloat(val4) + (pnr + menr + plnr + onr)).toFixed(2);
 
             const eval1 = (parseFloat(val1) * ep).toFixed(2);
             const eval2 = (parseFloat(val2) * eme).toFixed(2);
@@ -299,116 +246,68 @@ class StatementProductorLogic {
             const eval11 = (parseFloat(eval1) + (ep * pr)).toFixed(2);
             const eval22 = (parseFloat(eval2) + (eme * mer)).toFixed(2);
             const eval33 = (parseFloat(eval3) + (plr * epl)).toFixed(2);
-            const eval44 = (parseFloat(eval4) + ((pnr + menr + plnr+onr) * enr)).toFixed(2);
+            const eval44 = (parseFloat(eval4) + ((pnr + menr + plnr + onr) * enr)).toFixed(2);
 
-            // const fixed = ((((((ep * pr) * diff_p) || 0) + (ep * pr)) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + ((((plr * epl) * diff_pl) || 0)) + (plr * epl) + ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr + manr + onr) * enr)) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
-            const neto0 = (((ep * pr) + (eme * mer) + (plr * epl) + ((pnr + menr + plnr+onr) * enr)) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
-            // const fixed = (parseFloat(((((((ep * pr) * diff_p) || 0) + (ep * pr))) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + (((((plr * epl) * diff_pl) || 0)) + (plr * epl)) + (((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr+onr) * enr))) + neto) * uf).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
-            const fixed = 0;
             const neto = ((parseFloat(eval11) + parseFloat(eval22) + parseFloat(eval33) + parseFloat(eval44)) * uf);
             const iva = neto * 0.19;
-            // const total = ((((((ep * pr) * diff_p) || 0) + (ep * pr)) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + ((((plr * epl) * diff_pl) || 0)) + (plr * epl) + ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr + manr + onr) * enr)) * uf * 1.19).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
-            // const total = (parseFloat(((((((ep * pr) * diff_p) || 0) + (ep * pr))) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + (((((plr * epl) * diff_pl) || 0)) + (plr * epl)) + (((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr+onr) * enr))) + neto) * uf * 1.19).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
-            const total = 0;
 
             doc.render({
-                neto: neto.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' }),
-                fixed,
-                iva: iva.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' }),
-                total: (neto + iva).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' }),
-                business_name: header.BUSINESS_NAME,
-                year,
-                lyear: parseInt(year) - 1,
-                date: dateFormat(new Date(), 'dd-mm-yyyy'),
+                // Table 1
+                // C1
+                lrp: lrp.toFixed(2).replace(".", ","),
+                lrme: lrme.toFixed(2).replace(".", ","),
+                lrpl: lrpl.toFixed(2).replace(".", ","),
+                lnr: lnr.toFixed(2).replace(".", ","),
+                // C2
                 pr: pr.toFixed(2).replace(".", ","),
-                pnr: pnr.toFixed(2).replace(".", ","),
-                preu: preu.toFixed(2).replace(".", ","),
-                ptt: (pr + pnr + preu).toFixed(2).replace(".", ","),
-
-
+                mer: mer.toFixed(2).replace(".", ","),
+                plr: plr.toFixed(2).replace(".", ","),
+                pomnr: (pnr + menr + plnr + onr).toFixed(2).replace(".", ","),
+                // C3
                 val1: val1.replace(".", ","),
                 val2: val2.replace(".", ","),
                 val3: val3.replace(".", ","),
                 val4: val4.replace(".", ","),
-                eval1: eval1.replace(".", ","),
-                eval2: eval2.replace(".", ","),
-                eval3: eval3.replace(".", ","),
-                eval4: eval4.replace(".", ","),
-
+                // C4
                 val11: val11.replace('.', ','),
                 val22: val22.replace('.', ','),
                 val33: val33.replace('.', ','),
                 val44: val44.replace('.', ','),
                 valtt: (parseFloat(val11) + parseFloat(val22) + parseFloat(val33) + parseFloat(val44)).toFixed(2).replace(".", ","),
 
-
+                // ----
+                // Table 2
+                // C1
+                ep: ep.toString().replace(".", ","),
+                eme: eme.toString().replace(".", ","),
+                epl: epl.toString().replace(".", ","),
+                enr: enr.toString().replace(".", ","),
+                //C2
+                eppomp: (ep * pr).toFixed(2).replace(".", ","),
+                emepomme: (eme * mer).toFixed(2).replace(".", ","),
+                eplpompl: (plr * epl).toFixed(2).replace(".", ","),
+                enrpomnr: ((pnr + menr + plnr + onr) * enr).toFixed(2).replace(".", ","),
+                // C3
+                eval1: eval1.replace(".", ","),
+                eval2: eval2.replace(".", ","),
+                eval3: eval3.replace(".", ","),
+                eval4: eval4.replace(".", ","),
+                // C4
                 eval11: eval11.replace('.', ','),
                 eval22: eval22.replace('.', ','),
                 eval33: eval33.replace('.', ','),
                 eval44: eval44.replace('.', ','),
                 evaltt: (parseFloat(eval11) + parseFloat(eval22) + parseFloat(eval33) + parseFloat(eval44)).toFixed(2).replace(".", ","),
-                lrp: lrp.toFixed(2).replace(".", ","),
-                lrme: lrme.toFixed(2).replace(".", ","),
-                lrpl: lrpl.toFixed(2).replace(".", ","),
-                lnr: lnr.toFixed(2).replace(".", ","),
-                mer,
-                menr,
-                mereu,
-                mett: (mer + menr + mereu).toFixed(2).replace(".", ","),
+                // Resume
+                neto: neto.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' }),
+                iva: iva.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' }),
+                total: (neto + iva).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' }),
 
-                plr: plr.toFixed(2).replace(".", ","),
-                plnr: plnr.toFixed(2).replace(".", ","),
-                plreu: plreu.toFixed(2).replace(".", ","),
-                pltt: (plr + plnr + plreu).toFixed(2).replace(".", ","),
-
-                mar: mar.toFixed(2).replace(".", ","),
-                manr: manr.toFixed(2).replace(".", ","),
-                mareu: mareu.toFixed(2).replace(".", ","),
-                matt: (mar + manr + mareu).toFixed(2).replace(".", ","),
-
-                or,
-                onr,
-                oreu,
-                ott: (or + onr + oreu).toFixed(2).replace(".", ","),
-
-                ttr: (pr + mer + plr + mar + or).toFixed(2).replace(".", ","),
-                ttnr: (pnr + menr + plnr + manr + onr).toFixed(2).replace(".", ","),
-                ttreu: (preu + mereu + plreu + mareu + oreu).toFixed(2).replace(".", ","),
-                ttotal: ((pr + pnr + preu) + (mer + menr + mereu) + (plr + plnr + plreu) + (mar + manr + mareu) + (or + onr + oreu)).toFixed(2).replace(".", ","),
-
-                ep: ep.toString().replace(".", ","),
-                pomp: (pr).toFixed(2).replace(".", ","),
-                eppomp: (ep * pr).toFixed(2).replace(".", ","),
-
-                eme: eme.toString().replace(".", ","),
-                pomme: (mer).toFixed(2).replace(".", ","),
-                emepomme: (eme * mer).toFixed(2).replace(".", ","),
-
-                epl: epl.toString().replace(".", ","),
-                pompl: (plr).toFixed(2).replace(".", ","),
-                eplpompl: (plr * epl).toFixed(2).replace(".", ","),
-
-                enr: enr.toString().replace(".", ","),
-                pomnr: (pnr + menr + plnr+onr).toFixed(2).replace(".", ","),
-                enrpomnr: ((pnr + menr + plnr+onr) * enr).toFixed(2).replace(".", ","),
-                ett: "",
-                pmptt: (pr + mer + plr + pnr + menr + plnr).toFixed(2).replace(".", ","),
-                eppomptt: ((ep * pr) + (eme * mer) + (plr * epl) + ((pnr + menr + plnr+onr) * enr)).toFixed(2).replace(".", ","),
-
-                dp: (((ep * pr) * diff_p) || 0).toFixed(2).replace(".", ","),
-                dme: (((eme * mer) * diff_me) || 0).toFixed(2).replace(".", ","),
-                dpl: ((((plr * epl) * diff_pl) || 0).toFixed(2).replace(".", ",")),
-                dnr: ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0).toFixed(2).replace(".", ","),
-                dtt: (parseFloat((((ep * pr) * diff_p) || 0).toFixed(2)) + parseFloat((((eme * mer) * diff_me) || 0).toFixed(2)) + parseFloat(((((plr * epl) * diff_pl) || 0).toFixed(2))) + parseFloat((((pnr + menr + plnr + manr + onr) * enr) * diff_nr || 0).toFixed(2))).toFixed(2).replace(".", ","),
-
-                tp: (((((ep * pr) * diff_p) || 0) + (ep * pr))).toFixed(2).replace(".", ","),
-                tme: ((((eme * mer) * diff_me) || 0) + (eme * mer)).toFixed(2).replace(".", ","),
-                tpl: (((((plr * epl) * diff_pl) || 0)) + (plr * epl)).toFixed(2).replace(".", ","),
-                tnr: (((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr+onr) * enr)).toFixed(2).replace(".", ","),
-                // tt: (((((ep * pr) * diff_p) || 0) + (ep * pr)) + ((((eme * mer) * diff_me) || 0) + (eme * mer)) + ((((plr * epl) * diff_pl) || 0)) + (plr * epl) + ((((pnr + menr + plnr + manr + onr) * enr) * diff_nr) || 0) + ((pnr + menr + plnr + manr + onr) * enr)).toFixed(2).replace(".",",")
-                // tt: (((parseFloat((((ep * pr) * diff_p) || 0).toFixed(2)) + (ep * pr)))+(parseFloat((((eme * mer) * diff_p) || 0).toFixed(2)) + (eme * mer))+(parseFloat((((plr * epl) * diff_p) || 0).toFixed(2)) + (plr * epl))+(parseFloat((((pnr + menr + plnr + manr + onr) * enr) * diff_nr ||0).toFixed(2)) + ((pnr + menr + plnr+onr) * enr))).toFixed(2).replace(".",","),
-                tt: (parseFloat((parseFloat((((ep * pr) * diff_p) || 0).toFixed(2)) + parseFloat((((eme * mer) * diff_me) || 0).toFixed(2)) + parseFloat(((((plr * epl) * diff_pl) || 0).toFixed(2))) + parseFloat((((pnr + menr + plnr + manr + onr) * enr) * diff_nr || 0).toFixed(2))).toFixed(2)) + parseFloat(((ep * pr) + (eme * mer) + (plr * epl) + ((pnr + menr + plnr+onr) * enr)).toFixed(2))).toFixed(2).replace(".", ",")
-
+                // DATA
+                date: dateFormat(new Date(), 'dd-mm-yyyy'),
+                business_name: header.BUSINESS_NAME,
+                year,
+                lyear: parseInt(year) - 1
             });
             const buf = doc.getZip().generate({
                 type: "nodebuffer",
