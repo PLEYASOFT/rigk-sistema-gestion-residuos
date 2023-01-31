@@ -80,7 +80,6 @@ export class StatementsComponent implements OnInit {
     this.db = this.dbStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
   }
   previus() {
-    console.log(this.pos);
     if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
     this.pos = this.pos - 1;
     this.db = this.dbStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
