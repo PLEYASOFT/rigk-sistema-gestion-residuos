@@ -46,7 +46,7 @@ export class StatementsComponent implements OnInit {
   filter() {
     const n = (document.getElementById('f_name') as HTMLSelectElement).value;
     const y = (document.getElementById('f_year') as HTMLSelectElement).value;
-    this.db = this.dbStatements.filter(r => {
+    const tmp = this.dbStatements.filter(r => {
       if (n != '-1' && r.NAME_BUSINESS == n) {
         if (y != '-1') {
           if (r.YEAR_STATEMENT == y)
@@ -63,14 +63,15 @@ export class StatementsComponent implements OnInit {
           return r;
         }
       }
-    }).slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
-
+    });
+    this.db = tmp.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+    this.cant = Math.ceil(tmp.length / 10);
   }
   reset() {
     this.loadStatements();
   }
   pagTo(i: number) {
-    this.pos = i+1;
+    this.pos = i + 1;
     this.db = this.dbStatements.slice((i * 10), (i + 1) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
   }
   next() {
@@ -80,9 +81,9 @@ export class StatementsComponent implements OnInit {
   }
   previus() {
     console.log(this.pos);
-    if (this.pos -1 <= 0 || this.pos >= this.cant + 1) return;
-    this.pos = this.pos-1;
-    this.db = this.dbStatements.slice((this.pos-1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
+    if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
+    this.pos = this.pos - 1;
+    this.db = this.dbStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
   }
   downloadPDF(id: any, year: any) {
     Swal.fire({

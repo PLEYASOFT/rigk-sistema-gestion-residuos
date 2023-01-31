@@ -185,7 +185,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
 
             (document.getElementById(`actual_weight_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = tmp_weight.toFixed(2).replace(".", ",");
             (document.getElementById(`actual_amount_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}`) as HTMLInputElement).value = tmp_amount.toFixed(2).replace(".", ",") || "";
-            this.calculateDiff();
+            // this.calculateDiff();
           }
           sessionStorage.setItem('detailForm', JSON.stringify(this.detailForm));
         }

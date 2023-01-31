@@ -6,13 +6,13 @@ class statementProductorDao {
 
         const statements = await conn?.execute("SELECT header_statement_form.*, business.NAME as NAME_BUSINESS, business.CODE_BUSINESS, SUM(detail_statement_form.AMOUNT) as AMOUNT  FROM header_statement_form INNER JOIN business ON business.id = header_statement_form.ID_BUSINESS INNER JOIN detail_statement_form ON detail_statement_form.ID_HEADER = header_statement_form.ID WHERE ID_BUSINESS in (SELECT ID_BUSINESS FROM user_business WHERE ID_USER=?) GROUP BY header_statement_form.ID", [user]).then((res) => res[0]).catch(error => { undefined });
         conn?.end();
-        return {statements};
+        return { statements };
     }
 
     public async getDeclaretionByYear(business: string, year: string, isDraft: number) {
         let res_header: any;
         let res_detail: any;
-        
+
         const conn = mysqlcon.getConnection();
 
         const res_business: any = await conn?.execute("SELECT * FROM business WHERE CODE_BUSINESS = ?", [business]).then((res) => res[0]).catch(error => { console.log(error); return undefined });
@@ -36,16 +36,15 @@ class statementProductorDao {
         let id_header = 0;
         const res_business: any = await conn?.execute("SELECT * FROM business WHERE CODE_BUSINESS = ?", [id_business]).then((res) => res[0]).catch(error => { console.log(error); return undefined });
         if (res_business.length == 0) {
-            return {id_header: -1};
+            return { id_header: -1 };
         }
         const business = res_business[0].ID;
 
-        if (header.id_statement) {
+        if (header?.id_statement) {
             id_header = header.id_statement;
         } else {
-
             const id: any = await conn?.execute("SELECT ID FROM header_statement_form WHERE ID_BUSINESS=? AND YEAR_STATEMENT=?", [business, year_statement]).then(res => res[0]).catch(error => { console.log(error) });
-            if(id[0]?.ID > 0) {
+            if (id[0]?.ID > 0) {
                 id_header = id[0].ID;
             } else {
                 const resp: any = await conn?.execute("INSERT INTO header_statement_form(ID_BUSINESS,YEAR_STATEMENT,STATE,CREATED_BY) VALUES (?,?,?,?)", [business, year_statement, state, created_by]).then(res => res[0]).catch(error => { console.log(error) });
@@ -53,7 +52,7 @@ class statementProductorDao {
             }
         }
 
-        if(detail.length>0){
+        if (detail.length > 0) {
             for (let i = 0; i < detail.length; i++) {
                 const { precedence, hazard, recyclability, type_residue, value, amount } = detail[i];
                 if (detail[i].id) {
@@ -63,7 +62,6 @@ class statementProductorDao {
                 }
             }
         }
-
         conn?.end();
         return { id_header: id_header };
     }
@@ -107,10 +105,9 @@ class statementProductorDao {
             return isOk
         }
     }
-    public async getDetailById(id:any, year: any) {
+    public async getDetailById(id: any, year: any) {
         const conn = mysqlcon.getConnection();
         const table0 = await conn?.execute("SELECT SUM(VALUE) as VALUE, TYPE_RESIDUE, RECYCLABILITY FROM detail_statement_form INNER JOIN header_statement_form ON header_statement_form.ID = detail_statement_form.ID_HEADER WHERE ID_BUSINESS = (SELECT ID FROM business WHERE CODE_BUSINESS=?) AND YEAR_STATEMENT=? GROUP BY TYPE_RESIDUE, RECYCLABILITY", [id, year]).then((res) => res[0]).catch(error => { undefined });
-        // const res_detail = await conn?.execute("SELECT * FROM detail_statement_form WHERE ID_HEADER = ?", [id_statement]).then((res) => res[0]).catch(error => { undefined });
         conn?.end();
         return table0;
     }

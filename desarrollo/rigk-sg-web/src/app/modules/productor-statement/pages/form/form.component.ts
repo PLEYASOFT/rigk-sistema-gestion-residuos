@@ -53,11 +53,12 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if(!this.isSubmited) {
+    if (!this.isSubmited) {
       this.saveDraft();
     }
     sessionStorage.removeItem('id_statement');
     sessionStorage.removeItem('detailForm');
+    sessionStorage.removeItem('saving');
     sessionStorage.removeItem('detailLastForm');
   }
 
@@ -84,8 +85,8 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   saveDraft() {
-    
-    const edited = sessionStorage.getItem('isEdited') || false;    
+    const _continue = sessionStorage.getItem('saving') || false;
+    const edited = sessionStorage.getItem('isEdited') || false;
     this.id_statement = parseInt(sessionStorage.getItem('id_statement')!) || null;
     const tmp = sessionStorage.getItem('detailForm');
     const detail = JSON.parse(tmp ? tmp : "[]");
@@ -102,25 +103,21 @@ export class FormComponent implements OnInit, OnDestroy {
       state: false,
       id_statement: this.id_statement
     };
-    
+
     if (flagZero) {
-      
-      detail.push({ precedence:1, hazard:1, recyclability:1, type_residue:1, value:0, amount:0});
-      
+
+      detail.push({ precedence: 1, hazard: 1, recyclability: 1, type_residue: 1, value: 0, amount: 0 });
+
       Swal.fire({
         icon: 'question',
         title: '¿Formulario vacio?',
         text: 'El formulario tiene todos los valores en cero. ¿Estas seguro de guardar borrador?',
         showConfirmButton: true,
         showCancelButton: true,
-        cancelButtonText:'Cancelar',
+        cancelButtonText: 'Cancelar',
         confirmButtonText: 'Guardar'
       }).then(r => {
         if (r.isConfirmed) {
-          if(!edited) {
-            this.hour = new Date();
-            return;
-          }
           Swal.fire({
             title: 'Guardando Datos',
             text: `Se están guardando datos`,
@@ -128,17 +125,19 @@ export class FormComponent implements OnInit, OnDestroy {
             showConfirmButton: false
           });
           Swal.showLoading();
-          if (this.id_statement == null) {
+          if (this.id_statement == null && !_continue) {
+            sessionStorage.setItem('saving', 'true');
             this.productorService.saveForm({ header, detail }).subscribe(r => {
               this.hour = new Date();
               if (r.status) {
-                // sessionStorage.setItem('id_statement', r.data);
-                // sessionStorage.removeItem('detailForm');
-                // sessionStorage.removeItem('detailLastForm');
+                sessionStorage.setItem('id_statement', r.data);
                 Swal.close()
               }
+              sessionStorage.removeItem('isEdited');
+              sessionStorage.removeItem('saving');
             });
           } else {
+            if (_continue) return;
             this.productorService.updateValuesStatement(this.id_statement, detail, header).subscribe(r => {
               if (r.status) {
                 this.hour = new Date();
@@ -151,22 +150,22 @@ export class FormComponent implements OnInit, OnDestroy {
         }
       });
     } else {
-      if(!edited) {
+      if (!edited) {
         this.hour = new Date();
         return;
       }
-      
-      if (this.id_statement == null) {
+      if (this.id_statement == null && !_continue) {
+        sessionStorage.setItem('saving', 'true');
         this.productorService.saveForm({ header, detail }).subscribe(r => {
           this.hour = new Date();
           if (r.status) {
-            // sessionStorage.setItem('id_statement', r.data);
-            // sessionStorage.removeItem('detailForm');
-            // sessionStorage.removeItem('detailLastForm');
+            sessionStorage.setItem('id_statement', r.data);
           }
+          sessionStorage.removeItem('saving');
+          sessionStorage.removeItem('isEdited');
         });
       } else {
-        
+        if (_continue) return;
         this.productorService.updateValuesStatement(this.id_statement, detail, header).subscribe(r => {
           if (r.status) {
             this.hour = new Date();
