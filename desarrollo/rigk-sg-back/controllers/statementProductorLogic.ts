@@ -307,6 +307,7 @@ class StatementProductorLogic {
                 date: dateFormat(new Date(), 'dd-mm-yyyy'),
                 business_name: header.BUSINESS_NAME,
                 year,
+                llyear: parseInt(year)+1,
                 lyear: parseInt(year) - 1
             });
             const buf = doc.getZip().generate({
