@@ -1,13 +1,15 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpHeaders, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { catchError, Observable, of, throwError } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InterceptorService implements HttpInterceptor {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<any> {
     const token = sessionStorage.getItem('token') || '';
@@ -20,8 +22,20 @@ export class InterceptorService implements HttpInterceptor {
     });
 
     return next.handle(reqClone).pipe(
-      catchError((error: HttpErrorResponse) => {
-        return throwError(() => error.error);
+      catchError((error: HttpErrorResponse | any) => {
+        const urlArray = error.url.split('/');
+        const finalUrl = urlArray.pop();
+        if(finalUrl != 'auth'){
+          Swal.fire({
+            icon: 'error',
+            text: 'Sesión expirada'
+          })
+          this.router.navigate(['/auth/login'], { queryParams: { logout: true } });
+          return throwError(() => error.error);
+        }
+        else{
+          return throwError(() => error.error);
+        }
       })
   );
 
