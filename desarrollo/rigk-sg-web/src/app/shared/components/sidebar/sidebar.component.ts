@@ -22,6 +22,14 @@ export class SidebarComponent implements OnInit {
 
   ];
 
+  menuConsumidor = [
+    { title: "Inicio", path: "#/consumidor/home", icon: "fa-home" },
+    { title: "Mi Perfil", path: "#/consumidor/profile", icon: "fa-user" },
+    { title: "Registro de declaración", path: "#/consumidor/form", icon: "fa-file-text" },
+    { title: "Consulta de declaración", path: "#/consumidor/statements", icon: "fa-search" },
+
+  ];
+
   menuAdmin = [
     { title: "Inicio", path: "#/mantenedor/home", icon: "fa-home" },
     { title: "Mi Perfil", path: "#/mantenedor/profile", icon: "fa-user" },

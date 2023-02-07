@@ -1,0 +1,50 @@
+<div id="content">
+    <!-- inicio breadcrumbs -->  
+    <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" aria-current="page"><i class="fa fa-home" aria-hidden="true"></i> Inicio</li>
+        </ol>
+    </nav>
+    <!-- fin breadcrumbs -->
+    
+    <!-- inicio Inicio -->
+    <section class="inicio">
+        <h1>Inicio</h1>
+        <div class="box box-inicio">
+            <div class="row">
+                <!-- columna 1 -->
+                <div class="col-12 col-md-7">
+                    <h2 class="h1">Bienvenida a mi declaración</h2>
+                    <p>Como parte de las obligaciones que establece la Ley REP, los Productores deben informar la cantidad de EyE no domiciliarios (POM) puestos en el mercado el año anterior.</p>
+                    <p>ProREP pone a disposición de sus socios la plataforma de declaración que dará cumplimiento a la obligación de informar sus EyE.</p>
+                    <p>La información deberá subirse hasta el 15 de marzo del 2023.</p>
+                    <p>En caso de tener dudas con respecto a su declaración puede ver los tutoriales y preguntas frecuentes.</p>
+                    
+                    <h2 class="h1">Contacto:</h2>
+
+                    <p><strong>¿Alguna pregunta?</strong> Póngase en contacto con nuestro equipo de atención al cliente.</p>
+                    <p>Celular <strong><a class="color-white" href="tel:+56998172845">+56 9 98172845</a></strong> y mail <strong><a class="color-white" href="mailto:contacto@prorep.cl">contacto@prorep.cl</a></strong></p>
+                </div>
+                <!-- columna 2 -->
+                <div class="col-12 col-md-5">
+                    <div class="pt-4 pt-md-0 mt-3 mt-md-0 border-top border-top-md-0">
+                        <p>Las tarifas por subcategoría son de carácter anual por lo que estarán vigentes por todo el año 2023.</p>
+                        <ul class="list list-tarifas list-unstyled">
+                            <li class="text-end d-block bg-blue color-white">Tarifas por tonelada (UF)</li>
+                            
+                            <li *ngFor="let type of rates">
+                                <span>{{type.name}}</span>
+                                <span>{{type.price}}</span>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- fin box inicio -->
+
+    </section>
+    <!-- fin Monitor Inicio -->
+
+</div>
