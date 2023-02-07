@@ -58,7 +58,7 @@
                                 <td >{{giro[x]}}</td>
                                 <td > 
                                     <div class="btn-group">
-                                        <button class="btn btn-success btn-sm" (click)="popupModify = !popupModify; id = id_business[x]; index = x">Modificar</button>
+                                        <button class="btn btn-success btn-sm" (click)="popupModify = !popupModify; id = id_business[x]; index = x; this.existingCode = this.code_business[x];">Modificar</button>
                                     </div>
                                 </td>
                                 <td > 
@@ -83,6 +83,7 @@
                                 </div>
                                 <div *ngIf="formData.controls['code_business'].errors && formData.controls['code_business'].touched" class="text-danger pl-0">
                                     <p *ngIf="formData.controls['code_business'].errors['required']">El código de la empresa es requerido.</p>
+                                    <p *ngIf="formData.controls['code_business'].value != '' && formData.controls['code_business'].errors['code_business']">El código de empresa ya existe.</p>
                                 </div>
                             </div>
                             <div class="mb-4">
@@ -207,6 +208,7 @@
                                 </div>
                                 <div *ngIf="formData.controls['code_business'].errors && formData.controls['code_business'].touched" class="text-danger pl-0">
                                     <p *ngIf="formData.controls['code_business'].errors['required']">El código de la empresa es requerido.</p>
+                                    <p *ngIf="formData.controls['code_business'].value != '' && !formData.controls['code_business'].errors['verifyCode']">El código de empresa ya existe.</p>
                                 </div>
                             </div>
                             <div class="mb-4">
