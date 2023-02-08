@@ -6,7 +6,9 @@
     "start": "npm i && ng build && ng serve --port 8080",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "build:prod": "npm run build -- --configuration production --aot",
+    "build:qa": "npm run build -- --configuration qa --aot"
   },
   "private": true,
   "dependencies": {
