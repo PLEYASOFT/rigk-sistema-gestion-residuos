@@ -4,8 +4,8 @@ import { validarJWT } from "../middleware/validar-jwt";
 
 const router = Router();
 
-router.get('/uf', [], ratesLogic.getUfDay);
-router.get('/clp', [], ratesLogic.getRatesCLP);
-router.get('/:year', [], ratesLogic.getRatesByYear);
+router.get('/uf', [validarJWT], ratesLogic.getUfDay);
+router.get('/clp', [validarJWT], ratesLogic.getRatesCLP);
+router.get('/:year', [validarJWT], ratesLogic.getRatesByYear);
 
 export default router;

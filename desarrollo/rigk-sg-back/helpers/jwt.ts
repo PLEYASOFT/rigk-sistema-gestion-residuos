@@ -5,7 +5,7 @@ export const generarJWT = (uid: any, name: any, rol: any) => {
 
     return new Promise((resolve, reject) => {
         jwt.sign(payload, process.env.SECRET_JWT_SEED!, {
-            expiresIn: '24h'
+            expiresIn: '60m'
         }, (err: any, token: unknown) => {
             if (err) {
                 console.log(err);

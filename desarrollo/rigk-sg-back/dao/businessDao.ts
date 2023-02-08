@@ -16,7 +16,7 @@ class BusinessDao {
 
     public async getBusiness(id: string) {
         const conn = mysqlcon.getConnection()!;
-        const business: any = await conn.query("SELECT ID, NAME, VAT, LOC_ADDRESS, PHONE, EMAIL, AM_FIRST_NAME, AM_LAST_NAME, INVOICE_NAME, INVOICE_EMAIL, INVOICE_PHONE, CODE_BUSINESS, GIRO FROM business WHERE ID = ?", [id]).then(res => res[0]).catch(erro => undefined);
+        const business: any = await conn.query("SELECT ID, NAME, VAT, LOC_ADDRESS, PHONE, EMAIL, AM_FIRST_NAME, AM_LAST_NAME, INVOICE_NAME, INVOICE_EMAIL, INVOICE_PHONE, CODE_BUSINESS, GIRO FROM business WHERE CODE_BUSINESS = ?", [id]).then(res => res[0]).catch(erro => undefined);
         if (business == null || business.length == 0) {
             return false;
         }

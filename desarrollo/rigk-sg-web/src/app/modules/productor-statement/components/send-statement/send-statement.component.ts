@@ -22,6 +22,7 @@ export class SendStatementComponent implements OnInit {
   email: string = "";
   am_first_name: string = "";
   am_last_name: string = "";
+  giro: string = "";
   invoice_name: string = "";
   invoice_email: string = "";
   invoice_phone: string = "";
@@ -71,6 +72,7 @@ export class SendStatementComponent implements OnInit {
           this.invoice_name = resp.status[0].INVOICE_NAME;
           this.invoice_email = resp.status[0].INVOICE_EMAIL;
           this.invoice_phone = resp.status[0].INVOICE_PHONE;
+          this.giro = resp.status[0].GIRO;
         }
       },
       error: r => {

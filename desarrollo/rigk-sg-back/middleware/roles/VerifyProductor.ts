@@ -10,14 +10,7 @@ export const verifyRolProductor = (req: any, res: Response, next: NextFunction) 
     }
     try {
         const { uid, name } = jwt.verify(token, process.env.SECRET_JWT_SEED!);
-        const rol = 1;
-
-        if (rol != 1) {
-            return res.status(401).json({
-                ok: false,
-                msg: 'Token no válido2'
-            });
-        }
+        
         req.uid = uid;
         req.name = name;
 

@@ -11,20 +11,8 @@ import {  validate, clean, format, getCheckDigit } from 'rut.js'
 })
 export class MaintainerBusinessComponent implements OnInit {
 
-  formData: FormGroup = this.fb.group({
-    code_business : ['', [Validators.required]], // Campo requerido
-    name_business : ['', [Validators.required]], // Campo requerido
-    rut : ['', [Validators.required, Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$'),this.verifyRut] ], // Campo requerido y con formato de RUT
-    loc_address : ['', [Validators.required]], // Campo requerido
-    phone : ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]], // Campo requerido y con formato de número de teléfono
-    email : ['', [Validators.required, Validators.email]], // Campo requerido y con formato de correo electrónico
-    am_first_name : ['', [Validators.required]], // Campo requerido
-    am_last_name : ['', [Validators.required]], // Campo requerido
-    invoice_name : ['', [Validators.required]], // Campo requerido
-    invoice_email : ['', [Validators.required, Validators.email]], // Campo requerido y con formato de correo electrónico
-    invoice_phone : ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]], // Campo requerido y con formato de número de teléfono
-    giro: ['', [Validators.required]]
-  });
+  formData: any;
+  existingCode:any = '';
   popupVisible = false;
   popupModify = false;
   id = '';
@@ -40,7 +28,7 @@ export class MaintainerBusinessComponent implements OnInit {
   invoice_name: string [] = [];
   invoice_email: string [] = [];
   invoice_phone: string [] = [];
-  code_business: string[] = [];
+  code_business: any[] = [];
   giro: string[] = [];
 
   userData: any | null;
@@ -51,6 +39,21 @@ export class MaintainerBusinessComponent implements OnInit {
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
     this.getAllBusiness();
+
+    this.formData = this.fb.group({
+      code_business : ['', [Validators.required, this.verifyCode]], // Campo requerido
+      name_business : ['', [Validators.required]], // Campo requerido
+      rut : ['', [Validators.required, Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$'),this.verifyRut] ], // Campo requerido y con formato de RUT
+      loc_address : ['', [Validators.required]], // Campo requerido
+      phone : ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]], // Campo requerido y con formato de número de teléfono
+      email : ['', [Validators.required, Validators.email]], // Campo requerido y con formato de correo electrónico
+      am_first_name : ['', [Validators.required]], // Campo requerido
+      am_last_name : ['', [Validators.required]], // Campo requerido
+      invoice_name : ['', [Validators.required]], // Campo requerido
+      invoice_email : ['', [Validators.required, Validators.email]], // Campo requerido y con formato de correo electrónico
+      invoice_phone : ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]], // Campo requerido y con formato de número de teléfono
+      giro: ['', [Validators.required]]
+    });
   }
 
   getAllBusiness() {
@@ -116,16 +119,16 @@ export class MaintainerBusinessComponent implements OnInit {
     
     this.businessService.postBusiness(name_business, rut, loc_address, phone, email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business,giro).subscribe({
       next: resp => {
-        if(resp.status){
-          Swal.fire({
-            title: "Empresa agregada",
-            text: "La empresa fue agregada exitosamente",
-            icon: "success",
-          })
-          this.popupVisible=false;
-          this.getAllBusiness();
-          this.formData.reset();
-        }
+          if(resp.status ){
+            Swal.fire({
+              title: "Empresa agregada",
+              text: "La empresa fue agregada exitosamente",
+              icon: "success",
+            })
+            this.popupVisible=false;
+            this.getAllBusiness();
+            this.formData.reset();
+          }
       },
     error: err => {
       Swal.fire({
@@ -221,4 +224,13 @@ export class MaintainerBusinessComponent implements OnInit {
       return { rut: true };  // el RUT es inválido, retorna un error
     }
   }
+
+  verifyCode = (control: FormControl) => {
+    const code_business = control.value;
+    if (this.code_business.includes(code_business) && code_business !== this.existingCode) {
+      return { code_business: true };  // el código se encuentra en el arreglo, hay errores
+    } else {
+      return null;  // el código NO se encuentra en el arreglo, no hay error
+    }
+  };
 }
