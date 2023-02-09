@@ -1,5 +1,4 @@
 import mysqlcon from '../db';
-import bcrypt from 'bcrypt';
 
 class AuthDao {
     async getPassword(ID: string) {

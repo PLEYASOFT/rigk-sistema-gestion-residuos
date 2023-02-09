@@ -1,0 +1,44 @@
+<!-- inicio breadcrumbs -->
+<nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+        <li class="breadcrumb-item"><a href="#">Mantenedor Establecimientos</a></li>
+    </ol>
+</nav>
+
+<h1>Establecimientos</h1>
+<div class="table-responsive mb-4" >
+    <!-- inicio Consulta de Declaración -->
+    <section >
+        <div class="row w-100 " >
+            <!-- Columna 1 -->
+            <div id = "table" #table1 class="w-100 " >
+                 <div class="w-100">
+                    <!-- Tabla Desktop -->
+                    <table class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table" >
+                        
+                        <thead>
+                            <tr class="text-center w-100" >
+                                <th >NOMBRE</th>
+                                <th >DIRECCIÓN</th>
+                                <th >Establecimientos</th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <tr class="text-center w-100" *ngFor="let r of name_business; let x = index">
+                                <td >{{name_business[x]}}</td>
+                                <td >{{loc_address[x]}}</td>
+                                <td > 
+                                    <div class="btn-group">
+                                        <button class="btn btn-success btn-sm" (click)="popupModify = !popupModify; id = id_business[x]; index = x; this.existingCode = this.code_business[x];">Establecimientos</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- fin Consulta de Declaración -->
+</div>

@@ -6,13 +6,15 @@ import { HomeComponent } from './pages/home/home.component';
 import { MaintainerBusinessComponent } from './pages/maintainer-business/maintainer-business.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MaintainerEstablishmentComponent } from './pages/maintainer-establishment/maintainer-establishment.component';
 
 
 @NgModule({
   declarations: [
     HomeComponent,
     MaintainerBusinessComponent,
-    ProfileComponent
+    ProfileComponent,
+    MaintainerEstablishmentComponent
   ],
   imports: [
     CommonModule,

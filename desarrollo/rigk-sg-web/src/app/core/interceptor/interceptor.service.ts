@@ -34,6 +34,7 @@ export class InterceptorService implements HttpInterceptor {
           return throwError(() => error.error);
         }
         else{
+          this.router.navigate(['/auth/login'], { queryParams: { logout: true } });
           return throwError(() => error.error);
         }
       })

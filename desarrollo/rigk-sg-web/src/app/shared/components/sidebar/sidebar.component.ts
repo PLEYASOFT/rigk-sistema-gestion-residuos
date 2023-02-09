@@ -19,7 +19,6 @@ export class SidebarComponent implements OnInit {
     { title: "Mi Perfil", path: "#/productor/profile", icon: "fa-user" },
     { title: "Registro de declaración", path: "#/productor/form", icon: "fa-file-text" },
     { title: "Consulta de declaración", path: "#/productor/statements", icon: "fa-search" },
-
   ];
 
   menuConsumidor = [
@@ -27,14 +26,13 @@ export class SidebarComponent implements OnInit {
     { title: "Mi Perfil", path: "#/consumidor/profile", icon: "fa-user" },
     { title: "Registro de declaración", path: "#/consumidor/form", icon: "fa-file-text" },
     { title: "Consulta de declaración", path: "#/consumidor/statements", icon: "fa-search" },
-
   ];
 
   menuAdmin = [
     { title: "Inicio", path: "#/mantenedor/home", icon: "fa-home" },
     { title: "Mi Perfil", path: "#/mantenedor/profile", icon: "fa-user" },
-    { title: "Mantener Empresas", path: "#/mantenedor/business", icon: "fa-file-text" }
-
+    { title: "Mantenedor Empresas", path: "#/mantenedor/business", icon: "fa-file-text" },
+    { title: "Mantenedor establecimientos", path: "#/mantenedor/establishment", icon: "fa-file-text" },
   ];
 
   constructor(private router: Router,
