@@ -231,10 +231,7 @@ export class MaintainerBusinessComponent implements OnInit {
     if (!code_business) {
       return null;
     }
-    console.log('code: ',code_business)
     const lowerCaseCodes = this.code_business.map(code => code.toLowerCase()); 
-    console.log('lowerCaseCodes: ',lowerCaseCodes)
-    console.log('existingCode: ', this.existingCode)
     if (lowerCaseCodes.includes(code_business.toLowerCase())  && 
     ( code_business.toLowerCase() !== this.existingCode.toLowerCase())) {
       return { code_business: true };  // el código se encuentra en el arreglo, hay errores
