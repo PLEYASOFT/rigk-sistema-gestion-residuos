@@ -1,24 +1,30 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MantainerRoutingModule } from './mantainer-routing.module';
 import { HomeComponent } from './pages/home/home.component';
 import { MaintainerBusinessComponent } from './pages/maintainer-business/maintainer-business.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MantainerUsersComponent } from './pages/mantainer-users/mantainer-users.component';
+
+import {MultiSelectModule} from 'primeng/multiselect';
 
 
 @NgModule({
   declarations: [
     HomeComponent,
     MaintainerBusinessComponent,
-    ProfileComponent
+    ProfileComponent,
+    MantainerUsersComponent
   ],
   imports: [
     CommonModule,
     MantainerRoutingModule,
     FormsModule,
     ReactiveFormsModule,
+    MultiSelectModule
   ]
 })
 export class MantainerModule { }

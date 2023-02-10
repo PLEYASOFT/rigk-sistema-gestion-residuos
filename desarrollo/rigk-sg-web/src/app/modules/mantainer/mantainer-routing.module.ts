@@ -4,6 +4,7 @@ import { LayoutComponent } from '../productor-statement/pages/layout/layout.comp
 import { HomeComponent } from './pages/home/home.component';
 import { MaintainerBusinessComponent } from './pages/maintainer-business/maintainer-business.component';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { MantainerUsersComponent } from './pages/mantainer-users/mantainer-users.component';
 
 const routes: Routes = [{
   path: '',
@@ -12,6 +13,7 @@ const routes: Routes = [{
   { path: 'home', component:  HomeComponent},
   { path: 'profile', component: ProfileComponent },
   { path: 'business', component: MaintainerBusinessComponent },
+  { path: 'users', component: MantainerUsersComponent },
   { path: '**', redirectTo: 'home', pathMatch: 'full' }]
 }
   
