@@ -18,7 +18,7 @@ import {MultiSelectModule} from 'primeng/multiselect';
     HomeComponent,
     MaintainerBusinessComponent,
     ProfileComponent,
-    MaintainerEstablishmentComponent
+    MaintainerEstablishmentComponent,
     MantainerUsersComponent
   ],
   imports: [
