@@ -33,6 +33,7 @@ export class SidebarComponent implements OnInit {
     { title: "Mi Perfil", path: "#/mantenedor/profile", icon: "fa-user" },
     { title: "Mantenedor Empresas", path: "#/mantenedor/business", icon: "fa-file-text" },
     { title: "Mantenedor establecimientos", path: "#/mantenedor/establishment", icon: "fa-file-text" },
+    { title: "Mantenedor Usuarios", path: "#/mantenedor/users", icon: "fa-users" },
   ];
 
   constructor(private router: Router,

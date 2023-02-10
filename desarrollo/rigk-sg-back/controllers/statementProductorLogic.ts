@@ -307,8 +307,10 @@ class StatementProductorLogic {
                 date: dateFormat(new Date(), 'dd-mm-yyyy'),
                 business_name: header.BUSINESS_NAME,
                 year,
+                llyear: parseInt(year)+1,
                 lyear: parseInt(year) - 1
             });
+            console.log("justo antes de generar");
             const buf = doc.getZip().generate({
                 type: "nodebuffer",
                 compression: "DEFLATE",
@@ -316,7 +318,7 @@ class StatementProductorLogic {
             fs.writeFileSync(path.resolve('files/templates', `plantilla_${header.ID}.docx`), buf);
             convertWordToPDF(header.ID, res);
         } catch (error) {
-            console.log(error)
+            console.log("error pos "+error)
             res.status(500).json({
                 status: false,
                 msg: "Algo salió mal"

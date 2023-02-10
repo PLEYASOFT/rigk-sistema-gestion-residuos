@@ -71,12 +71,55 @@ class AuthDao {
 
     }
 
-    async register(EMAIL: string, FIRST_NAME: string, LAST_NAME: string, PASSWORD: string, PHONE: string,PHONE_OFFICE:string, POSITION:string) {
+    async register(EMAIL: string, FIRST_NAME: string, LAST_NAME: string, PASSWORD: string, PHONE: string,PHONE_OFFICE:string, POSITION:string, ROL: any) {
         const conn = mysqlcon.getConnection()!;
         const res: any = await conn.query("INSERT INTO user(EMAIL,FIRST_NAME,LAST_NAME, PASSWORD,PHONE, STATE, SALT,PHONE_OFFICE,POSITION) VALUES (?,?,?,?,?,?,'ABC',?,?)", [EMAIL, FIRST_NAME, LAST_NAME, PASSWORD, PHONE,1,PHONE_OFFICE,POSITION]).then((res) => res[0]).catch(error => [{ undefined }]);
-        const res_1: any = await conn.query("INSERT INTO user_rol(USER_ID,ROL_ID) VALUES (?,?)", [res.insertId]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const res_1: any = await conn.query("INSERT INTO user_rol(USER_ID,ROL_ID) VALUES (?,?)", [res.insertId, ROL]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         return res
+    }
+
+    public async users() {
+        const conn = mysqlcon.getConnection()!;
+        const res: any = await conn.query("SELECT USER.*, rol.ID as ID_ROL, rol.NAME AS ROL_NAME FROM USER INNER JOIN user_rol ON user_rol.USER_ID = USER.ID INNER JOIN rol ON rol.ID = user_rol.ROL_ID", []).then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        return res;
+    }
+    
+    public async getBusiness(user: any) {
+        const conn = mysqlcon.getConnection()!;
+        const res: any = await conn.query("SELECT business.NAME, user_business.ID_BUSINESS FROM user_business INNER JOIN business ON business.ID = user_business.ID_BUSINESS WHERE user_business.ID_USER=?", [user]).then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        return res;
+    }
+
+    public async deleteUser(id:any) {
+        const conn = mysqlcon.getConnection()!;
+        await conn.query("DELETE FROM USER_ROL WHERE USER_ID=?", [id]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const res: any = await conn.query("DELETE FROM USER WHERE ID=?", [id]).then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        return res;
+    }
+    public async getRoles() {
+        const conn = mysqlcon.getConnection()!;
+        const res: any = await conn.query("SELECT * FROM rol", []).then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        return res;
+    }
+    public async addUserBusiness(id_user: any, id_business: any) {
+        const conn = mysqlcon.getConnection()!;
+        const res: any = await conn.query("INSERT INTO user_business VALUES(?,?)", [id_user, id_business]).then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        return res;
+    }
+    public async updateUser(ID:any, FIRST_NAME:any, LAST_NAME:any, EMAIL:any, ROL:any, PHONE:any, PHONE_OFFICE:any, POSITION:any) {
+        const conn = mysqlcon.getConnection()!;
+        const res: any = await conn.query("UPDATE user SET FIRST_NAME=?, LAST_NAME=?, EMAIL=?, PHONE=?, PHONE_OFFICE=?, POSITION=? WHERE ID = ?", [FIRST_NAME, LAST_NAME, EMAIL, PHONE, PHONE_OFFICE, POSITION, ID]).then((res) => res[0]).catch(error => [{ undefined }]);
+        await conn.query("DELETE FROM user_business WHERE ID_USER=?", [ID]);
+        await conn.query("update user_rol SET ROL_ID = ? WHERE USER_ID=?", [ROL,ID]);
+
+        conn.end();
+        return res;
     }
 }
 
