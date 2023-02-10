@@ -30,11 +30,11 @@ export class InterceptorService implements HttpInterceptor {
             icon: 'error',
             text: 'Sesión expirada'
           })
-          this.router.navigate(['/auth/login'], { queryParams: { logout: true } });
+          //this.router.navigate(['/auth/login'], { queryParams: { logout: true } });
           return throwError(() => error.error);
         }
         else{
-          this.router.navigate(['/auth/login'], { queryParams: { logout: true } });
+          //this.router.navigate(['/auth/login'], { queryParams: { logout: true } });
           return throwError(() => error.error);
         }
       })
