@@ -25,7 +25,7 @@ export class InterceptorService implements HttpInterceptor {
       catchError((error: HttpErrorResponse | any) => {
         const urlArray = error.url.split('/');
         const finalUrl = urlArray.pop();
-        if(finalUrl != 'auth'){
+        if(finalUrl != 'auth' && error.status==401){
           Swal.fire({
             icon: 'error',
             text: 'Sesión expirada'

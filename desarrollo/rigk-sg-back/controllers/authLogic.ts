@@ -144,7 +144,7 @@ class AuthLogic {
         const user = req.body.EMAIL;
         const first_name = req.body.FIRST_NAME;
         const last_name = req.body.LAST_NAME
-        const password = req.body.PASSWORD || '';
+        const password = req.body.PASSWORD || '1231231234';
         const phone = req.body.PHONE;
         const phone_office = req.body.PHONE_OFFICE;
         const position = req.body.POSITION;
@@ -152,13 +152,15 @@ class AuthLogic {
         try {
             let passwordHash = bcrypt.hashSync(password, 8);
             const result = await authDao.register(user, first_name, last_name, passwordHash, phone, phone_office, position, ROL);
-
+            if(result.length == 0) {
+                return res.status(200).json({ status: false, msg: 'Correo existe', data: {} });
+            }
             for (let i = 0; i < BUSINESS.length; i++) {
                 const b = BUSINESS[i];
                 await authDao.addUserBusiness(result.insertId,b);
             }
 
-            res.status(200).json({ status: true, msg: 'Has creado usuario', data: {} })
+            res.status(200).json({ status: true, msg: 'Has creado usuario', data: {} });
         }
         catch (err) {
             console.log(err)

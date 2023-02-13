@@ -106,8 +106,9 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="inp_email">E-mail</label>
-                                <input type="text" formControlName="EMAIL" id="inp_email" class="form-control"
+                                <input type="text" formControlName="EMAIL" (change)="verifyEmail()" id="inp_email" class="form-control"
                                     placeholder="cto@correo.com">
+                                    <p class="text-danger" *ngIf="verifyEmail2(userForm.controls.EMAIL.errors)">El correo ya existe registrado.</p>
                             </div>
                         </div>
                         <div class="row mt-4">
@@ -146,7 +147,7 @@
             <div class="modal-footer">
                 <button type="button" id="btnCloseModal" class="btn btn-secondary"
                     data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" (click)="saveForm()">Guardar</button>
+                <button type="button" class="btn btn-primary" (click)="saveForm()" [disabled]="userForm.invalid">Guardar</button>
             </div>
         </div>
     </div>

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import Swal from 'sweetalert2';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { BusinessService } from '../../../../core/services/business.service';
 
 @Component({
@@ -19,14 +19,13 @@ export class MantainerUsersComponent implements OnInit {
 
   userForm = this.fb.group({
     ID: [],
-    FIRST_NAME: [],
-    LAST_NAME: [],
-    EMAIL: [],
-    ROL: [0],
-    PASSWORD: [],
-    PHONE: [],
-    PHONE_OFFICE: [],
-    POSITION: [],
+    FIRST_NAME: ['', [Validators.required]],
+    LAST_NAME: ['', [Validators.required]],
+    EMAIL: ['', [Validators.required, Validators.email]],
+    ROL: [0, [Validators.required, Validators.min(1)]],
+    PHONE: ['', [Validators.required]],
+    PHONE_OFFICE: ['', [Validators.required]],
+    POSITION: ['', [Validators.required]],
     BUSINESS: []
   })
 
@@ -42,7 +41,15 @@ export class MantainerUsersComponent implements OnInit {
     ];
   }
 
+
   ngOnInit(): void {
+    Swal.fire({
+      title: 'Cargando Datos',
+      text: 'Se está recuperando datos',
+      timerProgressBar: true,
+      showConfirmButton: false
+    });
+    Swal.showLoading();
     this.loadUsers();
     this.loadBusiness();
     this.loadRoles();
@@ -73,6 +80,7 @@ export class MantainerUsersComponent implements OnInit {
         this.listUser = r.data;
         this.cant = Math.ceil(this.listUser.length / 10);
         this.db = this.listUser.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+        Swal.close();
       }
     })
   }
@@ -110,13 +118,31 @@ export class MantainerUsersComponent implements OnInit {
               text: r.msg
             })
             this.loadUsers();
+            this.pos=1;
           }
         })
       }
     })
   }
+  
 
+  verifyEmail() {
+    const email = this.userForm.value.EMAIL;
+    const user = this.listUser.find(r=>r.EMAIL == email);
+    if(!user || user.ID == this.userForm.value.ID) return false;
+    
+    this.userForm.controls['EMAIL'].setErrors({notUnique:true});
+    return false;
+  }
+
+  verifyEmail2(e:any) {
+    if(e?.notUnique) {
+      return true;
+    }
+    return false;
+  }
   saveForm() {
+    if(this.userForm.invalid) return;
 
     if (this.isEdit) {
       this.authService.updateUser(this.userForm.value).subscribe(r => {
@@ -127,6 +153,7 @@ export class MantainerUsersComponent implements OnInit {
             text: r.msg
           })
           this.loadUsers();
+          this.pos=1;
         }
       });
     } else {
@@ -138,10 +165,12 @@ export class MantainerUsersComponent implements OnInit {
             text: r.msg
           });
           this.loadUsers();
+          this.pos=1;
         }
       });
     }
   }
+
   pos = 1;
   db: any[] = [];
   cant = 0;
