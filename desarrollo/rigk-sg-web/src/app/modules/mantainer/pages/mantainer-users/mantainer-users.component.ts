@@ -11,7 +11,7 @@ import { BusinessService } from '../../../../core/services/business.service';
 })
 export class MantainerUsersComponent implements OnInit {
 
-  business: any[];
+  business: any[] = [];
   selectedBusiness!: any[];
   listUser: any[] = [];
   listRoles: any[] = [];
@@ -23,23 +23,15 @@ export class MantainerUsersComponent implements OnInit {
     LAST_NAME: ['', [Validators.required]],
     EMAIL: ['', [Validators.required, Validators.email]],
     ROL: [0, [Validators.required, Validators.min(1)]],
-    PHONE: ['', [Validators.required]],
-    PHONE_OFFICE: ['', [Validators.required]],
+    PHONE: ['', [Validators.required,Validators.pattern('^[0-9]{9}$')]],
+    PHONE_OFFICE: ['', [Validators.required,Validators.pattern('^[0-9]{9}$')]],
     POSITION: ['', [Validators.required]],
-    BUSINESS: []
+    BUSINESS: [,[Validators.minLength(1)]]
   })
 
   constructor(private authService: AuthService,
     private businesService: BusinessService,
-    private fb: FormBuilder) {
-    this.business = [
-      { name: 'New York', code: 'NY' },
-      { name: 'Rome', code: 'RM' },
-      { name: 'London', code: 'LDN' },
-      { name: 'Istanbul', code: 'IST' },
-      { name: 'Paris', code: 'PRS' }
-    ];
-  }
+    private fb: FormBuilder) {  }
 
 
   ngOnInit(): void {
@@ -76,6 +68,7 @@ export class MantainerUsersComponent implements OnInit {
   }
   loadUsers() {
     this.authService.getUsers.subscribe(r => {
+      console.log(r)
       if (r.status) {
         this.listUser = r.data;
         this.cant = Math.ceil(this.listUser.length / 10);
@@ -124,7 +117,6 @@ export class MantainerUsersComponent implements OnInit {
       }
     })
   }
-  
 
   verifyEmail() {
     const email = this.userForm.value.EMAIL;
