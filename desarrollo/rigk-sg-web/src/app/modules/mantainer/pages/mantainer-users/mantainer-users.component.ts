@@ -23,15 +23,15 @@ export class MantainerUsersComponent implements OnInit {
     LAST_NAME: ['', [Validators.required]],
     EMAIL: ['', [Validators.required, Validators.email]],
     ROL: [0, [Validators.required, Validators.min(1)]],
-    PHONE: ['', [Validators.required,Validators.pattern('^[0-9]{9}$')]],
-    PHONE_OFFICE: ['', [Validators.required,Validators.pattern('^[0-9]{9}$')]],
+    PHONE: ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]],
+    PHONE_OFFICE: ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]],
     POSITION: ['', [Validators.required]],
-    BUSINESS: [,[Validators.minLength(1)]]
+    BUSINESS: [[], [Validators.required]]
   })
 
   constructor(private authService: AuthService,
     private businesService: BusinessService,
-    private fb: FormBuilder) {  }
+    private fb: FormBuilder) { }
 
 
   ngOnInit(): void {
@@ -111,7 +111,7 @@ export class MantainerUsersComponent implements OnInit {
               text: r.msg
             })
             this.loadUsers();
-            this.pos=1;
+            this.pos = 1;
           }
         })
       }
@@ -120,21 +120,21 @@ export class MantainerUsersComponent implements OnInit {
 
   verifyEmail() {
     const email = this.userForm.value.EMAIL;
-    const user = this.listUser.find(r=>r.EMAIL == email);
-    if(!user || user.ID == this.userForm.value.ID) return false;
-    
-    this.userForm.controls['EMAIL'].setErrors({notUnique:true});
+    const user = this.listUser.find(r => r.EMAIL == email);
+    if (!user || user.ID == this.userForm.value.ID) return false;
+
+    this.userForm.controls['EMAIL'].setErrors({ notUnique: true });
     return false;
   }
 
-  verifyEmail2(e:any) {
-    if(e?.notUnique) {
+  verifyEmail2(e: any) {
+    if (e?.notUnique) {
       return true;
     }
     return false;
   }
   saveForm() {
-    if(this.userForm.invalid) return;
+    if (this.userForm.invalid) return;
 
     if (this.isEdit) {
       this.authService.updateUser(this.userForm.value).subscribe(r => {
@@ -145,7 +145,7 @@ export class MantainerUsersComponent implements OnInit {
             text: r.msg
           })
           this.loadUsers();
-          this.pos=1;
+          this.pos = 1;
         }
       });
     } else {
@@ -157,7 +157,7 @@ export class MantainerUsersComponent implements OnInit {
             text: r.msg
           });
           this.loadUsers();
-          this.pos=1;
+          this.pos = 1;
         }
       });
     }
