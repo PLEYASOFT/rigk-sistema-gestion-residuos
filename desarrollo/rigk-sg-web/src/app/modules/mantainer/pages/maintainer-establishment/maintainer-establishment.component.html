@@ -55,56 +55,15 @@
                     <form [formGroup]="userForm">
                         <div class="row">
                             <div class="col-md-6">
-                                <label for="inp_nom">NOMBRE:</label>
-                                <input type="text" formControlName="FIRST_NAME" id="inp_nom" placeholder="Nombre"
+                                <label for="inp_nom">Establecimiento:</label>
+                                <input type="text" formControlName="FIRST_NAME" id="inp_nom" placeholder="Establecimiento"
                                     class="form-control">
                             </div>
                             <div class="col-md-6">
-                                <label for="inp_ap">APELLIDOS:</label>
-                                <input type="text" formControlName="LAST_NAME" id="inp_ap" placeholder="Apellidos"
-                                    class="form-control">
-                            </div>
-                        </div>
-                        <div class="row mt-4">
-                            <div class="col-md-6">
-                                <label for="inp_tel">TELÉFONO</label>
-                                <input type="text" formControlName="PHONE" class="form-control" id="inp_tel"
-                                    placeholder="912345678">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="inp_email">E-mail</label>
-                                <input type="text" formControlName="EMAIL" id="inp_email" class="form-control"
-                                    placeholder="cto@correo.com">
-                            </div>
-                        </div>
-                        <div class="row mt-4">
-                            <div class="col-md-12">
-                                <hr>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="inp_tel">TELÉFONO OFICINA</label>
-                                <input type="text" formControlName="PHONE_OFFICE" class="form-control" id="inp_tel"
-                                    placeholder="912345678">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="inp_email">CARGO</label>
-                                <input type="text" formControlName="POSITION" id="inp_email" class="form-control"
-                                    placeholder="cto@correo.com">
-                            </div>
-                        </div>
-                        <div class="row mt-4">
-                            <div class="col-md-6">
-                                <label for="">Empresas</label> <br>
+                                <label for="">Region</label> <br>
                                 <p-multiSelect [options]="business" formControlName="BUSINESS" optionLabel="view_name"
-                                    optionValue="ID" defaultLabel="Seleccione Empresas"
+                                    optionValue="ID" defaultLabel="Seleccione Región"
                                     [selectedItemsLabel]="'{0} items selected'"></p-multiSelect>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="inp_rol">ROL</label>
-                                <select formControlName="ROL" id="inp_rol" class="form-select">
-                                    <option value="0">Selecciona Rol</option>
-                                    <option *ngFor="let r of listRoles" value="{{r.ID}}">{{r.NAME}}</option>
-                                </select>
                             </div>
                         </div>
                     </form>
