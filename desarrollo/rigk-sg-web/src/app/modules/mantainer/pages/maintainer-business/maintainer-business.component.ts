@@ -167,6 +167,7 @@ export class MaintainerBusinessComponent implements OnInit {
                   icon: "error",
                 })
                 this.getAllBusiness();
+                this.pagTo(0);
               }
               else {
                 Swal.fire({
