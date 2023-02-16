@@ -17,7 +17,7 @@ class AuthDao {
     async login(USER: string) {
         const conn = mysqlcon.getConnection()!;
         const res: any = await conn.query("SELECT USER.*,USER_ROL.ROL_ID AS ROL, ROL.NAME AS ROL_NAME, BUSINESS.NAME AS BUSINESS, BUSINESS.ID as ID_BUSINESS FROM USER INNER JOIN USER_ROL ON USER_ROL.USER_ID = USER.ID INNER JOIN USER_BUSINESS ON USER_BUSINESS.ID_USER = USER.ID INNER JOIN BUSINESS ON BUSINESS.ID = USER_BUSINESS.ID_BUSINESS INNER JOIN ROL ON ROL.ID=USER_ROL.ROL_ID WHERE USER.EMAIL = ?", [USER]).then((res) => res[0]).catch(error => [{ undefined }]);
-        
+
         let login = false;
         if (res != null && res != undefined && res.length > 0) {
             login = true;
@@ -72,14 +72,13 @@ class AuthDao {
 
     }
 
-    async register(EMAIL: string, FIRST_NAME: string, LAST_NAME: string, PASSWORD: string, PHONE: string,PHONE_OFFICE:string, POSITION:string, ROL: any) {
+    async register(EMAIL: string, FIRST_NAME: string, LAST_NAME: string, PASSWORD: string, PHONE: string, PHONE_OFFICE: string, POSITION: string, ROL: any) {
         const conn = mysqlcon.getConnection()!;
         const res_0: any = await conn.execute("SELECT * FROM user WHERE EMAIL = ?", [EMAIL]).then((res) => res[0]).catch(error => [{ undefined }]);
-        if(res_0.length > 0) {
+        if (res_0.length > 0) {
             return [];
         }
-        const res: any = await conn.query("INSERT INTO user(EMAIL,FIRST_NAME,LAST_NAME, PASSWORD,PHONE, STATE, SALT,PHONE_OFFICE,POSITION) VALUES (?,?,?,?,?,?,'ABC',?,?)", [EMAIL, FIRST_NAME, LAST_NAME, PASSWORD, PHONE,1,PHONE_OFFICE,POSITION]).then((res) => res[0]).catch(error => {console.log(error); return [{ undefined }]});
-        console.log(res)
+        const res: any = await conn.query("INSERT INTO user(EMAIL,FIRST_NAME,LAST_NAME, PASSWORD,PHONE, STATE, SALT,PHONE_OFFICE,POSITION) VALUES (?,?,?,?,?,?,'ABC',?,?)", [EMAIL, FIRST_NAME, LAST_NAME, PASSWORD, PHONE, 1, PHONE_OFFICE, POSITION]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
         const res_1: any = await conn.query("INSERT INTO user_rol(USER_ID,ROL_ID) VALUES (?,?)", [res.insertId, ROL]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         return res
@@ -91,7 +90,7 @@ class AuthDao {
         conn.end();
         return res;
     }
-    
+
     public async getBusiness(user: any) {
         const conn = mysqlcon.getConnection()!;
         const res: any = await conn.query("SELECT business.NAME, user_business.ID_BUSINESS FROM user_business INNER JOIN business ON business.ID = user_business.ID_BUSINESS WHERE user_business.ID_USER=?", [user]).then((res) => res[0]).catch(error => [{ undefined }]);
@@ -99,7 +98,7 @@ class AuthDao {
         return res;
     }
 
-    public async deleteUser(id:any) {
+    public async deleteUser(id: any) {
         const conn = mysqlcon.getConnection()!;
         await conn.query("DELETE FROM USER_ROL WHERE USER_ID=?", [id]).then((res) => res[0]).catch(error => [{ undefined }]);
         const res: any = await conn.query("DELETE FROM USER WHERE ID=?", [id]).then((res) => res[0]).catch(error => [{ undefined }]);
@@ -118,11 +117,11 @@ class AuthDao {
         conn.end();
         return res;
     }
-    public async updateUser(ID:any, FIRST_NAME:any, LAST_NAME:any, EMAIL:any, ROL:any, PHONE:any, PHONE_OFFICE:any, POSITION:any) {
+    public async updateUser(ID: any, FIRST_NAME: any, LAST_NAME: any, EMAIL: any, ROL: any, PHONE: any, PHONE_OFFICE: any, POSITION: any) {
         const conn = mysqlcon.getConnection()!;
         const res: any = await conn.query("UPDATE user SET FIRST_NAME=?, LAST_NAME=?, EMAIL=?, PHONE=?, PHONE_OFFICE=?, POSITION=? WHERE ID = ?", [FIRST_NAME, LAST_NAME, EMAIL, PHONE, PHONE_OFFICE, POSITION, ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         await conn.query("DELETE FROM user_business WHERE ID_USER=?", [ID]);
-        await conn.query("update user_rol SET ROL_ID = ? WHERE USER_ID=?", [ROL,ID]);
+        await conn.query("update user_rol SET ROL_ID = ? WHERE USER_ID=?", [ROL, ID]);
 
         conn.end();
         return res;
