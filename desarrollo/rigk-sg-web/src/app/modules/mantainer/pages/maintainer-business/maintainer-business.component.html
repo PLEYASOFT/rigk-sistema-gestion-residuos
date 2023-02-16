@@ -203,7 +203,7 @@
                                 </div>
                             </div>
                                 <!-- Otros campos del formulario -->
-                                <button type="submit" class="btn btn-primary" style="width: 150px;margin-left: 400px;"(click)="btnAddBusiness()" [disabled]="miFormulario.invalid">Aceptar</button>
+                                <button type="submit" class="btn btn-primary" style="width: 150px;margin-left: 400px;"(click)="btnAddBusiness();pagTo(0)" [disabled]="miFormulario.invalid">Aceptar</button>
                                 <button type="button" class="btn btn-secondary buttonRight" style="width: 150px;"(click)="popupVisible = !popupVisible; this.formData.reset()">Cancelar</button>
                               </form>
                         </div>
