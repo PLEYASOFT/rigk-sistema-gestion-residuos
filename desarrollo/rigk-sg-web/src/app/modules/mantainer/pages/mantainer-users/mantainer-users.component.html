@@ -15,7 +15,14 @@
         (click)="isEdit=false; userForm.reset({ROL:0})">Agregar Usuario</button>
 </div>
 
+
 <div style="height: 50px;"></div>
+<div class="row mb-3">
+    <div class="col-md-12">
+        <label>Filtro:</label>
+        <input type="text" class="form-control" placeholder="Filtro de búsqueda" (keyup)="filter($event.target)">
+    </div>
+</div>
 <div class="table-responsive mb-4">
     <!-- inicio Consulta de Declaración -->
     <section>
@@ -47,7 +54,7 @@
                                 <td>{{r.EMAIL}}</td>
                                 <td>{{r.PHONE_OFFICE}}</td>
                                 <td>{{r.POSITION}}</td>
-                                <td>{{r.BUSINESS.length > 1 ? 'Multiple Empresas': r.BUSINESS[0]?.NAME||'No Asignado'}}
+                                <td>{{showBusiness(r.BUSINESS) || 'No Asignado'}}
                                 </td>
                                 <td>
                                     <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal"
@@ -117,7 +124,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="inp_tel">TELÉFONO OFICINA</label>
-                                <input type="text" formControlName="PHONE_OFFICE" class="form-control" id="inp_tel"
+                                <input type="text" formControlName="PHONE_OFFICE" required class="form-control" id="inp_tel"
                                     placeholder="912345678">
                             </div>
                             <div class="col-md-6">
@@ -131,7 +138,8 @@
                                 <label for="">Empresas</label> <br>
                                 <p-multiSelect [options]="business" formControlName="BUSINESS" optionLabel="view_name"
                                     optionValue="ID" defaultLabel="Seleccione Empresas"
-                                    [selectedItemsLabel]="'{0} items selected'"></p-multiSelect>
+                                    [selectedItemsLabel]="'{0} Empresas seleccionadas'"></p-multiSelect>
+
                             </div>
                             <div class="col-md-6">
                                 <label for="inp_rol">ROL</label>
@@ -139,6 +147,9 @@
                                     <option value="0">Selecciona Rol</option>
                                     <option *ngFor="let r of listRoles" value="{{r.ID}}">{{r.NAME}}</option>
                                 </select>
+                            </div>
+                            <div class="col-md-6">
+                                <span *ngFor="let e of userForm.value.BUSINESS" class="badge bg-primary m-1">{{showName(e)}}</span>
                             </div>
                         </div>
                     </form>
