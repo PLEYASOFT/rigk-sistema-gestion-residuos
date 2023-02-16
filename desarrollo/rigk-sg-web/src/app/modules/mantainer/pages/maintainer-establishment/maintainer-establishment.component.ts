@@ -165,8 +165,8 @@ export class MaintainerEstablishmentComponent implements OnInit {
       next: resp => {
           if(resp.status ){
             Swal.fire({
-              title: "Empresa agregada",
-              text: "La empresa fue agregada exitosamente",
+              title: "Establecimiento agregado",
+              text: "El establecimiento fue agregado exitosamente",
               icon: "success",
             })
           }
@@ -175,7 +175,7 @@ export class MaintainerEstablishmentComponent implements OnInit {
     error: err => {
       Swal.fire({
         title: 'Error',
-        text: 'Error al agregar la empresa',
+        text: 'Error al agregar el establecimiento',
         icon: 'error'
       })
     }
