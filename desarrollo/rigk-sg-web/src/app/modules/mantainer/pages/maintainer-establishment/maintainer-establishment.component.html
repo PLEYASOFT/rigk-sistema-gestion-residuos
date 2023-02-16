@@ -61,8 +61,8 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="inp_region">Región</label>
-                                <select formControlName="REGION" id="inp_region" class="form-select">
-                                    <option value="0">Selecciona Región</option>
+                                <select formControlName="REGION" id="inp_region" class="form-select" required>
+                                    <option value="">Selecciona Región</option>
                                     <option *ngFor="let r of listRegiones">{{r}}</option>
                                 </select>
                             </div>
@@ -86,7 +86,7 @@
                                         <td>{{establishmentNames[x]}}</td>
                                         <td>{{establishmentRegions[x]}}</td>
                                         <td>
-                                            <button type="button" class="btn btn-danger btn-sm rounded-pill">
+                                            <button type="button" class="btn btn-danger btn-sm rounded-pill" (click)="deleteEstablishment(establishmentID[x])">
                                                 X
                                             </button>
                                         </td>

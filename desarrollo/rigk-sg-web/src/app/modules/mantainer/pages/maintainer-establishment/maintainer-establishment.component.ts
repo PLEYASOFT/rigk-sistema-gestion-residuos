@@ -43,6 +43,7 @@ export class MaintainerEstablishmentComponent implements OnInit {
   establishmentStatus: any = [];
   establishmentNames: string[] = [];
   establishmentRegions: string[] = [];
+  establishmentID: string[] = [];
 
   index: number = 0;
 
@@ -58,8 +59,6 @@ export class MaintainerEstablishmentComponent implements OnInit {
     private establishmentService: EstablishmentService,
     private fb: FormBuilder) {
   }
-
-    
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
@@ -126,19 +125,13 @@ export class MaintainerEstablishmentComponent implements OnInit {
           this.establishmentStatus = resp.status;
           this.establishmentNames = resp.status.map((e: any) => e.NAME_ESTABLISHMENT);
           this.establishmentRegions = resp.status.map((e: any) => e.REGION);
-          console.log(this.establishmentStatus);
-          console.log(this.establishmentNames);
-          console.log(this.establishmentRegions);
+          this.establishmentID = resp.status.map((e: any) => e.ID_ESTABLISHMENT);
         }
         else{
           this.establishmentStatus = [];
           this.establishmentNames = [];
           this.establishmentRegions = [];
-          console.log(resp)
-          console.log(id_business)
-          console.log(this.establishmentStatus);
-          console.log(this.establishmentNames);
-          console.log(this.establishmentRegions);
+          this.establishmentID = [];
         }
       },
       error: r => {
@@ -187,5 +180,42 @@ export class MaintainerEstablishmentComponent implements OnInit {
       })
     }
     });
+  }
+
+  deleteEstablishment(id_establishment:any) {
+    Swal.fire({
+      title: '¿Estás seguro que quieres eliminar el establecimiento??',
+      showDenyButton: true,
+      confirmButtonText: 'Confirmar',
+      denyButtonText: `Cancelar`,}).then((result) => {
+        if (result.isConfirmed) {
+          this.establishmentService.deleteEstablishment(id_establishment).subscribe({
+            next: resp => {
+              if (resp.status) {
+                Swal.fire({
+                  title: "Establecimiento Eliminado",
+                  text: "",
+                  icon: "error",
+                })
+                this.getEstablishment(this.index);
+              }
+              else {
+                Swal.fire({
+                  title: "Validar información",
+                  text: resp.msg,
+                  icon: "error",
+                });
+              }
+            },
+          error: err => {
+            Swal.fire({
+              title: 'Formato inválido',
+              text: '',
+              icon: 'error'
+            })
+          }
+          });
+        } 
+      })
   }
 }

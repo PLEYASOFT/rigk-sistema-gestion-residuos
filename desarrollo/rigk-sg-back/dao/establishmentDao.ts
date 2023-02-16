@@ -26,7 +26,7 @@ class EstablishmentDao {
 
     public async getEstablishment(ID: any) {
         const conn = mysqlcon.getConnection()!;
-        const establishment: any = await conn.query("SELECT establishment.NAME_ESTABLISHMENT, establishment.REGION, establishment_business.ID_BUSINESS FROM establishment_business INNER JOIN establishment ON establishment.ID = establishment_business.ID_ESTABLISHMENT WHERE establishment_business.ID_BUSINESS=?",[ID]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const establishment: any = await conn.query("SELECT establishment.NAME_ESTABLISHMENT, establishment.REGION, establishment_business.ID_BUSINESS,establishment_business.ID_ESTABLISHMENT FROM establishment_business INNER JOIN establishment ON establishment.ID = establishment_business.ID_ESTABLISHMENT WHERE establishment_business.ID_BUSINESS=?",[ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         if (establishment == null || establishment.length == 0) {
             return false;
         }
@@ -34,9 +34,10 @@ class EstablishmentDao {
         return establishment;
     }
 
-    public async deleteEstablishment(ID: string) {
+    public async deleteEstablishment(ID: any) {
         const conn = mysqlcon.getConnection()!;
-        const res: any = await conn.query("DELETE FROM establishment WHERE id = ?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
+        await conn.query("DELETE FROM establishment_business WHERE ID_ESTABLISHMENT = ?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const res: any = await conn.query("DELETE FROM establishment WHERE ID=?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         return res
     }
