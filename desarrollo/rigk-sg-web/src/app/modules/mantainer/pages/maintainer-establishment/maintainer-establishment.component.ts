@@ -36,14 +36,6 @@ export class MaintainerEstablishmentComponent implements OnInit {
   db: any[] = [];
   cant = 0;
 
-  id_business: any [] = [];
-  name_business: string [] = [];
-  loc_address: string [] = [];
-
-  id_establishment: any [] = [];
-  name_establishment: string [] = [];
-  region_establishment: string [] = [];
-
   establishmentStatus: any = [];
   establishmentNames: string[] = [];
   establishmentRegions: string[] = [];
@@ -58,8 +50,7 @@ export class MaintainerEstablishmentComponent implements OnInit {
     REGION: [0]
   })
 
-  constructor(private authService: AuthService,
-    private businesService: BusinessService,
+  constructor(private businesService: BusinessService,
     private establishmentService: EstablishmentService,
     private fb: FormBuilder) {
   }
@@ -67,55 +58,14 @@ export class MaintainerEstablishmentComponent implements OnInit {
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
     this.getAllBusiness();
-    this.getAllEstablishment();
   }
 
   getAllBusiness() {
-    this.id_business= [];
-    this.name_business= [];
-    this.loc_address= [];
     this.businesService.getAllBusiness().subscribe({
       next: resp => {
         this.listBusiness = resp.status;
         this.cant = Math.ceil(this.listBusiness.length / 5);
-        console.log(this.cant)
         this.db = this.listBusiness.slice(0, 5).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
-        console.log(this.db)
-
-        if (resp.status) {
-          for(let i = 0; i < resp.status.length; i++)
-          {
-            this.id_business.push(resp.status[i].ID) ;
-            this.name_business.push(resp.status[i].NAME) ;
-            this.loc_address.push(resp.status[i].LOC_ADDRESS) ;
-          }
-        }
-      },
-      error: r => {
-        Swal.close();
-        Swal.fire({
-          icon: 'error',
-          text: r.msg,
-          title: '¡Ups!'
-        });
-      }
-    });
-  }
-
-  getAllEstablishment() {
-    this.id_establishment= [];
-    this.name_establishment= [];
-    this.region_establishment= [];
-    this.establishmentService.getAllEstablishment().subscribe({
-      next: resp => {
-        if (resp.status) {
-          for(let i = 0; i < resp.status.length; i++)
-          {
-            this.id_establishment.push(resp.status[i].ID) ;
-            this.name_establishment.push(resp.status[i].NAME_ESTABLISHMENT) ;
-            this.region_establishment.push(resp.status[i].REGION) ;
-          }
-        }
       },
       error: r => {
         Swal.close();

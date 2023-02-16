@@ -43,19 +43,19 @@
                             </tr>
                         </thead>
                         <tbody >
-                            <tr class="text-end w-100" *ngFor="let r of name_business; let x = index">
-                                <td >{{code_business[x]}}</td>
-                                <td >{{name_business[x]}}</td>
-                                <td >{{rut[x]}}</td>
-                                <td >{{loc_address[x]}}</td>
-                                <td >{{phone[x]}}</td>
-                                <td >{{email[x]}}</td>
-                                <td >{{am_first_name[x]}}</td>
-                                <td >{{am_last_name[x]}}</td>
-                                <td >{{invoice_name[x]}}</td>
-                                <td >{{invoice_email[x]}}</td>
-                                <td >{{invoice_phone[x]}}</td>
-                                <td >{{giro[x]}}</td>
+                            <tr class="text-end w-100" *ngFor="let r of db; let x = index">
+                                <td >{{r.CODE_BUSINESS}}</td>
+                                <td >{{r.NAME}}</td>
+                                <td >{{r.VAT}}</td>
+                                <td >{{r.LOC_ADDRESS}}</td>
+                                <td >{{r.PHONE}}</td>
+                                <td >{{r.EMAIL}}</td>
+                                <td >{{r.AM_FIRST_NAME}}</td>
+                                <td >{{r.AM_LAST_NAME}}</td>
+                                <td >{{r.INVOICE_NAME}}</td>
+                                <td >{{r.INVOICE_EMAIL}}</td>
+                                <td >{{r.INVOICE_PHONE}}</td>
+                                <td >{{r.GIRO}}</td>
                                 <td > 
                                     <div class="btn-group">
                                         <button class="btn btn-success btn-sm" (click)="popupModify = !popupModify; id = id_business[x]; index = x; this.existingCode = this.code_business[x];">Modificar</button>
@@ -69,6 +69,17 @@
                             </tr>
                         </tbody>
                     </table>
+                    <nav aria-label="Navegación resultados">
+                        <ul class="pagination">
+                            <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
+                            <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
+                            <li *ngFor="let in of setArrayFromNumber(); let i = index"><button class="border btn btn-sm"
+                                    [ngClass]="{ 'btn-info':pos==(i+1), 'btn-primary': pos != (i+1)}"
+                                    (click)="pagTo(i)">{{i+1}}</button></li>
+                            <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
+                            <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
+                        </ul>
+                    </nav>
                     <!--<button class="btn btn-primary" (click)="popupVisible = !popupVisible">Agregar Empresa</button>-->
 
                         <div class="dark-background " *ngIf="popupVisible" >
