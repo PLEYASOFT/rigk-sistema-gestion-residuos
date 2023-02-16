@@ -68,7 +68,7 @@ export class MantainerUsersComponent implements OnInit {
   }
   loadUsers() {
     this.authService.getUsers.subscribe(r => {
-      console.log(r)
+    
       if (r.status) {
         this.listUser = r.data;
         this.cant = Math.ceil(this.listUser.length / 10);
