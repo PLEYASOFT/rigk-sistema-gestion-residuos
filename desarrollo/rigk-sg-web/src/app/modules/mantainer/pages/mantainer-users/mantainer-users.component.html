@@ -1,0 +1,154 @@
+<!-- inicio breadcrumbs -->
+<nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+        <li class="breadcrumb-item"><a href="#">Mantener Usuarios</a></li>
+    </ol>
+</nav>
+
+<h1>Usuarios</h1>
+
+<div class="buttonRight">
+
+    <!-- <button class="btn btn-primary" (click)="popupVisible = !popupVisible">Agregar Empresa</button> -->
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
+        (click)="isEdit=false; userForm.reset({ROL:0})">Agregar Usuario</button>
+</div>
+
+<div style="height: 50px;"></div>
+<div class="table-responsive mb-4">
+    <!-- inicio Consulta de Declaración -->
+    <section>
+        <div class="row w-100 ">
+            <!-- Columna 1 -->
+            <div id="table" #table1 class="w-100 ">
+                <div class="w-100">
+                    <!-- Tabla Desktop -->
+                    <table
+                        class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
+
+                        <thead>
+                            <tr class="text-center w-100">
+                                <th>NOMBRE</th>
+                                <th>ROL</th>
+                                <th>TELÉFONO</th>
+                                <th>E-MAIL</th>
+                                <th>TÉLEFONO OFICINA</th>
+                                <th>CARGO</th>
+                                <th>EMPRESAS</th>
+                                <th>OPCIONES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text-end w-100" *ngFor="let r of db; let x = index">
+                                <td>{{r.FIRST_NAME}} {{r.LAST_NAME}}</td>
+                                <td>{{r.ROL_NAME}}</td>
+                                <td>{{r.PHONE}}</td>
+                                <td>{{r.EMAIL}}</td>
+                                <td>{{r.PHONE_OFFICE}}</td>
+                                <td>{{r.POSITION}}</td>
+                                <td>{{r.BUSINESS.length > 1 ? 'Multiple Empresas': r.BUSINESS[0]?.NAME||'No Asignado'}}
+                                </td>
+                                <td>
+                                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                        (click)="selectUser(r.ID)">Modificar</button>
+                                    <button class="btn btn-danger" (click)="deleteUser(r.ID)">Eliminar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- Pagination -->
+                    <nav aria-label="Navegación resultados">
+                        <ul class="pagination">
+                            <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
+                            <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
+                            <li *ngFor="let in of setArrayFromNumber(); let i = index"><button class="border btn btn-sm"
+                                    [ngClass]="{ 'btn-info':pos==(i+1), 'btn-primary': pos != (i+1)}"
+                                    (click)="pagTo(i)">{{i+1}}</button></li>
+                            <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
+                            <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- fin Consulta de Declaración -->
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Formulario Usuario</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <form [formGroup]="userForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="inp_nom">NOMBRE:</label>
+                                <input type="text" formControlName="FIRST_NAME" id="inp_nom" placeholder="Nombre"
+                                    class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inp_ap">APELLIDOS:</label>
+                                <input type="text" formControlName="LAST_NAME" id="inp_ap" placeholder="Apellidos"
+                                    class="form-control">
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <label for="inp_tel">TELÉFONO</label>
+                                <input type="text" formControlName="PHONE" class="form-control" id="inp_tel"
+                                    placeholder="912345678">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inp_email">E-mail</label>
+                                <input type="text" formControlName="EMAIL" (change)="verifyEmail()" id="inp_email" class="form-control"
+                                    placeholder="cto@correo.com">
+                                    <p class="text-danger" *ngIf="verifyEmail2(userForm.controls.EMAIL.errors)">El correo ya existe registrado.</p>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <hr>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inp_tel">TELÉFONO OFICINA</label>
+                                <input type="text" formControlName="PHONE_OFFICE" class="form-control" id="inp_tel"
+                                    placeholder="912345678">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inp_email">CARGO</label>
+                                <input type="text" formControlName="POSITION" id="inp_email" class="form-control"
+                                    placeholder="Gerente">
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <label for="">Empresas</label> <br>
+                                <p-multiSelect [options]="business" formControlName="BUSINESS" optionLabel="view_name"
+                                    optionValue="ID" defaultLabel="Seleccione Empresas"
+                                    [selectedItemsLabel]="'{0} items selected'"></p-multiSelect>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inp_rol">ROL</label>
+                                <select formControlName="ROL" id="inp_rol" class="form-select">
+                                    <option value="0">Selecciona Rol</option>
+                                    <option *ngFor="let r of listRoles" value="{{r.ID}}">{{r.NAME}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCloseModal" class="btn btn-secondary"
+                    data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="saveForm()" [disabled]="userForm.invalid">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
