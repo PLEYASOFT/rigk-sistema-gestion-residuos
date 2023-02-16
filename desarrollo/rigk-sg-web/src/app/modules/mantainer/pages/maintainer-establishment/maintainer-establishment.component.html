@@ -30,7 +30,7 @@
                                 <td >{{loc_address[x]}}</td>
                                 <td > 
                                     <div class="btn-group">
-                                        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                        <button class="btn btn-success btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="this.getEstablishment(id_business[x]); index =id_business[x];"
                                         >Establecimientos</button>
                                     </div>
                                 </td>
@@ -55,24 +55,47 @@
                     <form [formGroup]="userForm">
                         <div class="row">
                             <div class="col-md-6">
-                                <label for="inp_nom">Establecimiento:</label>
-                                <input type="text" formControlName="FIRST_NAME" id="inp_nom" placeholder="Establecimiento"
+                                <label for="inp_nom">NOMBRE:</label>
+                                <input type="text" formControlName="FIRST_NAME" id="inp_nom" placeholder="Nombre"
                                     class="form-control">
                             </div>
                             <div class="col-md-6">
-                                <label for="">Region</label> <br>
-                                <p-multiSelect [options]="business" formControlName="BUSINESS" optionLabel="view_name"
-                                    optionValue="ID" defaultLabel="Seleccione Región"
-                                    [selectedItemsLabel]="'{0} items selected'"></p-multiSelect>
+                                <label for="inp_region">Región</label>
+                                <select formControlName="REGION" id="inp_region" class="form-select">
+                                    <option value="0">Selecciona Región</option>
+                                    <option *ngFor="let r of listRegiones">{{r}}</option>
+                                </select>
                             </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" (click)="addEstablishment( this.index ); ">Guardar</button>
+                        </div>
+                        <div style="visibility: hidden;">a</div>
+                        <div style="visibility: hidden;">a</div>
+                        <div *ngIf="this.establishmentStatus && this.establishmentStatus.length > 0">
+                            <table class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
+                                <thead>
+                                    <tr class="text-center w-100">
+                                        <th>Establecimiento</th>
+                                        <th>Región</th>
+                                        <th>Eliminar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="text-center w-100" *ngFor="let r of establishmentStatus; let x = index">
+                                        <td>{{establishmentNames[x]}}</td>
+                                        <td>{{establishmentRegions[x]}}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-sm rounded-pill">
+                                                X
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </form>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" id="btnCloseModal" class="btn btn-secondary"
-                    data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" (click)="saveForm()">Guardar</button>
             </div>
         </div>
     </div>

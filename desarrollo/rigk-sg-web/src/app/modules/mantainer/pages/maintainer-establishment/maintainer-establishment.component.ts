@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { BusinessService } from 'src/app/core/services/business.service';
 import Swal from 'sweetalert2';
-import {  validate, clean, format, getCheckDigit } from 'rut.js'
 import { AuthService } from 'src/app/core/services/auth.service';
+import { EstablishmentService } from 'src/app/core/services/establishment.service';
 
 @Component({
   selector: 'app-maintainer-establishment',
@@ -12,44 +12,51 @@ import { AuthService } from 'src/app/core/services/auth.service';
 })
 export class MaintainerEstablishmentComponent implements OnInit {
 
-  business: any[];
-  selectedBusiness!: any[];
-  listUser: any[] = [];
-  listRoles: any[] = [];
-  isEdit = false;
+  listRegiones: any[] = [
+    'Región de Arica y Parinacota',
+    'Región de Tarapacá',
+    'Región de Antofagasta',
+    'Región de Atacama',
+    'Región de Coquimbo',
+    'Región de Valparaíso',
+    'Región Metropolitana',
+    'Región de O’Higgins',
+    'Región del Maule',
+    'Región del Ñuble',
+    'Región del Biobío',
+    'Región de La Araucanía',
+    'Región de Los Ríos',
+    'Región de Los Lagos',
+    'Región de Aysén',
+    'Región de Magallanes'
+  ];
+  
 
- 
-  id = '';
-  index = 0;
   id_business: any [] = [];
   name_business: string [] = [];
   loc_address: string [] = [];
 
+  id_establishment: any [] = [];
+  name_establishment: string [] = [];
+  region_establishment: string [] = [];
+
+  establishmentStatus: any = [];
+  establishmentNames: string[] = [];
+  establishmentRegions: string[] = [];
+
+  index: number = 0;
+
   userData: any | null;
 
   userForm = this.fb.group({
-    ID: [],
     FIRST_NAME: [],
-    LAST_NAME: [],
-    EMAIL: [],
-    ROL: [0],
-    PASSWORD: [],
-    PHONE: [],
-    PHONE_OFFICE: [],
-    POSITION: [],
-    BUSINESS: []
+    REGION: [0]
   })
 
   constructor(private authService: AuthService,
     private businesService: BusinessService,
+    private establishmentService: EstablishmentService,
     private fb: FormBuilder) {
-    this.business = [
-      { name: 'New York', code: 'NY' },
-      { name: 'Rome', code: 'RM' },
-      { name: 'London', code: 'LDN' },
-      { name: 'Istanbul', code: 'IST' },
-      { name: 'Paris', code: 'PRS' }
-    ];
   }
 
     
@@ -57,6 +64,7 @@ export class MaintainerEstablishmentComponent implements OnInit {
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
     this.getAllBusiness();
+    this.getAllEstablishment();
   }
 
   getAllBusiness() {
@@ -85,118 +93,99 @@ export class MaintainerEstablishmentComponent implements OnInit {
     });
   }
 
-  loadBusiness() {
-    this.businesService.getAllBusiness().subscribe(r => {
-      console.log(r)
-      if (r.status) {
-        this.business = r.status;
-        this.business.map(r => {
-          r.view_name = `${r.CODE_BUSINESS} | ${r.NAME}`
-        })
-      }
-    })
-  }
-
-  loadRoles() {
-    this.authService.getRoles.subscribe(r => {
-      if (r.status) {
-        this.listRoles = r.data;
-      }
-    })
-  }
-  loadUsers() {
-    this.authService.getUsers.subscribe(r => {
-      if (r.status) {
-        this.listUser = r.data;
-        this.cant = Math.ceil(this.listUser.length / 10);
-        this.db = this.listUser.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
-      }
-    })
-  }
-
-  selectUser(id: number) {
-    this.isEdit = true;
-    const user = this.listUser.find(r => r.ID == id);
-    this.userForm.controls['ID'].setValue(user.ID);
-    this.userForm.controls['FIRST_NAME'].setValue(user.FIRST_NAME);
-    this.userForm.controls['LAST_NAME'].setValue(user.LAST_NAME);
-    this.userForm.controls['EMAIL'].setValue(user.EMAIL);
-    this.userForm.controls['PHONE'].setValue(user.PHONE);
-    this.userForm.controls['PHONE_OFFICE'].setValue(user.PHONE_OFFICE);
-    this.userForm.controls['POSITION'].setValue(user.POSITION);
-    this.userForm.controls['ROL'].setValue(user.ID_ROL);
-    const tmp = user.BUSINESS?.map((r: any) => r.ID_BUSINESS);
-    this.userForm.controls['BUSINESS'].setValue(tmp);
-  }
-
-  deleteUser(id: number) {
-    const user = this.listUser.find(r => r.ID == id);
-    Swal.fire({
-      icon: 'question',
-      text: `Estas seguro de eliminar al usuario ${user.FIRST_NAME} ${user.LAST_NAME}`,
-      showCancelButton: true,
-      showConfirmButton: true,
-      confirmButtonText: 'Si',
-      cancelButtonText: 'No'
-    }).then(btn => {
-      if (btn.isConfirmed) {
-        this.authService.deleteUser(user.ID).subscribe(r => {
-          if (r.status) {
-            Swal.fire({
-              icon: 'success',
-              text: r.msg
-            })
-            this.loadUsers();
+  getAllEstablishment() {
+    this.id_establishment= [];
+    this.name_establishment= [];
+    this.region_establishment= [];
+    this.establishmentService.getAllEstablishment().subscribe({
+      next: resp => {
+        if (resp.status) {
+          for(let i = 0; i < resp.status.length; i++)
+          {
+            this.id_establishment.push(resp.status[i].ID) ;
+            this.name_establishment.push(resp.status[i].NAME_ESTABLISHMENT) ;
+            this.region_establishment.push(resp.status[i].REGION) ;
           }
-        })
+        }
+      },
+      error: r => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          text: r.msg,
+          title: '¡Ups!'
+        });
       }
-    })
+    });
   }
 
-  saveForm() {
+  getEstablishment(id_business:any) {
+    this.establishmentService.getEstablishment(id_business).subscribe({
+      next: resp => {
+        if (resp.status) {
+          this.establishmentStatus = resp.status;
+          this.establishmentNames = resp.status.map((e: any) => e.NAME_ESTABLISHMENT);
+          this.establishmentRegions = resp.status.map((e: any) => e.REGION);
+          console.log(this.establishmentStatus);
+          console.log(this.establishmentNames);
+          console.log(this.establishmentRegions);
+        }
+        else{
+          this.establishmentStatus = [];
+          this.establishmentNames = [];
+          this.establishmentRegions = [];
+          console.log(resp)
+          console.log(id_business)
+          console.log(this.establishmentStatus);
+          console.log(this.establishmentNames);
+          console.log(this.establishmentRegions);
+        }
+      },
+      error: r => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          text: r.msg,
+          title: '¡Ups!'
+        });
+      }
+    });
+  }
 
-    if (this.isEdit) {
-      this.authService.updateUser(this.userForm.value).subscribe(r => {
-        if (r.status) {
-          document.getElementById('btnCloseModal')?.click();
-          Swal.fire({
-            icon: 'success',
-            text: r.msg
-          })
-          this.loadUsers();
-        }
+  addEstablishment(id_business:any) {
+    
+    const { FIRST_NAME, REGION} = this.userForm.value;
+    if (!FIRST_NAME || !REGION) {
+      Swal.fire({
+        title: "Validar información",
+        text: 'Debe completar todos los campos',
+        icon: "error",
       });
-    } else {
-      this.authService.registerUser(this.userForm.value).subscribe(r => {
-        if (r.status) {
-          document.getElementById('btnCloseModal')?.click();
-          Swal.fire({
-            icon: 'success',
-            text: r.msg
-          });
-          this.loadUsers();
-        }
-      });
+      return;
     }
-  }
-  pos = 1;
-  db: any[] = [];
-  cant = 0;
-  pagTo(i: number) {
-    this.pos = i + 1;
-    this.db = this.listUser.slice((i * 10), (i + 1) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
-  }
-  next() {
-    if (this.pos >= this.cant) return;
-    this.pos++;
-    this.db = this.listUser.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
-  }
-  previus() {
-    if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
-    this.pos = this.pos - 1;
-    this.db = this.listUser.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
-  }
-  setArrayFromNumber() {
-    return new Array(this.cant);
+    
+    this.establishmentNames[id_business - 1] = FIRST_NAME;
+    this.establishmentRegions[id_business - 1] = REGION.toString();
+    this.establishmentStatus.push(id_business);
+
+    this.establishmentService.addEstablishment(FIRST_NAME,REGION,id_business).subscribe({
+      next: resp => {
+          if(resp.status ){
+            Swal.fire({
+              title: "Empresa agregada",
+              text: "La empresa fue agregada exitosamente",
+              icon: "success",
+            })
+          }
+          this.getEstablishment(id_business);
+      },
+    error: err => {
+      Swal.fire({
+        title: 'Error',
+        text: 'Error al agregar la empresa',
+        icon: 'error'
+      })
+    }
+    });
   }
 }
