@@ -123,7 +123,7 @@ export class MantainerUsersComponent implements OnInit {
     const user = this.listUser.find(r => r.ID == id);
     Swal.fire({
       icon: 'question',
-      text: `Estas seguro de eliminar al usuario ${user.FIRST_NAME} ${user.LAST_NAME}`,
+      text: `¿Estás seguro de eliminar al usuario ${user.FIRST_NAME} ${user.LAST_NAME}?`,
       showCancelButton: true,
       showConfirmButton: true,
       confirmButtonText: 'Si',
