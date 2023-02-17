@@ -11,6 +11,8 @@ import { BusinessService } from '../../../../core/services/business.service';
 })
 export class MantainerUsersComponent implements OnInit {
 
+  emailPattern = "^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$";
+
   business: any[] = [];
   selectedBusiness!: any[];
   listUser: any[] = [];
@@ -21,7 +23,7 @@ export class MantainerUsersComponent implements OnInit {
     ID: [],
     FIRST_NAME: ['', [Validators.required]],
     LAST_NAME: ['', [Validators.required]],
-    EMAIL: ['', [Validators.required, Validators.email]],
+    EMAIL: ['', [Validators.required, Validators.email, Validators.pattern(this.emailPattern)]],
     ROL: [0, [Validators.required, Validators.min(1)]],
     PHONE: ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]],
     PHONE_OFFICE: ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]],
@@ -49,7 +51,6 @@ export class MantainerUsersComponent implements OnInit {
 
   loadBusiness() {
     this.businesService.getAllBusiness().subscribe(r => {
-      console.log(r)
       if (r.status) {
         this.business = r.status;
         this.business.map(r => {
@@ -57,6 +58,20 @@ export class MantainerUsersComponent implements OnInit {
         })
       }
     })
+  }
+
+  filter(target: any) {
+    const value = target.value?.toLowerCase();
+    this.pos = 1;
+    if(target.value != ''){
+      this.cant = 1;
+      this.db = this.listUser.filter(r=>{
+        if(r.FIRST_NAME?.toLowerCase() == value || r.LAST_NAME?.toLowerCase() == value || r.PHONE?.toLowerCase() == value || r.ROL_NAME?.toLowerCase() == value || r.EMAIL?.toLowerCase() ==value || r.PHONE_OFFICE?.toLowerCase() == value || r.POSITION?.toLowerCase() == value) return r;
+      });
+      return;
+    }
+    this.db = this.listUser.slice(0,10);
+    this.cant = Math.ceil(this.listUser.length / 10);    
   }
 
   loadRoles() {
@@ -68,7 +83,6 @@ export class MantainerUsersComponent implements OnInit {
   }
   loadUsers() {
     this.authService.getUsers.subscribe(r => {
-    
       if (r.status) {
         this.listUser = r.data;
         this.cant = Math.ceil(this.listUser.length / 10);
@@ -76,6 +90,18 @@ export class MantainerUsersComponent implements OnInit {
         Swal.close();
       }
     })
+  }
+
+  showBusiness(e:any[]) {
+    let tmp:any = [];
+    e.forEach(b => {
+      tmp.push(b.NAME)
+    });
+    return tmp.join(', ');
+  }
+  showName(id: any){
+    const b = this.business.find(r=>r.ID == id);
+    return `${b.CODE_BUSINESS} | ${b.NAME}`
   }
 
   selectUser(id: number) {
