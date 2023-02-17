@@ -1,0 +1,114 @@
+<!-- inicio breadcrumbs -->
+<nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+        <li class="breadcrumb-item"><a href="#">Mantenedor Establecimientos</a></li>
+    </ol>
+</nav>
+
+<h1>Establecimientos</h1>
+<div class="table-responsive mb-4" >
+    <!-- inicio Consulta de Declaración -->
+    <section >
+        <div class="row w-100 " >
+            <!-- Columna 1 -->
+            <div id = "table" #table1 class="w-100 " >
+                 <div class="w-100">
+                    <!-- Tabla Desktop -->
+                    <table class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table" >
+                        
+                        <thead>
+                            <tr class="text-center w-100" >
+                                <th >NOMBRE</th>
+                                <th >DIRECCIÓN</th>
+                                <th >Establecimientos</th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <tr class="text-center w-100" *ngFor="let r of db; let x = index">
+                                <td >{{r.NAME}}</td>
+                                <td >{{r.LOC_ADDRESS}}</td>
+                                <td > 
+                                    <div class="btn-group">
+                                        <button class="btn btn-success btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="this.getEstablishment(listBusiness[x].ID); index =listBusiness[x].ID;"
+                                        >Establecimientos</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- Pagination -->
+                    <nav aria-label="Navegación resultados">
+                        <ul class="pagination">
+                            <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
+                            <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
+                            <li *ngFor="let in of setArrayFromNumber(); let i = index"><button class="border btn btn-sm"
+                                    [ngClass]="{ 'btn-info':pos==(i+1), 'btn-primary': pos != (i+1)}"
+                                    (click)="pagTo(i)">{{i+1}}</button></li>
+                            <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
+                            <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Formulario Usuario</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <form [formGroup]="userForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="inp_nom">NOMBRE:</label>
+                                <input type="text" formControlName="FIRST_NAME" id="inp_nom" placeholder="Nombre"
+                                    class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inp_region">Región</label>
+                                <select formControlName="REGION" id="inp_region" class="form-select" required>
+                                    <option value="">Selecciona Región</option>
+                                    <option *ngFor="let r of listRegiones">{{r}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" (click)="addEstablishment( this.index ); ">Guardar</button>
+                        </div>
+                        <div style="visibility: hidden;">a</div>
+                        <div style="visibility: hidden;">a</div>
+                        <div *ngIf="this.establishmentStatus && this.establishmentStatus.length > 0">
+                            <table class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
+                                <thead>
+                                    <tr class="text-center w-100">
+                                        <th>Establecimiento</th>
+                                        <th>Región</th>
+                                        <th>Eliminar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="text-center w-100" *ngFor="let r of establishmentStatus; let x = index">
+                                        <td>{{establishmentNames[x]}}</td>
+                                        <td>{{establishmentRegions[x]}}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-sm rounded-pill" (click)="deleteEstablishment(establishmentID[x])">
+                                                X
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
