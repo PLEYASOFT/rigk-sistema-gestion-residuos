@@ -8,6 +8,7 @@ import { MaintainerBusinessComponent } from './pages/maintainer-business/maintai
 import { ProfileComponent } from './pages/profile/profile.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MantainerUsersComponent } from './pages/mantainer-users/mantainer-users.component';
+import { MaintainerEstablishmentComponent } from './pages/maintainer-establishment/maintainer-establishment.component';
 
 import {MultiSelectModule} from 'primeng/multiselect';
 
@@ -17,6 +18,7 @@ import {MultiSelectModule} from 'primeng/multiselect';
     HomeComponent,
     MaintainerBusinessComponent,
     ProfileComponent,
+    MaintainerEstablishmentComponent,
     MantainerUsersComponent
   ],
   imports: [
