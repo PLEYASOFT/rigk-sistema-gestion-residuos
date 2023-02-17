@@ -13,6 +13,9 @@ export class MantainerUsersComponent implements OnInit {
 
   emailPattern = "^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$";
 
+
+  showErrorEmail = false;
+
   business: any[] = [];
   selectedBusiness!: any[];
   listUser: any[] = [];
@@ -147,9 +150,13 @@ export class MantainerUsersComponent implements OnInit {
   verifyEmail() {
     const email = this.userForm.value.EMAIL;
     const user = this.listUser.find(r => r.EMAIL == email);
-    if (!user || user.ID == this.userForm.value.ID) return false;
+    if (!user || user.ID == this.userForm.value.ID){
+      this.showErrorEmail= true;
+      return false
+    };
 
     this.userForm.controls['EMAIL'].setErrors({ notUnique: true });
+    this.showErrorEmail = false;
     return false;
   }
 
