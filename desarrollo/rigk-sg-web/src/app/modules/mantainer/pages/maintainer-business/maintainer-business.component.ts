@@ -227,7 +227,13 @@ export class MaintainerBusinessComponent implements OnInit {
 
   verifyCode = (control: FormControl) => {
     const code_business = control.value;
-    if (this.code_business.includes(code_business) && code_business !== this.existingCode) {
+    
+    if (!code_business) {
+      return null;
+    }
+    const lowerCaseCodes = this.code_business.map(code => code.toLowerCase()); 
+    if (lowerCaseCodes.includes(code_business.toLowerCase())  && 
+    ( code_business.toLowerCase() !== this.existingCode.toLowerCase())) {
       return { code_business: true };  // el código se encuentra en el arreglo, hay errores
     } else {
       return null;  // el código NO se encuentra en el arreglo, no hay error

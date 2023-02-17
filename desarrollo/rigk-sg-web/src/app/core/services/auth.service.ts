@@ -31,6 +31,19 @@ export class AuthService {
   modifyPassword(repeatPassword: string, newPassword: string, actual: string) {
     return this.http.post<any>(`${this.url}/modifyPassword`, { newPassword, actual, repeatPassword });
   }
-
-  
+  get getUsers() {
+    return this.http.get<any>(`${this.url}/`);
+  }
+  get getRoles(){
+    return this.http.get<any>(`${this.url}/roles`);
+  }
+  deleteUser(id:any) {
+    return this.http.delete<any>(`${this.url}/${id}`);
+  }
+  registerUser(data:any) {
+    return this.http.post<any>(`${this.url}/register`, data);
+  }
+  updateUser(data:any) {
+    return this.http.put<any>(`${this.url}/`, data);
+  } 
 }

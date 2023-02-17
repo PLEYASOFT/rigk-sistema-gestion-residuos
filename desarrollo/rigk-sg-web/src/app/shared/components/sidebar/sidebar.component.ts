@@ -33,7 +33,8 @@ export class SidebarComponent implements OnInit {
   menuAdmin = [
     { title: "Inicio", path: "#/mantenedor/home", icon: "fa-home" },
     { title: "Mi Perfil", path: "#/mantenedor/profile", icon: "fa-user" },
-    { title: "Mantener Empresas", path: "#/mantenedor/business", icon: "fa-file-text" }
+    { title: "Mantenedor Empresas", path: "#/mantenedor/business", icon: "fa-file-text" },
+    { title: "Mantenedor Usuarios", path: "#/mantenedor/users", icon: "fa-users" },
 
   ];
 
