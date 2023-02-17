@@ -114,7 +114,7 @@
                                 <label for="inp_email">E-mail</label>
                                 <input type="text" formControlName="EMAIL" (change)="verifyEmail()" id="inp_email" class="form-control"
                                     placeholder="cto@correo.com">
-                                    <p class="text-danger" *ngIf="verifyEmail2(userForm.controls.EMAIL.errors)">El correo ya existe registrado.</p>
+                                    <p class="text-danger" *ngIf="verifyEmail2(userForm.controls.EMAIL.errors)">El correo ya se encuentra registrado.</p>
                             </div>
                         </div>
                         <div class="row mt-4">
