@@ -11,6 +11,11 @@ import {  validate, clean, format, getCheckDigit } from 'rut.js'
 })
 export class MaintainerBusinessComponent implements OnInit {
 
+  listBusiness: any [] = [];
+  pos = 1;
+  db: any[] = [];
+  cant = 0;
+
   formData: any;
   existingCode:any = '';
   popupVisible = false;
@@ -72,7 +77,11 @@ export class MaintainerBusinessComponent implements OnInit {
     this.giro= [];
     this.businessService.getAllBusiness().subscribe({
       next: resp => {
+        this.listBusiness = resp.status;
+        this.cant = Math.ceil(this.listBusiness.length / 5);
+        this.db = this.listBusiness.slice(0, 5).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
         if (resp.status) {
+
           for(let i = 0; i < resp.status.length; i++)
           {
             this.id_business.push(resp.status[i].ID) ;
@@ -158,6 +167,7 @@ export class MaintainerBusinessComponent implements OnInit {
                   icon: "error",
                 })
                 this.getAllBusiness();
+                this.pagTo(0);
               }
               else {
                 Swal.fire({
@@ -227,10 +237,34 @@ export class MaintainerBusinessComponent implements OnInit {
 
   verifyCode = (control: FormControl) => {
     const code_business = control.value;
-    if (this.code_business.includes(code_business) && code_business !== this.existingCode) {
+    
+    if (!code_business) {
+      return null;
+    }
+    const lowerCaseCodes = this.code_business.map(code => code.toLowerCase()); 
+    if (lowerCaseCodes.includes(code_business.toLowerCase())  && 
+    ( code_business.toLowerCase() !== this.existingCode.toLowerCase())) {
       return { code_business: true };  // el código se encuentra en el arreglo, hay errores
     } else {
       return null;  // el código NO se encuentra en el arreglo, no hay error
     }
   };
+
+  pagTo(i: number) {
+    this.pos = i + 1;
+    this.db = this.listBusiness.slice((i * 5), (i + 1) * 5).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+  }
+  next() {
+    if (this.pos >= this.cant) return;
+    this.pos++;
+    this.db = this.listBusiness.slice((this.pos - 1) * 5, (this.pos) * 5).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+  }
+  previus() {
+    if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
+    this.pos = this.pos - 1;
+    this.db = this.listBusiness.slice((this.pos - 1) * 5, (this.pos) * 5).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+  }
+  setArrayFromNumber() {
+    return new Array(this.cant);
+  }
 }
