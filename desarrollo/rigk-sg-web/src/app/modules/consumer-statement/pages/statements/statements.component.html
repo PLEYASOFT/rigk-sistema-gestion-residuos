@@ -68,7 +68,6 @@
                       <td>{{s.CREATED_AT | date: 'dd-MM-yyyy H:m:ss'}}</td>
                       <td>
                         <span [ngClass]="s.semaforo ? 'circle green-circle' : 'circle red-circle'"></span>
-                        {{s.semaforo}}
                       </td>
                       <td>
                         <a [href]="'#/consumidor/form?id='+s.ID_HEADER"><i class="fa fa-eye fa-lg fa-fw color-verde" aria-hidden="true"></i></a>
