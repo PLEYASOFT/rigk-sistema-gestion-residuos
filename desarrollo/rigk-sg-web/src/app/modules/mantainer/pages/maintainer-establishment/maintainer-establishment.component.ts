@@ -48,6 +48,8 @@ export class MaintainerEstablishmentComponent implements OnInit {
   REGION: any = "";
   userForm: any;
 
+  direction = 'asc';
+  directionEstablishment = 'asc';
   constructor(private businesService: BusinessService,
     private establishmentService: EstablishmentService,
     private fb: FormBuilder) {
@@ -204,17 +206,17 @@ export class MaintainerEstablishmentComponent implements OnInit {
 
   pagTo2(i: number) {
     this.pos2 = i + 1;
-    this.db2 = this.establishmentStatus.slice((i * 10), (i + 1) * 10).sort((a: { ID_ESTABLISHMENT: number; }, b: { ID_ESTABLISHMENT: number; }) => b.ID_ESTABLISHMENT - a.ID_ESTABLISHMENT);
+    this.db2 = this.establishmentStatus.slice((i * 10), (i + 1) * 10).sort((a: { ID_ESTABLISHMENT: number; }, b: { ID_ESTABLISHMENT: number; }) => a.ID_ESTABLISHMENT - b.ID_ESTABLISHMENT);
   }
   next2() {
     if (this.pos2 >= this.cant) return;
     this.pos2++;
-    this.db2 = this.establishmentStatus.slice((this.pos2 - 1) * 10, (this.pos2) * 10).sort((a: { ID_ESTABLISHMENT: number; }, b: { ID_ESTABLISHMENT: number; }) => b.ID_ESTABLISHMENT - a.ID_ESTABLISHMENT);
+    this.db2 = this.establishmentStatus.slice((this.pos2 - 1) * 10, (this.pos2) * 10).sort((a: { ID_ESTABLISHMENT: number; }, b: { ID_ESTABLISHMENT: number; }) => a.ID_ESTABLISHMENT - b.ID_ESTABLISHMENT);
   }
   previus2() {
     if (this.pos2 - 1 <= 0 || this.pos2 >= this.cant + 1) return;
     this.pos2 = this.pos2 - 1;
-    this.db2 = this.establishmentStatus.slice((this.pos2 - 1) * 10, (this.pos2) * 10).sort((a: { ID_ESTABLISHMENT: number; }, b: { ID_ESTABLISHMENT: number; }) => b.ID_ESTABLISHMENT - a.ID_ESTABLISHMENT);
+    this.db2 = this.establishmentStatus.slice((this.pos2 - 1) * 10, (this.pos2) * 10).sort((a: { ID_ESTABLISHMENT: number; }, b: { ID_ESTABLISHMENT: number; }) => a.ID_ESTABLISHMENT - b.ID_ESTABLISHMENT);
   }
   setArrayFromNumber2() {
     return new Array(this.cant2);
@@ -241,5 +243,19 @@ export class MaintainerEstablishmentComponent implements OnInit {
     } else {
       return true;  // el código NO se encuentra en el arreglo, no hay error
     }
+  }
+
+  toggleDirection() {
+    this.direction = this.direction === 'asc' ? 'desc' : 'asc';
+    this.listBusiness.reverse();
+    this.cant = Math.ceil(this.listBusiness.length / 10);
+    this.db = this.listBusiness.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+  }
+
+  toggleDirectionEstablishments() {
+    this.directionEstablishment = this.directionEstablishment === 'asc' ? 'desc' : 'asc';
+    this.establishmentStatus.reverse();
+    this.cant2 = Math.ceil(this.establishmentStatus.length / 10);
+    this.db2 = this.establishmentStatus.slice(0, 10).reverse();
   }
 }

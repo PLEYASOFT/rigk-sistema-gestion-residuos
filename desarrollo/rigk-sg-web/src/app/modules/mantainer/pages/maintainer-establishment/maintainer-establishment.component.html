@@ -20,10 +20,10 @@
 
                         <thead>
                             <tr class="text-center w-100">
-                                <th>CÓDIGO EMPRESA</th>
-                                <th>NOMBRE</th>
-                                <th>DIRECCIÓN</th>
-                                <th>ESTABLECIMIENTOS</th>
+                                <th (click)="toggleDirection()">CÓDIGO EMPRESA <span [class]="direction === 'asc' ? 'arrow-up' : 'arrow-down'"></span></th>
+                                <th>NOMBRE </th>
+                                <th>DIRECCIÓN </th>
+                                <th>ESTABLECIMIENTOS </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -83,7 +83,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label for="inp_region">Región</label>
+                                <label for="inp_region">REGIÓN</label>
                                 <select formControlName="REGION" id="inp_region" class="form-select" required>
                                     <option value="">Selecciona Región</option>
                                     <option *ngFor="let r of listRegiones">{{r}}</option>
@@ -108,7 +108,7 @@
                                 class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
                                 <thead>
                                     <tr class="text-center w-100">
-                                        <th>Establecimiento</th>
+                                        <th  (click)="toggleDirectionEstablishments()">Establecimiento <span [class]="directionEstablishment === 'asc' ? 'arrow-up' : 'arrow-down'"></span></th>
                                         <th>Región</th>
                                         <th>Eliminar</th>
                                     </tr>
