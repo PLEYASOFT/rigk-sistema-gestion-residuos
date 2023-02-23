@@ -41,6 +41,31 @@ class EstablishmentDao {
         conn.end();
         return res
     }
+
+    public async getDeclarationEstablishment() {
+        const conn = mysqlcon.getConnection()!;
+        const data: any = await conn.execute(`SELECT establishment.NAME_ESTABLISHMENT, header_industrial_consumer_form.CREATED_AT, header_industrial_consumer_form.YEAR_STATEMENT,
+                                                header_industrial_consumer_form.ID AS ID_HEADER, business.NAME as NAME_BUSINESS FROM header_industrial_consumer_form
+                                                INNER JOIN establishment ON establishment.ID = header_industrial_consumer_form.ID_ESTABLISHMENT
+                                                INNER JOIN establishment_business ON establishment_business.ID_ESTABLISHMENT = establishment.ID
+                                                INNER JOIN business ON business.ID = establishment_business.ID_BUSINESS`).then(res => res[0]).catch(erro => undefined);
+                                          
+        for (let i = 0; i < data.length; i++) {
+            const element = data[i];
+                                    
+            const detail = await conn.execute("SELECT VALUE FROM detail_industrial_consumer_form WHERE ID_HEADER=? AND ID not IN (SELECT ID_DETAIL FROM attached_industrial_consumer_form)", [element.ID_HEADER]);
+                                    
+            if(detail.length>0) {
+                // pintar en rojo
+                element.semaforo=false;
+            } else {
+                // pintar en verde
+            element.semaforo = true;
+            }
+        }
+        conn.end();
+        return data
+    }
 }
 
 const establishmentDao = new EstablishmentDao();
