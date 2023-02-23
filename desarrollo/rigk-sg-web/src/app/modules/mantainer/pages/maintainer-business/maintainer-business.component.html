@@ -58,7 +58,7 @@
                                 <td >{{r.GIRO}}</td>
                                 <td > 
                                     <div class="btn-group">
-                                        <button class="btn btn-success btn-sm" (click)="popupModify = !popupModify; id = r.ID; index = this.pos > 1 ? x + (5 * this.pos-5) : x * this.pos; this.existingCode = r.CODE_BUSINESS;">Modificar</button>
+                                        <button class="btn btn-success btn-sm" (click)="popupModify = !popupModify; id = r.ID; index = this.pos > 1 ? x + (10 * (this.pos-1)) : x * this.pos; this.existingCode = r.CODE_BUSINESS;">Modificar</button>
                                     </div>
                                 </td>
                                 <td > 

@@ -78,8 +78,8 @@ export class MaintainerBusinessComponent implements OnInit {
     this.businessService.getAllBusiness().subscribe({
       next: resp => {
         this.listBusiness = resp.status;
-        this.cant = Math.ceil(this.listBusiness.length / 5);
-        this.db = this.listBusiness.slice(0, 5).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+        this.cant = Math.ceil(this.listBusiness.length / 10);
+        this.db = this.listBusiness.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
         if (resp.status) {
 
           for(let i = 0; i < resp.status.length; i++)
@@ -252,17 +252,17 @@ export class MaintainerBusinessComponent implements OnInit {
 
   pagTo(i: number) {
     this.pos = i + 1;
-    this.db = this.listBusiness.slice((i * 5), (i + 1) * 5).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+    this.db = this.listBusiness.slice((i * 10), (i + 1) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
   }
   next() {
     if (this.pos >= this.cant) return;
     this.pos++;
-    this.db = this.listBusiness.slice((this.pos - 1) * 5, (this.pos) * 5).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+    this.db = this.listBusiness.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
   }
   previus() {
     if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
     this.pos = this.pos - 1;
-    this.db = this.listBusiness.slice((this.pos - 1) * 5, (this.pos) * 5).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+    this.db = this.listBusiness.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
   }
   setArrayFromNumber() {
     return new Array(this.cant);

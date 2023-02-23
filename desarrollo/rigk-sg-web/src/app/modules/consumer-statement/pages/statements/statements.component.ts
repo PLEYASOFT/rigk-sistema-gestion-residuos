@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { EstablishmentService } from 'src/app/core/services/establishment.service';
 import { ProductorService } from 'src/app/core/services/productor.service';
 import Swal from 'sweetalert2';
 
@@ -17,17 +18,18 @@ export class StatementsComponent implements OnInit {
   years: number[] = [];
   cant: number = 0;
 
-  constructor(public productorService: ProductorService) { }
+  constructor(public productorService: ProductorService,
+    private establishmentService: EstablishmentService) { }
 
   ngOnInit(): void {
     this.loadStatements();
   }
 
   loadStatements() {
-    this.productorService.getStatementByUser.subscribe(r => {
+    this.establishmentService.getDeclarationEstablishment().subscribe(r => {
       if (r.status) {
-        r.data = r.data.sort(((a: any, b: any) => b.YEAR_STATEMENT - a.YEAR_STATEMENT));
-        (r.data as any[]).forEach(e => {
+        r.status = r.status.sort(((a: any, b: any) => b.YEAR_STATEMENT - a.YEAR_STATEMENT));
+        (r.status as any[]).forEach(e => {
 
           if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
             this.business_name.push(e.NAME_BUSINESS);
@@ -37,12 +39,13 @@ export class StatementsComponent implements OnInit {
           }
         });
         this.years.sort((a, b) => b - a);
-        this.dbStatements = r.data;
+        this.dbStatements = r.status;
         this.cant = Math.ceil(this.dbStatements.length / 10);
         this.db = this.dbStatements.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
       }
     })
   }
+
   filter() {
     const n = (document.getElementById('f_name') as HTMLSelectElement).value;
     const y = (document.getElementById('f_year') as HTMLSelectElement).value;
@@ -84,27 +87,7 @@ export class StatementsComponent implements OnInit {
     this.pos = this.pos - 1;
     this.db = this.dbStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
   }
-  downloadPDF(id: any, year: any) {
-    Swal.fire({
-      title: 'Espere',
-      text: 'Generando PDF',
-      showConfirmButton: false
-    });
-    Swal.showLoading();
-    this.productorService.downloadPDF(id, year).subscribe(r => {
-      const file = new Blob([r], { type: 'application/pdf' });
-      let link = document.createElement('a');
-      link.href = window.URL.createObjectURL(file);
-      link.download = `Reporte_${year}`;
-      document.body.appendChild(link);
-      link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
-      link.remove();
-      window.URL.revokeObjectURL(link.href);
-      Swal.close();
-    });
-  }
   setArrayFromNumber() {
     return new Array(this.cant);
   }
-
 }

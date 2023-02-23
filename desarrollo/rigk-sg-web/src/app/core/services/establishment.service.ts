@@ -27,4 +27,8 @@ export class EstablishmentService {
     return this.http.get<any>(`${this.url}/${id}`);
   }
 
+  getDeclarationEstablishment(){
+    return this.http.get<any>(`${this.url}/declaration/`);
+  }
+
 }
