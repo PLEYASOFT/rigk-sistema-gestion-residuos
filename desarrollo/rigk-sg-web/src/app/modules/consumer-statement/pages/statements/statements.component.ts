@@ -28,7 +28,6 @@ export class StatementsComponent implements OnInit {
   loadStatements() {
     this.establishmentService.getDeclarationEstablishment().subscribe(r => {
       if (r.status) {
-        console.log(r)
         r.status = r.status.sort(((a: any, b: any) => b.YEAR_STATEMENT - a.YEAR_STATEMENT));
         (r.status as any[]).forEach(e => {
 
