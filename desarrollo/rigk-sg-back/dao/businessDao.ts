@@ -43,10 +43,13 @@ class BusinessDao {
     }
 
     public async deleteBusiness(ID: string) {
+
         const conn = mysqlcon.getConnection()!;
+        await conn.query("DELETE FROM establishment_business WHERE ID_BUSINESS=?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
+        await conn.query("DELETE FROM user_business WHERE ID_BUSINESS=?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         const res: any = await conn.query("DELETE FROM business WHERE id = ?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
-        return res
+        return res;
     }
 
     public async updateBusiness(ID: string, NAME: string, VAT: string, LOC_ADDRESS: string, PHONE: string, EMAIL: string,AM_FIRST_NAME: string, AM_LAST_NAME: string, INVOICE_NAME: string, INVOICE_EMAIL: string, INVOICE_PHONE: string,CODE_BUSINESS:string, GIRO:string) {
