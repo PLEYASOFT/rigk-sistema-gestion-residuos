@@ -63,8 +63,6 @@ export class MaintainerEstablishmentComponent implements OnInit {
       FIRST_NAME: [[], [Validators.required]], // Campo requerido
       REGION: ["", [Validators.required]], // Campo requerido
     });
-
-
   }
 
   getAllBusiness() {
