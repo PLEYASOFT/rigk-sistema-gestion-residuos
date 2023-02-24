@@ -105,9 +105,7 @@ export class FormComponent implements OnInit {
         for (let i = 0; i < attached.length; i++) {
           const f = attached[i];
           for (let j = 0; j < tmp; j++) {
-            console.log(`inp_f_${tmp+1}_${f.PRECEDENCE}_${f.TYPE_RESIDUE}`);
             const pos = j;
-            console.log((document.getElementById(`inp_f_${pos+1}_${f.PRECEDENCE}_${f.TYPE_RESIDUE}`) as HTMLSelectElement)?.value);
             if((document.getElementById(`inp_f_${pos+1}_${f.PRECEDENCE}_${f.TYPE_RESIDUE}`) as HTMLSelectElement).value != "0") {
               continue;
             } else {
@@ -150,7 +148,6 @@ export class FormComponent implements OnInit {
       value = 0;
       target.value = 0;
     }
-
     const reg = this.data.find(r => r?.residue == residue && r?.table == table);
     if (reg) {
       reg.val = value;
@@ -178,7 +175,6 @@ export class FormComponent implements OnInit {
       this.data.push({ table, residue, date_withdraw: target.value, id_gestor: 0, val: 0 });
     }
   }
-
   uploadFile(table: number, residue: number, target: any, col: number) {
     const i = this.attached.findIndex(r => r.col == col && r.table == table && r.residue == residue);
     if (i == -1) {
@@ -187,7 +183,6 @@ export class FormComponent implements OnInit {
       this.attached[i].file = target.files[0];
     }
   }
-
   updateType(table: number, residue: number, target: any, col: number) {
     const i = this.attached.findIndex(r => r.col == col && r.table == table && r.residue == residue);
     if (i == -1) {
@@ -196,8 +191,6 @@ export class FormComponent implements OnInit {
       this.attached[i].type = target.value;
     }
   }
-
-
   saveForm() {
     if (this.data.length == 0) return;
 
@@ -240,7 +233,6 @@ export class FormComponent implements OnInit {
     });
 
   }
-
   downloadFile(col:number) {
     if(this._files[col-1]){
       const f = this._files[col-1];

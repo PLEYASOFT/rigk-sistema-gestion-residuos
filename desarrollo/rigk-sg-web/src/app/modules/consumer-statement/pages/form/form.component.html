@@ -7,7 +7,6 @@
         </ol>
     </nav>
     <!-- fin breadcrumbs -->
-
     <!-- inicio Formulario CI -->
     <section class="formulario-ci">
         <h1>Formulario CI</h1>
@@ -23,7 +22,6 @@
                 </select> -->
             </div>
         </div>
-
         <!-- inicio Nombre tabla -->
         <div class="table-responsive mb-4" *ngFor="let x of tables; let i = index">
             <h2 class="table-header-div table-header-div-blue"> {{x}}</h2>
@@ -38,8 +36,6 @@
                                 retiro</span></th>
                         <th>Gestor</th>
                         <th colspan="3">Medios de verificación</th>
-
-
                     </tr>
                 </thead>
                 <tbody>
@@ -110,10 +106,7 @@
                                 (change)="uploadFile(i,type.id,$event.target,3)">
                                 <button *ngIf="disableAll" class="btn  btn-sm" (click)="downloadFile(3)"> <i class="fa fa-file-pdf-o fa-fw fa-lg color-blue"></i> </button>
                         </td>
-
                     </tr>
-
-
                 </tbody>
                 <tfoot>
                     <tr>
@@ -123,10 +116,7 @@
                 </tfoot>
             </table>
         </div>
-
         <button class="btn btn-primary px-5 mb-4" (click)="saveForm()" *ngIf="!disableAll">Enviar</button>
-
     </section>
     <!-- fin Formulario CI -->
-
 </div>

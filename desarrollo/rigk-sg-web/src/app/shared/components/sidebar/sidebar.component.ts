@@ -73,7 +73,6 @@ export class SidebarComponent implements OnInit {
               if (r.status) {
                 this.productorService.verifyDraft(id_business, year).subscribe({
                   next: e => {
-                    console.log("aaaa", e)
                     if (!e.status) {
                       this.router.navigate(['/productor/form'], { queryParams: { year, id_business } });
                     } else {
