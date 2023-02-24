@@ -25,7 +25,6 @@ export class ConsumerService {
     return this.http.get<any>(`${this.url}/${id}`);
   }
   verifyForm(business: any, year: any) {
-    console.log(business, year);
     return this.http.get<any>(`${this.url}/verify/${year}/${business}`);
   }
 
