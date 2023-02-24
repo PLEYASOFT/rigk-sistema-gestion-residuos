@@ -12,7 +12,8 @@ const routes: Routes = [{
     children: 
     [
       { path: 'home', component: HomeComponent },
-      { path: 'form', component: FormComponent },
+      { path: 'form', component: FormComponent, data: {show:false} },
+      { path: 'form/:id', component: FormComponent, data:{show: true} },
       { path: 'profile', component: ProfileComponent },
       { path: 'statements', component: StatementsComponent },
       { path: '**', redirectTo: 'home', pathMatch: 'full' }

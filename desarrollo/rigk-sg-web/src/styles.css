@@ -60,9 +60,6 @@
 .bg-red-light {
   background-color: #fae5e2 !important;
 }
-.bg-grey-light {
-  background-color: #E7E7E7 !important;
-}
 
 .text-decoration-none {
   text-decoration: none;
@@ -14267,7 +14264,7 @@ body {
   background-position: right;
   background-repeat: repeat-y;
   background-size: cover;
-  /* background-image: url(./assets/images/c-bar.svg); */
+  /* background-image: url(../images/c-bar.svg); */
   position: relative;
   bottom: -32px;
 }
@@ -14278,7 +14275,7 @@ body {
   background-position: right;
   background-repeat: repeat-y;
   background-size: cover;
-  /* background-image: url(./assets./images/c-bar.svg); */
+  /* background-image: url(../images/c-bar.svg); */
   position: absolute;
   bottom: 0;
 }
@@ -14291,6 +14288,16 @@ a:hover {
 }
 a .fa:hover {
   color: #07a47b;
+}
+
+/* Anchos */
+.w-50px {
+  width: 50px;
+}
+@media (min-width: 576px) {
+  .w-50px {
+    width: auto;
+  }
 }
 
 h1,
@@ -14378,7 +14385,7 @@ p {
     align-items: center;
     min-height: 100vh;
     overflow: hidden;
-    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(./assets/images/bg-login.jpg);
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(./assets/images/bg-login.jpg);;
     background-size: cover;
     background-position: center right;
   }
@@ -15522,6 +15529,24 @@ body.shrink .nav-item [data-bs-toggle]:hover:before {
 .table-align-middle {
   vertical-align: middle;
 }
+.table-header-green thead tr th {
+  background-color: #07a47b;
+}
+.table-header-div {
+  font-size: 12px;
+  padding: 0.5rem 0.5rem;
+  margin: 0;
+  color: #ffffff;
+  border-bottom: 1px solid #ffffff;
+  border-radius: 20px 20px 0 0;
+  margin: 0 1px;
+}
+.table-header-div-blue {
+  background-color: #3a7d9b;
+}
+.table-header-div-green {
+  background-color: #07a47b;
+}
 
 .table-even tbody tr:nth-child(2n) {
   background-color: #eeeeee;
@@ -15603,6 +15628,16 @@ body.shrink .nav-item [data-bs-toggle]:hover:before {
 }
 .accordion-table .accordion-button strong {
   margin-right: 5px;
+}
+.accordion-no-border {
+  margin: 0 1px;
+}
+.accordion-no-border .accordion-item:first-child .accordion-button {
+  border-radius: 0;
+}
+.accordion-header-green .accordion-button:not(.collapsed) {
+  background-color: #07a47b;
+  box-shadow: inset 0 -1px 0 #07a47b;
 }
 
 .accordion-with-buttons .accordion-item {
@@ -15727,5 +15762,8 @@ body.shrink .nav-item [data-bs-toggle]:hover:before {
     columns: 5;
   }
 }
+
+/*# sourceMappingURL=style.css.map */
+
 
 /*# sourceMappingURL=style.css.map */
