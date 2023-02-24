@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { BusinessService } from '../../../core/services/business.service';
 import { ProductorService } from '../../../core/services/productor.service';
+import { ConsumerService } from '../../../core/services/consumer.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -38,16 +39,17 @@ export class SidebarComponent implements OnInit {
 
   constructor(private router: Router,
     public businessService: BusinessService,
+    public ss: ConsumerService,
     private productorService: ProductorService) { }
 
   ngOnInit(): void {
-    
+
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
-    
+
   }
 
   hideSidebar() {
-    if(window.innerWidth <= 992){
+    if (window.innerWidth <= 992) {
       document.getElementById('sidebar')?.classList.toggle("active");
     }
   }
@@ -61,8 +63,7 @@ export class SidebarComponent implements OnInit {
         const id_business = ((document.getElementById('inp_id_business') as HTMLInputElement).value);
         const year = parseInt((document.getElementById('inp_year') as HTMLInputElement).value);
         const actual = new Date().getFullYear();
-        if( !(year < actual && id_business != ''))
-        {
+        if (!(year < actual && id_business != '')) {
           Swal.showValidationMessage(`Solo se aceptan antes del año ${actual - 1}`);
           return;
         }
@@ -72,7 +73,7 @@ export class SidebarComponent implements OnInit {
               if (r.status) {
                 this.productorService.verifyDraft(id_business, year).subscribe({
                   next: e => {
-                    console.log("aaaa",e)
+                    console.log("aaaa", e)
                     if (!e.status) {
                       this.router.navigate(['/productor/form'], { queryParams: { year, id_business } });
                     } else {
@@ -109,8 +110,7 @@ export class SidebarComponent implements OnInit {
         const id_business = ((document.getElementById('inp_id_business') as HTMLInputElement).value);
         const year = parseInt((document.getElementById('inp_year') as HTMLInputElement).value);
         const actual = new Date().getFullYear();
-        if( !(year < actual && id_business != ''))
-        {
+        if (!(year < actual && id_business != '')) {
           Swal.showValidationMessage(`Solo se aceptan antes del año ${actual - 1}`);
           return;
         }
@@ -118,8 +118,19 @@ export class SidebarComponent implements OnInit {
           await this.businessService.verifyBusiness(id_business).subscribe({
             next: r => {
               if (r.status) {
-                console.log(r)
-                this.router.navigate(['/consumidor/form'], { queryParams: { year, id_business:r.data } });
+                this.ss.verifyForm(id_business, year).subscribe({
+                  next: e => {
+                    if (!e.status) {
+                      this.router.navigate(['/consumidor/form'], { queryParams: { year, id_business: r.data } });
+                    } else {
+                      Swal.fire({
+                        icon: 'error',
+                        title: '¡Oops!',
+                        text: 'Año ya fue declarado'
+                      });
+                    }
+                  }
+                })
               } else {
                 Swal.fire({
                   icon: 'error',
@@ -136,5 +147,5 @@ export class SidebarComponent implements OnInit {
     }).then(result => {
     });
   }
-  
+
 }

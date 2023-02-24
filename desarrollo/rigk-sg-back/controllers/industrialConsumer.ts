@@ -32,6 +32,19 @@ class IndustrialConsumer {
             });
         }
     }
+    public async verify(req: any, res: Response) {
+        const { year, business } = req.params;
+        try {
+            const data = await industrialConsumerDao.verify(year, business);
+            res.status(200).json({ status: data });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
 }
 
 const industrialConsumer = new IndustrialConsumer();

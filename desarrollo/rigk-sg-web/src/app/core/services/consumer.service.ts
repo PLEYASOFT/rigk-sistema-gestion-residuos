@@ -9,8 +9,8 @@ export class ConsumerService {
   url = `${environment.API_V1_URL}/consumer`;
 
   constructor(private http: HttpClient) { }
-  
-  save(data:any) {
+
+  save(data: any) {
     const body = new FormData();
     for (let i = 0; i < data.attached.length; i++) {
       const f = data.attached[i];
@@ -18,11 +18,15 @@ export class ConsumerService {
     }
     body.append("header", JSON.stringify(data.header));
     body.append("detail", JSON.stringify(data.detail.data));
-    return this.http.post<any>(`${this.url}`,body);
+    return this.http.post<any>(`${this.url}`, body);
   }
-  
-  getForm(id:any) {
+
+  getForm(id: any) {
     return this.http.get<any>(`${this.url}/${id}`);
+  }
+  verifyForm(business: any, year: any) {
+    console.log(business, year);
+    return this.http.get<any>(`${this.url}/verify/${year}/${business}`);
   }
 
 }
