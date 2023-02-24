@@ -8,7 +8,6 @@ class BusinessLogic {
         const user = req.uid;
         try {
             const {resp, id2} = await businessDao.checkID(user, id);
-            console.log(resp,id2)
             res.status(200).json({ status: resp, data: id2, msg: '' });
         } catch (err) {
             console.log(err);
