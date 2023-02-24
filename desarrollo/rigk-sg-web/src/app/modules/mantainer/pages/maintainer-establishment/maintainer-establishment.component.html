@@ -7,31 +7,35 @@
 </nav>
 
 <h1>Establecimientos</h1>
-<div class="table-responsive mb-4" >
+<div class="table-responsive mb-4">
     <!-- inicio Consulta de Declaración -->
-    <section >
-        <div class="row w-100 " >
+    <section>
+        <div class="row w-100 ">
             <!-- Columna 1 -->
-            <div id = "table" #table1 class="w-100 " >
-                 <div class="w-100">
+            <div id="table" #table1 class="w-100 ">
+                <div class="w-100">
                     <!-- Tabla Desktop -->
-                    <table class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table" >
-                        
+                    <table
+                        class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
+
                         <thead>
-                            <tr class="text-center w-100" >
-                                <th >NOMBRE</th>
-                                <th >DIRECCIÓN</th>
-                                <th >Establecimientos</th>
+                            <tr class="text-center w-100">
+                                <th (click)="toggleDirection()">CÓDIGO EMPRESA <span [class]="direction === 'asc' ? 'arrow-up' : 'arrow-down'"></span></th>
+                                <th>NOMBRE </th>
+                                <th>DIRECCIÓN </th>
+                                <th>ESTABLECIMIENTOS </th>
                             </tr>
                         </thead>
-                        <tbody >
+                        <tbody>
                             <tr class="text-center w-100" *ngFor="let r of db; let x = index">
-                                <td >{{r.NAME}}</td>
-                                <td >{{r.LOC_ADDRESS}}</td>
-                                <td > 
+                                <td>{{r.CODE_BUSINESS}}</td>
+                                <td>{{r.NAME}}</td>
+                                <td>{{r.LOC_ADDRESS}}</td>
+                                <td>
                                     <div class="btn-group">
-                                        <button class="btn btn-success btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="this.getEstablishment(listBusiness[x].ID); index =listBusiness[x].ID;"
-                                        >Establecimientos</button>
+                                        <button class="btn btn-success btn-sm rounded-pill" data-bs-toggle="modal"
+                                            data-bs-target="#exampleModal"
+                                            (click)="this.getEstablishment(r.ID); index =r.ID;">Establecimientos</button>
                                     </div>
                                 </td>
                             </tr>
@@ -59,52 +63,82 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Formulario Usuario</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Formulario Establecimientos</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="container">
-                    <form [formGroup]="userForm">
+                    <form #miFormulario="ngForm" [formGroup]="userForm">
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="inp_nom">NOMBRE:</label>
-                                <input type="text" formControlName="FIRST_NAME" id="inp_nom" placeholder="Nombre"
-                                    class="form-control">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" formControlName="FIRST_NAME" id="inp_nom"
+                                        placeholder="Nombre" class="form-control">
+                                </div>
+                                <div *ngIf="userForm.controls['FIRST_NAME'].errors && userForm.controls['FIRST_NAME'].touched"
+                                    class="text-danger pl-0">
+                                    <p *ngIf="userForm.controls['FIRST_NAME'].errors['required']">El nombre del
+                                        establecimiento es requerido.</p>
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <label for="inp_region">Región</label>
+                                <label for="inp_region">REGIÓN</label>
                                 <select formControlName="REGION" id="inp_region" class="form-select" required>
                                     <option value="">Selecciona Región</option>
                                     <option *ngFor="let r of listRegiones">{{r}}</option>
                                 </select>
+                                <div *ngIf="userForm.controls['REGION'].errors && userForm.controls['REGION'].touched"
+                                    class="text-danger pl-0">
+                                    <p *ngIf="userForm.controls['REGION'].errors['required']">Debe seleccionar alguna
+                                        región.</p>
+                                </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" (click)="addEstablishment( this.index ); ">Guardar</button>
+                            <button type="button" id="btnCloseModal" class="btn btn-secondary" data-bs-dismiss="modal"
+                                (click)="reset()">Cerrar</button>
+                            <button type="button" class="btn btn-primary" [disabled]="miFormulario.invalid"
+                                (click)="addEstablishment( this.index ) ; ">Agregar</button>
                         </div>
                         <div style="visibility: hidden;">a</div>
                         <div style="visibility: hidden;">a</div>
                         <div *ngIf="this.establishmentStatus && this.establishmentStatus.length > 0">
-                            <table class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
+                            <table
+                                class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
                                 <thead>
                                     <tr class="text-center w-100">
-                                        <th>Establecimiento</th>
+                                        <th  (click)="toggleDirectionEstablishments()">Establecimiento <span [class]="directionEstablishment === 'asc' ? 'arrow-up' : 'arrow-down'"></span></th>
                                         <th>Región</th>
                                         <th>Eliminar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="text-center w-100" *ngFor="let r of establishmentStatus; let x = index">
-                                        <td>{{establishmentNames[x]}}</td>
-                                        <td>{{establishmentRegions[x]}}</td>
+                                    <tr class="text-center w-100" *ngFor="let r of db2; let x = index">
+                                        <td>{{r.NAME_ESTABLISHMENT}}</td>
+                                        <td>{{r.REGION}}</td>
                                         <td>
-                                            <button type="button" class="btn btn-danger btn-sm rounded-pill" (click)="deleteEstablishment(establishmentID[x])">
+                                            <button type="button" class="btn btn-danger btn-sm rounded-pill"
+                                                (click)="deleteEstablishment(r.ID_ESTABLISHMENT)">
                                                 X
                                             </button>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
+                            <!-- Pagination -->
+                            <nav aria-label="Navegación resultados">
+                                <ul class="pagination">
+                                    <li><button class="btn btn-primary" (click)="pagTo2(0)">Primero</button></li>
+                                    <li><button class="btn btn-primary" (click)="previus2()">Anterior</button></li>
+                                    <li *ngFor="let in of setArrayFromNumber2(); let i = index"><button
+                                            class="border btn btn-sm"
+                                            [ngClass]="{ 'btn-info':pos2==(i+1), 'btn-primary': pos2 != (i+1)}"
+                                            (click)="pagTo2(i)">{{i+1}}</button></li>
+                                    <li><button class="btn btn-primary" (click)="next2()">Siguiente</button></li>
+                                    <li><button class="btn btn-primary" (click)="pagTo2(cant2-1)">Último</button></li>
+                                </ul>
+                            </nav>
                         </div>
                     </form>
                 </div>
