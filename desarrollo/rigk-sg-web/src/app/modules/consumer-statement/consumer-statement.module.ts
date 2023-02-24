@@ -7,6 +7,7 @@ import { StatementsComponent } from './pages/statements/statements.component';
 import { FormComponent } from './pages/form/form.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     ConsumerStatementRoutingModule,
     SharedModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MultiSelectModule
   ]
 })
 export class ConsumerStatementModule { }

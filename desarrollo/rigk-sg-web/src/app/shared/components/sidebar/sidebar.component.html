@@ -1,13 +1,15 @@
 <nav id="sidebar" class="mainmenu" *ngIf="isVisible">
     <ul class="list-unstyled" *ngIf="userData.ROL_NAME=== 'Productor'">
         <li class="nav-item" *ngFor="let link of menuProductor">
-            <a *ngIf="link.title != 'Registro de declaración'" routerLinkActive="active" class="nav-link" (click)="hideSidebar()" [href]="link.path" data-bs-toggle="tooltip" [title]="link.title">
+            <a *ngIf="link.title != 'Registro de declaración'" routerLinkActive="active" class="nav-link"
+                (click)="hideSidebar()" [href]="link.path" data-bs-toggle="tooltip" [title]="link.title">
                 <span>
                     <i class="fa {{link.icon}} fa-fw" aria-hidden="true"></i>
                 </span>
                 <span class="nav-link__hide">{{link.title}}</span>
             </a>
-            <a *ngIf="link.title == 'Registro de declaración'" routerLinkActive="active" class="nav-link" (click)="showDialog(); hideSidebar()" href="#" data-bs-toggle="tooltip" [title]="link.title">
+            <a *ngIf="link.title == 'Registro de declaración'" routerLinkActive="active" class="nav-link"
+                (click)="showDialog(); hideSidebar()" href="#" data-bs-toggle="tooltip" [title]="link.title">
                 <span>
                     <i class="fa {{link.icon}} fa-fw" aria-hidden="true"></i>
                 </span>
@@ -15,9 +17,10 @@
             </a>
         </li>
     </ul>
-    <ul class="list-unstyled"  *ngIf="userData.ROL_NAME=== 'Admin'" >
+    <ul class="list-unstyled" *ngIf="userData.ROL_NAME=== 'Admin'">
         <li class="nav-item" *ngFor="let link of menuAdmin">
-            <a routerLinkActive="active" class="nav-link" (click)=" hideSidebar()" [href]="link.path" data-bs-toggle="tooltip" [title]="link.title">
+            <a routerLinkActive="active" class="nav-link" (click)=" hideSidebar()" [href]="link.path"
+                data-bs-toggle="tooltip" [title]="link.title">
                 <span>
                     <i class="fa {{link.icon}} fa-fw" aria-hidden="true"></i>
                 </span>
@@ -27,7 +30,15 @@
     </ul>
     <ul class="list-unstyled" *ngIf="userData.ROL_NAME=== 'Consumidor'">
         <li class="nav-item" *ngFor="let link of menuConsumidor">
-            <a routerLinkActive="active" class="nav-link" (click)=" hideSidebar()" [href]="link.path" data-bs-toggle="tooltip" [title]="link.title">
+            <a *ngIf="link.title != 'Registro de declaración'" routerLinkActive="active" class="nav-link"
+                (click)=" hideSidebar()" [href]="link.path" data-bs-toggle="tooltip" [title]="link.title">
+                <span>
+                    <i class="fa {{link.icon}} fa-fw" aria-hidden="true"></i>
+                </span>
+                <span class="nav-link__hide">{{link.title}}</span>
+            </a>
+            <a *ngIf="link.title == 'Registro de declaración'" style="cursor: pointer;" routerLinkActive="active"
+                class="nav-link" (click)="showDialog2(); hideSidebar()" data-bs-toggle="tooltip" [title]="link.title">
                 <span>
                     <i class="fa {{link.icon}} fa-fw" aria-hidden="true"></i>
                 </span>
