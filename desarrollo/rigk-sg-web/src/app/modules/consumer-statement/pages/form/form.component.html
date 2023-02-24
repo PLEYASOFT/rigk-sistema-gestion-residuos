@@ -89,7 +89,7 @@
                                 <button *ngIf="disableAll" class="btn  btn-sm" (click)="downloadFile(1)"> <i class="fa fa-file-pdf-o fa-fw fa-lg color-blue"></i> </button>
                         </td>
                         <td *ngIf="type.id">
-                            <select [disabled]="disableAll" class="form-select"
+                            <select id="inp_f_2_{{i}}_{{type.id}}" [disabled]="disableAll" class="form-select"
                                 (change)="updateType(i,type.id,$event.target,2)">
                                 <option value="0">Seleccione Tipo M.V</option>
                                 <option value="1">Factura</option>
@@ -101,7 +101,7 @@
                                 <button *ngIf="disableAll" class="btn  btn-sm" (click)="downloadFile(2)"> <i class="fa fa-file-pdf-o fa-fw fa-lg color-blue"></i> </button>
                         </td>
                         <td *ngIf="type.id">
-                            <select [disabled]="disableAll" class="form-select"
+                            <select id="inp_f_3_{{i}}_{{type.id}}" [disabled]="disableAll" class="form-select"
                                 (change)="updateType(i,type.id,$event.target,3)">
                                 <option value="0">Seleccione Tipo M.V</option>
                                 <option value="1">Factura</option>

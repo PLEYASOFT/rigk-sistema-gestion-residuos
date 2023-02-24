@@ -101,14 +101,19 @@ export class FormComponent implements OnInit {
           (document.getElementById(`inp_3_${l.PRECEDENCE}_${l.TYPE_RESIDUE}`) as HTMLSelectElement).value=l.ID_GESTOR;
           this.total_tables[l.PRECEDENCE] += l.VALUE;
         }
-        let tmp = 0;
+        let tmp = 3;
         for (let i = 0; i < attached.length; i++) {
           const f = attached[i];
-          if(tmp<3) {
-            console.log(`ino_f_${tmp+1}_${f.PRECEDENCE}_${f.TYPE_RESIDUE}`);
-            (document.getElementById(`inp_f_${tmp+1}_${f.PRECEDENCE}_${f.TYPE_RESIDUE}`) as HTMLSelectElement).value=f.TYPE_FILE;
-            tmp++;
-            this._files.push(f);
+          for (let j = 0; j < tmp; j++) {
+            console.log(`inp_f_${tmp+1}_${f.PRECEDENCE}_${f.TYPE_RESIDUE}`);
+            const pos = j;
+            console.log((document.getElementById(`inp_f_${pos+1}_${f.PRECEDENCE}_${f.TYPE_RESIDUE}`) as HTMLSelectElement)?.value);
+            if((document.getElementById(`inp_f_${pos+1}_${f.PRECEDENCE}_${f.TYPE_RESIDUE}`) as HTMLSelectElement).value != "0") {
+              continue;
+            } else {
+              (document.getElementById(`inp_f_${pos+1}_${f.PRECEDENCE}_${f.TYPE_RESIDUE}`) as HTMLSelectElement)!.value=f.TYPE_FILE;
+              break;
+            }
           }
         }
       }
@@ -236,33 +241,15 @@ export class FormComponent implements OnInit {
 
   }
 
-  blobToFile(data: any, type: string, fileName: string) {
-    const a = document.createElement('a');
-    document.body.appendChild(a);
-    a.style.display = 'none';
-    const blob = new Blob([data], { type: type });
-    const url = window.URL.createObjectURL(blob);
-    a.href = url; a.download = fileName; a.click();
-    window.URL.revokeObjectURL(url);
-  }
-
   downloadFile(col:number) {
     if(this._files[col-1]){
       const f = this._files[col-1];
-      console.log(this._files[col-1]);
-      const a = document.createElement('a');
-      document.body.appendChild(a);
-      a.style.display = 'none';
-      const blob = new Blob([f.FILE], {type: 'application/pdf'});
-      const url = window.URL.createObjectURL(blob);
-      a.href = url; a.download = f.FILE_NAME; a.click();
-      window.URL.revokeObjectURL(url);
-
-      // let downloadLink = document.createElement('a');
-      //     downloadLink.href = window.URL.createObjectURL(new Blob(f.FILE.data, { type: 'blob' }));
-      //     downloadLink.setAttribute('download', f.FILE_NAME);
-      //     document.body.appendChild(downloadLink);
-      //     downloadLink.click();
+      var blob = new Blob([new Uint8Array(f.FILE.data)], {type: "Buffer"});
+      var link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      var fileName = f.FILE_NAME;
+      link.download = fileName;
+      link.click();
     }
   }
 
