@@ -10,18 +10,13 @@ import { BusinessService } from '../../../../core/services/business.service';
   styleUrls: ['./mantainer-users.component.css']
 })
 export class MantainerUsersComponent implements OnInit {
-
   emailPattern = "^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$";
-
-
   showErrorEmail = false;
-
   business: any[] = [];
   selectedBusiness!: any[];
   listUser: any[] = [];
   listRoles: any[] = [];
   isEdit = false;
-
   userForm = this.fb.group({
     ID: [],
     FIRST_NAME: ['', [Validators.required]],
@@ -37,8 +32,6 @@ export class MantainerUsersComponent implements OnInit {
   constructor(private authService: AuthService,
     private businesService: BusinessService,
     private fb: FormBuilder) { }
-
-
   ngOnInit(): void {
     Swal.fire({
       title: 'Cargando Datos',
@@ -51,7 +44,6 @@ export class MantainerUsersComponent implements OnInit {
     this.loadBusiness();
     this.loadRoles();
   }
-
   loadBusiness() {
     this.businesService.getAllBusiness().subscribe(r => {
       if (r.status) {
@@ -62,7 +54,6 @@ export class MantainerUsersComponent implements OnInit {
       }
     })
   }
-
   filter(target: any) {
     const value = target.value?.toLowerCase();
     this.pos = 1;
@@ -104,7 +95,7 @@ export class MantainerUsersComponent implements OnInit {
   }
   showName(id: any){
     const b = this.business.find(r=>r.ID == id);
-    return `${b.CODE_BUSINESS} | ${b.NAME}`
+    return `${b.CODE_BUSINESS} | ${b.NAME}`;
   }
 
   selectUser(id: number) {

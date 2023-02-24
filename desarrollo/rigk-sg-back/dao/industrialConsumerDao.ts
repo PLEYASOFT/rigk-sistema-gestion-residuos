@@ -19,7 +19,6 @@ class IndustrialConsumerDao {
                 const _type = key.split("_")[3];
                 if (_residue == residue && _table == table) {
                     const file_name = attached[key].name;
-                    console.log(file_name,id_detail);
                     await conn.execute("INSERT INTO attached_industrial_consumer_form(ID_DETAIL, FILE_NAME, FILE, TYPE_FILE) VALUES (?,?,?,?)", [id_detail, file_name, attached[key].data, _type]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
                 }
             }

@@ -92,10 +92,8 @@ export class FormComponent implements OnInit {
         const {header, detail, attached} = r.data;
         this.id_business = header.ID_BUSINESS;
         this.establishment = header.NAME_ESTABLISHMENT;
-        console.log(attached);
         for (let o = 0; o < detail.length; o++) {
           const l = detail[o];
-          console.log(l);
           (document.getElementById(`inp_1_${l.PRECEDENCE}_${l.TYPE_RESIDUE}`) as HTMLInputElement).value=(l.VALUE.toString().replace(".",","));
           (document.getElementById(`inp_2_${l.PRECEDENCE}_${l.TYPE_RESIDUE}`) as HTMLInputElement).value=l.DATE_WITHDRAW.split("T")[0];
           (document.getElementById(`inp_3_${l.PRECEDENCE}_${l.TYPE_RESIDUE}`) as HTMLSelectElement).value=l.ID_GESTOR;
