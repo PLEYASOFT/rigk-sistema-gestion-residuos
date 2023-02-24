@@ -6,12 +6,12 @@ class BusinessDao {
         const conn = mysqlcon.getConnection()!;
         const res: any = await conn.query("SELECT * FROM user_business WHERE ID_USER = ? AND ID_BUSINESS = (SELECT ID FROM business WHERE CODE_BUSINESS=?)", [user, id]).then(res => res[0]).catch(erro => undefined);
 
-        let isOk = false;
+        let resp = false;
         if ((res != null && res != undefined) && res.length > 0) {
-            isOk = true;
+            resp = true;
         }
         conn.end();
-        return isOk;
+        return {resp,id2: res[0]?.ID_BUSINESS};
     }
 
     public async getBusiness(id: string) {
