@@ -10,7 +10,6 @@ import Swal from 'sweetalert2';
   styleUrls: ['./form.component.css']
 })
 export class FormComponent implements OnInit {
-
   materials = [
     {
       name: "Papel/Cartón",
@@ -41,9 +40,7 @@ export class FormComponent implements OnInit {
     { id: 15, name: "Caja de Madera" },
     { id: 16, name: "Pallet de Madera" }
   ];
-
   disableAll = false;
-
   tables = [
     "Reciclaje Mecánico",
     "Valorización Energética",
@@ -51,25 +48,19 @@ export class FormComponent implements OnInit {
   ];
   total_tables = [0, 0, 0];
   id_establishment = -1;
-
   establishments: any[] = [];
   selectedEstablishment: any = [];
-
   attached: any[] = [];
   id_business = "0";
   year_statement = 0;
-
   establishment = "";
-
   _files: any[] = [];
-
   constructor(public establishmentService: EstablishmentService,
     public consumerService: ConsumerService,
     private router: Router,
     private actived: ActivatedRoute,) {
-
-    this.actived.data.subscribe((r:any)=>{
-      if(r.show) {
+    this.actived.data.subscribe((r: any) => {
+      if (r.show) {
         const id = this.actived.snapshot.params['id'];
         this.loadForm(id);
         this.disableAll = true;
@@ -82,21 +73,19 @@ export class FormComponent implements OnInit {
       }
     });
   }
-
   ngOnInit(): void {
   }
-
   loadForm(id: any) {
     this.consumerService.getForm(id).subscribe({
-      next: r=> {
-        const {header, detail, attached} = r.data;
+      next: r => {
+        const { header, detail, attached } = r.data;
         this.id_business = header.ID_BUSINESS;
         this.establishment = header.NAME_ESTABLISHMENT;
         for (let o = 0; o < detail.length; o++) {
           const l = detail[o];
-          (document.getElementById(`inp_1_${l.PRECEDENCE}_${l.TYPE_RESIDUE}`) as HTMLInputElement).value=(l.VALUE.toString().replace(".",","));
-          (document.getElementById(`inp_2_${l.PRECEDENCE}_${l.TYPE_RESIDUE}`) as HTMLInputElement).value=l.DATE_WITHDRAW.split("T")[0];
-          (document.getElementById(`inp_3_${l.PRECEDENCE}_${l.TYPE_RESIDUE}`) as HTMLSelectElement).value=l.ID_GESTOR;
+          (document.getElementById(`inp_1_${l.PRECEDENCE}_${l.TYPE_RESIDUE}`) as HTMLInputElement).value = (l.VALUE.toString().replace(".", ","));
+          (document.getElementById(`inp_2_${l.PRECEDENCE}_${l.TYPE_RESIDUE}`) as HTMLInputElement).value = l.DATE_WITHDRAW.split("T")[0];
+          (document.getElementById(`inp_3_${l.PRECEDENCE}_${l.TYPE_RESIDUE}`) as HTMLSelectElement).value = l.ID_GESTOR;
           this.total_tables[l.PRECEDENCE] += l.VALUE;
         }
         let tmp = 3;
@@ -104,10 +93,10 @@ export class FormComponent implements OnInit {
           const f = attached[i];
           for (let j = 0; j < tmp; j++) {
             const pos = j;
-            if((document.getElementById(`inp_f_${pos+1}_${f.PRECEDENCE}_${f.TYPE_RESIDUE}`) as HTMLSelectElement).value != "0") {
+            if ((document.getElementById(`inp_f_${pos + 1}_${f.PRECEDENCE}_${f.TYPE_RESIDUE}`) as HTMLSelectElement).value != "0") {
               continue;
             } else {
-              (document.getElementById(`inp_f_${pos+1}_${f.PRECEDENCE}_${f.TYPE_RESIDUE}`) as HTMLSelectElement)!.value=f.TYPE_FILE;
+              (document.getElementById(`inp_f_${pos + 1}_${f.PRECEDENCE}_${f.TYPE_RESIDUE}`) as HTMLSelectElement)!.value = f.TYPE_FILE;
               break;
             }
           }
@@ -115,7 +104,6 @@ export class FormComponent implements OnInit {
       }
     });
   }
-
   loadEstablishments() {
     if (this.id_business == "0") return;
     this.establishmentService.getEstablishment(this.id_business.toString()).subscribe({
@@ -128,9 +116,7 @@ export class FormComponent implements OnInit {
       }
     });
   }
-
   data: { table: number, residue: number, val: number, date_withdraw: string, id_gestor: number }[] = [];
-
   updateVal(table: number, residue: number, target: any) {
     if ((target.value as string).indexOf(".") != -1) {
       target.value = 0;
@@ -154,7 +140,7 @@ export class FormComponent implements OnInit {
     }
     this.total_tables[table] = 0;
     this.data.forEach(e => {
-      this.total_tables[table] += e.val;
+      if (e.table == table && e.residue == residue) this.total_tables[table] += e.val;
     });
   }
   updateGestor(table: number, residue: number, target: any) {
@@ -174,6 +160,21 @@ export class FormComponent implements OnInit {
     }
   }
   uploadFile(table: number, residue: number, target: any, col: number) {
+    if (target.files[0].size / 1000 > 1000) {
+      Swal.fire({
+        icon: 'info',
+        text: 'Archivo excede el tamaño permitido.'
+      });
+      return;
+    }
+    const tmp = target.files[0].type.split('/')[0];
+    // if(tmp != 'image' && target.files[0].type != 'application/pdf') {
+    //   Swal.fire({
+    //     icon: 'info',
+    //     text: 'Tipo de archivo no permitido.'
+    //   });
+    //   return;
+    // }
     const i = this.attached.findIndex(r => r.col == col && r.table == table && r.residue == residue);
     if (i == -1) {
       this.attached.push({ table, residue, col, type: (this.attached[i]?.type || 0), file: target.files[0] });
@@ -190,51 +191,60 @@ export class FormComponent implements OnInit {
     }
   }
   saveForm() {
-    if (this.data.length == 0) return;
-
+    if (this.data.length == 0) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Formulario está vacío'
+      })
+      return;
+    }
     // Verify data
     let error = null;
     if (!this.selectedEstablishment[0] || this.selectedEstablishment[0] == 0) {
-      error = true
+      error = 'Falta establecimiento';
     }
-
     for (let i = 0; i < this.data.length; i++) {
       const reg = this.data[i];
-      if ((reg.val == 0 && (reg.date_withdraw != "" || reg.id_gestor > 0)) || (reg.val > 0 && (reg.date_withdraw == "" || reg.id_gestor == 0))) error = 1;
+      if ((reg.val == 0 && (reg.date_withdraw != "" || reg.id_gestor > 0)) || (reg.val > 0 && (reg.date_withdraw == "" || reg.id_gestor == 0))) error = "Falta ingresar fecha de retiro o gestor";
     }
-
     for (let i = 0; i < this.attached.length; i++) {
       const f = this.attached[i];
-      if ((f.type == 0 && f.file != null) || (f.type > 0 && f.file == null)) error = 2;
+      if ((f.type == 0 && f.file != null) || (f.type > 0 && f.file == null)) error = "Falta seleccionar tipo de M.V o archivo";
     }
-
     if (error) {
       Swal.fire({
         icon: 'error',
-        text: error == 1 ? 'Datos incompletos' : 'Medios de verificación incompletos'
+        text: error
       });
-      return
+      return;
     }
-
+    Swal.fire({
+      icon: 'info',
+      text: `Enviando formulario ${this.attached.length > 0} ? 'y subiendo archivos':''`
+    })
+    Swal.showLoading();
     const header = { year: this.year_statement, establishment: this.selectedEstablishment[0] };
     const detail = { data: this.data, attached: this.attached };
     this.consumerService.save({ header, detail, attached: this.attached }).subscribe({
       next: r => {
+        Swal.close();
         if (r.status) {
           Swal.fire({
             icon: 'success',
             text: 'Declaración guardada satisfactoriamente'
+          }).then(btn => {
+            if (btn.isConfirmed) {
+              this.router.navigate(['/consumidor']);
+            }
           });
-          this.router.navigate(['/consumidor']);
         }
       }
     });
-
   }
-  downloadFile(col:number) {
-    if(this._files[col-1]){
-      const f = this._files[col-1];
-      var blob = new Blob([new Uint8Array(f.FILE.data)], {type: "Buffer"});
+  downloadFile(col: number) {
+    if (this._files[col - 1]) {
+      const f = this._files[col - 1];
+      var blob = new Blob([new Uint8Array(f.FILE.data)], { type: "Buffer" });
       var link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
       var fileName = f.FILE_NAME;
@@ -242,5 +252,4 @@ export class FormComponent implements OnInit {
       link.click();
     }
   }
-
 }
