@@ -31,7 +31,7 @@
                         <th><span class="d-none d-lg-block">Fecha de retiro</span><span class="d-lg-none">Fec. de
                                 retiro</span></th>
                         <th>Gestor</th>
-                        <th colspan="3">Medios de verificación</th>
+                        <th colspan="3" width="100px">Medios de verificación</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -74,10 +74,13 @@
                                 <option value="5">Otro</option>
                             </select>
                             <!-- accept="application/pdf, image/*"  -->
-                            <input *ngIf="!disableAll" [disabled]="disableAll" type="file" class="form-control"
-                                (change)="uploadFile(i,type.id,$event.target,1)">
-                            <button *ngIf="disableAll" class="btn  btn-sm" (click)="downloadFile(1)"> <i
+                            <input *ngIf="!disableAll" id="f_1_{{i}}_{{type.id}}" [disabled]="disableAll" type="file"
+                                class="form-control" (change)="uploadFile(i,type.id,$event.target,1)">
+                            <button *ngIf="disableAll" class="btn btn-sm d-none" id="pdf_1_{{i}}_{{type.id}}"
+                                (click)="downloadFile(i,type.id,1)"> <i
                                     class="fa fa-file-pdf-o fa-fw fa-lg color-blue"></i> </button>
+                            <button class="btn d-none" (click)="deleteSelectedFile(i,type.id,1)"
+                                id="btn_f_1_{{i}}_{{type.id}}"><i class="fa fa-trash"></i> Eliminar Selección</button>
                         </td>
                         <td *ngIf="type.id">
                             <select id="inp_f_2_{{i}}_{{type.id}}" [disabled]="disableAll" class="form-select"
@@ -90,10 +93,13 @@
                                 <option value="5">Otro</option>
                             </select>
                             <!-- accept="application/pdf, image/*"  -->
-                            <input *ngIf="!disableAll" [disabled]="disableAll" type="file" class="form-control"
-                                (change)="uploadFile(i,type.id,$event.target,2)">
-                            <button *ngIf="disableAll" class="btn  btn-sm" (click)="downloadFile(2)"> <i
+                            <input *ngIf="!disableAll" id="f_2_{{i}}_{{type.id}}" [disabled]="disableAll" type="file"
+                                class="form-control" (change)="uploadFile(i,type.id,$event.target,2)">
+                            <button *ngIf="disableAll" class="btn btn-sm d-none" id="pdf_2_{{i}}_{{type.id}}"
+                                (click)="downloadFile(i,type.id,1)"> <i
                                     class="fa fa-file-pdf-o fa-fw fa-lg color-blue"></i> </button>
+                            <button class="btn d-none" (click)="deleteSelectedFile(i,type.id,2)"
+                                id="btn_f_1_{{i}}_{{type.id}}"><i class="fa fa-trash"></i> Eliminar Selección</button>
                         </td>
                         <td *ngIf="type.id">
                             <select id="inp_f_3_{{i}}_{{type.id}}" [disabled]="disableAll" class="form-select"
@@ -106,10 +112,13 @@
                                 <option value="5">Otro</option>
                             </select>
                             <!-- accept="application/pdf, image/*"  -->
-                            <input *ngIf="!disableAll" [disabled]="disableAll" type="file" class="form-control"
-                                (change)="uploadFile(i,type.id,$event.target,3)">
-                            <button *ngIf="disableAll" class="btn  btn-sm" (click)="downloadFile(3)"> <i
+                            <input *ngIf="!disableAll" id="f_3_{{i}}_{{type.id}}" [disabled]="disableAll" type="file"
+                                class="form-control" (change)="uploadFile(i,type.id,$event.target,3)">
+                            <button *ngIf="disableAll" class="btn btn-sm d-none" id="pdf_3_{{i}}_{{type.id}}"
+                                (click)="downloadFile(i,type.id,1)"> <i
                                     class="fa fa-file-pdf-o fa-fw fa-lg color-blue"></i> </button>
+                            <button class="btn d-none" (click)="deleteSelectedFile(i,type.id,3)"
+                                id="btn_f_1_{{i}}_{{type.id}}"><i class="fa fa-trash"></i> Eliminar Selección</button>
                         </td>
                     </tr>
                 </tbody>

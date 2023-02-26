@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EstablishmentService } from '../../../../core/services/establishment.service';
 import { ConsumerService } from '../../../../core/services/consumer.service';
 import Swal from 'sweetalert2';
-
 @Component({
   selector: 'app-form',
   templateUrl: './form.component.html',
@@ -54,7 +53,7 @@ export class FormComponent implements OnInit {
   id_business = "0";
   year_statement = 0;
   establishment = "";
-  _files: any[] = [];
+  data: { table: number, residue: number, val: number, date_withdraw: string, id_gestor: number }[] = [];
   constructor(public establishmentService: EstablishmentService,
     public consumerService: ConsumerService,
     private router: Router,
@@ -81,6 +80,7 @@ export class FormComponent implements OnInit {
         const { header, detail, attached } = r.data;
         this.id_business = header.ID_BUSINESS;
         this.establishment = header.NAME_ESTABLISHMENT;
+        this.attached = attached;
         for (let o = 0; o < detail.length; o++) {
           const l = detail[o];
           (document.getElementById(`inp_1_${l.PRECEDENCE}_${l.TYPE_RESIDUE}`) as HTMLInputElement).value = (l.VALUE.toString().replace(".", ","));
@@ -97,6 +97,7 @@ export class FormComponent implements OnInit {
               continue;
             } else {
               (document.getElementById(`inp_f_${pos + 1}_${f.PRECEDENCE}_${f.TYPE_RESIDUE}`) as HTMLSelectElement)!.value = f.TYPE_FILE;
+              (document.getElementById(`pdf_${pos + 1}_${f.PRECEDENCE}_${f.TYPE_RESIDUE}`) as HTMLButtonElement)!.classList.remove('d-none');
               break;
             }
           }
@@ -116,7 +117,6 @@ export class FormComponent implements OnInit {
       }
     });
   }
-  data: { table: number, residue: number, val: number, date_withdraw: string, id_gestor: number }[] = [];
   updateVal(table: number, residue: number, target: any) {
     if ((target.value as string).indexOf(".") != -1) {
       target.value = 0;
@@ -160,19 +160,27 @@ export class FormComponent implements OnInit {
     }
   }
   uploadFile(table: number, residue: number, target: any, col: number) {
+    if (target.files.length == 0) {
+      document.getElementById(`btn_f_${col}_${table}_${residue}`)?.classList.add('d-none');
+      (document.getElementById(`f_${col}_${table}_${residue}`) as HTMLInputElement).value = '';
+    }
     if (target.files[0].size / 1000 > 1000) {
       Swal.fire({
         icon: 'info',
         text: 'Archivo excede el tamaño permitido.'
       });
+      document.getElementById(`btn_f_${col}_${table}_${residue}`)?.classList.add('d-none');
+      (document.getElementById(`f_${col}_${table}_${residue}`) as HTMLInputElement).value = '';
       return;
     }
-    const tmp = target.files[0].type.split('/')[0];
+    // const tmp = target.files[0].type.split('/')[0];
     // if(tmp != 'image' && target.files[0].type != 'application/pdf') {
     //   Swal.fire({
     //     icon: 'info',
     //     text: 'Tipo de archivo no permitido.'
     //   });
+    // document.getElementById(`btn_f_${col}_${table}_${residue}`)?.classList.add('d-none');
+    // (document.getElementById(`f_${col}_${table}_${residue}`) as HTMLInputElement).value = '';
     //   return;
     // }
     const i = this.attached.findIndex(r => r.col == col && r.table == table && r.residue == residue);
@@ -181,6 +189,7 @@ export class FormComponent implements OnInit {
     } else {
       this.attached[i].file = target.files[0];
     }
+    document.getElementById(`btn_f_${col}_${table}_${residue}`)?.classList.remove('d-none');
   }
   updateType(table: number, residue: number, target: any, col: number) {
     const i = this.attached.findIndex(r => r.col == col && r.table == table && r.residue == residue);
@@ -241,9 +250,10 @@ export class FormComponent implements OnInit {
       }
     });
   }
-  downloadFile(col: number) {
-    if (this._files[col - 1]) {
-      const f = this._files[col - 1];
+  downloadFile(table: number, residue: number, col: number) {
+    const i = this.attached.findIndex(r => r.PRECEDENCE == table && r.TYPE_RESIDUE == residue);
+    if (i > -1) {
+      const f = this.attached[i];
       var blob = new Blob([new Uint8Array(f.FILE.data)], { type: "Buffer" });
       var link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
@@ -251,5 +261,13 @@ export class FormComponent implements OnInit {
       link.download = fileName;
       link.click();
     }
+  }
+  deleteSelectedFile(table: number, residue: number, col: number) {
+    const i = this.attached.findIndex(r => r.col == col && r.table == table && r.residue == residue);
+    if (i > -1) {
+      this.attached.splice(i, 1);
+    }
+    document.getElementById(`btn_f_${col}_${table}_${residue}`)?.classList.add('d-none');
+    (document.getElementById(`f_${col}_${table}_${residue}`) as HTMLInputElement).value = '';
   }
 }
