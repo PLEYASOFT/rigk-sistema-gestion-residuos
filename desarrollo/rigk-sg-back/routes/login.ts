@@ -10,6 +10,7 @@ const router = Router();
 
 router.get('/', [], authLogic.getUsers);
 router.get('/roles', [], authLogic.getRoles);
+router.get('/profile/:email', [validarJWT], authLogic.profile);
 router.post('/', [validateLogin], authLogic.login);
 router.post('/modifyPassword', [validarJWT, verifyParametersModifyPassword], authLogic.modifyPassword);
 router.post('/sendCode', [], authLogic.sendCode);

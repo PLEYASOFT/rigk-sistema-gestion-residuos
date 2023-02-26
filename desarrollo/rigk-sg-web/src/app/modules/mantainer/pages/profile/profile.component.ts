@@ -26,6 +26,7 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
+    this.getProfile(this.userData.EMAIL);
     this.horaIngreso = new Date(sessionStorage.getItem('horaIngreso')!);
   }
 
@@ -38,7 +39,7 @@ export class ProfileComponent implements OnInit {
             title: "Cambio de contraseña",
             text: "La contraseña fue cambiada exitosamente",
             icon: "success",
-          })
+          });
           this.router.navigate(['/mantenedor/home']);
         }
         else {
@@ -55,11 +56,10 @@ export class ProfileComponent implements OnInit {
         title: 'Formato inválido',
         text: 'Contraseña debe contener al menos 8 caracteres',
         icon: 'error'
-      })
+      });
     }
     });
   }
-
   displayModifyPassword() {
     if (this.pos == "right") {
       this.pos = "down";
@@ -67,5 +67,10 @@ export class ProfileComponent implements OnInit {
       this.pos = "right";
     }
   }
-
+  getProfile(email:string) {
+    this.authService.getProfile(email).subscribe(r=>{
+      sessionStorage.setItem('user', JSON.stringify(r.data.user));
+      this.userData = r.data.user
+    })
+  }
 }

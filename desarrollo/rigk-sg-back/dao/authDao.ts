@@ -21,14 +21,12 @@ class AuthDao {
         if (res != null && res != undefined && res.length > 0) {
             login = true;
         }
-
         conn.end();
         return res[0] || undefined;
     }
     async verifyEmail(USER: string) {
         const conn = mysqlcon.getConnection()!;
         const res: any = await conn.query("SELECT EMAIL,ID,PASSWORD FROM USER WHERE EMAIL = ?", [USER]).then((res) => res[0]).catch(error => [{ undefined }]);
-
         let login = false;
         conn.end();
         if (res != null && res != undefined && res.length > 0) {
@@ -38,7 +36,6 @@ class AuthDao {
             console.log("Correo no es correcto, intente nuevamente");
             return res;
         }
-
     }
     async generateCode(CODE: string, ID: string) {
         const conn = mysqlcon.getConnection()!;
@@ -46,7 +43,6 @@ class AuthDao {
         const res: any = await conn.query("UPDATE USER SET CODE = ?, DATE_CODE = ? WHERE ID=?", [CODE, now, ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         return res;
-
     }
     async verifyCode(CODE: string, USER: string) {
         const conn = mysqlcon.getConnection()!;
@@ -60,7 +56,6 @@ class AuthDao {
             console.log("Código incorrecto, intente nuevamente");
             return res;
         }
-
     }
 
     async recovery(PASSWORD: string, USER: string) {
@@ -68,7 +63,6 @@ class AuthDao {
         const res: any = await conn.query("UPDATE USER SET PASSWORD = ? WHERE EMAIL = ?", [PASSWORD, USER]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         return res
-
     }
 
     async register(EMAIL: string, FIRST_NAME: string, LAST_NAME: string, PASSWORD: string, PHONE: string, PHONE_OFFICE: string, POSITION: string, ROL: any) {
@@ -78,7 +72,7 @@ class AuthDao {
             return [];
         }
         const res: any = await conn.query("INSERT INTO user(EMAIL,FIRST_NAME,LAST_NAME, PASSWORD,PHONE, STATE, SALT,PHONE_OFFICE,POSITION) VALUES (?,?,?,?,?,?,'ABC',?,?)", [EMAIL, FIRST_NAME, LAST_NAME, PASSWORD, PHONE, 1, PHONE_OFFICE, POSITION]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
-        const res_1: any = await conn.query("INSERT INTO user_rol(USER_ID,ROL_ID) VALUES (?,?)", [res.insertId, ROL]).then((res) => res[0]).catch(error => [{ undefined }]);
+        await conn.query("INSERT INTO user_rol(USER_ID,ROL_ID) VALUES (?,?)", [res.insertId, ROL]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         return res
     }
@@ -121,7 +115,6 @@ class AuthDao {
         const res: any = await conn.query("UPDATE user SET FIRST_NAME=?, LAST_NAME=?, EMAIL=?, PHONE=?, PHONE_OFFICE=?, POSITION=? WHERE ID = ?", [FIRST_NAME, LAST_NAME, EMAIL, PHONE, PHONE_OFFICE, POSITION, ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         await conn.query("DELETE FROM user_business WHERE ID_USER=?", [ID]);
         await conn.query("update user_rol SET ROL_ID = ? WHERE USER_ID=?", [ROL, ID]);
-
         conn.end();
         return res;
     }

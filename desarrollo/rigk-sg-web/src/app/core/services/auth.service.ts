@@ -45,5 +45,8 @@ export class AuthService {
   }
   updateUser(data:any) {
     return this.http.put<any>(`${this.url}/`, data);
-  } 
+  }
+  getProfile(email:string) {
+    return this.http.get<any>(`${this.url}/profile/${email}`);
+  }
 }

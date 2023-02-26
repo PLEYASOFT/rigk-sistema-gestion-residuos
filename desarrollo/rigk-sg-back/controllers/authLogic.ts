@@ -1,14 +1,9 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-import mysqlcon from '../db';
-import jwt from 'jsonwebtoken';
 import { generarJWT } from '../helpers/jwt';
 import { sendCode } from '../helpers/sendCode';
 import authDao from '../dao/authDao';
-import { resolve } from 'path';
-
 class AuthLogic {
-
     async modifyPassword(req: any, res: Response) {
         const { newPassword, actual } = req.body;
         const repeatPassword = req.body.repeatPassword;
@@ -40,7 +35,6 @@ class AuthLogic {
     async login(req: Request, res: Response) {
         const user = req.body.user;
         const password = req.body.password;
-
         try {
             const output = await authDao.login(user);
             if (output != undefined) {
@@ -68,6 +62,23 @@ class AuthLogic {
         }
         catch (err) {
             console.log(err)
+            res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
+        }
+    }
+    public async profile(req: any, res: Response) {
+        const {email} = req.params;
+        console.log(email)
+        try {
+            const output = await authDao.login(email);
+            delete output.PASSWORD;
+            delete output.SALT;
+            delete output.STATE
+            delete output.DATE_CODE;
+            delete output.CODE
+            delete output.ID;
+            res.status(200).json({ status: true, msg: '', data: { user: output } })
+        } catch (error) {
+            console.log(error)
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
@@ -148,16 +159,16 @@ class AuthLogic {
         const phone = req.body.PHONE;
         const phone_office = req.body.PHONE_OFFICE;
         const position = req.body.POSITION;
-        const {ROL, BUSINESS} = req.body;
+        const { ROL, BUSINESS } = req.body;
         try {
             let passwordHash = bcrypt.hashSync(password, 8);
             const result = await authDao.register(user, first_name, last_name, passwordHash, phone, phone_office, position, ROL);
-            if(result.length == 0) {
+            if (result.length == 0) {
                 return res.status(200).json({ status: false, msg: 'Correo existe', data: {} });
             }
             for (let i = 0; i < BUSINESS.length; i++) {
                 const b = BUSINESS[i];
-                await authDao.addUserBusiness(result.insertId,b);
+                await authDao.addUserBusiness(result.insertId, b);
             }
 
             res.status(200).json({ status: true, msg: 'Has creado usuario', data: {} });
@@ -202,12 +213,11 @@ class AuthLogic {
     }
     public async updateUser(req: Request, res: Response) {
         const { ID, FIRST_NAME, LAST_NAME, EMAIL, ROL, PHONE, PHONE_OFFICE, POSITION, BUSINESS } = req.body;
-
         try {
             await authDao.updateUser(ID, FIRST_NAME, LAST_NAME, EMAIL, ROL, PHONE, PHONE_OFFICE, POSITION);
             for (let i = 0; i < BUSINESS.length; i++) {
                 const b = BUSINESS[i];
-                await authDao.addUserBusiness(ID,b);
+                await authDao.addUserBusiness(ID, b);
             }
             res.status(200).json({ status: true, msg: 'Usuario actualizado satisfactoriamente', data: [] });
         } catch (error) {
