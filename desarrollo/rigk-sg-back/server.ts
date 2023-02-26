@@ -3,6 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import fileUpload from 'express-fileupload';
 import helmet from 'helmet';
+import { RateLimiterMemory } from 'rate-limiter-flexible'
 import loginRoutes from './routes/login';
 import businessRoutes from './routes/business';
 import statementRoutes from './routes/statmentProductor';
@@ -19,7 +20,7 @@ class Server {
         consumer: '/api/v1/consumer',
         rates: '/api/v1/rates',
         establishment: '/api/v1/establishment'
-    }
+    };
     constructor() {
         this.app = express();
         this.port = process.env.PORT_SV || '3000';
@@ -44,21 +45,42 @@ class Server {
         });
     }
     config() {
+        const opts = {
+            points: 5, // 5 points
+            duration: 10, // Per second
+            blockDuration: 300, // block for 5 minutes if more than points consumed 
+        };
+        const rateLimiter = new RateLimiterMemory(opts);
+        const rateLimiterMiddleware = (req: any, res: any, next: any) => {
+            rateLimiter.consume(req.connection.remoteAddress)
+                .then(() => {
+                    next();
+                })
+                .catch((rejRes) => {
+                    res.status(429).json({
+                        status: false,
+                        msg: 'Too Many Requests'
+                    });
+                });
+        };
+        this.app.use(rateLimiterMiddleware);
         this.app.use(helmet({
-            contentSecurityPolicy: false,
+            contentSecurityPolicy: true,
             hidePoweredBy: true,
             frameguard: { action: 'deny' },
             crossOriginResourcePolicy: false,
-            crossOriginEmbedderPolicy: false,
+            crossOriginEmbedderPolicy: { policy: 'credentialless' },
+            crossOriginOpenerPolicy: true,
             xssFilter: true
         }));
         this.app.use(helmet.xssFilter());
         this.app.use(express.urlencoded({ extended: false }));
         this.app.use(express.json({ strict: true }));
         this.app.use(cors({ origin: '*' }));
-        this.app.use(fileUpload())
+        this.app.use(fileUpload({
+            limits: { fileSize: 1024 * 1024 * 1 }
+        }));
         this.app.use(morgan('dev'));
-
     }
     listen() {
         this.app.listen(this.port, () => {

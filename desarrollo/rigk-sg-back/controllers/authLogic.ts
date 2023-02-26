@@ -10,18 +10,18 @@ class AuthLogic {
         const user = req.uid;
         try {
             if (newPassword !== repeatPassword) {
-                return res.status(200).json({ status: false, msg: 'contraseña no coincide', data: {} })
+                return res.status(200).json({ status: false, msg: 'contraseña no coincide', data: {} });
             }
             else if (newPassword == '' || repeatPassword == '') {
-                return res.status(200).json({ status: false, msg: 'ingrese una contraseña', data: {} })
+                return res.status(200).json({ status: false, msg: 'ingrese una contraseña', data: {} });
             }
             else {
                 const output = await authDao.getPassword(user);
                 bcrypt.compare(actual, output.PASSWORD).then(async (r) => {
                     if (r) {
                         let passwordHash = bcrypt.hashSync(newPassword, 8);
-                        const output2 = await authDao.updatePassword(passwordHash, user);
-                        res.status(200).json({ status: true, msg: 'Contraseña cambiada', data: {} })
+                        await authDao.updatePassword(passwordHash, user);
+                        res.status(200).json({ status: true, msg: 'Contraseña cambiada', data: {} });
                     }
                     else {
                         res.status(200).json({ status: false, msg: 'Contraseña incorrecta, intenta nuevamente', data: {} });
@@ -43,13 +43,13 @@ class AuthLogic {
                         const token = await generarJWT(output.ID, user, output.ROL);
                         delete output.PASSWORD;
                         delete output.SALT;
-                        delete output.STATE
+                        delete output.STATE;
                         delete output.DATE_CODE;
                         delete output.CODE
                         delete output.ID;
                         res.header('x-token', token!.toString());
                         res.header("Access-Control-Expose-Headers", "*");
-                        res.status(200).json({ status: true, msg: '', data: { user: output } })
+                        res.status(200).json({ status: true, msg: '', data: { user: output } });
                     }
                     else {
                         res.status(200).json({ status: false, msg: 'Usuario y/o contraseña incorrectos, intenta nuevamente', data: {} });
@@ -61,12 +61,12 @@ class AuthLogic {
             }
         }
         catch (err) {
-            console.log(err)
+            console.log(err);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
     public async profile(req: any, res: Response) {
-        const {email} = req.params;
+        const { email } = req.params;
         try {
             const output = await authDao.login(email);
             delete output.PASSWORD;
@@ -75,9 +75,9 @@ class AuthLogic {
             delete output.DATE_CODE;
             delete output.CODE
             delete output.ID;
-            res.status(200).json({ status: true, msg: '', data: { user: output } })
+            res.status(200).json({ status: true, msg: '', data: { user: output } });
         } catch (error) {
-            console.log(error)
+            console.log(error);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
@@ -90,7 +90,7 @@ class AuthLogic {
                 await authDao.generateCode(cod, output.ID);
 
                 sendCode(output, cod, res);
-                res.status(200).json({ status: true, msg: '', data: output.EMAIL })
+                res.status(200).json({ status: true, msg: '', data: output.EMAIL });
             }
 
             else {
@@ -98,7 +98,7 @@ class AuthLogic {
             }
         }
         catch (err) {
-            console.log(err)
+            console.log(err);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
@@ -112,7 +112,7 @@ class AuthLogic {
                 const dateCode = new Date(output.DATE_CODE).getTime();
                 const dif2 = ((now - dateCode) / (60000));
                 if (dif2 <= 5) {
-                    res.status(200).json({ status: true, msg: 'Código correcto, modifique contraseña', data: {} })
+                    res.status(200).json({ status: true, msg: 'Código correcto, modifique contraseña', data: {} });
                 }
                 else {
                     res.status(200).json({ status: false, msg: 'Código expirado, solicitelo nuevamente', data: {} });
@@ -123,7 +123,7 @@ class AuthLogic {
             }
         }
         catch (err) {
-            console.log(err)
+            console.log(err);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
@@ -133,7 +133,7 @@ class AuthLogic {
         const repeatPassword = req.body.repeatPassword;
         try {
             if (password !== repeatPassword) {
-                return res.status(200).json({ status: false, msg: 'contraseña no coincide', data: {} })
+                return res.status(200).json({ status: false, msg: 'contraseña no coincide', data: {} });
             }
             else if (password == '' || repeatPassword == '') {
                 res.status(200).json({ status: false, msg: 'Contraseña vacía', data: {} });
@@ -141,19 +141,18 @@ class AuthLogic {
             else {
                 let passwordHash = bcrypt.hashSync(password, 8);
                 await authDao.recovery(passwordHash, user);
-                res.status(200).json({ status: true, msg: 'Haz recuperado tu contraseña', data: {} })
+                res.status(200).json({ status: true, msg: 'Haz recuperado tu contraseña', data: {} });
             }
         }
         catch (err) {
-            console.log(err)
+            console.log(err);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
-
     async register(req: Request, res: Response) {
         const user = req.body.EMAIL;
         const first_name = req.body.FIRST_NAME;
-        const last_name = req.body.LAST_NAME
+        const last_name = req.body.LAST_NAME;
         const password = req.body.PASSWORD || '1231231234';
         const phone = req.body.PHONE;
         const phone_office = req.body.PHONE_OFFICE;
@@ -173,11 +172,10 @@ class AuthLogic {
             res.status(200).json({ status: true, msg: 'Has creado usuario', data: {} });
         }
         catch (err) {
-            console.log(err)
+            console.log(err);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
-
     public async getUsers(req: Request, res: Response) {
         try {
             const users = await authDao.users();
@@ -185,18 +183,18 @@ class AuthLogic {
                 const u = users[i];
                 u.BUSINESS = (await authDao.getBusiness(u.ID));
             }
-            res.status(200).json({ status: true, msg: '', data: users })
+            res.status(200).json({ status: true, msg: '', data: users });
         } catch (error) {
-            console.log(error)
+            console.log(error);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
     public async getRoles(req: Request, res: Response) {
         try {
             const roles = await authDao.getRoles();
-            res.status(200).json({ status: true, msg: '', data: roles })
+            res.status(200).json({ status: true, msg: '', data: roles });
         } catch (error) {
-            console.log(error)
+            console.log(error);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
@@ -204,9 +202,9 @@ class AuthLogic {
         const { id } = req.params;
         try {
             await authDao.deleteUser(id);
-            res.status(200).json({ status: true, msg: 'Usuario eliminado', data: [] })
+            res.status(200).json({ status: true, msg: 'Usuario eliminado', data: [] });
         } catch (error) {
-            console.log(error)
+            console.log(error);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
@@ -220,11 +218,10 @@ class AuthLogic {
             }
             res.status(200).json({ status: true, msg: 'Usuario actualizado satisfactoriamente', data: [] });
         } catch (error) {
-            console.log(error)
+            console.log(error);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
 }
-
 const authLogic = new AuthLogic();
 export default authLogic;

@@ -1,10 +1,7 @@
-// const mysql = require("mysql2/promise");
 import mysql from 'mysql2/promise';
 import { env } from 'process';
 import dotenv from 'dotenv';
-
 dotenv.config();
-
 class DBConnection {
     constructor() {
         this.getConnection();
@@ -23,5 +20,4 @@ class DBConnection {
         }
     };
 }
-
 export default new DBConnection();
