@@ -67,7 +67,6 @@ class AuthLogic {
     }
     public async profile(req: any, res: Response) {
         const {email} = req.params;
-        console.log(email)
         try {
             const output = await authDao.login(email);
             delete output.PASSWORD;
