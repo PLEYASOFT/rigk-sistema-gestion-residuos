@@ -70,7 +70,7 @@ export class ProfileComponent implements OnInit {
   getProfile(email:string) {
     this.authService.getProfile(email).subscribe(r=>{
       sessionStorage.setItem('user', JSON.stringify(r.data.user));
-      this.userData = r.data.user
-    })
+      this.userData = r.data.user;
+    });
   }
 }
