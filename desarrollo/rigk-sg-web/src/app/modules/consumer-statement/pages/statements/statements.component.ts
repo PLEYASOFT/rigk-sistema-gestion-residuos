@@ -31,12 +31,7 @@ export class StatementsComponent implements OnInit {
     this.establishmentService.getDeclarationEstablishment().subscribe(r => {
       if (r.status) {
         r.status = r.status.sort(((a: any, b: any) => b.YEAR_STATEMENT - a.YEAR_STATEMENT));
-        for(let i = 0;i < r.status.length;i++){
-          if(!r.status[i].NAME_BUSINESS.includes(this.userData.BUSINESS)){
-            let a = r.status.splice(i, 1)
-            i--;
-          }
-        }
+        
         (r.status as any[]).forEach(e => {
 
           if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
