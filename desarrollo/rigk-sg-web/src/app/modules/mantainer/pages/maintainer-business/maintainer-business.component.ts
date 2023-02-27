@@ -267,4 +267,19 @@ export class MaintainerBusinessComponent implements OnInit {
   setArrayFromNumber() {
     return new Array(this.cant);
   }
+
+  filter(target: any) {
+    const value = target.value?.toLowerCase();
+    this.pos = 1;
+    if(target.value != ''){
+      this.cant = 1;
+      this.db = this.listBusiness.filter(r=>{
+        console.log(r)
+        if(r.NAME?.toLowerCase() == value || r.CODE_BUSINESS?.toLowerCase() == value || r.LOC_ADDRESS?.toLowerCase() == value || r.VAT?.toLowerCase() == value || r.PHONE?.toLowerCase() == value || r.EMAIL?.toLowerCase() == value) return r;
+      });
+      return;
+    }
+    this.db = this.listBusiness.slice(0,10);
+    this.cant = Math.ceil(this.listBusiness.length / 10);    
+  }
 }

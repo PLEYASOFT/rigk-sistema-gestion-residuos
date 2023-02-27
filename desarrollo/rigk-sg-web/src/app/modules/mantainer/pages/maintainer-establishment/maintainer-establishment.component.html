@@ -5,7 +5,13 @@
         <li class="breadcrumb-item"><a href="#">Mantenedor Establecimientos</a></li>
     </ol>
 </nav>
-
+<div style="height: 50px;"></div>
+<div class="row mb-3">
+    <div class="col-md-12">
+        <label>Filtro:</label>
+        <input type="text" class="form-control" placeholder="Filtro de búsqueda" (keyup)="filter($event.target)">
+    </div>
+</div>
 <h1>Establecimientos</h1>
 <div class="table-responsive mb-4">
     <!-- inicio Consulta de Declaración -->
@@ -20,7 +26,7 @@
 
                         <thead>
                             <tr class="text-center w-100">
-                                <th (click)="toggleDirection()">CÓDIGO EMPRESA <span [class]="direction === 'asc' ? 'arrow-up' : 'arrow-down'"></span></th>
+                                <th>CÓDIGO EMPRESA </th>
                                 <th>NOMBRE </th>
                                 <th>DIRECCIÓN </th>
                                 <th>ESTABLECIMIENTOS </th>
@@ -104,11 +110,19 @@
                         <div style="visibility: hidden;">a</div>
                         <div style="visibility: hidden;">a</div>
                         <div *ngIf="this.establishmentStatus && this.establishmentStatus.length > 0">
+                            <div style="height: 50px;"></div>
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label>Filtro:</label>
+                                    <input type="text" class="form-control" placeholder="Filtro de búsqueda"
+                                        (keyup)="filterForm($event.target)">
+                                </div>
+                            </div>
                             <table
                                 class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
                                 <thead>
                                     <tr class="text-center w-100">
-                                        <th  (click)="toggleDirectionEstablishments()">Establecimiento <span [class]="directionEstablishment === 'asc' ? 'arrow-up' : 'arrow-down'"></span></th>
+                                        <th>Establecimiento</th>
                                         <th>Región</th>
                                         <th>Eliminar</th>
                                     </tr>
