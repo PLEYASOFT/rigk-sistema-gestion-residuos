@@ -45,35 +45,34 @@ class Server {
         });
     }
     config() {
-        const opts = {
-            points: 5, // 5 points
-            duration: 10, // Per second
-            blockDuration: 300, // block for 5 minutes if more than points consumed 
-        };
-        const rateLimiter = new RateLimiterMemory(opts);
-        const rateLimiterMiddleware = (req: any, res: any, next: any) => {
-            rateLimiter.consume(req.connection.remoteAddress)
-                .then(() => {
-                    next();
-                })
-                .catch((rejRes) => {
-                    res.status(429).json({
-                        status: false,
-                        msg: 'Too Many Requests'
-                    });
-                });
-        };
-        this.app.use(rateLimiterMiddleware);
+        // const opts = {
+        //     points: 5, // 5 points
+        //     duration: 10, // Per second
+        //     blockDuration: 300, // block for 5 minutes if more than points consumed 
+        // };
+        // const rateLimiter = new RateLimiterMemory(opts);
+        // const rateLimiterMiddleware = (req: any, res: any, next: any) => {
+        //     rateLimiter.consume(req.connection.remoteAddress)
+        //         .then(() => {
+        //             next();
+        //         })
+        //         .catch((rejRes) => {
+        //             res.status(429).json({
+        //                 status: false,
+        //                 msg: 'Too Many Requests'
+        //             });
+        //         });
+        // };
+        // this.app.use(rateLimiterMiddleware);
         this.app.use(helmet({
             contentSecurityPolicy: true,
             hidePoweredBy: true,
             frameguard: { action: 'deny' },
-            crossOriginResourcePolicy: false,
+            crossOriginResourcePolicy: true,
             crossOriginEmbedderPolicy: { policy: 'credentialless' },
             crossOriginOpenerPolicy: true,
             xssFilter: true
         }));
-        this.app.use(helmet.xssFilter());
         this.app.use(express.urlencoded({ extended: false }));
         this.app.use(express.json({ strict: true }));
         this.app.use(cors({ origin: '*' }));
