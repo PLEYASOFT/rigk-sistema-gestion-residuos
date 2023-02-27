@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 })
 export class StatementsComponent implements OnInit {
 
+  userData: any | null;
   dbStatements: any[] = [];
   db: any[] = [];
   pos = 1;
@@ -22,6 +23,7 @@ export class StatementsComponent implements OnInit {
     private establishmentService: EstablishmentService) { }
 
   ngOnInit(): void {
+    this.userData = JSON.parse(sessionStorage.getItem('user')!);
     this.loadStatements();
   }
 
@@ -29,6 +31,7 @@ export class StatementsComponent implements OnInit {
     this.establishmentService.getDeclarationEstablishment().subscribe(r => {
       if (r.status) {
         r.status = r.status.sort(((a: any, b: any) => b.YEAR_STATEMENT - a.YEAR_STATEMENT));
+        
         (r.status as any[]).forEach(e => {
 
           if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
@@ -40,8 +43,8 @@ export class StatementsComponent implements OnInit {
         });
         this.years.sort((a, b) => b - a);
         this.dbStatements = r.status;
-        this.cant = Math.ceil(this.dbStatements.length / 2);
-        this.db = this.dbStatements.slice(0, 2).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+        this.cant = Math.ceil(this.dbStatements.length / 10);
+        this.db = this.dbStatements.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
       }
     })
   }
@@ -67,25 +70,25 @@ export class StatementsComponent implements OnInit {
         }
       }
     });
-    this.db = tmp.slice(0, 2).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
-    this.cant = Math.ceil(tmp.length / 2);
+    this.db = tmp.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+    this.cant = Math.ceil(tmp.length / 10);
   }
   reset() {
     this.loadStatements();
   }
   pagTo(i: number) {
     this.pos = i + 1;
-    this.db = this.dbStatements.slice((i * 2), (i + 1) * 2).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
+    this.db = this.dbStatements.slice((i * 10), (i + 1) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
   }
   next() {
     if (this.pos >= this.cant) return;
     this.pos++;
-    this.db = this.dbStatements.slice((this.pos - 1) * 2, (this.pos) * 2).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
+    this.db = this.dbStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
   }
   previus() {
     if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
     this.pos = this.pos - 1;
-    this.db = this.dbStatements.slice((this.pos - 1) * 2, (this.pos) * 2).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
+    this.db = this.dbStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
   }
   setArrayFromNumber() {
     return new Array(this.cant);

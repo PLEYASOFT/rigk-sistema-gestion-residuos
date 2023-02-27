@@ -3,7 +3,6 @@ import { AuthService } from '../../../../core/services/auth.service';
 import Swal from 'sweetalert2';
 import { FormBuilder, Validators } from '@angular/forms';
 import { BusinessService } from '../../../../core/services/business.service';
-
 @Component({
   selector: 'app-mantainer-users',
   templateUrl: './mantainer-users.component.html',
@@ -17,29 +16,22 @@ export class MantainerUsersComponent implements OnInit {
   listUser: any[] = [];
   listRoles: any[] = [];
   isEdit = false;
+  saving = false;
   userForm = this.fb.group({
     ID: [],
     FIRST_NAME: ['', [Validators.required]],
     LAST_NAME: ['', [Validators.required]],
     EMAIL: ['', [Validators.required, Validators.email, Validators.pattern(this.emailPattern)]],
     ROL: [0, [Validators.required, Validators.min(1)]],
-    PHONE: ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]],
-    PHONE_OFFICE: ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]],
-    POSITION: ['', [Validators.required]],
+    PHONE: ['', [Validators.required, Validators.pattern('^[0-9]{7,12}$')]],
+    PHONE_OFFICE: ['', [Validators.required, Validators.pattern('^[0-9]{7,12}$')]],
+    POSITION: ['', [Validators.required,Validators.min(1)]],
     BUSINESS: [[], [Validators.required]]
   })
-
   constructor(private authService: AuthService,
     private businesService: BusinessService,
     private fb: FormBuilder) { }
   ngOnInit(): void {
-    Swal.fire({
-      title: 'Cargando Datos',
-      text: 'Se está recuperando datos',
-      timerProgressBar: true,
-      showConfirmButton: false
-    });
-    Swal.showLoading();
     this.loadUsers();
     this.loadBusiness();
     this.loadRoles();
@@ -49,33 +41,43 @@ export class MantainerUsersComponent implements OnInit {
       if (r.status) {
         this.business = r.status;
         this.business.map(r => {
-          r.view_name = `${r.CODE_BUSINESS} | ${r.NAME}`
-        })
+          r.view_name = `${r.CODE_BUSINESS} | ${r.NAME}`;
+        });
       }
-    })
+    });
   }
   filter(target: any) {
-    const value = target.value?.toLowerCase();
+    const value = target.value?.toLowerCase().trim();
     this.pos = 1;
-    if(target.value != ''){
+    if (target.value != '') {
       this.cant = 1;
-      this.db = this.listUser.filter(r=>{
-        if(r.FIRST_NAME?.toLowerCase() == value || r.LAST_NAME?.toLowerCase() == value || r.PHONE?.toLowerCase() == value || r.ROL_NAME?.toLowerCase() == value || r.EMAIL?.toLowerCase() ==value || r.PHONE_OFFICE?.toLowerCase() == value || r.POSITION?.toLowerCase() == value) return r;
+      this.db = this.listUser.filter(r => {
+        const name = `${r.FIRST_NAME?.toLowerCase()} ${r.LAST_NAME?.toLowerCase()}`;
+        if (r.FIRST_NAME?.toLowerCase().indexOf(value) > -1 || r.LAST_NAME?.toLowerCase().indexOf(value) > -1 || r.PHONE?.toLowerCase().indexOf(value) > -1 || r.ROL_NAME?.toLowerCase().indexOf(value) > -1 || r.EMAIL?.toLowerCase().indexOf(value) > -1 || r.PHONE_OFFICE?.toLowerCase().indexOf(value) > -1 || r.POSITION?.toLowerCase().indexOf(value) > -1 || name.indexOf(value) > -1) return r;
       });
       return;
     }
-    this.db = this.listUser.slice(0,10);
-    this.cant = Math.ceil(this.listUser.length / 10);    
+    this.db = this.listUser.slice(0, 10);
+    this.cant = Math.ceil(this.listUser.length / 10);
   }
-
   loadRoles() {
     this.authService.getRoles.subscribe(r => {
       if (r.status) {
         this.listRoles = r.data;
       }
-    })
+    });
   }
   loadUsers() {
+    Swal.fire({
+      title: 'Cargando Datos',
+      text: 'Se está recuperando datos',
+      timerProgressBar: true,
+      showConfirmButton: false,
+      allowEscapeKey: false,
+      allowOutsideClick: false
+    });
+    Swal.showLoading();
+    (document.getElementById('inp_filter') as HTMLInputElement).value = '';
     this.authService.getUsers.subscribe(r => {
       if (r.status) {
         this.listUser = r.data;
@@ -83,21 +85,19 @@ export class MantainerUsersComponent implements OnInit {
         this.db = this.listUser.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
         Swal.close();
       }
-    })
+    });
   }
-
-  showBusiness(e:any[]) {
-    let tmp:any = [];
+  showBusiness(e: any[]) {
+    let tmp: any = [];
     e.forEach(b => {
-      tmp.push(b.NAME)
+      tmp.push(b.NAME);
     });
     return tmp.join(', ');
   }
-  showName(id: any){
-    const b = this.business.find(r=>r.ID == id);
+  showName(id: any) {
+    const b = this.business.find(r => r.ID == id);
     return `${b.CODE_BUSINESS} | ${b.NAME}`;
   }
-
   selectUser(id: number) {
     this.isEdit = true;
     const user = this.listUser.find(r => r.ID == id);
@@ -112,7 +112,6 @@ export class MantainerUsersComponent implements OnInit {
     const tmp = user.BUSINESS?.map((r: any) => r.ID_BUSINESS);
     this.userForm.controls['BUSINESS'].setValue(tmp);
   }
-
   deleteUser(id: number) {
     const user = this.listUser.find(r => r.ID == id);
     Swal.fire({
@@ -129,28 +128,26 @@ export class MantainerUsersComponent implements OnInit {
             Swal.fire({
               icon: 'success',
               text: r.msg
-            })
+            });
             this.loadUsers();
             this.pos = 1;
           }
-        })
+        });
       }
-    })
+    });
   }
-
   verifyEmail() {
     const email = this.userForm.value.EMAIL;
     const user = this.listUser.find(r => r.EMAIL == email);
-    if (!user || user.ID == this.userForm.value.ID){
-      this.showErrorEmail= true;
-      return false
-    };
-
+    if (!user || user.ID == this.userForm.value.ID) {
+      this.showErrorEmail = true;
+      this.userForm.controls['EMAIL'].setErrors({used:true});
+      return false;
+    }
     this.userForm.controls['EMAIL'].setErrors({ notUnique: true });
     this.showErrorEmail = false;
     return false;
   }
-
   verifyEmail2(e: any) {
     if (e?.notUnique) {
       return true;
@@ -158,8 +155,8 @@ export class MantainerUsersComponent implements OnInit {
     return false;
   }
   saveForm() {
+    this.saving = true;
     if (this.userForm.invalid) return;
-
     if (this.isEdit) {
       this.authService.updateUser(this.userForm.value).subscribe(r => {
         if (r.status) {
@@ -167,9 +164,10 @@ export class MantainerUsersComponent implements OnInit {
           Swal.fire({
             icon: 'success',
             text: r.msg
-          })
+          });
           this.loadUsers();
           this.pos = 1;
+          this.saving = false;
         }
       });
     } else {
@@ -182,11 +180,11 @@ export class MantainerUsersComponent implements OnInit {
           });
           this.loadUsers();
           this.pos = 1;
+          this.saving = false;
         }
       });
     }
   }
-
   pos = 1;
   db: any[] = [];
   cant = 0;

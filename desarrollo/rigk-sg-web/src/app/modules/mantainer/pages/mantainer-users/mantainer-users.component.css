@@ -1,17 +1,18 @@
-:host
-{
-    width: 100% !important;
-    padding: 1%;
+:host {
+  width: 100% !important;
+  padding: 1%;
 }
 .buttonRight {
-    position: absolute;
-    right: 40px;
-  }
-
-  :host ::ng-deep .p-multiselect {
-    min-width: 15rem;
-    width: 100%;
+  position: absolute;
+  right: 40px;
 }
-.ng-invalid:not(form)  {
-  border: 1px solid #a94442; /* red */
+:host ::ng-deep .p-multiselect {
+  min-width: 15rem;
+  width: 100%;
+  border-radius: 100px !important;
+}
+:host ::ng-deep .p-multiselect .p-multiselect-label {
+  padding: 8px !important;
+  border-radius: 100px !important;
+  border-color: red !important;
 }

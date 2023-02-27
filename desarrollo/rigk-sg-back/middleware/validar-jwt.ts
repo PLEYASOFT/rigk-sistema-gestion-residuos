@@ -1,6 +1,5 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 const jwt = require('jsonwebtoken');
-
 export const validarJWT = (req: any, res: Response, next: NextFunction) => {
     const token = req.header('x-token');
     if (!token) {
@@ -11,7 +10,7 @@ export const validarJWT = (req: any, res: Response, next: NextFunction) => {
         });
     }
     try {
-        const { uid, name, rol } = jwt.verify(token, process.env.SECRET_JWT_SEED!);
+        const { uid, name } = jwt.verify(token, process.env.SECRET_JWT_SEED!);
         req.uid = uid;
         req.name = name;
     } catch (error) {
