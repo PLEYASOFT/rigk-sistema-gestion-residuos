@@ -195,8 +195,8 @@
                                     <input type="invoice_phone" class="form-control" id="invoice_phone" formControlName="invoice_phone" placeholder="Teléfono/Celular contacto facturación">
                                 </div>
                                 <div *ngIf="formData.controls['invoice_phone'].errors && formData.controls['invoice_phone'].touched" class="text-danger pl-0">
-                                    <p *ngIf="formData.controls['invoice_phone'].errors['required']">El teléfono de facturación es requerido (9 dígitos).</p>
-                                    <p *ngIf="formData.controls['invoice_phone'].errors['pattern']">El formato del teléfono es inválido (9 dígitos).</p>
+                                    <p *ngIf="formData.controls['invoice_phone'].errors['required']">El teléfono de facturación es requerido (entre 7 y 12 dígitos).</p>
+                                    <p *ngIf="formData.controls['invoice_phone'].errors['pattern']">El formato del teléfono es inválido (entre 7 y 12 dígitos).</p>
                                 </div>
                             </div>
                             <div class="mb-4">

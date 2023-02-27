@@ -1,5 +1,4 @@
 import Joi from "joi";
-
 export const userScheme = Joi.object({
     ID: Joi.number().allow(null),
     FIRST_NAME: Joi.string(),

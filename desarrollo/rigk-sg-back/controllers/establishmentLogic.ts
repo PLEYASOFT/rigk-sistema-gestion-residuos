@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 import establishmentDao from '../dao/establishmentDao';
-
-
 class EstablishmentLogic {
-
     async addEstablishment(req: Request, res: Response) {
         const name = req.body.name;
         const region = req.body.region;
@@ -17,9 +14,7 @@ class EstablishmentLogic {
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
-
     async getAllEstablishment(req: any, res: Response) {
-
         try {
             const establishment = await establishmentDao.getAllEstablishment();
             res.status(200).json({ status: establishment, data: {}, msg: '' });
@@ -31,7 +26,6 @@ class EstablishmentLogic {
             });
         }
     }
-
     async getEstablishment(req: any, res: Response) {
         const id = req.params.id;
         try {
@@ -45,7 +39,6 @@ class EstablishmentLogic {
             });
         }
     }
-
     async deleteEstablishment(req: any, res: Response) {
         const id = req.params.id;
         try {
@@ -59,7 +52,6 @@ class EstablishmentLogic {
             });
         }
     }
-
     async getDeclarationEstablishment(req: any, res: Response) {
         try {
             const establishment = await establishmentDao.getDeclarationEstablishment(req.uid);
@@ -73,6 +65,5 @@ class EstablishmentLogic {
         }
     }
 }
-
 const establishmentLogic = new EstablishmentLogic();
 export default establishmentLogic;
