@@ -1,5 +1,4 @@
 import Joi from 'joi';
-
 export const statementProductorFormScheme = Joi.object({
     header: Joi.object({
         id_business: Joi.string()
@@ -28,7 +27,6 @@ export const statementProductorFormScheme = Joi.object({
     })),
 
 });
-
 export const statementByIdScheme = Joi.object({
     business: Joi.string()
         .required(),

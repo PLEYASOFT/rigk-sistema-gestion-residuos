@@ -1,10 +1,6 @@
 import mysqlcon from '../db';
-
 class IndustrialConsumerDao {
-
     public async saveForm(header: any, detail: any[], attached: any) {
-        const { Blob } = require("buffer");
-
         const conn = mysqlcon.getConnection()!;
         const resp_header: any = await conn.execute("INSERT INTO header_industrial_consumer_form(ID_ESTABLISHMENT,CREATED_BY,YEAR_STATEMENT) VALUES(?,?,?)", [header.establishment, header.created_by, header.year]).then((res) => res[0]).catch(error => [{ undefined }]);
         const id_header = resp_header.insertId;
@@ -41,13 +37,12 @@ class IndustrialConsumerDao {
         if (res != null && res != undefined && res.length > 0) {
             isOk = true;
             conn?.end();
-            return isOk
+            return isOk;
         } else {
             conn?.end();
-            return isOk
+            return isOk;
         }
     }
 }
-
 const industrialConsumerDao = new IndustrialConsumerDao();
 export default industrialConsumerDao;

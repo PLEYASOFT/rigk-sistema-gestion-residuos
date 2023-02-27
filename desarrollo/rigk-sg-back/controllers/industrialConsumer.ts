@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import industrialConsumerDao from "../dao/industrialConsumerDao";
-
 class IndustrialConsumer {
     public async saveForm(req: any, res: Response) {
         const header = JSON.parse(req.body.header);
@@ -8,7 +7,6 @@ class IndustrialConsumer {
         const files = req.files;
         try {
             header.created_by = req['uid'];
-
             const id_header = await industrialConsumerDao.saveForm(header, detail, files);
             res.json({ status: true, data: id_header });
         } catch (error) {
@@ -46,6 +44,5 @@ class IndustrialConsumer {
         }
     }
 }
-
 const industrialConsumer = new IndustrialConsumer();
 export default industrialConsumer;
