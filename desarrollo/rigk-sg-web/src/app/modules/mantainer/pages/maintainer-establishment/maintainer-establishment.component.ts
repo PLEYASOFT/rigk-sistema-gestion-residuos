@@ -230,8 +230,10 @@ export class MaintainerEstablishmentComponent implements OnInit {
   verificarEstablecimiento() {
     const { FIRST_NAME, REGION } = this.userForm.value;
     let existe = false;
+    const nombreEstablecimiento = FIRST_NAME.trim(); // eliminando espacios en blanco adicionales al inicio y al final de la cadena de texto
+
     for (let i = 0; i < this.establishmentStatus.length; i++) {
-      if (this.establishmentStatus[i].NAME_ESTABLISHMENT === FIRST_NAME && this.establishmentStatus[i].REGION === REGION) {
+      if (this.establishmentStatus[i].NAME_ESTABLISHMENT.toLowerCase() === nombreEstablecimiento.toLowerCase() && this.establishmentStatus[i].REGION === REGION) {
         existe = true;
         break;
       }
@@ -255,5 +257,33 @@ export class MaintainerEstablishmentComponent implements OnInit {
     this.establishmentStatus.reverse();
     this.cant2 = Math.ceil(this.establishmentStatus.length / 10);
     this.db2 = this.establishmentStatus.slice(0, 10).reverse();
+  }
+
+  filter(target: any) {
+    const value = target.value?.toLowerCase();
+    this.pos = 1;
+    if(target.value != ''){
+      this.cant = 1;
+      this.db = this.listBusiness.filter(r=>{
+        if(r.NAME?.toLowerCase() == value || r.CODE_BUSINESS?.toLowerCase() == value || r.LOC_ADDRESS?.toLowerCase() == value) return r;
+      });
+      return;
+    }
+    this.db = this.listBusiness.slice(0,10);
+    this.cant = Math.ceil(this.listBusiness.length / 10);    
+  }
+
+  filterForm(target: any) {
+    const value = target.value?.toLowerCase();
+    this.pos2 = 1;
+    if(target.value != ''){
+      this.cant2 = 1;
+      this.db2 = this.establishmentStatus.filter((r: any)=>{
+        if(r.NAME_ESTABLISHMENT?.toLowerCase() == value || r.REGION?.toLowerCase() == value) return r;
+      });
+      return;
+    }
+    this.db2 = this.establishmentStatus.slice(0,10);
+    this.cant2 = Math.ceil(this.establishmentStatus.length / 10);    
   }
 }

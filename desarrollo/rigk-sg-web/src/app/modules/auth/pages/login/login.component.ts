@@ -40,7 +40,6 @@ export class LoginComponent implements OnInit {
     const { user, password } = this.formData.value;
     this.authService.login(user,password).subscribe({
       next: resp=> {
-        console.log(resp.body)
         if (!resp.body.status) {
           this.error = true;
           this.msg = resp.body.msg;

@@ -54,7 +54,7 @@ class EstablishmentLogic {
     }
     async getDeclarationEstablishment(req: any, res: Response) {
         try {
-            const establishment = await establishmentDao.getDeclarationEstablishment();
+            const establishment = await establishmentDao.getDeclarationEstablishment(req.uid);
             res.status(200).json({ status: establishment, data: {}, msg: '' });
         } catch (err) {
             console.log(err);

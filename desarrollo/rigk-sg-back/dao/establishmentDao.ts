@@ -34,13 +34,14 @@ class EstablishmentDao {
         conn.end();
         return res;
     }
-    public async getDeclarationEstablishment() {
+
+    public async getDeclarationEstablishment(ID:any) {
         const conn = mysqlcon.getConnection()!;
         const data: any = await conn.execute(`SELECT establishment.NAME_ESTABLISHMENT, header_industrial_consumer_form.CREATED_AT, header_industrial_consumer_form.YEAR_STATEMENT,
                                                 header_industrial_consumer_form.ID AS ID_HEADER, business.NAME as NAME_BUSINESS FROM header_industrial_consumer_form
                                                 INNER JOIN establishment ON establishment.ID = header_industrial_consumer_form.ID_ESTABLISHMENT
                                                 INNER JOIN establishment_business ON establishment_business.ID_ESTABLISHMENT = establishment.ID
-                                                INNER JOIN business ON business.ID = establishment_business.ID_BUSINESS`).then(res => res[0]).catch(erro => undefined);
+                                                INNER JOIN business ON business.ID = establishment_business.ID_BUSINESS WHERE establishment_business.ID_ESTABLISHMENT IN (SELECT ID_ESTABLISHMENT FROM establishment_business WHERE ID_BUSINESS IN (SELECT ID_BUSINESS FROM user_business WHERE ID_USER = ?))`,[ID]).then(res => res[0]).catch(erro => {console.log(erro);return undefined});
 
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
