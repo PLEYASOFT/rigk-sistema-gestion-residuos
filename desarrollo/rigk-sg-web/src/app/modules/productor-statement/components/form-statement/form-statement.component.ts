@@ -15,7 +15,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
   /**
  * BORRAR
  */
-  tablas = ['EyE Reciclables', 'EyE No Reciclables', 'EyE Retornables / Reutilizados'];
+  tablas = ['EyE Reciclables', 'EyE No Reciclables', 'EyE Retornables / Reutilizables'];
   residuos = [
     'Papel/Cartón',
     'Metal',
