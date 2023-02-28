@@ -16,7 +16,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
 
   @ViewChild("table1") table!: ElementRef;
 
-  tablas = ['Reciclable', 'No Reciclable', 'Retornables / Reutilizados'];
+  tablas = ['Reciclable', 'No Reciclable', 'Retornables / Reutilizables'];
   residuos = [
     'Papel/Cartón Reciclable',
     'Metal Reciclable',
