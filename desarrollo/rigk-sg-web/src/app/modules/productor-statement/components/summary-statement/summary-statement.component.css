@@ -5,3 +5,11 @@
 #mi-tabla {
     width: 25% !important;
 }
+
+.mi-columna {
+    width: 100px;
+  }
+
+.columna-doble {
+    width: 200px;
+}

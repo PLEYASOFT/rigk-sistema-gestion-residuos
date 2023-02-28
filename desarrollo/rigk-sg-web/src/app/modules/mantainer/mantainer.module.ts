@@ -11,6 +11,7 @@ import { MantainerUsersComponent } from './pages/mantainer-users/mantainer-users
 import { MaintainerEstablishmentComponent } from './pages/maintainer-establishment/maintainer-establishment.component';
 
 import {MultiSelectModule} from 'primeng/multiselect';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import {MultiSelectModule} from 'primeng/multiselect';
     MantainerRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    MultiSelectModule
+    MultiSelectModule,
+    SharedModule
   ]
 })
 export class MantainerModule { }

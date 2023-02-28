@@ -21,7 +21,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     'Papel/Cartón Reciclable',
     'Metal Reciclable',
     'Plástico Reciclable',
-    'No Reciclables *',
+    'No Reciclables',
     'Retornables'
   ];
 
