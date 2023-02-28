@@ -15,6 +15,13 @@ class AuthDao {
     async login(USER: string) {
         const conn = mysqlcon.getConnection()!;
         const res: any = await conn.query("SELECT USER.*,USER_ROL.ROL_ID AS ROL, ROL.NAME AS ROL_NAME, BUSINESS.NAME AS BUSINESS, BUSINESS.ID as ID_BUSINESS FROM USER INNER JOIN USER_ROL ON USER_ROL.USER_ID = USER.ID INNER JOIN USER_BUSINESS ON USER_BUSINESS.ID_USER = USER.ID INNER JOIN BUSINESS ON BUSINESS.ID = USER_BUSINESS.ID_BUSINESS INNER JOIN ROL ON ROL.ID=USER_ROL.ROL_ID WHERE USER.EMAIL = ?", [USER]).then((res) => res[0]).catch(error => [{ undefined }]);
+        let user:any = {}
+        let name_business = []
+        for(let i =0; i< res.length;i++){
+            name_business.push(res[i].BUSINESS);
+        }
+        user = {...res[0]}
+        user.BUSINESS = name_business;
         let login = false;
         if (res != null && res != undefined && res.length > 0) {
             login = true;
