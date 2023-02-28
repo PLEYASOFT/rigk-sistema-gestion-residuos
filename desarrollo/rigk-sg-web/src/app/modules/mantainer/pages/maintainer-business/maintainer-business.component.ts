@@ -268,8 +268,7 @@ export class MaintainerBusinessComponent implements OnInit {
     if(target.value != ''){
       this.cant = 1;
       this.db = this.listBusiness.filter(r=>{
-        console.log(r)
-        if(r.NAME?.toLowerCase() == value || r.CODE_BUSINESS?.toLowerCase() == value || r.LOC_ADDRESS?.toLowerCase() == value || r.VAT?.toLowerCase() == value || r.PHONE?.toLowerCase() == value || r.EMAIL?.toLowerCase() == value) return r;
+        if(r.NAME?.toLowerCase().indexOf(value) > -1 || r.CODE_BUSINESS?.toLowerCase().indexOf(value) > -1 || r.LOC_ADDRESS?.toLowerCase().indexOf(value) > -1 || r.VAT?.toLowerCase().indexOf(value) > -1 || r.PHONE?.toLowerCase().indexOf(value) > -1 || r.EMAIL?.toLowerCase().indexOf(value) > -1) return r;
       });
       return;
     }

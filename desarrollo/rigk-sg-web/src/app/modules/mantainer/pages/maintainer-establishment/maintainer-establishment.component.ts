@@ -265,7 +265,7 @@ export class MaintainerEstablishmentComponent implements OnInit {
     if(target.value != ''){
       this.cant = 1;
       this.db = this.listBusiness.filter(r=>{
-        if(r.NAME?.toLowerCase() == value || r.CODE_BUSINESS?.toLowerCase() == value || r.LOC_ADDRESS?.toLowerCase() == value) return r;
+        if(r.NAME?.toLowerCase().indexOf(value) > -1 || r.CODE_BUSINESS?.toLowerCase().indexOf(value) > -1 || r.LOC_ADDRESS?.toLowerCase().indexOf(value) > -1) return r;
       });
       return;
     }
@@ -279,7 +279,7 @@ export class MaintainerEstablishmentComponent implements OnInit {
     if(target.value != ''){
       this.cant2 = 1;
       this.db2 = this.establishmentStatus.filter((r: any)=>{
-        if(r.NAME_ESTABLISHMENT?.toLowerCase() == value || r.REGION?.toLowerCase() == value) return r;
+        if(r.NAME_ESTABLISHMENT?.toLowerCase().indexOf(value) > -1 || r.REGION?.toLowerCase().indexOf(value) > -1) return r;
       });
       return;
     }
