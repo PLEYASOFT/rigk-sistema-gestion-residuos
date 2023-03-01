@@ -53,6 +53,7 @@ export class FormComponent implements OnInit {
   id_business = "0";
   year_statement = 0;
   establishment = "";
+  goTo = '/consumidor/';
   data: { table: number, residue: number, val: number, date_withdraw: string, id_gestor: number }[] = [];
   constructor(public establishmentService: EstablishmentService,
     public consumerService: ConsumerService,
@@ -75,6 +76,7 @@ export class FormComponent implements OnInit {
   ngOnInit(): void {
   }
   loadForm(id: any) {
+    this.goTo = '/consumidor/statements';
     this.consumerService.getForm(id).subscribe({
       next: r => {
         const { header, detail, attached } = r.data;
@@ -126,7 +128,6 @@ export class FormComponent implements OnInit {
     if (!pattern.test(target.value)) {
       target.value = 0;
     }
-
     let value = parseFloat(target.value.replace(",", "."));
     if (!target.value || isNaN(value) || value < 0) {
       value = 0;
@@ -139,9 +140,10 @@ export class FormComponent implements OnInit {
       this.data.push({ table, residue, val: value, date_withdraw: "", id_gestor: 0 });
     }
     this.total_tables[table] = 0;
-    this.data.forEach(e => {
-      if (e.table == table && e.residue == residue) this.total_tables[table] += e.val;
-    });
+    for (let i = 0; i < this.data.length; i++) {
+      const e = this.data[i];
+      if (e.table == table) this.total_tables[table] += e.val;
+    }
   }
   updateGestor(table: number, residue: number, target: any) {
     const reg = this.data.find(r => r?.residue == residue && r?.table == table);
@@ -167,7 +169,7 @@ export class FormComponent implements OnInit {
     if (target.files[0].size / 1000 > 1000) {
       Swal.fire({
         icon: 'info',
-        text: 'Archivo excede el tamaño permitido.'
+        text: 'Archivo excede el tamaño permitido (1Mb).'
       });
       document.getElementById(`btn_f_${col}_${table}_${residue}`)?.classList.add('d-none');
       (document.getElementById(`f_${col}_${table}_${residue}`) as HTMLInputElement).value = '';
@@ -214,7 +216,26 @@ export class FormComponent implements OnInit {
     }
     for (let i = 0; i < this.data.length; i++) {
       const reg = this.data[i];
-      if ((reg.val == 0 && (reg.date_withdraw != "" || reg.id_gestor > 0)) || (reg.val > 0 && (reg.date_withdraw == "" || reg.id_gestor == 0))) error = "Falta ingresar fecha de retiro o gestor";
+      if ((reg.val == 0 && (reg.date_withdraw != "" || reg.id_gestor > 0))) {
+        error = "Falta ingresar peso";
+        break;
+      } else if (reg.val > 0 && (reg.date_withdraw == "" || reg.id_gestor == 0)) {
+        error = "Falta ingresar fecha de retiro o gestor";
+        break;
+      } else if (reg.val == 0 && (reg.date_withdraw == "" || reg.id_gestor == 0)) {
+        this.data.splice(i, 1);
+        if (this.data.length == 0) {
+          error = "Formulario está vacío";
+        }
+        break;
+      }
+    }
+    if (error) {
+      Swal.fire({
+        icon: 'error',
+        text: error
+      });
+      return;
     }
     for (let i = 0; i < this.attached.length; i++) {
       const f = this.attached[i];
@@ -229,8 +250,9 @@ export class FormComponent implements OnInit {
     }
     Swal.fire({
       icon: 'info',
-      text: `Enviando formulario ${this.attached.length > 0} ? 'y subiendo archivos':''`
-    })
+      title: 'Espere...',
+      text: `Enviando formulario`
+    });
     Swal.showLoading();
     const header = { year: this.year_statement, establishment: this.selectedEstablishment[0] };
     const detail = { data: this.data, attached: this.attached };
@@ -247,13 +269,20 @@ export class FormComponent implements OnInit {
             }
           });
         }
+      },
+      error: r => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          text: 'Ocurrió un error mientras se enviaba el formulario.'
+        });
       }
     });
   }
   downloadFile(table: number, residue: number, col: number) {
-    const i = this.attached.findIndex(r => r.PRECEDENCE == table && r.TYPE_RESIDUE == residue);
-    if (i > -1) {
-      const f = this.attached[i];
+    const i = this.attached.filter(r => r.PRECEDENCE == table && r.TYPE_RESIDUE == residue);
+    if (i.length > 0) {
+      const f = i[col - 1];
       var blob = new Blob([new Uint8Array(f.FILE.data)], { type: "Buffer" });
       var link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
@@ -269,5 +298,8 @@ export class FormComponent implements OnInit {
     }
     document.getElementById(`btn_f_${col}_${table}_${residue}`)?.classList.add('d-none');
     (document.getElementById(`f_${col}_${table}_${residue}`) as HTMLInputElement).value = '';
+  }
+  goBack() {
+    this.router.navigate([this.goTo]);
   }
 }
