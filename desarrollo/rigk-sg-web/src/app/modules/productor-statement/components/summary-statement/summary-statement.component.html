@@ -17,19 +17,18 @@
                         class="table table-even table-section table-borderless table-align-middle table-border table-radius d-lg-table table-statement">
                         <thead>
                             <tr>
-                                <th colspan="13" style="margin-bottom: 100px;">Resumen Materiales {{year_statement}}
-                                    (Ton)</th>
+                                <th colspan="13" style="margin-bottom: 100px;">Resumen de EyE por subcategoría</th>
                             </tr>
                         </thead>
                         <p></p>
                         <thead>
                             <tr class="text-center w-100">
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Subcategoría</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">{{year_statement - 1}}</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">{{year_statement}}</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Ajuste {{year_statement -
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Subcategoría</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">{{year_statement - 1}}</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">{{year_statement}}</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Ajuste {{year_statement -
                                     1}} vs {{year_statement}} (Ton)</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Total Corregido (Ton)</th>
+                                <th class="columna-doble" style="background-color: rgb(8, 148, 110);color: white;">Total Neto (Ton)</th>
                             </tr>
                         </thead>
 
@@ -56,7 +55,7 @@
         </div>
         <tr>
             <td colspan="13">
-                <span>*</span> No considera EyE de madera no reciclable
+                No considera EyE de madera no reciclable
             </td>
         </tr>
         <p></p>
@@ -82,15 +81,15 @@
                         <p></p>
                         <thead>
                             <tr class="text-center w-100">
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Subcategoría</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Ecotarifa {{+year_statement
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Subcategoría</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Ecotarifa {{+year_statement
                                     + 1}} (UF)</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Costo Anual
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Costo Anual
                                     {{year_statement}} (UF)</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Ajuste {{year_statement -
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Ajuste {{year_statement -
                                     1}} vs {{year_statement}} (UF)</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Total corregido (UF)</th>
-                                <th style="background-color: rgb(8, 148, 110);color: white;">Total Bruto (CLP) + IVA
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Total corregido (UF)</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Total Bruto (CLP) + IVA
                                 </th>
                             </tr>
                         </thead>
@@ -121,11 +120,6 @@
                 </div>
             </div>
         </div>
-        <tr>
-            <td colspan="13">
-                <span>*</span> No considera EyE de madera no reciclable
-            </td>
-        </tr>
         <p></p>
         La factura se enviará con el valor de la UF al momento de enviar la declaración.
         <p></p>
@@ -181,7 +175,7 @@
         </div>
         <tr>
             <td colspan="13">
-                <span>*</span> El Costo Total en $CL se factura con el valor de la UF al momento de enviar la declaración. A ese Monto Neto se le agrega el IVA.
+                El Costo Total en $CL se factura con el valor de la UF al momento de enviar la declaración. A ese Monto Neto se le agrega el IVA.
             </td>
         </tr>
     </section>

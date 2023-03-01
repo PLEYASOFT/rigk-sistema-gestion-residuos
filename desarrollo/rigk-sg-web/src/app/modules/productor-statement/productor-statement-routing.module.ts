@@ -6,6 +6,7 @@ import { LayoutComponent } from './pages/layout/layout.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { StatementsComponent } from './pages/statements/statements.component';
 import { SummaryStatementComponent } from './components/summary-statement/summary-statement.component';
+import { FaqComponent } from 'src/app/shared/components/faq/faq.component';
 
 const routes: Routes = [
   {
@@ -17,6 +18,7 @@ const routes: Routes = [
       { path: 'profile', component: ProfileComponent },
       { path: 'statements', component: StatementsComponent },
       { path: 'summary', component: SummaryStatementComponent },
+      { path: 'faq', component: FaqComponent },
       { path: '**', redirectTo: 'home', pathMatch: 'full' }
     ]
   }

@@ -6,6 +6,7 @@ import { MaintainerBusinessComponent } from './pages/maintainer-business/maintai
 import { ProfileComponent } from './pages/profile/profile.component';
 import { MaintainerEstablishmentComponent } from './pages/maintainer-establishment/maintainer-establishment.component';
 import { MantainerUsersComponent } from './pages/mantainer-users/mantainer-users.component';
+import { FaqComponent } from 'src/app/shared/components/faq/faq.component';
 
 const routes: Routes = [{
   path: '',
@@ -16,6 +17,7 @@ const routes: Routes = [{
   { path: 'business', component: MaintainerBusinessComponent },
   { path: 'establishment', component: MaintainerEstablishmentComponent },
   { path: 'users', component: MantainerUsersComponent },
+  { path: 'faq', component: FaqComponent },
   { path: '**', redirectTo: 'home', pathMatch: 'full' }]
 }
   

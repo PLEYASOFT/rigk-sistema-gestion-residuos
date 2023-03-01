@@ -268,7 +268,7 @@ export class MaintainerBusinessComponent implements OnInit {
     if(target.value != ''){
       this.cant = 1;
       this.db = this.listBusiness.filter(r=>{
-        if(r.NAME?.toLowerCase().indexOf(value) > -1 || r.CODE_BUSINESS?.toLowerCase().indexOf(value) > -1 || r.LOC_ADDRESS?.toLowerCase().indexOf(value) > -1 || r.VAT?.toLowerCase().indexOf(value) > -1 || r.PHONE?.toLowerCase().indexOf(value) > -1 || r.EMAIL?.toLowerCase().indexOf(value) > -1) return r;
+        if(r.NAME?.toLowerCase().indexOf(value) > -1 || r.CODE_BUSINESS?.toLowerCase().indexOf(value) > -1 || r.LOC_ADDRESS?.toLowerCase().indexOf(value) > -1 || r.VAT?.toLowerCase().indexOf(value) > -1 || r.PHONE?.toLowerCase().indexOf(value) > -1 || r.EMAIL?.toLowerCase().indexOf(value) > -1 || r.GIRO?.toLowerCase().indexOf(value) > -1 || r.AM_FIRST_NAME?.toLowerCase().indexOf(value) > -1 || r.AM_LAST_NAME?.toLowerCase().indexOf(value) > -1 || r.INVOICE_NAME?.toLowerCase().indexOf(value) > -1 || r.INVOICE_EMAIL?.toLowerCase().indexOf(value) > -1 || r.INVOICE_PHONE?.toLowerCase().indexOf(value) > -1) return r;
       });
       return;
     }

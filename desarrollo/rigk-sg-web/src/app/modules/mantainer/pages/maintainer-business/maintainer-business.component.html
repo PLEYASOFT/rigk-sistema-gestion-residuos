@@ -138,8 +138,8 @@
                                     <input type="phone" class="form-control" id="phone" formControlName="phone" placeholder="Teléfono/Celular">
                                 </div>
                                 <div *ngIf="formData.controls['phone'].errors && formData.controls['phone'].touched" class="text-danger pl-0">
-                                    <p *ngIf="formData.controls['phone'].errors['required']">El número de Teléfono/Celular de la empresa es requerido (9 dígitos).</p>
-                                    <p *ngIf="formData.controls['phone'].errors['pattern']">El formato del Teléfono/Celular es inválido (9 dígitos).</p>
+                                    <p *ngIf="formData.controls['phone'].errors['required']">El número de Teléfono/Celular de la empresa es requerido (7 - 12 dígitos).</p>
+                                    <p *ngIf="formData.controls['phone'].errors['pattern']">El formato del Teléfono/Celular es inválido (7 - 12 dígitos).</p>
                                 </div>
                             </div>
                             <div class="mb-4">
@@ -263,8 +263,8 @@
                                     <input type="phone" class="form-control" id="phone" formControlName="phone" placeholder="Teléfono/Celular" [(ngModel)]="phone[index]">
                                 </div>
                                 <div *ngIf="formData.controls['phone'].errors && formData.controls['phone'].touched" class="text-danger pl-0">
-                                    <p *ngIf="formData.controls['phone'].errors['required']">El número de Teléfono/Celular de la empresa es requerido (9 dígitos).</p>
-                                    <p *ngIf="formData.controls['phone'].errors['pattern']">El formato del Teléfono/Celular es inválido (9 dígitos).</p>
+                                    <p *ngIf="formData.controls['phone'].errors['required']">El número de Teléfono/Celular de la empresa es requerido (7 - 12 dígitos).</p>
+                                    <p *ngIf="formData.controls['phone'].errors['pattern']">El formato del Teléfono/Celular es inválido (7 - 12 dígitos).</p>
                                 </div>
                             </div>
                             <div class="mb-4">
@@ -320,8 +320,8 @@
                                     <input type="invoice_phone" class="form-control" id="invoice_phone" formControlName="invoice_phone" placeholder="Teléfono/Celular contacto facturación" [(ngModel)]="invoice_phone[index]">
                                 </div>
                                 <div *ngIf="formData.controls['invoice_phone'].errors && formData.controls['invoice_phone'].touched" class="text-danger pl-0">
-                                    <p *ngIf="formData.controls['invoice_phone'].errors['required']">El teléfono de facturación es requerido (9 dígitos).</p>
-                                    <p *ngIf="formData.controls['invoice_phone'].errors['pattern']">El formato del teléfono es inválido (9 dígitos).</p>
+                                    <p *ngIf="formData.controls['invoice_phone'].errors['required']">El teléfono de facturación es requerido (7 - 12 dígitos).</p>
+                                    <p *ngIf="formData.controls['invoice_phone'].errors['pattern']">El formato del teléfono es inválido (7 - 12 dígitos).</p>
                                 </div>
                             </div>
                             <div class="mb-4">

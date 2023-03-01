@@ -5,6 +5,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 
 import { RouterModule } from '@angular/router';
+import { FaqComponent } from './components/faq/faq.component';
 
 
 
@@ -12,12 +13,14 @@ import { RouterModule } from '@angular/router';
   declarations: [
     FooterComponent,
     NavbarComponent,
-    SidebarComponent
+    SidebarComponent,
+    FaqComponent
   ],
   exports: [
     FooterComponent,
     NavbarComponent,
-    SidebarComponent
+    SidebarComponent,
+    FaqComponent
   ],
   imports: [
     RouterModule,

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { FaqComponent } from 'src/app/shared/components/faq/faq.component';
 import { LayoutComponent } from '../productor-statement/pages/layout/layout.component';
 import { FormComponent } from './pages/form/form.component';
 import { HomeComponent } from './pages/home/home.component';
@@ -16,6 +17,7 @@ const routes: Routes = [{
       { path: 'form/:id', component: FormComponent, data:{show: true} },
       { path: 'profile', component: ProfileComponent },
       { path: 'statements', component: StatementsComponent },
+      { path: 'faq', component: FaqComponent },
       { path: '**', redirectTo: 'home', pathMatch: 'full' }
     ]
   }
