@@ -35,13 +35,14 @@ export class MantainerUsersComponent implements OnInit {
     ID: [],
     FIRST_NAME: ['', [Validators.required]],
     LAST_NAME: ['', [Validators.required]],
-    EMAIL: ['', [Validators.required, Validators.pattern(this.emailPattern),this.verifyEmailMW]],
+    EMAIL: ['', [Validators.required, Validators.pattern(this.emailPattern), this.verifyEmailMW]],
     ROL: [0, [Validators.required, Validators.min(1)]],
     PHONE: ['', [Validators.required, Validators.pattern('^[0-9]{7,12}$')]],
     PHONE_OFFICE: ['', [Validators.required, Validators.pattern('^[0-9]{7,12}$')]],
-    POSITION: ['', [Validators.required,Validators.min(1)]],
+    POSITION: ['', [Validators.required, Validators.min(1)]],
     BUSINESS: [[], [Validators.required]]
-  })
+  });
+  dbTmp: any[] = [];
   constructor(private authService: AuthService,
     private businesService: BusinessService,
     private fb: FormBuilder) { }
@@ -64,15 +65,30 @@ export class MantainerUsersComponent implements OnInit {
     const value = target.value?.toLowerCase().trim();
     this.pos = 1;
     if (target.value != '') {
+      if (this.dbTmp.length > 0) {
+        this.listUser = this.dbTmp;
+      }
       this.cant = 1;
       this.db = this.listUser.filter(r => {
         const name = `${r.FIRST_NAME?.toLowerCase()} ${r.LAST_NAME?.toLowerCase()}`;
-        if (r.FIRST_NAME?.toLowerCase().indexOf(value) > -1 || r.LAST_NAME?.toLowerCase().indexOf(value) > -1 || r.PHONE?.toLowerCase().indexOf(value) > -1 || r.ROL_NAME?.toLowerCase().indexOf(value) > -1 || r.EMAIL?.toLowerCase().indexOf(value) > -1 || r.PHONE_OFFICE?.toLowerCase().indexOf(value) > -1 || r.POSITION?.toLowerCase().indexOf(value) > -1 || name.indexOf(value) > -1) return r;
+        const tmp: any[] = r.BUSINESS.filter((b: any) => {
+          return b.NAME.toLowerCase().indexOf(value) > -1;
+        });
+        if (tmp.length > 0 || r.FIRST_NAME?.toLowerCase().indexOf(value) > -1 || r.LAST_NAME?.toLowerCase().indexOf(value) > -1 || r.PHONE?.toLowerCase().indexOf(value) > -1 || r.ROL_NAME?.toLowerCase().indexOf(value) > -1 || r.EMAIL?.toLowerCase().indexOf(value) > -1 || r.PHONE_OFFICE?.toLowerCase().indexOf(value) > -1 || r.POSITION?.toLowerCase().indexOf(value) > -1 || name.indexOf(value) > -1) return r;
       });
+      if (this.dbTmp.length == 0) {
+        this.dbTmp = this.listUser;
+      }
+      this.listUser = this.db;
+      this.db = this.db.splice(0, 10);
+      this.cant = Math.ceil(this.listUser.length / 10) || 1;
       return;
     }
+    if (this.dbTmp.length > 0) {
+      this.listUser = this.dbTmp;
+    }
     this.db = this.listUser.slice(0, 10);
-    this.cant = Math.ceil(this.listUser.length / 10);
+    this.cant = (Math.ceil(this.listUser.length / 10) || 1);
   }
   loadRoles() {
     this.authService.getRoles.subscribe(r => {
@@ -95,7 +111,7 @@ export class MantainerUsersComponent implements OnInit {
     this.authService.getUsers.subscribe(r => {
       if (r.status) {
         this.listUser = r.data;
-        this.cant = Math.ceil(this.listUser.length / 10);
+        this.cant = Math.ceil(this.listUser.length / 10) || 1;
         this.db = this.listUser.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
         Swal.close();
       }
@@ -156,7 +172,7 @@ export class MantainerUsersComponent implements OnInit {
     const user = this.listUser.find(r => r.EMAIL == email);
     if (!user || user.ID == this.userForm.value.ID) {
       this.showErrorEmail = true;
-      this.userForm.controls['EMAIL'].setErrors({used:true});
+      this.userForm.controls['EMAIL'].setErrors({ used: true });
       return false;
     }
     this.showErrorEmail = false;
