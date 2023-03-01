@@ -10,11 +10,11 @@ import Swal from 'sweetalert2';
 
 export class AppComponent implements OnInit {
   title = 'Sistema Gestion Rigk';
-  inactiveSeconds:any = 0;
+  inactiveSeconds: any = 0;
   timer: any;
   active: boolean = true;
 
-  constructor( private router: Router) {}
+  constructor(private router: Router) { }
 
   ngOnInit() {
     this.router.events.subscribe(event => {
@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
       this.inactiveSeconds = 0;
       this.startTimer();
     });
-  
+
     document.addEventListener('keypress', () => {
       clearTimeout(this.timer);
       this.inactiveSeconds = 0;
@@ -48,7 +48,7 @@ export class AppComponent implements OnInit {
     if (!this.active) return;
     this.timer = setTimeout(() => {
       this.inactiveSeconds++;
-      if (this.inactiveSeconds >= 300) {
+      if (this.inactiveSeconds >= 1800) {
         this.router.navigate(['/auth/login'], { queryParams: { logout: true } });
         Swal.fire({
           icon: 'error',
