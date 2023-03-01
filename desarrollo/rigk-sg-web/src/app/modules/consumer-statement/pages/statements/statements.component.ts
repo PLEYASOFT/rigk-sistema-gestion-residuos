@@ -28,6 +28,15 @@ export class StatementsComponent implements OnInit {
   }
 
   loadStatements() {
+    Swal.fire({
+      title: 'Cargando Datos',
+      text: 'Se está recuperando datos',
+      timerProgressBar: true,
+      showConfirmButton: false,
+      allowEscapeKey: false,
+      allowOutsideClick: false
+    });
+    Swal.showLoading();
     this.establishmentService.getDeclarationEstablishment().subscribe(r => {
       if (r.status) {
         r.status = r.status.sort(((a: any, b: any) => b.YEAR_STATEMENT - a.YEAR_STATEMENT));
@@ -45,6 +54,7 @@ export class StatementsComponent implements OnInit {
         this.dbStatements = r.status;
         this.cant = Math.ceil(this.dbStatements.length / 10);
         this.db = this.dbStatements.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+        Swal.close();
       }
     })
   }

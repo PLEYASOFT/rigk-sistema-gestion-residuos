@@ -22,6 +22,7 @@ export class SidebarComponent implements OnInit {
     { title: "Mi Perfil", path: "#/productor/profile", icon: "fa-user" },
     { title: "Registro de declaración", path: "#/productor/form", icon: "fa-file-text" },
     { title: "Consulta de declaración", path: "#/productor/statements", icon: "fa-search" },
+    { title: "Preguntas frecuentes", path: "#/productor/faq", icon: "fa-search" },
   ];
 
   menuConsumidor = [
@@ -29,6 +30,7 @@ export class SidebarComponent implements OnInit {
     { title: "Mi Perfil", path: "#/consumidor/profile", icon: "fa-user" },
     { title: "Registro de declaración", path: "#/consumidor/form", icon: "fa-file-text" },
     { title: "Consulta de declaración", path: "#/consumidor/statements", icon: "fa-search" },
+    { title: "Preguntas frecuentes", path: "#/consumidor/faq", icon: "fa-search" },
   ];
 
   menuAdmin = [
@@ -37,6 +39,7 @@ export class SidebarComponent implements OnInit {
     { title: "Mantenedor Empresas", path: "#/mantenedor/business", icon: "fa-file-text" },
     { title: "Mantenedor Establecimientos", path: "#/mantenedor/establishment", icon: "fa-file-text" },
     { title: "Mantenedor Usuarios", path: "#/mantenedor/users", icon: "fa-users" },
+    { title: "Preguntas frecuentes", path: "#/mantenedor/faq", icon: "fa-search" },
   ];
 
   constructor(private router: Router,
@@ -61,6 +64,8 @@ export class SidebarComponent implements OnInit {
       title: 'Ingrese Datos',
       html: '<input id="inp_id_business" type="text" placeholder="ID Empresa" class="form-control"><br><input id="inp_year" type="number" placeholder="AÑO Declaración" class="form-control"><p>Corresponde declarar año '+(+this.year-1)+'</p>',
       showCancelButton: true,
+      confirmButtonText: 'Aceptar ',
+      cancelButtonText: 'Cancelar',
       preConfirm: async () => {
         const id_business = ((document.getElementById('inp_id_business') as HTMLInputElement).value);
         const year = parseInt((document.getElementById('inp_year') as HTMLInputElement).value);
@@ -107,6 +112,8 @@ export class SidebarComponent implements OnInit {
       title: 'Ingrese Datos',
       html: '<input id="inp_id_business" type="text" placeholder="ID Empresa" class="form-control"><br><input id="inp_year" type="number" placeholder="AÑO Declaración" class="form-control"><p>Corresponde declarar año '+(+this.year-1)+'</p>',
       showCancelButton: true,
+      confirmButtonText: 'Aceptar ',
+      cancelButtonText: 'Cancelar',
       preConfirm: async () => {
         const id_business = ((document.getElementById('inp_id_business') as HTMLInputElement).value);
         const year = parseInt((document.getElementById('inp_year') as HTMLInputElement).value);
