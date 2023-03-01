@@ -276,7 +276,6 @@ export class MaintainerBusinessComponent implements OnInit {
             listIndex.push(r);
           } 
       });
-      console.log(listIndex)
       this.db = listIndex.slice(0, 10);
       this.cant = Math.ceil(listIndex.length / 10);
       return this.db;

@@ -262,28 +262,40 @@ export class MaintainerEstablishmentComponent implements OnInit {
   filter(target: any) {
     const value = target.value?.toLowerCase();
     this.pos = 1;
+    const listIndex:any = []
     if(target.value != ''){
       this.cant = 1;
       this.db = this.listBusiness.filter(r=>{
-        if(r.NAME?.toLowerCase().indexOf(value) > -1 || r.CODE_BUSINESS?.toLowerCase().indexOf(value) > -1 || r.LOC_ADDRESS?.toLowerCase().indexOf(value) > -1) return r;
+        if(r.NAME?.toLowerCase().indexOf(value) > -1 || r.CODE_BUSINESS?.toLowerCase().indexOf(value) > -1 || r.LOC_ADDRESS?.toLowerCase().indexOf(value) > -1) {
+          listIndex.push(r);
+        };
       });
-      return;
+      this.db = listIndex.slice(0, 10);
+      this.cant = Math.ceil(listIndex.length / 10);
+      return this.db;
     }
-    this.db = this.listBusiness.slice(0,10);
-    this.cant = Math.ceil(this.listBusiness.length / 10);    
+    this.db = this.listBusiness.slice(0, 10);
+    this.cant = Math.ceil(this.listBusiness.length / 10);
+    return this.db; 
   }
 
   filterForm(target: any) {
     const value = target.value?.toLowerCase();
     this.pos2 = 1;
+    const listIndex:any = []
     if(target.value != ''){
       this.cant2 = 1;
       this.db2 = this.establishmentStatus.filter((r: any)=>{
-        if(r.NAME_ESTABLISHMENT?.toLowerCase().indexOf(value) > -1 || r.REGION?.toLowerCase().indexOf(value) > -1) return r;
+        if(r.NAME_ESTABLISHMENT?.toLowerCase().indexOf(value) > -1 || r.REGION?.toLowerCase().indexOf(value) > -1) {
+          listIndex.push(r);
+        };
       });
-      return;
+      this.db2 = listIndex.slice(0, 10);
+      this.cant2 = Math.ceil(listIndex.length / 10);
+      return this.db2;
     }
     this.db2 = this.establishmentStatus.slice(0,10);
-    this.cant2 = Math.ceil(this.establishmentStatus.length / 10);    
+    this.cant2 = Math.ceil(this.establishmentStatus.length / 10);
+    return this.db2;     
   }
 }
