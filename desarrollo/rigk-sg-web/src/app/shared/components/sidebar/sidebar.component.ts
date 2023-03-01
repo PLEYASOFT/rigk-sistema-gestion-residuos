@@ -15,6 +15,8 @@ export class SidebarComponent implements OnInit {
 
   userData: any | null;
 
+  year = new Date().getFullYear();
+
   menuProductor = [
     { title: "Inicio", path: "#/productor/home", icon: "fa-home" },
     { title: "Mi Perfil", path: "#/productor/profile", icon: "fa-user" },
@@ -57,7 +59,7 @@ export class SidebarComponent implements OnInit {
   async showDialog() {
     Swal.fire({
       title: 'Ingrese Datos',
-      html: '<input id="inp_id_business" type="text" placeholder="ID Empresa" class="form-control"><br><input id="inp_year" type="number" placeholder="AÑO Declaración" class="form-control">',
+      html: '<input id="inp_id_business" type="text" placeholder="ID Empresa" class="form-control"><br><input id="inp_year" type="number" placeholder="AÑO Declaración" class="form-control"><p>Corresponde declarar año '+(+this.year-1)+'</p>',
       showCancelButton: true,
       preConfirm: async () => {
         const id_business = ((document.getElementById('inp_id_business') as HTMLInputElement).value);
@@ -103,7 +105,7 @@ export class SidebarComponent implements OnInit {
   async showDialog2() {
     Swal.fire({
       title: 'Ingrese Datos',
-      html: '<input id="inp_id_business" type="text" placeholder="ID Empresa" class="form-control"><br><input id="inp_year" type="number" placeholder="AÑO Declaración" class="form-control">',
+      html: '<input id="inp_id_business" type="text" placeholder="ID Empresa" class="form-control"><br><input id="inp_year" type="number" placeholder="AÑO Declaración" class="form-control"><p>Corresponde declarar año '+(+this.year-1)+'</p>',
       showCancelButton: true,
       preConfirm: async () => {
         const id_business = ((document.getElementById('inp_id_business') as HTMLInputElement).value);

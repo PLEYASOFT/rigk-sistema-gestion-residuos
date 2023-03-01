@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import Swal from 'sweetalert2';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { BusinessService } from '../../../../core/services/business.service';
 @Component({
   selector: 'app-mantainer-users',
@@ -9,7 +9,21 @@ import { BusinessService } from '../../../../core/services/business.service';
   styleUrls: ['./mantainer-users.component.css']
 })
 export class MantainerUsersComponent implements OnInit {
-  emailPattern = "^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$";
+  verifyEmailMW = (control: FormControl) => {
+    const email = control.value;
+
+    if (!email) {
+      return null;
+    }
+    const user = this.listUser.find(r => r.EMAIL == email);
+    if (user && user.ID != this.userForm.value.ID) {
+      return { used: true };  // el código se encuentra en el arreglo, hay errores
+    } else {
+      return null;  // el código NO se encuentra en el arreglo, no hay error
+    }
+  };
+
+  emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$";
   showErrorEmail = false;
   business: any[] = [];
   selectedBusiness!: any[];
@@ -21,7 +35,7 @@ export class MantainerUsersComponent implements OnInit {
     ID: [],
     FIRST_NAME: ['', [Validators.required]],
     LAST_NAME: ['', [Validators.required]],
-    EMAIL: ['', [Validators.required, Validators.email, Validators.pattern(this.emailPattern)]],
+    EMAIL: ['', [Validators.required, Validators.pattern(this.emailPattern),this.verifyEmailMW]],
     ROL: [0, [Validators.required, Validators.min(1)]],
     PHONE: ['', [Validators.required, Validators.pattern('^[0-9]{7,12}$')]],
     PHONE_OFFICE: ['', [Validators.required, Validators.pattern('^[0-9]{7,12}$')]],
@@ -136,6 +150,7 @@ export class MantainerUsersComponent implements OnInit {
       }
     });
   }
+
   verifyEmail() {
     const email = this.userForm.value.EMAIL;
     const user = this.listUser.find(r => r.EMAIL == email);
@@ -144,7 +159,6 @@ export class MantainerUsersComponent implements OnInit {
       this.userForm.controls['EMAIL'].setErrors({used:true});
       return false;
     }
-    this.userForm.controls['EMAIL'].setErrors({ notUnique: true });
     this.showErrorEmail = false;
     return false;
   }

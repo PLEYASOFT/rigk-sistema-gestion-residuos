@@ -116,13 +116,14 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="inp_email">E-MAIL</label>
-                                <input type="text" formControlName="EMAIL" (change)="verifyEmail()" id="inp_email"
+                                <input type="text" formControlName="EMAIL" id="inp_email"
                                     class="form-control" placeholder="cto@correo.com">
                                 <!-- <p class="text-danger" *ngIf="showErrorEmail">El correo ya se encuentra registrado.</p> -->
                                 <div *ngIf="userForm.controls['EMAIL'].errors && userForm.controls['EMAIL'].touched" class="text-danger pl-0">
-                                    <p *ngIf="userForm.controls['EMAIL'].errors['required']">El email contacto de facturación es requerido (ejemplo@correo.com).</p>
+                                    <p *ngIf="userForm.controls['EMAIL'].errors['required']">El email contacto es requerido (ejemplo@correo.com).</p>
                                     <p *ngIf="userForm.controls['EMAIL'].errors['email']">El formato del correo es inválido (ejemplo@correo.com).</p>
-                                    <p *ngIf="userForm.controls['EMAIL'].errors['notUnique']">El correo ya se encuentra registrado.</p>
+                                    <p *ngIf="userForm.controls['EMAIL'].errors['pattern']">El formato del correo es inválido (ejemplo@correo.com).</p>
+                                    <p *ngIf="userForm.controls['EMAIL'].errors['used']">El correo ya se encuentra registrado.</p>
                                 </div>
                             </div>
                         </div>
@@ -169,10 +170,10 @@
                             <div class="col-md-6">
                                 <span *ngFor="let e of userForm.value.BUSINESS"
                                     class="badge bg-primary m-1">{{showName(e)}}</span>
+                                </div>
                             </div>
-                        </div>
-                    </form>
-                </div>
+                        </form>
+                    </div>
             </div>
             <div class="modal-footer">
                 <button type="button" id="btnCloseModal" class="btn btn-secondary"
