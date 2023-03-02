@@ -297,6 +297,7 @@ export class FormComponent implements OnInit {
       this.attached.splice(i, 1);
     }
     document.getElementById(`btn_f_${col}_${table}_${residue}`)?.classList.add('d-none');
+    (document.getElementById(`inp_f_${col}_${table}_${residue}`) as HTMLSelectElement).value = "0";
     (document.getElementById(`f_${col}_${table}_${residue}`) as HTMLInputElement).value = '';
   }
   goBack() {
