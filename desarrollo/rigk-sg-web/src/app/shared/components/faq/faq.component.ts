@@ -16,4 +16,11 @@ export class FaqComponent implements OnInit {
     const section = this.elementRef.nativeElement.querySelector(`#${sectionId}`);
     section.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
+
+  zoomImage(event: any) {
+    const image = event.target;
+    image.classList.toggle('zoom');
+    const msg = image.nextElementSibling;
+    msg.style.display = 'block';
+  }
 }
