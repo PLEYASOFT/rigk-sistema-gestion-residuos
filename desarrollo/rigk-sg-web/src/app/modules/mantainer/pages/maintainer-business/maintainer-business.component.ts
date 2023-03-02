@@ -265,14 +265,23 @@ export class MaintainerBusinessComponent implements OnInit {
   filter(target: any) {
     const value = target.value?.toLowerCase();
     this.pos = 1;
-    if(target.value != ''){
+    const listIndex:any = []
+    if (target.value != '') {
       this.cant = 1;
-      this.db = this.listBusiness.filter(r=>{
-        if(r.NAME?.toLowerCase().indexOf(value) > -1 || r.CODE_BUSINESS?.toLowerCase().indexOf(value) > -1 || r.LOC_ADDRESS?.toLowerCase().indexOf(value) > -1 || r.VAT?.toLowerCase().indexOf(value) > -1 || r.PHONE?.toLowerCase().indexOf(value) > -1 || r.EMAIL?.toLowerCase().indexOf(value) > -1 || r.GIRO?.toLowerCase().indexOf(value) > -1 || r.AM_FIRST_NAME?.toLowerCase().indexOf(value) > -1 || r.AM_LAST_NAME?.toLowerCase().indexOf(value) > -1 || r.INVOICE_NAME?.toLowerCase().indexOf(value) > -1 || r.INVOICE_EMAIL?.toLowerCase().indexOf(value) > -1 || r.INVOICE_PHONE?.toLowerCase().indexOf(value) > -1) return r;
+      this.db = this.listBusiness.filter(r => {
+        if (r.NAME?.toLowerCase().indexOf(value) > -1 || r.CODE_BUSINESS?.toLowerCase().indexOf(value) > -1 || r.LOC_ADDRESS?.toLowerCase().indexOf(value) > -1 ||
+          r.VAT?.toLowerCase().indexOf(value) > -1 || r.PHONE?.toLowerCase().indexOf(value) > -1 || r.EMAIL?.toLowerCase().indexOf(value) > -1 ||
+          r.GIRO?.toLowerCase().indexOf(value) > -1 || r.AM_FIRST_NAME?.toLowerCase().indexOf(value) > -1 || r.AM_LAST_NAME?.toLowerCase().indexOf(value) > -1 ||
+          r.INVOICE_NAME?.toLowerCase().indexOf(value) > -1 || r.INVOICE_EMAIL?.toLowerCase().indexOf(value) > -1 || r.INVOICE_PHONE?.toLowerCase().indexOf(value) > -1){
+            listIndex.push(r);
+          } 
       });
-      return;
+      this.db = listIndex.slice(0, 10);
+      this.cant = Math.ceil(listIndex.length / 10);
+      return this.db;
     }
-    this.db = this.listBusiness.slice(0,10);
-    this.cant = Math.ceil(this.listBusiness.length / 10);    
+    this.db = this.listBusiness.slice(0, 10);
+    this.cant = Math.ceil(this.listBusiness.length / 10);
+    return this.db;
   }
 }
