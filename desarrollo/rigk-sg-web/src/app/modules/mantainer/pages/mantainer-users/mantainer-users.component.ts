@@ -35,7 +35,7 @@ export class MantainerUsersComponent implements OnInit {
     ID: [],
     FIRST_NAME: ['', [Validators.required]],
     LAST_NAME: ['', [Validators.required]],
-    EMAIL: ['', [Validators.required, Validators.pattern(this.emailPattern), this.verifyEmailMW]],
+    EMAIL: ['', [Validators.required, Validators.email, this.verifyEmailMW]],
     ROL: [0, [Validators.required, Validators.min(1)]],
     PHONE: ['', [Validators.required, Validators.pattern('^[0-9]{7,12}$')]],
     PHONE_OFFICE: ['', [Validators.required, Validators.pattern('^[0-9]{7,12}$')]],
@@ -82,6 +82,7 @@ export class MantainerUsersComponent implements OnInit {
       this.listUser = this.db;
       this.db = this.db.splice(0, 10);
       this.cant = Math.ceil(this.listUser.length / 10) || 1;
+      console.log(this.listUser);
       return;
     }
     if (this.dbTmp.length > 0) {
@@ -98,6 +99,8 @@ export class MantainerUsersComponent implements OnInit {
     });
   }
   loadUsers() {
+    this.listUser = [];
+    this.dbTmp = [];
     Swal.fire({
       title: 'Cargando Datos',
       text: 'Se está recuperando datos',
@@ -111,6 +114,7 @@ export class MantainerUsersComponent implements OnInit {
     this.authService.getUsers.subscribe(r => {
       if (r.status) {
         this.listUser = r.data;
+        this.dbTmp = r.data;
         this.cant = Math.ceil(this.listUser.length / 10) || 1;
         this.db = this.listUser.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
         Swal.close();
@@ -129,8 +133,9 @@ export class MantainerUsersComponent implements OnInit {
     return `${b.CODE_BUSINESS} | ${b.NAME}`;
   }
   selectUser(id: number) {
+    console.log(this.db)
     this.isEdit = true;
-    const user = this.listUser.find(r => r.ID == id);
+    const user = this.db.find(r => r.ID == id);
     this.userForm.controls['ID'].setValue(user.ID);
     this.userForm.controls['FIRST_NAME'].setValue(user.FIRST_NAME);
     this.userForm.controls['LAST_NAME'].setValue(user.LAST_NAME);
@@ -143,7 +148,7 @@ export class MantainerUsersComponent implements OnInit {
     this.userForm.controls['BUSINESS'].setValue(tmp);
   }
   deleteUser(id: number) {
-    const user = this.listUser.find(r => r.ID == id);
+    const user = this.db.find(r => r.ID == id);
     Swal.fire({
       icon: 'question',
       text: `¿Estás seguro de eliminar al usuario ${user.FIRST_NAME} ${user.LAST_NAME}?`,
