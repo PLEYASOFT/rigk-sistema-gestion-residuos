@@ -3,7 +3,7 @@ export const userScheme = Joi.object({
     ID: Joi.number().allow(null),
     FIRST_NAME: Joi.string(),
     LAST_NAME: Joi.string(),
-    EMAIL: Joi.string().email().required(),
+    EMAIL: Joi.string().required(),
     ROL: Joi.number().required(),
     PASSWORD: Joi.string().allow(null),
     PHONE: Joi.string(),
