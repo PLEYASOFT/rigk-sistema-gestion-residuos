@@ -23,6 +23,19 @@ class statementProductorDao {
         conn?.end();
         return { header: res_header[0], detail: res_detail };
     }
+
+    public async getAllStatementByYear(year: string) {
+        const conn = mysqlcon.getConnection();
+        
+        const res_business: any = await conn?.execute("SELECT ID_BUSINESS, STATE,CREATED_BY,UPDATED_AT FROM header_statement_form WHERE YEAR_STATEMENT = ?", [year]).then((res) => res[0]).catch(error => { undefined });
+        console.log('asdjasdjdjas')
+        if (res_business.length == 0) {
+            return false;
+        }
+        
+        conn?.end();
+        return { res_business};
+    }
     public async saveDeclaretion(header: any, detail: any[]) {
         const { id_business, year_statement, state, created_by } = header;
         const conn = mysqlcon.getConnection();
