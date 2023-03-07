@@ -27,8 +27,8 @@ class statementProductorDao {
     public async getAllStatementByYear(year: string) {
         const conn = mysqlcon.getConnection();
         
-        const res_business: any = await conn?.execute("SELECT ID_BUSINESS, STATE,CREATED_BY,UPDATED_AT FROM header_statement_form WHERE YEAR_STATEMENT = ?", [year]).then((res) => res[0]).catch(error => { undefined });
-        console.log('asdjasdjdjas')
+        const res_business: any = await conn?.execute("SELECT h.ID AS ID_HEADER, h.ID_BUSINESS, h.STATE, h.CREATED_BY, h.UPDATED_AT, b.AM_FIRST_NAME, b.AM_LAST_NAME, b.CODE_BUSINESS, b.EMAIL, b.GIRO, b.INVOICE_EMAIL, b.INVOICE_NAME, b.INVOICE_PHONE, b.LOC_ADDRESS, b.NAME, b.PHONE, b.VAT FROM header_statement_form h JOIN business b ON h.ID_BUSINESS = b.ID WHERE h.YEAR_STATEMENT = ?", [year]).then((res) => res[0]).catch(error => { undefined });
+
         if (res_business.length == 0) {
             return false;
         }
@@ -108,6 +108,13 @@ class statementProductorDao {
     public async getDetailById(id: any, year: any) {
         const conn = mysqlcon.getConnection();
         const table0 = await conn?.execute("SELECT SUM(VALUE) as VALUE, TYPE_RESIDUE, RECYCLABILITY FROM detail_statement_form INNER JOIN header_statement_form ON header_statement_form.ID = detail_statement_form.ID_HEADER WHERE ID_BUSINESS = (SELECT ID FROM business WHERE CODE_BUSINESS=?) AND YEAR_STATEMENT=? GROUP BY TYPE_RESIDUE, RECYCLABILITY", [id, year]).then((res) => res[0]).catch(error => { undefined });
+        conn?.end();
+        return table0;
+    }
+
+    public async getDetailByIdHeader(id_header: any) {
+        const conn = mysqlcon.getConnection();
+        const table0 = await conn?.execute("SELECT * FROM detail_statement_form WHERE ID_HEADER = ?", [id_header]).then((res) => res[0]).catch(error => { undefined });
         conn?.end();
         return table0;
     }
