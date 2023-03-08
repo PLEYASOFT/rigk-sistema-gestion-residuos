@@ -12,6 +12,8 @@ router.get('/:business/year/:year/isDraft/:draft', [validarJWT, verifyRolProduct
 router.get('/draft/:business/year/:year', [validarJWT, verifyRolProductor], statementProductorLogic.verifyDraft);
 router.get('/byUser', [validarJWT], statementProductorLogic.getStatementsByUser);
 router.get('/pdf/:id/year/:year', [validarJWT], statementProductorLogic.generatePDF);
+router.get('/year/:year', [validarJWT], statementProductorLogic.getAllStatementByYear);
+router.get('/detail/:id_header', [validarJWT], statementProductorLogic.getDetailByIdHeader);
 router.post('/', [validarJWT, verifyRolProductor, verifyParametersProductorForm], statementProductorLogic.saveForm);
 router.put('/:id/state/:state', [validarJWT, verifyRolProductor, verifyParametersUpdateStateForm], statementProductorLogic.updateStateForm);
 router.put('/:id', [validarJWT, verifyRolProductor], statementProductorLogic.updateValuesForm);
