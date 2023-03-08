@@ -15,12 +15,12 @@ class AuthDao {
     async login(USER: string) {
         const conn = mysqlcon.getConnection()!;
         const res: any = await conn.query("SELECT USER.*,USER_ROL.ROL_ID AS ROL, ROL.NAME AS ROL_NAME, BUSINESS.NAME AS BUSINESS, BUSINESS.ID as ID_BUSINESS FROM USER INNER JOIN USER_ROL ON USER_ROL.USER_ID = USER.ID INNER JOIN USER_BUSINESS ON USER_BUSINESS.ID_USER = USER.ID INNER JOIN BUSINESS ON BUSINESS.ID = USER_BUSINESS.ID_BUSINESS INNER JOIN ROL ON ROL.ID=USER_ROL.ROL_ID WHERE USER.EMAIL = ?", [USER]).then((res) => res[0]).catch(error => [{ undefined }]);
-        let user:any = {}
+        let user: any = {}
         let name_business = []
-        for(let i =0; i< res.length;i++){
+        for (let i = 0; i < res.length; i++) {
             name_business.push(res[i].BUSINESS);
         }
-        user = {...res[0]}
+        user = { ...res[0] }
         user.BUSINESS = name_business;
         let login = false;
         if (res != null && res != undefined && res.length > 0) {
@@ -79,13 +79,8 @@ class AuthDao {
     }
     public async users() {
         const conn = mysqlcon.getConnection()!;
-        const res: any = await conn.query("SELECT USER.*, rol.ID as ID_ROL, rol.NAME AS ROL_NAME FROM USER INNER JOIN user_rol ON user_rol.USER_ID = USER.ID INNER JOIN rol ON rol.ID = user_rol.ROL_ID", []).then((res) => res[0]).catch(error => [{ undefined }]);
-        conn.end();
-        return res;
-    }
-    public async getBusiness(user: any) {
-        const conn = mysqlcon.getConnection()!;
-        const res: any = await conn.query("SELECT business.NAME, user_business.ID_BUSINESS FROM user_business INNER JOIN business ON business.ID = user_business.ID_BUSINESS WHERE user_business.ID_USER=?", [user]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const query = "SELECT user.*, rol.ID as ID_ROL, rol.NAME as ROL_NAME, business.NAME as BUSINESS_NAME, user_business.ID_BUSINESS FROM user INNER JOIN user_rol ON user_rol.USER_ID = USER.ID INNER JOIN rol ON rol.ID = user_rol.ROL_ID LEFT JOIN user_business ON user_business.ID_USER=user.ID INNER JOIN business ON business.ID = user_business.ID_BUSINESS";
+        const res: any = await conn.query(query, []).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         return res;
     }
@@ -117,6 +112,5 @@ class AuthDao {
         return res;
     }
 }
-
 const authDao = new AuthDao();
 export default authDao;
