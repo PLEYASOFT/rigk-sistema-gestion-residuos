@@ -102,7 +102,6 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     this.businesService.getAllBusiness().subscribe({
       next: resp => {
         this.listBusiness = resp.status;
-        console.log(this.listBusiness)
       },
       error: r => {
         Swal.close();
@@ -125,18 +124,15 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
             return b.STATE - a.STATE;
           }
         });
-        console.log(this.listStatements)
         this.filteredListBusiness = this.listBusiness.filter(business => {
           return !this.listStatements.some(statement => statement.ID_BUSINESS === business.ID);
         });
-        console.log(this.filteredListBusiness)
       }
     })
   }
 
   generarExcel = async (nombreArchivo: string) => {
     const y = parseInt((document.getElementById('f_year') as HTMLSelectElement).value);
-    console.log('year ', y)
     // Esperar a que se complete la petición y obtener los datos
     const r = await this.productorService.getAllStatementByYear(y).toPromise();
     if (r.status) {
@@ -152,12 +148,9 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
       });
     }
 
-    console.log(this.listStatements)
-    console.log(this.filteredListBusiness)
-
     const f = await this.productorService.getDetailByIdHeader(240).toPromise();
     if (f.status) {
-      console.log(f)
+      //console.log(f)
     }
 
     for (let i = 0; i < this.listStatements.length; i++) {
