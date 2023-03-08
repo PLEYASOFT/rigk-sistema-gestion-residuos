@@ -43,6 +43,47 @@ class StatementProductorLogic {
             });
         }
     }
+
+    public async getDetailByIdHeader(req: Request, res: Response) {
+        const { id_header} = req.params;
+        try {
+            const statement: any | boolean = await statementDao.getDetailByIdHeader(id_header);
+            res.status(200).json({
+                status: true,
+                data: statement
+            });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
+
+    public async getAllStatementByYear(req: Request, res: Response) {
+        const { year} = req.params;
+        try {
+            const statement: any | boolean = await statementDao.getAllStatementByYear(year);
+            if (statement === false) {
+                return res.status(200).json({
+                    status: false,
+                    data: {},
+                    msg: "Año no encontrado"
+                });
+            }
+            res.status(200).json({
+                status: true,
+                data: statement
+            });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
     public async verifyDraft(req: Request, res: Response) {
         const { business, year } = req.params;
         try {

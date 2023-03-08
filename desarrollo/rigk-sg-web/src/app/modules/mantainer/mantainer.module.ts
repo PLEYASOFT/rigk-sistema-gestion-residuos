@@ -12,6 +12,7 @@ import { MaintainerEstablishmentComponent } from './pages/maintainer-establishme
 
 import {MultiSelectModule} from 'primeng/multiselect';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { MaintainerDeclarationsProductorComponent } from './pages/maintainer-declarations-productor/maintainer-declarations-productor.component';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import { SharedModule } from 'src/app/shared/shared.module';
     MaintainerBusinessComponent,
     ProfileComponent,
     MaintainerEstablishmentComponent,
-    MantainerUsersComponent
+    MantainerUsersComponent,
+    MaintainerDeclarationsProductorComponent
   ],
   imports: [
     CommonModule,

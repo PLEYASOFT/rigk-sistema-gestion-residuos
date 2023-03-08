@@ -179,11 +179,20 @@ class AuthLogic {
     public async getUsers(req: Request, res: Response) {
         try {
             const users = await authDao.users();
+            const tmp:any[] = [];
             for (let i = 0; i < users.length; i++) {
                 const u = users[i];
-                u.BUSINESS = (await authDao.getBusiness(u.ID));
+                const indx = tmp.findIndex(r=>r.ID == u.ID);
+                if(indx == -1) {
+                    u.BUSINESS = [{ID_BUSINESS: u.ID_BUSINESS, NAME:u.BUSINESS_NAME}];
+                    tmp.push(u);
+                    continue;
+                } else {
+                    tmp[indx].BUSINESS.push({ID_BUSINESS: u.ID_BUSINESS, NAME:u.BUSINESS_NAME});
+                    continue;
+                }                
             }
-            res.status(200).json({ status: true, msg: '', data: users });
+            res.status(200).json({ status: true, msg: '', data: tmp });
         } catch (error) {
             console.log(error);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
