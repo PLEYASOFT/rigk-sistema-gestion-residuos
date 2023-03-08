@@ -16,11 +16,11 @@ export class MantainerUsersComponent implements OnInit {
       return null;
     }
     let user;
-    this.dbTmp.findIndex(r=> {
+    this.dbTmp.findIndex(r => {
       console.log(r.EMAIL);
     })
-    if(this.dbTmp.length > 0) {
-      user = this.dbTmp.findIndex(r=>r.EMAIL.toLowerCase() == email);
+    if (this.dbTmp.length > 0) {
+      user = this.dbTmp.findIndex(r => r.EMAIL.toLowerCase() == email);
     } else {
       user = this.listUser.findIndex(r => r.EMAIL.toLowerCase() === email);
     }
@@ -197,12 +197,20 @@ export class MantainerUsersComponent implements OnInit {
     return false;
   }
   saveForm() {
+    Swal.fire({
+      icon: 'info',
+      text: 'Guardando datos',
+      allowEnterKey: false,
+      allowEscapeKey: false,
+      allowOutsideClick: false
+    });
+    Swal.showLoading();
     this.saving = true;
     if (this.userForm.invalid) return;
     if (this.isEdit) {
       this.authService.updateUser(this.userForm.value).subscribe({
         next: r => {
-          console.log(r)
+          Swal.close();
           if (r.status) {
             document.getElementById('btnCloseModal')?.click();
             Swal.fire({
@@ -213,42 +221,46 @@ export class MantainerUsersComponent implements OnInit {
             this.pos = 1;
             this.saving = false;
           }
-      },
-      error: r=> {
-        Swal.fire({
-          icon: 'error',
-          text: 'Algo salió mal'
-        });
-      }
-    });
+        },
+        error: r => {
+          Swal.close();
+          Swal.fire({
+            icon: 'error',
+            text: 'Algo salió mal'
+          });
+        }
+      });
     } else {
       this.authService.registerUser(this.userForm.value).subscribe({
-        next :r => {
-        if (r.status) {
-          document.getElementById('btnCloseModal')?.click();
+        next: r => {
+          Swal.close();
+          if (r.status) {
+            document.getElementById('btnCloseModal')?.click();
+            Swal.fire({
+              icon: 'success',
+              text: r.msg
+            });
+            this.loadUsers();
+            this.pos = 1;
+            this.saving = false;
+          } else {
+            Swal.close();
+            Swal.fire({
+              icon: 'warning',
+              text: r.msg
+            });
+            this.saving = false;
+          }
+        },
+        error: r => {
+          Swal.close();
           Swal.fire({
-            icon: 'success',
-            text: r.msg
+            icon: 'error',
+            text: 'Algo salió mal'
           });
-          this.loadUsers();
-          this.pos = 1;
-          this.saving = false;
-        } else {
-          Swal.fire({
-            icon: 'warning',
-            text: r.msg
-          });
-          this.saving = false;
         }
-      },
-      error: r=> {
-        Swal.fire({
-          icon: 'error',
-          text: 'Algo salió mal'
-        });
       }
-    }
-    );
+      );
     }
   }
   pos = 1;
