@@ -15,8 +15,18 @@ export class MantainerUsersComponent implements OnInit {
     if (!email) {
       return null;
     }
-    const user = this.listUser.find(r => r.EMAIL == email);
-    if (user && user.ID != this.userForm.value.ID) {
+    let user;
+    this.dbTmp.findIndex(r=> {
+      console.log(r.EMAIL);
+    })
+    if(this.dbTmp.length > 0) {
+      user = this.dbTmp.findIndex(r=>r.EMAIL.toLowerCase() == email);
+    } else {
+      user = this.listUser.findIndex(r => r.EMAIL.toLowerCase() === email);
+    }
+    console.log(user);
+    if (user > -1) {
+      console.log("first2")
       return { used: true };  // el código se encuentra en el arreglo, hay errores
     } else {
       return null;  // el código NO se encuentra en el arreglo, no hay error
@@ -190,20 +200,30 @@ export class MantainerUsersComponent implements OnInit {
     this.saving = true;
     if (this.userForm.invalid) return;
     if (this.isEdit) {
-      this.authService.updateUser(this.userForm.value).subscribe(r => {
-        if (r.status) {
-          document.getElementById('btnCloseModal')?.click();
-          Swal.fire({
-            icon: 'success',
-            text: r.msg
-          });
-          this.loadUsers();
-          this.pos = 1;
-          this.saving = false;
-        }
-      });
+      this.authService.updateUser(this.userForm.value).subscribe({
+        next: r => {
+          console.log(r)
+          if (r.status) {
+            document.getElementById('btnCloseModal')?.click();
+            Swal.fire({
+              icon: 'success',
+              text: r.msg
+            });
+            this.loadUsers();
+            this.pos = 1;
+            this.saving = false;
+          }
+      },
+      error: r=> {
+        Swal.fire({
+          icon: 'error',
+          text: 'Algo salió mal'
+        });
+      }
+    });
     } else {
-      this.authService.registerUser(this.userForm.value).subscribe(r => {
+      this.authService.registerUser(this.userForm.value).subscribe({
+        next :r => {
         if (r.status) {
           document.getElementById('btnCloseModal')?.click();
           Swal.fire({
@@ -213,8 +233,22 @@ export class MantainerUsersComponent implements OnInit {
           this.loadUsers();
           this.pos = 1;
           this.saving = false;
+        } else {
+          Swal.fire({
+            icon: 'warning',
+            text: r.msg
+          });
+          this.saving = false;
         }
-      });
+      },
+      error: r=> {
+        Swal.fire({
+          icon: 'error',
+          text: 'Algo salió mal'
+        });
+      }
+    }
+    );
     }
   }
   pos = 1;
