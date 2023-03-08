@@ -76,6 +76,13 @@ export class FormComponent implements OnInit {
   ngOnInit(): void {
   }
   loadForm(id: any) {
+    Swal.fire({
+      title: 'Cargando Datos',
+      text: 'Se está recuperando datos',
+      timerProgressBar: true,
+      showConfirmButton: false
+    });
+    Swal.showLoading();
     this.goTo = '/consumidor/statements';
     this.consumerService.getForm(id).subscribe({
       next: r => {
@@ -104,6 +111,7 @@ export class FormComponent implements OnInit {
             }
           }
         }
+        Swal.close();
       }
     });
   }
