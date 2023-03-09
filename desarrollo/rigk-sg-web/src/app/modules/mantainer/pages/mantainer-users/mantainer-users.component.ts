@@ -82,7 +82,6 @@ export class MantainerUsersComponent implements OnInit {
       this.listUser = this.db;
       this.db = this.db.splice(0, 10);
       this.cant = Math.ceil(this.listUser.length / 10) || 1;
-      console.log(this.listUser);
       return;
     }
     if (this.dbTmp.length > 0) {
@@ -121,10 +120,10 @@ export class MantainerUsersComponent implements OnInit {
       }
     });
   }
-  showBusiness(e: any[]) {
+  showBusiness(e: any) {
     let tmp: any = [];
-    e.forEach(b => {
-      tmp.push(b.NAME);
+    e.BUSINESS.forEach((b: any) => {
+      tmp.push(b.NAME.trim());
     });
     return tmp.join(', ');
   }
@@ -133,7 +132,6 @@ export class MantainerUsersComponent implements OnInit {
     return `${b.CODE_BUSINESS} | ${b.NAME}`;
   }
   selectUser(id: number) {
-    console.log(this.db)
     this.isEdit = true;
     const user = this.db.find(r => r.ID == id);
     this.userForm.controls['ID'].setValue(user.ID);
@@ -171,7 +169,6 @@ export class MantainerUsersComponent implements OnInit {
       }
     });
   }
-
   verifyEmail() {
     const email = this.userForm.value.EMAIL;
     const user = this.listUser.find(r => r.EMAIL == email);
