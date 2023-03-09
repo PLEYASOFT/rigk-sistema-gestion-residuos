@@ -164,6 +164,8 @@ class StatementProductorLogic {
             enr = (rates.find(r => r.type == 4))?.price || 0;
             const declaretion: any = await statementDao.getDeclaretionByYear(id, year, 0);
             const { detail, header } = declaretion;
+            const user_name = `${header.USER_FIRSTNAME} ${header.USER_LASTNAME}`;
+            const date_registered = dateFormat(new Date(header.CREATED_AT), 'dd-mm-yyyy');
             const last_detail: any = await statementDao.getDetailById(id, (parseInt(year) - 1));
             const uf: any = await ratesDao.getUF((new Date(header.UPDATED_AT)).toISOString().split("T")[0]);
             let lrp = 0;
@@ -247,7 +249,7 @@ class StatementProductorLogic {
             const fs = require("fs");
             const path = require("path");
             const content = fs.readFileSync(
-                path.resolve('files/templates', "plantillav2.docx"),
+                path.resolve('files/templates', "plantillav3.docx"),
                 "binary"
             );
             const zip = new PizZip(content);
@@ -296,6 +298,8 @@ class StatementProductorLogic {
                 val33: val33.replace('.', ','),
                 val44: val44.replace('.', ','),
                 valtt: (parseFloat(val11) + parseFloat(val22) + parseFloat(val33) + parseFloat(val44)).toFixed(2).replace(".", ","),
+                evaltt1: (pr + mer + plr + (pnr + menr + plnr + onr)).toFixed(2).replace(".", ","),
+                evaltt2: ((ep * pr) + (eme * mer) + (plr * epl) + ((pnr + menr + plnr + onr) * enr)).toFixed(2).replace(".", ","),
                 // ----
                 // Table 2
                 // C1
@@ -328,7 +332,9 @@ class StatementProductorLogic {
                 business_name: header.BUSINESS_NAME,
                 year,
                 llyear: parseInt(year) + 1,
-                lyear: parseInt(year) - 1
+                lyear: parseInt(year) - 1,
+                user_name,
+                date_registered
             });
             const buf = doc.getZip().generate({
                 type: "nodebuffer",
