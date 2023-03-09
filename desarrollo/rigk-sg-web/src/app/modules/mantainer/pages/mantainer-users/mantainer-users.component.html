@@ -43,11 +43,11 @@
                         <tbody>
                             <tr class="text-end w-100" *ngFor="let r of db; let x = index">
                                 <td>{{r.FIRST_NAME}} {{r.LAST_NAME}}</td>
-                                <td>{{r.ROL_NAME}}</td>
+                                <td>{{r.ROL_NAME || 'No Asignado'}}</td>
                                 <td>{{r.PHONE}}</td>
                                 <td>{{r.EMAIL}}</td>
                                 <td>{{r.PHONE_OFFICE}}</td>
-                                <td>{{r.POSITION}}</td>
+                                <td>{{r.POSITION || 'No Asignado'}}</td>
                                 <td>{{showBusiness(r) || 'No Asignado'}}
                                 </td>
                                 <td>
