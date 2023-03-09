@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { concatMap } from 'rxjs';
 import { BusinessService } from 'src/app/core/services/business.service';
 import { ProductorService } from 'src/app/core/services/productor.service';
 import { RatesTsService } from 'src/app/core/services/rates.ts.service';
@@ -72,7 +71,6 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
   TotalCorregido: any = 0;
   TotalBruto: any = 0;
 
-  //////////
   l_R_PapelCarton_NP: any = 0;
   l_R_PapelCarton_P: any = 0;
   l_R_PapelCarton_ST: any = 0;
@@ -203,8 +201,16 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
   }
 
   generarExcel = async (nombreArchivo: string) => {
+    Swal.fire({
+      title: 'Cargando Datos',
+      text: 'Se está recuperando datos',
+      timerProgressBar: true,
+      showConfirmButton: false,
+      allowEscapeKey: false,
+      allowOutsideClick: false
+    });
+    Swal.showLoading();
     const y = parseInt((document.getElementById('f_year') as HTMLSelectElement).value);
-    console.log('year ', y)
     // Esperar a que se complete la petición y obtener los datos
     const r = await this.productorService.getAllStatementByYear(y).toPromise();
     if (r.status) {
@@ -245,25 +251,25 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
         const fechaFormateada = new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
         this.datos.push({
-          'ID empresa': this.listStatements[i].CODE_BUSINESS, 'Nombre empresa': this.listStatements[i].NAME, 'Año declaración': y, 'Estado declaración': 'Enviada',
-          'Fecha de envío': fechaFormateada, 'Usuario': this.listStatements[i].AM_FIRST_NAME + ' ' + this.listStatements[i].AM_LAST_NAME, 'R. Papel/cartón NP': this.R_PapelCarton_NP,
-          'R. Papel/cartón P': this.R_PapelCarton_P, 'R. Papel/cartón ST': this.R_PapelCarton_ST, 'R. Metal NP': this.R_Metal_NP, 'R. Metal P': this.R_Metal_P, 'R. Metal ST': this.R_Metal_ST,
-          'R. Plástico NP': this.R_Plastico_NP, 'R. Plástico P': this.R_Plastico_P, 'R. Plástico ST': this.R_Plastico_ST, 'R. Madera NP': this.R_Madera_NP, 'R. Madera P': this.R_Madera_P, 'R. Madera ST': this.R_Madera_ST,
-          'R. Total Ton': this.R_Total_Ton, 'R. Total UF': this.R_Total_UF, 'NR. Papel/cartón NP': this.NR_PapelCarton_NP, 'NR. Papel/cartón P': this.NR_PapelCarton_P, 'NR. Papel/cartón ST': this.NR_PapelCarton_ST,
-          'NR. Metal NP': this.NR_Metal_NP, 'NR. Metal P': this.NR_Metal_P, 'NR. Metal ST': this.NR_Metal_ST, 'NR. Plástico NP': this.NR_Plastico_NP, 'NR. Plástico P': this.NR_Plastico_P, 'NR. Plástico ST': this.NR_Plastico_ST,
-          'NR. Madera NP': this.NR_Madera_NP, 'NR. Madera P': this.NR_Madera_P, 'NR. Madera ST': this.NR_Madera_ST, 'NR. Compuestos NP': this.NR_Compuestos_NP, 'NR. Compuestos P': this.NR_Compuestos_P, 'NR. Compuestos ST': this.NR_Compuestos_ST,
-          'NR. Total Ton': this.NR_Total_Ton, 'NR. Total UF': this.NR_Total_UF, 'RET. Papel/cartón NP': this.RET_PapelCarton_NP, 'RET. Papel/cartón P': this.RET_PapelCarton_P, 'RET. Papel/cartón ST': this.RET_PapelCarton_ST,
-          'RET. Metal NP': this.RET_Metal_NP, 'RET. Metal P': this.RET_Metal_P, 'RET. Metal ST': this.RET_Metal_ST, 'RET. Plástico NP': this.RET_Plastico_NP, 'RET. Plástico P': this.RET_Plastico_P, 'RET. Plástico ST': this.RET_Plastico_ST,
-          'RET. Madera NP': this.RET_Madera_NP, 'RET. Madera P': this.RET_Madera_P, 'RET. Madera ST': this.RET_Madera_ST, 'RET. Total Ton': this.RET_Total_Ton, 'RET. Total UF': this.RET_Total_UF,
-          'Ajuste Papel/Cartón Reciclable Ton': this.Ajuste_PapelCarton_Reciclable_Ton, 'Ajuste Metal Reciclable Ton': this.Ajuste_Metal_Reciclable_Ton,
-          'Ajuste Plástico Reciclable Ton': this.Ajuste_Plastico_Reciclable_Ton, 'Ajuste No Reciclables Ton': this.Ajuste_No_Reciclables_Ton,
-          'Ajuste Retornables Ton': this.Ajuste_Retornables_Ton, 'Ajuste Papel/Cartón Reciclable UF': this.Ajuste_PapelCarton_Reciclable_UF, 'Ajuste Metal Reciclable UF': this.Ajuste_Metal_Reciclable_UF,
-          'Ajuste Plástico Reciclable UF': this.Ajuste_Plastico_Reciclable_UF, 'Ajuste No Reciclables UF': this.Ajuste_No_Reciclables_UF, 'Total corregido (UF)': this.TotalCorregido, 'Total Bruto (CLP) + IVA': this.TotalBruto
+          'ID empresa': this.listStatements[i].CODE_BUSINESS, 'Nombre empresa': this.listStatements[i].NAME, 'Año declaración': y.toString(), 'Estado declaración': 'Enviada',
+          'Fecha de envío': fechaFormateada, 'Usuario': this.listStatements[i].AM_FIRST_NAME + ' ' + this.listStatements[i].AM_LAST_NAME, 'R. Papel/cartón NP': this.setFormato(this.R_PapelCarton_NP),
+          'R. Papel/cartón P': this.setFormato(this.R_PapelCarton_P), 'R. Papel/cartón ST': this.setFormato(this.R_PapelCarton_ST), 'R. Metal NP': this.setFormato(this.R_Metal_NP), 'R. Metal P': this.setFormato(this.R_Metal_P), 'R. Metal ST': this.setFormato(this.R_Metal_ST),
+          'R. Plástico NP': this.setFormato(this.R_Plastico_NP), 'R. Plástico P': this.setFormato(this.R_Plastico_P), 'R. Plástico ST': this.setFormato(this.R_Plastico_ST), 'R. Madera NP': this.setFormato(this.R_Madera_NP), 'R. Madera P': this.setFormato(this.R_Madera_P), 'R. Madera ST': this.setFormato(this.R_Madera_ST),
+          'R. Total Ton': this.setFormato(this.R_Total_Ton), 'R. Total UF': this.setFormato(this.R_Total_UF), 'NR. Papel/cartón NP': this.setFormato(this.NR_PapelCarton_NP), 'NR. Papel/cartón P': this.setFormato(this.NR_PapelCarton_P), 'NR. Papel/cartón ST': this.setFormato(this.NR_PapelCarton_ST),
+          'NR. Metal NP': this.setFormato(this.NR_Metal_NP), 'NR. Metal P': this.setFormato(this.NR_Metal_P), 'NR. Metal ST': this.setFormato(this.NR_Metal_ST), 'NR. Plástico NP': this.setFormato(this.NR_Plastico_NP), 'NR. Plástico P': this.setFormato(this.NR_Plastico_P), 'NR. Plástico ST': this.setFormato(this.NR_Plastico_ST),
+          'NR. Madera NP': this.setFormato(this.NR_Madera_NP), 'NR. Madera P': this.setFormato(this.NR_Madera_P), 'NR. Madera ST': this.setFormato(this.NR_Madera_ST), 'NR. Compuestos NP': this.setFormato(this.NR_Compuestos_NP), 'NR. Compuestos P': this.setFormato(this.NR_Compuestos_P), 'NR. Compuestos ST': this.setFormato(this.NR_Compuestos_ST),
+          'NR. Total Ton': this.setFormato(this.NR_Total_Ton), 'NR. Total UF': this.setFormato(this.NR_Total_UF), 'RET. Papel/cartón NP': this.setFormato(this.RET_PapelCarton_NP), 'RET. Papel/cartón P': this.setFormato(this.RET_PapelCarton_P), 'RET. Papel/cartón ST': this.setFormato(this.RET_PapelCarton_ST),
+          'RET. Metal NP': this.setFormato(this.RET_Metal_NP), 'RET. Metal P': this.setFormato(this.RET_Metal_P), 'RET. Metal ST': this.setFormato(this.RET_Metal_ST), 'RET. Plástico NP': this.setFormato(this.RET_Plastico_NP), 'RET. Plástico P': this.setFormato(this.RET_Plastico_P), 'RET. Plástico ST': this.setFormato(this.RET_Plastico_ST),
+          'RET. Madera NP': this.setFormato(this.RET_Madera_NP), 'RET. Madera P': this.setFormato(this.RET_Madera_P), 'RET. Madera ST': this.setFormato(this.RET_Madera_ST), 'RET. Total Ton': this.setFormato(this.RET_Total_Ton), 'RET. Total UF': this.setFormato(this.RET_Total_UF),
+          'Ajuste Papel/Cartón Reciclable Ton': this.setFormato(this.Ajuste_PapelCarton_Reciclable_Ton), 'Ajuste Metal Reciclable Ton': this.setFormato(this.Ajuste_Metal_Reciclable_Ton),
+          'Ajuste Plástico Reciclable Ton': this.setFormato(this.Ajuste_Plastico_Reciclable_Ton), 'Ajuste No Reciclables Ton': this.setFormato(this.Ajuste_No_Reciclables_Ton),
+          'Ajuste Retornables Ton': this.setFormato(this.Ajuste_Retornables_Ton.toString()), 'Ajuste Papel/Cartón Reciclable UF': this.setFormato(this.Ajuste_PapelCarton_Reciclable_UF), 'Ajuste Metal Reciclable UF': this.setFormato(this.Ajuste_Metal_Reciclable_UF),
+          'Ajuste Plástico Reciclable UF': this.setFormato(this.Ajuste_Plastico_Reciclable_UF), 'Ajuste No Reciclables UF': this.setFormato(this.Ajuste_No_Reciclables_UF), 'Total corregido (UF)': this.setFormato(this.TotalCorregido), 'Total Bruto (CLP) + IVA': this.setFormato(this.TotalBruto)
         });
       }
       else {
         this.datos.push({
-          'ID empresa': this.listStatements[i].CODE_BUSINESS, 'Nombre empresa': this.listStatements[i].NAME, 'Año declaración': y, 'Estado declaración': 'Borrador',
+          'ID empresa': this.listStatements[i].CODE_BUSINESS, 'Nombre empresa': this.listStatements[i].NAME, 'Año declaración': y.toString(), 'Estado declaración': 'Borrador',
           'Fecha de envío': 'NA', 'Usuario': this.listStatements[i].AM_FIRST_NAME + ' ' + this.listStatements[i].AM_LAST_NAME
         });
       }
@@ -276,45 +282,36 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
       });
     }
 
-    // Crear un nuevo libro de Excel
     const libro = XLSX.utils.book_new();
-
-    // Crear una nueva hoja de Excel
     const hoja = XLSX.utils.json_to_sheet(this.datos);
 
-    // Obtener el ancho máximo de cada columna en función del contenido
     let objectMaxLength: number[] = [];
     for (let i = 0; i < this.datos.length; i++) {
       let value = <any>Object.values(this.datos[i]);
       for (let j = 0; j < value.length; j++) {
-        if (typeof value[j] == "number") {
-          objectMaxLength[j] = 100;
-        } else {
-          objectMaxLength[j] =
-            objectMaxLength[j] >= value[j].length
-              ? objectMaxLength[j]
-              : value[j].length;
-        }
+        objectMaxLength[j] = 30;
       }
     }
 
-    // Crear el objeto de configuración de ancho de columnas
     var wscols = [];
     for (let i = 0; i < objectMaxLength.length; i++) {
       wscols.push({ width: objectMaxLength[i] });
     }
-
-    // Asignar el objeto de configuración de ancho de columnas a la hoja de Excel
     hoja["!cols"] = wscols;
-    // Agregar la hoja al libro
     XLSX.utils.book_append_sheet(libro, hoja, 'Datos');
-
-    // Generar el archivo Excel y descargarlo
     XLSX.writeFile(libro, `${nombreArchivo}.xlsx`);
-
+    Swal.close();
     this.datos = []
   }
 
+  setFormato(num: number | string): string {
+    const numero = typeof num === 'string' ? parseFloat(num.replace(/,/g, '')) : num;
+    const decimal = Math.round(numero * 100) / 100;
+    const [entero, decimales] = decimal.toString().split('.');
+    const enteroConPuntos = entero.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+    return decimales ? `${enteroConPuntos},${decimales}` : enteroConPuntos;
+  }
   setDeclaration(datos: any) {
     const { RECYCLABILITY, TYPE_RESIDUE, HAZARD, PRECEDENCE, VALUE, AMOUNT } = datos;
 
