@@ -173,7 +173,6 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     this.businesService.getAllBusiness().subscribe({
       next: resp => {
         this.listBusiness = resp.status;
-        console.log(this.listBusiness)
       },
       error: r => {
         Swal.close();
@@ -196,11 +195,9 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
             return b.STATE - a.STATE;
           }
         });
-        console.log(this.listStatements)
         this.filteredListBusiness = this.listBusiness.filter(business => {
           return !this.listStatements.some(statement => statement.ID_BUSINESS === business.ID);
         });
-        console.log(this.filteredListBusiness)
       }
     })
   }
@@ -226,7 +223,6 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     for (let i = 0; i < this.listStatements.length; i++) {
       const f = await this.productorService.getDetailByIdHeader(this.listStatements[i].ID_HEADER).toPromise();
       const lt = await this.productorService.getValueStatementByYear(this.listStatements[i].CODE_BUSINESS, y - 1, 0).toPromise();
-      console.log(lt)
       if (lt.status) {
         for (let j = 0; j < lt.data.detail.length; j++) {
           this.setLastDeclaration(lt.data.detail[j]);
