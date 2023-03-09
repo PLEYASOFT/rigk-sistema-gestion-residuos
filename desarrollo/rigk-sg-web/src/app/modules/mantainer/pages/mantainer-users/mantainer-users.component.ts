@@ -16,17 +16,12 @@ export class MantainerUsersComponent implements OnInit {
       return null;
     }
     let user;
-    this.dbTmp.findIndex(r => {
-      console.log(r.EMAIL);
-    })
     if (this.dbTmp.length > 0) {
       user = this.dbTmp.findIndex(r => r.EMAIL.toLowerCase() == email);
     } else {
       user = this.listUser.findIndex(r => r.EMAIL.toLowerCase() === email);
     }
-    console.log(user);
     if (user > -1) {
-      console.log("first2")
       return { used: true };  // el código se encuentra en el arreglo, hay errores
     } else {
       return null;  // el código NO se encuentra en el arreglo, no hay error
