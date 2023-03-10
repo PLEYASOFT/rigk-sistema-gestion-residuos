@@ -17,11 +17,11 @@ export class MantainerUsersComponent implements OnInit {
     }
     let user;
     if (this.dbTmp.length > 0) {
-      user = this.dbTmp.findIndex(r => r.EMAIL.toLowerCase() == email);
+      user = this.dbTmp.find(r => r.EMAIL.toLowerCase() == email);
     } else {
-      user = this.listUser.findIndex(r => r.EMAIL.toLowerCase() === email);
+      user = this.listUser.find(r => r.EMAIL.toLowerCase() === email);
     }
-    if (user > -1) {
+    if (user && user.ID != this.userForm.value.ID) {
       return { used: true };  // el código se encuentra en el arreglo, hay errores
     } else {
       return null;  // el código NO se encuentra en el arreglo, no hay error

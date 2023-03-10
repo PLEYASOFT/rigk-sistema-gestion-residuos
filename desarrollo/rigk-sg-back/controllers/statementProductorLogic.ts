@@ -1,7 +1,49 @@
 import { Request, Response } from 'express';
 import statementDao from '../dao/statementProductorDao';
 import ratesDao from '../dao/ratesDao';
-import dateFormat from 'dateformat';
+import dateFormat, { i18n } from 'dateformat';
+i18n.dayNames = [
+    "Do",
+    "Lu",
+    "Ma",
+    "Mi",
+    "Ju",
+    "Vi",
+    "Sa",
+    "Domingo",
+    "Lunes",
+    "Martes",
+    "Miércoles",
+    "Jueves",
+    "Viernes",
+    "Sábado",
+];
+i18n.monthNames = [
+    "Ene",
+    "Feb",
+    "Mar",
+    "Abr",
+    "May",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dicc",
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Apbil",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+];
 class StatementProductorLogic {
     public async getStatementsByUser(req: any, res: Response) {
         const user = req.uid;
@@ -45,7 +87,7 @@ class StatementProductorLogic {
     }
 
     public async getDetailByIdHeader(req: Request, res: Response) {
-        const { id_header} = req.params;
+        const { id_header } = req.params;
         try {
             const statement: any | boolean = await statementDao.getDetailByIdHeader(id_header);
             res.status(200).json({
@@ -62,7 +104,7 @@ class StatementProductorLogic {
     }
 
     public async getAllStatementByYear(req: Request, res: Response) {
-        const { year} = req.params;
+        const { year } = req.params;
         try {
             const statement: any | boolean = await statementDao.getAllStatementByYear(year);
             if (statement === false) {
@@ -328,7 +370,7 @@ class StatementProductorLogic {
                 iva: iva.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' }),
                 total: (neto + iva).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' }),
                 // DATA
-                date: dateFormat(new Date(), 'dd-mm-yyyy'),
+                date: dateFormat(new Date(), 'dd "de" mmmm yyyy'),
                 business_name: header.BUSINESS_NAME,
                 year,
                 llyear: parseInt(year) + 1,
