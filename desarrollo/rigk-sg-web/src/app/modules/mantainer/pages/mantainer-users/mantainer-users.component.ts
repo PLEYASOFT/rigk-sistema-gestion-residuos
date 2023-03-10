@@ -15,8 +15,13 @@ export class MantainerUsersComponent implements OnInit {
     if (!email) {
       return null;
     }
-    const user = this.listUser.find(r => r.EMAIL == email);
-    if (user && user.ID != this.userForm.value.ID) {
+    let user;
+    if (this.dbTmp.length > 0) {
+      user = this.dbTmp.findIndex(r => r.EMAIL.toLowerCase() == email);
+    } else {
+      user = this.listUser.findIndex(r => r.EMAIL.toLowerCase() === email);
+    }
+    if (user > -1) {
       return { used: true };  // el código se encuentra en el arreglo, hay errores
     } else {
       return null;  // el código NO se encuentra en el arreglo, no hay error
@@ -187,34 +192,70 @@ export class MantainerUsersComponent implements OnInit {
     return false;
   }
   saveForm() {
+    Swal.fire({
+      icon: 'info',
+      text: 'Guardando datos',
+      allowEnterKey: false,
+      allowEscapeKey: false,
+      allowOutsideClick: false
+    });
+    Swal.showLoading();
     this.saving = true;
     if (this.userForm.invalid) return;
     if (this.isEdit) {
-      this.authService.updateUser(this.userForm.value).subscribe(r => {
-        if (r.status) {
-          document.getElementById('btnCloseModal')?.click();
+      this.authService.updateUser(this.userForm.value).subscribe({
+        next: r => {
+          Swal.close();
+          if (r.status) {
+            document.getElementById('btnCloseModal')?.click();
+            Swal.fire({
+              icon: 'success',
+              text: r.msg
+            });
+            this.loadUsers();
+            this.pos = 1;
+            this.saving = false;
+          }
+        },
+        error: r => {
+          Swal.close();
           Swal.fire({
-            icon: 'success',
-            text: r.msg
+            icon: 'error',
+            text: 'Algo salió mal'
           });
-          this.loadUsers();
-          this.pos = 1;
-          this.saving = false;
         }
       });
     } else {
-      this.authService.registerUser(this.userForm.value).subscribe(r => {
-        if (r.status) {
-          document.getElementById('btnCloseModal')?.click();
+      this.authService.registerUser(this.userForm.value).subscribe({
+        next: r => {
+          Swal.close();
+          if (r.status) {
+            document.getElementById('btnCloseModal')?.click();
+            Swal.fire({
+              icon: 'success',
+              text: r.msg
+            });
+            this.loadUsers();
+            this.pos = 1;
+            this.saving = false;
+          } else {
+            Swal.close();
+            Swal.fire({
+              icon: 'warning',
+              text: r.msg
+            });
+            this.saving = false;
+          }
+        },
+        error: r => {
+          Swal.close();
           Swal.fire({
-            icon: 'success',
-            text: r.msg
+            icon: 'error',
+            text: 'Algo salió mal'
           });
-          this.loadUsers();
-          this.pos = 1;
-          this.saving = false;
         }
-      });
+      }
+      );
     }
   }
   pos = 1;
