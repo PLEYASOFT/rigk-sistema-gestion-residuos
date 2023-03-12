@@ -128,7 +128,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
         Swal.fire({
           title: '¡Ups!',
           icon: 'error',
-          text: 'No se logró obtener el valor de la UF',
+          text: '“Ha sucedido un error al generar el archivo Excel, por favor pruebe de nuevo en unos minutos. Si el problema persiste póngase en contacto con administración',
           showConfirmButton: true
         });
         console.log(error);
@@ -152,7 +152,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
   }
 
   years: number[] = [];
-  selectedYear: number;
+  selectedYear: number= -1;
   listBusiness: any[] = [];
   listStatements: any[] = [];
   filteredListBusiness: any[] = [];
@@ -164,7 +164,6 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     for (let year = 2022; year <= currentYear; year++) {
       this.years.push(year);
     }
-    this.selectedYear = currentYear;
   }
 
   getAllBusiness() {
@@ -183,6 +182,9 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     });
   }
 
+  onYearSelected() {
+    console.log("Año seleccionado:", this.selectedYear);
+}
   loadStatements(year: any) {
     this.productorService.getAllStatementByYear(year).subscribe(r => {
       if (r.status) {
@@ -229,6 +231,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     for (let i = 0; i < this.listStatements.length; i++) {
       const f = await this.productorService.getDetailByIdHeader(this.listStatements[i].ID_HEADER).toPromise();
       const lt = await this.productorService.getValueStatementByYear(this.listStatements[i].CODE_BUSINESS, y - 1, 0).toPromise();
+      
       if (lt.status) {
         for (let j = 0; j < lt.data.detail.length; j++) {
           this.setLastDeclaration(lt.data.detail[j]);
@@ -245,14 +248,14 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
       this.RET_Total_UF = this.RET_Total_UF.toFixed(2);
 
       this.calculoAjustes();
+      const user = await this.productorService.getProductor(this.listStatements[i].CREATED_BY).toPromise();
       if (this.listStatements[i].STATE) {
-
         const fecha = this.listStatements[i].UPDATED_AT;
         const fechaFormateada = new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
+        console.log(user)
         this.datos.push({
           'ID empresa': this.listStatements[i].CODE_BUSINESS, 'Nombre empresa': this.listStatements[i].NAME, 'Año declaración': y.toString(), 'Estado declaración': 'Enviada',
-          'Fecha de envío': fechaFormateada, 'Usuario': this.listStatements[i].AM_FIRST_NAME + ' ' + this.listStatements[i].AM_LAST_NAME, 'R. Papel/cartón NP': this.setFormato(this.R_PapelCarton_NP),
+          'Fecha de envío': fechaFormateada, 'Usuario': user.data.statements[0].FIRST_NAME+ ' ' + user.data.statements[0].LAST_NAME, 'R. Papel/cartón NP': this.setFormato(this.R_PapelCarton_NP),
           'R. Papel/cartón P': this.setFormato(this.R_PapelCarton_P), 'R. Papel/cartón ST': this.setFormato(this.R_PapelCarton_ST), 'R. Metal NP': this.setFormato(this.R_Metal_NP), 'R. Metal P': this.setFormato(this.R_Metal_P), 'R. Metal ST': this.setFormato(this.R_Metal_ST),
           'R. Plástico NP': this.setFormato(this.R_Plastico_NP), 'R. Plástico P': this.setFormato(this.R_Plastico_P), 'R. Plástico ST': this.setFormato(this.R_Plastico_ST), 'R. Madera NP': this.setFormato(this.R_Madera_NP), 'R. Madera P': this.setFormato(this.R_Madera_P), 'R. Madera ST': this.setFormato(this.R_Madera_ST),
           'R. Total Ton': this.setFormato(this.R_Total_Ton), 'R. Total UF': this.setFormato(this.R_Total_UF), 'NR. Papel/cartón NP': this.setFormato(this.NR_PapelCarton_NP), 'NR. Papel/cartón P': this.setFormato(this.NR_PapelCarton_P), 'NR. Papel/cartón ST': this.setFormato(this.NR_PapelCarton_ST),
@@ -270,7 +273,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
       else {
         this.datos.push({
           'ID empresa': this.listStatements[i].CODE_BUSINESS, 'Nombre empresa': this.listStatements[i].NAME, 'Año declaración': y.toString(), 'Estado declaración': 'Borrador',
-          'Fecha de envío': 'NA', 'Usuario': this.listStatements[i].AM_FIRST_NAME + ' ' + this.listStatements[i].AM_LAST_NAME
+          'Fecha de envío': 'NA', 'Usuario': user.data.statements[0].FIRST_NAME+ ' ' + user.data.statements[0].LAST_NAME
         });
       }
       this.resetDatos();
@@ -299,7 +302,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     }
     hoja["!cols"] = wscols;
     XLSX.utils.book_append_sheet(libro, hoja, 'Datos');
-    XLSX.writeFile(libro, `${nombreArchivo}.xlsx`);
+    XLSX.writeFile(libro, `${nombreArchivo}_${y}.xlsx`);
     Swal.close();
     this.datos = []
   }

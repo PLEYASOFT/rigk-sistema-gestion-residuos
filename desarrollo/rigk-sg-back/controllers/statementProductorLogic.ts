@@ -183,6 +183,20 @@ class StatementProductorLogic {
             });
         }
     }
+    public async getProductor(req: Request, res: Response) {
+        const { id } = req.params;
+        
+        try {
+            const data = await statementDao.getProductor(id);
+            res.status(200).json({ status: true, data });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
     public async generatePDF(req: Request, res: Response) {
         const { id, year } = req.params;
         try {

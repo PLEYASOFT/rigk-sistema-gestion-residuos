@@ -23,6 +23,9 @@ export class ProductorService {
   getDetailByIdHeader(id_header: number) {
     return this.http.get<any>(`${this.url}/detail/${id_header}`);
   }
+  getProductor(id: number) {
+    return this.http.get<any>(`${this.url}/${id}`);
+  }
   get getStatementByUser() {
     return this.http.get<any>(`${this.url}/byUser`);
   }
