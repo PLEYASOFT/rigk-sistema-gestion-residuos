@@ -128,7 +128,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
         Swal.fire({
           title: '¡Ups!',
           icon: 'error',
-          text: '“Ha sucedido un error al generar el archivo Excel, por favor pruebe de nuevo en unos minutos. Si el problema persiste póngase en contacto con administración',
+          text: 'No se logró obtener el valor de la UF',
           showConfirmButton: true
         });
         console.log(error);
@@ -203,108 +203,131 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
   }
 
   generarExcel = async (nombreArchivo: string) => {
-    Swal.fire({
-      title: 'Cargando Datos',
-      text: 'Se está recuperando datos',
-      timerProgressBar: true,
-      showConfirmButton: false,
-      allowEscapeKey: false,
-      allowOutsideClick: false
-    });
-    Swal.showLoading();
-    const y = parseInt((document.getElementById('f_year') as HTMLSelectElement).value);
-    // Esperar a que se complete la petición y obtener los datos
-    const r = await this.productorService.getAllStatementByYear(y).toPromise();
-    if (r.status) {
-      this.listStatements = r.data.res_business.sort((a: { STATE: number; ID_BUSINESS: number; }, b: { STATE: number; ID_BUSINESS: number; }) => {
-        if (a.STATE === b.STATE) {
-          return a.ID_BUSINESS - b.ID_BUSINESS;
-        } else {
-          return b.STATE - a.STATE;
-        }
+    try {
+      Swal.fire({
+        title: 'Cargando Datos',
+        text: 'Se está recuperando datos',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowEscapeKey: false,
+        allowOutsideClick: false
       });
-      this.filteredListBusiness = this.listBusiness.filter(business => {
-        return !this.listStatements.some(statement => statement.ID_BUSINESS === business.ID);
-      });
-    }
-
-    for (let i = 0; i < this.listStatements.length; i++) {
-      const f = await this.productorService.getDetailByIdHeader(this.listStatements[i].ID_HEADER).toPromise();
-      const lt = await this.productorService.getValueStatementByYear(this.listStatements[i].CODE_BUSINESS, y - 1, 0).toPromise();
-      
-      if (lt.status) {
-        for (let j = 0; j < lt.data.detail.length; j++) {
-          this.setLastDeclaration(lt.data.detail[j]);
-        }
-      }
-      for (let j = 0; j < f.data.length; j++) {
-        this.setDeclaration(f.data[j]);
-      }
-      this.R_Total_Ton = this.R_Total_Ton.toFixed(2);
-      this.R_Total_UF = this.R_Total_UF.toFixed(2);
-      this.NR_Total_Ton = this.NR_Total_Ton.toFixed(2);
-      this.NR_Total_UF = this.NR_Total_UF.toFixed(2);
-      this.RET_Total_Ton = this.RET_Total_Ton.toFixed(2);
-      this.RET_Total_UF = this.RET_Total_UF.toFixed(2);
-
-      this.calculoAjustes();
-      const user = await this.productorService.getProductor(this.listStatements[i].CREATED_BY).toPromise();
-      if (this.listStatements[i].STATE) {
-        const fecha = this.listStatements[i].UPDATED_AT;
-        const fechaFormateada = new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        console.log(user)
-        this.datos.push({
-          'ID empresa': this.listStatements[i].CODE_BUSINESS, 'Nombre empresa': this.listStatements[i].NAME, 'Año declaración': y.toString(), 'Estado declaración': 'Enviada',
-          'Fecha de envío': fechaFormateada, 'Usuario': user.data.statements[0].FIRST_NAME+ ' ' + user.data.statements[0].LAST_NAME, 'R. Papel/cartón NP': this.setFormato(this.R_PapelCarton_NP),
-          'R. Papel/cartón P': this.setFormato(this.R_PapelCarton_P), 'R. Papel/cartón ST': this.setFormato(this.R_PapelCarton_ST), 'R. Metal NP': this.setFormato(this.R_Metal_NP), 'R. Metal P': this.setFormato(this.R_Metal_P), 'R. Metal ST': this.setFormato(this.R_Metal_ST),
-          'R. Plástico NP': this.setFormato(this.R_Plastico_NP), 'R. Plástico P': this.setFormato(this.R_Plastico_P), 'R. Plástico ST': this.setFormato(this.R_Plastico_ST), 'R. Madera NP': this.setFormato(this.R_Madera_NP), 'R. Madera P': this.setFormato(this.R_Madera_P), 'R. Madera ST': this.setFormato(this.R_Madera_ST),
-          'R. Total Ton': this.setFormato(this.R_Total_Ton), 'R. Total UF': this.setFormato(this.R_Total_UF), 'NR. Papel/cartón NP': this.setFormato(this.NR_PapelCarton_NP), 'NR. Papel/cartón P': this.setFormato(this.NR_PapelCarton_P), 'NR. Papel/cartón ST': this.setFormato(this.NR_PapelCarton_ST),
-          'NR. Metal NP': this.setFormato(this.NR_Metal_NP), 'NR. Metal P': this.setFormato(this.NR_Metal_P), 'NR. Metal ST': this.setFormato(this.NR_Metal_ST), 'NR. Plástico NP': this.setFormato(this.NR_Plastico_NP), 'NR. Plástico P': this.setFormato(this.NR_Plastico_P), 'NR. Plástico ST': this.setFormato(this.NR_Plastico_ST),
-          'NR. Madera NP': this.setFormato(this.NR_Madera_NP), 'NR. Madera P': this.setFormato(this.NR_Madera_P), 'NR. Madera ST': this.setFormato(this.NR_Madera_ST), 'NR. Compuestos NP': this.setFormato(this.NR_Compuestos_NP), 'NR. Compuestos P': this.setFormato(this.NR_Compuestos_P), 'NR. Compuestos ST': this.setFormato(this.NR_Compuestos_ST),
-          'NR. Total Ton': this.setFormato(this.NR_Total_Ton), 'NR. Total UF': this.setFormato(this.NR_Total_UF), 'RET. Papel/cartón NP': this.setFormato(this.RET_PapelCarton_NP), 'RET. Papel/cartón P': this.setFormato(this.RET_PapelCarton_P), 'RET. Papel/cartón ST': this.setFormato(this.RET_PapelCarton_ST),
-          'RET. Metal NP': this.setFormato(this.RET_Metal_NP), 'RET. Metal P': this.setFormato(this.RET_Metal_P), 'RET. Metal ST': this.setFormato(this.RET_Metal_ST), 'RET. Plástico NP': this.setFormato(this.RET_Plastico_NP), 'RET. Plástico P': this.setFormato(this.RET_Plastico_P), 'RET. Plástico ST': this.setFormato(this.RET_Plastico_ST),
-          'RET. Madera NP': this.setFormato(this.RET_Madera_NP), 'RET. Madera P': this.setFormato(this.RET_Madera_P), 'RET. Madera ST': this.setFormato(this.RET_Madera_ST), 'RET. Total Ton': this.setFormato(this.RET_Total_Ton), 'RET. Total UF': this.setFormato(this.RET_Total_UF),
-          'Ajuste Papel/Cartón Reciclable Ton': this.setFormato(this.Ajuste_PapelCarton_Reciclable_Ton), 'Ajuste Metal Reciclable Ton': this.setFormato(this.Ajuste_Metal_Reciclable_Ton),
-          'Ajuste Plástico Reciclable Ton': this.setFormato(this.Ajuste_Plastico_Reciclable_Ton), 'Ajuste No Reciclables Ton': this.setFormato(this.Ajuste_No_Reciclables_Ton),
-          'Ajuste Retornables Ton': this.setFormato(this.Ajuste_Retornables_Ton.toString()), 'Ajuste Papel/Cartón Reciclable UF': this.setFormato(this.Ajuste_PapelCarton_Reciclable_UF), 'Ajuste Metal Reciclable UF': this.setFormato(this.Ajuste_Metal_Reciclable_UF),
-          'Ajuste Plástico Reciclable UF': this.setFormato(this.Ajuste_Plastico_Reciclable_UF), 'Ajuste No Reciclables UF': this.setFormato(this.Ajuste_No_Reciclables_UF), 'Total corregido (UF)': this.setFormato(this.TotalCorregido), 'Total Bruto (CLP) + IVA': this.setFormato(this.TotalBruto)
+      Swal.showLoading();
+      const y = parseInt((document.getElementById('f_year') as HTMLSelectElement).value);
+      // Esperar a que se complete la petición y obtener los datos
+      const r = await this.productorService.getAllStatementByYear(y).toPromise();
+      if (r.status) {
+        this.listStatements = r.data.res_business.sort((a: { STATE: number; ID_BUSINESS: number; }, b: { STATE: number; ID_BUSINESS: number; }) => {
+          if (a.STATE === b.STATE) {
+            return a.ID_BUSINESS - b.ID_BUSINESS;
+          } else {
+            return b.STATE - a.STATE;
+          }
+        });
+        this.filteredListBusiness = this.listBusiness.filter(business => {
+          return !this.listStatements.some(statement => statement.ID_BUSINESS === business.ID);
         });
       }
-      else {
+  
+      for (let i = 0; i < this.listStatements.length; i++) {
+        const f = await this.productorService.getDetailByIdHeader(this.listStatements[i].ID_HEADER).toPromise();
+        const lt = await this.productorService.getValueStatementByYear(this.listStatements[i].CODE_BUSINESS, y - 1, 0).toPromise();
+        
+        if (lt.status) {
+          for (let j = 0; j < lt.data.detail.length; j++) {
+            this.setLastDeclaration(lt.data.detail[j]);
+          }
+        }
+        for (let j = 0; j < f.data.length; j++) {
+          this.setDeclaration(f.data[j]);
+        }
+        this.R_Total_Ton = this.R_Total_Ton.toFixed(2);
+        this.R_Total_UF = this.R_Total_UF.toFixed(2);
+        this.NR_Total_Ton = this.NR_Total_Ton.toFixed(2);
+        this.NR_Total_UF = this.NR_Total_UF.toFixed(2);
+        this.RET_Total_Ton = this.RET_Total_Ton.toFixed(2);
+        this.RET_Total_UF = this.RET_Total_UF.toFixed(2);
+  
+        this.calculoAjustes();
+        const user = await this.productorService.getProductor(this.listStatements[i].CREATED_BY).toPromise();
+        if (this.listStatements[i].STATE) {
+          const fecha = this.listStatements[i].UPDATED_AT;
+          const fechaFormateada = new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+          console.log(user)
+          this.datos.push({
+            'ID empresa': this.listStatements[i].CODE_BUSINESS, 'Nombre empresa': this.listStatements[i].NAME, 'Año declaración': y.toString(), 'Estado declaración': 'Enviada',
+            'Fecha de envío': fechaFormateada, 'Usuario': user.data.statements[0].FIRST_NAME+ ' ' + user.data.statements[0].LAST_NAME, 'R. Papel/cartón NP': this.setFormato(this.R_PapelCarton_NP),
+            'R. Papel/cartón P': this.setFormato(this.R_PapelCarton_P), 'R. Papel/cartón ST': this.setFormato(this.R_PapelCarton_ST), 'R. Metal NP': this.setFormato(this.R_Metal_NP), 'R. Metal P': this.setFormato(this.R_Metal_P), 'R. Metal ST': this.setFormato(this.R_Metal_ST),
+            'R. Plástico NP': this.setFormato(this.R_Plastico_NP), 'R. Plástico P': this.setFormato(this.R_Plastico_P), 'R. Plástico ST': this.setFormato(this.R_Plastico_ST), 'R. Madera NP': this.setFormato(this.R_Madera_NP), 'R. Madera P': this.setFormato(this.R_Madera_P), 'R. Madera ST': this.setFormato(this.R_Madera_ST),
+            'R. Total Ton': this.setFormato(this.R_Total_Ton), 'R. Total UF': this.setFormato(this.R_Total_UF), 'NR. Papel/cartón NP': this.setFormato(this.NR_PapelCarton_NP), 'NR. Papel/cartón P': this.setFormato(this.NR_PapelCarton_P), 'NR. Papel/cartón ST': this.setFormato(this.NR_PapelCarton_ST),
+            'NR. Metal NP': this.setFormato(this.NR_Metal_NP), 'NR. Metal P': this.setFormato(this.NR_Metal_P), 'NR. Metal ST': this.setFormato(this.NR_Metal_ST), 'NR. Plástico NP': this.setFormato(this.NR_Plastico_NP), 'NR. Plástico P': this.setFormato(this.NR_Plastico_P), 'NR. Plástico ST': this.setFormato(this.NR_Plastico_ST),
+            'NR. Madera NP': this.setFormato(this.NR_Madera_NP), 'NR. Madera P': this.setFormato(this.NR_Madera_P), 'NR. Madera ST': this.setFormato(this.NR_Madera_ST), 'NR. Compuestos NP': this.setFormato(this.NR_Compuestos_NP), 'NR. Compuestos P': this.setFormato(this.NR_Compuestos_P), 'NR. Compuestos ST': this.setFormato(this.NR_Compuestos_ST),
+            'NR. Total Ton': this.setFormato(this.NR_Total_Ton), 'NR. Total UF': this.setFormato(this.NR_Total_UF), 'RET. Papel/cartón NP': this.setFormato(this.RET_PapelCarton_NP), 'RET. Papel/cartón P': this.setFormato(this.RET_PapelCarton_P), 'RET. Papel/cartón ST': this.setFormato(this.RET_PapelCarton_ST),
+            'RET. Metal NP': this.setFormato(this.RET_Metal_NP), 'RET. Metal P': this.setFormato(this.RET_Metal_P), 'RET. Metal ST': this.setFormato(this.RET_Metal_ST), 'RET. Plástico NP': this.setFormato(this.RET_Plastico_NP), 'RET. Plástico P': this.setFormato(this.RET_Plastico_P), 'RET. Plástico ST': this.setFormato(this.RET_Plastico_ST),
+            'RET. Madera NP': this.setFormato(this.RET_Madera_NP), 'RET. Madera P': this.setFormato(this.RET_Madera_P), 'RET. Madera ST': this.setFormato(this.RET_Madera_ST), 'RET. Total Ton': this.setFormato(this.RET_Total_Ton), 'RET. Total UF': this.setFormato(this.RET_Total_UF),
+            'Ajuste Papel/Cartón Reciclable Ton': this.setFormato(this.Ajuste_PapelCarton_Reciclable_Ton), 'Ajuste Metal Reciclable Ton': this.setFormato(this.Ajuste_Metal_Reciclable_Ton),
+            'Ajuste Plástico Reciclable Ton': this.setFormato(this.Ajuste_Plastico_Reciclable_Ton), 'Ajuste No Reciclables Ton': this.setFormato(this.Ajuste_No_Reciclables_Ton),
+            'Ajuste Retornables Ton': this.setFormato(this.Ajuste_Retornables_Ton.toString()), 'Ajuste Papel/Cartón Reciclable UF': this.setFormato(this.Ajuste_PapelCarton_Reciclable_UF), 'Ajuste Metal Reciclable UF': this.setFormato(this.Ajuste_Metal_Reciclable_UF),
+            'Ajuste Plástico Reciclable UF': this.setFormato(this.Ajuste_Plastico_Reciclable_UF), 'Ajuste No Reciclables UF': this.setFormato(this.Ajuste_No_Reciclables_UF), 'Total corregido (UF)': this.setFormato(this.TotalCorregido), 'Total Bruto (CLP) + IVA': this.setFormato(this.TotalBruto)
+          });
+        }
+        else {
+          this.datos.push({
+            'ID empresa': this.listStatements[i].CODE_BUSINESS, 'Nombre empresa': this.listStatements[i].NAME, 'Año declaración': y.toString(), 'Estado declaración': 'Borrador',
+            'Fecha de envío': 'NA', 'Usuario': user.data.statements[0].FIRST_NAME+ ' ' + user.data.statements[0].LAST_NAME, 'R. Papel/cartón NP': '',
+            'R. Papel/cartón P': '', 'R. Papel/cartón ST': '', 'R. Metal NP': '', 'R. Metal P': '', 'R. Metal ST': '',
+            'R. Plástico NP': '', 'R. Plástico P': '', 'R. Plástico ST': '', 'R. Madera NP': '', 'R. Madera P': '', 'R. Madera ST': '',
+            'R. Total Ton': '', 'R. Total UF': '', 'NR. Papel/cartón NP': '', 'NR. Papel/cartón P': '', 'NR. Papel/cartón ST': '',
+            'NR. Metal NP': '', 'NR. Metal P': '', 'NR. Metal ST': '', 'NR. Plástico NP': '', 'NR. Plástico P': '', 'NR. Plástico ST': '',
+            'NR. Madera NP': '', 'NR. Madera P': '', 'NR. Madera ST': '', 'NR. Compuestos NP': '', 'NR. Compuestos P': '', 'NR. Compuestos ST': '',
+            'NR. Total Ton': '', 'NR. Total UF': '', 'RET. Papel/cartón NP': '', 'RET. Papel/cartón P': '', 'RET. Papel/cartón ST': '',
+            'RET. Metal NP': '', 'RET. Metal P': '', 'RET. Metal ST': '', 'RET. Plástico NP': '', 'RET. Plástico P': '', 'RET. Plástico ST': '',
+            'RET. Madera NP': '', 'RET. Madera P': '', 'RET. Madera ST': '', 'RET. Total Ton': '', 'RET. Total UF': '',
+            'Ajuste Papel/Cartón Reciclable Ton': '', 'Ajuste Metal Reciclable Ton': '',
+            'Ajuste Plástico Reciclable Ton': '', 'Ajuste No Reciclables Ton': '',
+            'Ajuste Retornables Ton': '', 'Ajuste Papel/Cartón Reciclable UF': '', 'Ajuste Metal Reciclable UF': '',
+            'Ajuste Plástico Reciclable UF': '', 'Ajuste No Reciclables UF': '', 'Total corregido (UF)': '', 'Total Bruto (CLP) + IVA': ''
+          });
+        }
+        this.resetDatos();
+      }
+      for (let i = 0; i < this.filteredListBusiness.length; i++) {
         this.datos.push({
-          'ID empresa': this.listStatements[i].CODE_BUSINESS, 'Nombre empresa': this.listStatements[i].NAME, 'Año declaración': y.toString(), 'Estado declaración': 'Borrador',
-          'Fecha de envío': 'NA', 'Usuario': user.data.statements[0].FIRST_NAME+ ' ' + user.data.statements[0].LAST_NAME
+          'ID empresa': this.filteredListBusiness[i].CODE_BUSINESS, 'Nombre empresa': this.filteredListBusiness[i].NAME, 'Año declaración': '', 'Estado declaración': 'NA',
+          'Fecha de envío': 'NA', 'Usuario': 'NA'
         });
       }
-      this.resetDatos();
-    }
-    for (let i = 0; i < this.filteredListBusiness.length; i++) {
-      this.datos.push({
-        'ID empresa': this.filteredListBusiness[i].CODE_BUSINESS, 'Nombre empresa': this.filteredListBusiness[i].NAME, 'Año declaración': '', 'Estado declaración': 'NA',
-        'Fecha de envío': 'NA', 'Usuario': 'NA'
-      });
-    }
-
-    const libro = XLSX.utils.book_new();
-    const hoja = XLSX.utils.json_to_sheet(this.datos);
-
-    let objectMaxLength: number[] = [];
-    for (let i = 0; i < this.datos.length; i++) {
-      let value = <any>Object.values(this.datos[i]);
-      for (let j = 0; j < value.length; j++) {
-        objectMaxLength[j] = 30;
+  
+      const libro = XLSX.utils.book_new();
+      const hoja = XLSX.utils.json_to_sheet(this.datos);
+  
+      let objectMaxLength: number[] = [];
+      for (let i = 0; i < this.datos.length; i++) {
+        let value = <any>Object.values(this.datos[i]);
+        for (let j = 0; j < value.length; j++) {
+          objectMaxLength[j] = 10;
+        }
       }
+  
+      var wscols = [];
+      for (let i = 0; i < objectMaxLength.length; i++) {
+        wscols.push({ width: objectMaxLength[i] });
+      }
+      hoja["!cols"] = wscols;
+      XLSX.utils.book_append_sheet(libro, hoja, 'Datos');
+      XLSX.writeFile(libro, `${nombreArchivo}_${y}.xlsx`);
+      Swal.close();
+      this.datos = []
+    } catch (error) {
+      Swal.fire({
+        title: '¡Ups!',
+        icon: 'error',
+        text: 'Ha sucedido un error al generar el archivo Excel, por favor pruebe de nuevo en unos minutos. Si el problema persiste póngase en contacto con administración',
+        showConfirmButton: true
+      });
+      console.log(error);
     }
-
-    var wscols = [];
-    for (let i = 0; i < objectMaxLength.length; i++) {
-      wscols.push({ width: objectMaxLength[i] });
-    }
-    hoja["!cols"] = wscols;
-    XLSX.utils.book_append_sheet(libro, hoja, 'Datos');
-    XLSX.writeFile(libro, `${nombreArchivo}_${y}.xlsx`);
-    Swal.close();
-    this.datos = []
+    
   }
 
   setFormato(num: number | string): string {
@@ -552,7 +575,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
       this.Ajuste_Metal_Reciclable_Ton = this.R_Metal_P + this.R_Metal_ST + this.R_Metal_NP - (this.l_R_Metal_P + this.l_R_Metal_ST + this.l_R_Metal_NP)
     }
     if ((this.l_R_Plastico_P + this.l_R_Plastico_ST + this.l_R_Plastico_NP) != 0) {
-      this.Ajuste_Plastico_Reciclable_Ton = this.R_Plastico_P + this.R_Plastico_ST + this.R_Plastico_NP - (this.l_R_Plastico_P + this.l_R_Plastico_ST + this.l_R_PapelCarton_NP)
+      this.Ajuste_Plastico_Reciclable_Ton = this.R_Plastico_P + this.R_Plastico_ST + this.R_Plastico_NP - (this.l_R_Plastico_P + this.l_R_Plastico_ST + this.l_R_Plastico_NP)
     }
     if ((this.l_NR_PapelCarton_P + this.l_NR_PapelCarton_ST + this.l_NR_PapelCarton_NP + this.l_NR_Metal_P + this.l_NR_Metal_ST + this.l_NR_Metal_NP + this.l_NR_Plastico_P + this.l_NR_Plastico_ST + this.l_NR_Plastico_NP + this.l_NR_Compuestos_P + this.l_NR_Compuestos_ST + this.l_NR_Compuestos_NP) != 0) {
       this.Ajuste_No_Reciclables_Ton = this.NR_PapelCarton_P + this.NR_PapelCarton_ST + this.NR_PapelCarton_NP + this.NR_Metal_P + this.NR_Metal_ST + this.NR_Metal_NP + this.NR_Plastico_P + this.NR_Plastico_ST + this.NR_Plastico_NP + this.NR_Compuestos_P + this.NR_Compuestos_ST + this.NR_Compuestos_NP - (this.l_NR_PapelCarton_P + this.l_NR_PapelCarton_ST + this.l_NR_PapelCarton_NP + this.l_NR_Metal_P + this.l_NR_Metal_ST + this.l_NR_Metal_NP + this.l_NR_Plastico_P + this.l_NR_Plastico_ST + this.l_NR_Plastico_NP + this.l_NR_Compuestos_P + this.l_NR_Compuestos_ST + this.l_NR_Compuestos_NP);
