@@ -45,37 +45,56 @@ class Server {
         });
     }
     config() {
-        // const opts = {
-        //     points: 5, // 5 points
-        //     duration: 10, // Per second
-        //     blockDuration: 300, // block for 5 minutes if more than points consumed 
-        // };
-        // const rateLimiter = new RateLimiterMemory(opts);
-        // const rateLimiterMiddleware = (req: any, res: any, next: any) => {
-        //     rateLimiter.consume(req.connection.remoteAddress)
-        //         .then(() => {
-        //             next();
-        //         })
-        //         .catch((rejRes) => {
-        //             res.status(429).json({
-        //                 status: false,
-        //                 msg: 'Too Many Requests'
-        //             });
-        //         });
-        // };
-        // this.app.use(rateLimiterMiddleware);
+        const opts = {
+            points: 12,
+            duration: 1,
+            blockDuration: 300
+        };
+        const rateLimiter = new RateLimiterMemory(opts);
+        const rateLimiterMiddleware = (req: any, res: any, next: any) => {
+            rateLimiter.consume(req.connection.remoteAddress, 1)
+                .then((rateLimiterRes) => {
+                    res.set('X-RateLimit-Remaining', rateLimiterRes.remainingPoints);
+                    res.set("X-RateLimit-Reset", new Date(Date.now() + rateLimiterRes.msBeforeNext));
+                    next();
+                })
+                .catch((rateLimiterRes) => {
+                    res.set('X-RateLimit-Remaining', rateLimiterRes.remainingPoints);
+                    res.set("X-RateLimit-Reset", new Date(Date.now() + rateLimiterRes.msBeforeNext));
+                    console.log("Bloqueado x DOS");
+                    res.status(429).json({
+                        status: false,
+                        msg: 'Too Many Requests'
+                    });
+                });
+        };
+        this.app.use(rateLimiterMiddleware);
+        var whitelist = ['http://localhost:4200', 'https://prorep.us-east-1.elasticbeanstalk.com'];
+        var corsOptionsDelegate = function (req: any, callback: any) {
+            var corsOptions;
+            if (whitelist.indexOf(req.header('Origin')) !== -1) {
+                corsOptions = { origin: true };
+            } else {
+                corsOptions = { origin: false };
+            }
+            callback(null, corsOptions);
+        };
         this.app.use(helmet({
             contentSecurityPolicy: true,
             hidePoweredBy: true,
             frameguard: { action: 'deny' },
+            referrerPolicy: {
+                policy: "no-referrer",
+            },
             crossOriginResourcePolicy: true,
             crossOriginEmbedderPolicy: { policy: 'credentialless' },
             crossOriginOpenerPolicy: true,
-            xssFilter: true
+            xssFilter: true,
+            hsts: true
         }));
         this.app.use(express.urlencoded({ extended: false }));
         this.app.use(express.json({ strict: true }));
-        this.app.use(cors({ origin: '*' }));
+        this.app.use(cors(corsOptionsDelegate));
         this.app.use(fileUpload({
             limits: { fileSize: 1024 * 1024 * 1 }
         }));
