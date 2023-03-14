@@ -6,6 +6,12 @@ class statementProductorDao {
         conn?.end();
         return { statements };
     }
+    public async getProductor(id: string) {
+        const conn = mysqlcon.getConnection();
+        const statements = await conn?.execute("SELECT FIRST_NAME, LAST_NAME from user WHERE ID = ?", [id]).then((res) => res[0]).catch(error => { undefined });
+        conn?.end();
+        return { statements };
+    }
     public async getDeclaretionByYear(business: string, year: string, isDraft: number) {
         let res_header: any;
         let res_detail: any;
