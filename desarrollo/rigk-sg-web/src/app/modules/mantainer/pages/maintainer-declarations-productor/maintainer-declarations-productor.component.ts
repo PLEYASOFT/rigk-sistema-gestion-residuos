@@ -161,7 +161,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     public productorService: ProductorService,
     public ratesService: RatesTsService) {
     const currentYear = new Date().getFullYear();
-    for (let year = 2022; year <= currentYear; year++) {
+    for (let year = 2022; year <= currentYear + 1; year++) {
       this.years.push(year);
     }
   }
@@ -204,19 +204,19 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
 
   generarExcel = async (nombreArchivo: string) => {
     try {
-      Swal.fire({
-        title: 'Cargando Datos',
-        text: 'Se está recuperando datos',
-        timerProgressBar: true,
-        showConfirmButton: false,
-        allowEscapeKey: false,
-        allowOutsideClick: false
-      });
-      Swal.showLoading();
       const y = parseInt((document.getElementById('f_year') as HTMLSelectElement).value);
       // Esperar a que se complete la petición y obtener los datos
       const r = await this.productorService.getAllStatementByYear(y).toPromise();
       if (r.status) {
+        Swal.fire({
+          title: 'Cargando Datos',
+          text: 'Se está recuperando datos',
+          timerProgressBar: true,
+          showConfirmButton: false,
+          allowEscapeKey: false,
+          allowOutsideClick: false
+        });
+        Swal.showLoading();
         this.listStatements = r.data.res_business.sort((a: { STATE: number; ID_BUSINESS: number; }, b: { STATE: number; ID_BUSINESS: number; }) => {
           if (a.STATE === b.STATE) {
             return a.ID_BUSINESS - b.ID_BUSINESS;
@@ -227,7 +227,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
         this.filteredListBusiness = this.listBusiness.filter(business => {
           return !this.listStatements.some(statement => statement.ID_BUSINESS === business.ID);
         });
-      }
+      
   
       for (let i = 0; i < this.listStatements.length; i++) {
         const f = await this.productorService.getDetailByIdHeader(this.listStatements[i].ID_HEADER).toPromise();
@@ -253,7 +253,6 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
         if (this.listStatements[i].STATE) {
           const fecha = this.listStatements[i].UPDATED_AT;
           const fechaFormateada = new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-          console.log(user)
           this.datos.push({
             'ID empresa': this.listStatements[i].CODE_BUSINESS, 'Nombre empresa': this.listStatements[i].NAME, 'Año declaración': y.toString(), 'Estado declaración': 'Enviada',
             'Fecha de envío': fechaFormateada, 'Usuario': user.data.statements[0].FIRST_NAME+ ' ' + user.data.statements[0].LAST_NAME, 'R. Papel/cartón NP': this.setFormato(this.R_PapelCarton_NP),
@@ -318,11 +317,20 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
       XLSX.writeFile(libro, `${nombreArchivo}_${y}.xlsx`);
       Swal.close();
       this.datos = []
+      }
+      else{
+        Swal.fire({
+          title: '¡Ups!',
+        icon: 'warning',
+        text: 'No se encuentran declaraciones asociadas al año seleccionado.',
+        showConfirmButton: true
+        });
+      }
     } catch (error) {
       Swal.fire({
         title: '¡Ups!',
         icon: 'error',
-        text: 'Ha sucedido un error al generar el archivo Excel, por favor pruebe de nuevo en unos minutos. Si el problema persiste póngase en contacto con administración',
+        text: 'Ha sucedido un error al generar el archivo Excel, por favor pruebe de nuevo en unos minutos. Si el problema persiste póngase en contacto con administración.',
         showConfirmButton: true
       });
       console.log(error);
