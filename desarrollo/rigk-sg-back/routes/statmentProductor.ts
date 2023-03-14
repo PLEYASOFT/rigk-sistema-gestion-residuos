@@ -8,10 +8,11 @@ import {
 } from "../middleware/validators/validatorsCustom";
 import { verifyRolProductor } from "../middleware/roles/rolesCustom";
 const router = Router();
+
+router.get('/byUser', [validarJWT], statementProductorLogic.getStatementsByUser);
 router.get('/:id', [validarJWT], statementProductorLogic.getProductor);
 router.get('/:business/year/:year/isDraft/:draft', [validarJWT, verifyRolProductor, verifyParametersStatementByYear], statementProductorLogic.getStatmentByYear);
 router.get('/draft/:business/year/:year', [validarJWT, verifyRolProductor], statementProductorLogic.verifyDraft);
-router.get('/byUser', [validarJWT], statementProductorLogic.getStatementsByUser);
 router.get('/pdf/:id/year/:year', [validarJWT], statementProductorLogic.generatePDF);
 router.get('/year/:year', [validarJWT], statementProductorLogic.getAllStatementByYear);
 router.get('/detail/:id_header', [validarJWT], statementProductorLogic.getDetailByIdHeader);
