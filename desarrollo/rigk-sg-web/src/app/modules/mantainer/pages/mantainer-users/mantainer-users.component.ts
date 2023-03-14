@@ -10,7 +10,7 @@ import { BusinessService } from '../../../../core/services/business.service';
 })
 export class MantainerUsersComponent implements OnInit {
   verifyEmailMW = (control: FormControl) => {
-    const email = control.value.trim();
+    const email = control.value.toLowerCase().trim();
 
     if (!email) {
       return null;
@@ -125,6 +125,9 @@ export class MantainerUsersComponent implements OnInit {
       }
     });
   }
+  clearFrom() {
+    this.userForm.reset({ ROL: 0, EMAIL: '' });
+  }
   showBusiness(e: any) {
     let tmp: any = [];
     e.BUSINESS.forEach((b: any) => {
@@ -175,8 +178,8 @@ export class MantainerUsersComponent implements OnInit {
     });
   }
   verifyEmail() {
-    const email = this.userForm.value.EMAIL?.toLocaleLowerCase().trim();
-    const user = this.listUser.find(r => r.EMAIL.toLocaleLowerCase().trim() == email);
+    const email = this.userForm.value.EMAIL?.toLowerCase().trim();
+    const user = this.listUser.find(r => r.EMAIL.toLowerCase().trim() == email);
     if (!user || user.ID == this.userForm.value.ID) {
       this.showErrorEmail = true;
       this.userForm.controls['EMAIL'].setErrors({ used: true });
@@ -207,6 +210,7 @@ export class MantainerUsersComponent implements OnInit {
         next: r => {
           Swal.close();
           if (r.status) {
+            this.clearFrom();
             document.getElementById('btnCloseModal')?.click();
             Swal.fire({
               icon: 'success',
@@ -230,6 +234,7 @@ export class MantainerUsersComponent implements OnInit {
         next: r => {
           Swal.close();
           if (r.status) {
+            this.clearFrom();
             document.getElementById('btnCloseModal')?.click();
             Swal.fire({
               icon: 'success',
