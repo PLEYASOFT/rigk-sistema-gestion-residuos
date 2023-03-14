@@ -10,7 +10,7 @@
 
 <!-- inicio Registro de declaración -->
 <section class="declaracion">
-    <h1>Registro de Declaración</h1>
+    <h1>Consulta Declaraciones</h1>
     <div class="d-sm-flex justify-content-between mb-3 mb-md-0">
     </div>
 
@@ -70,7 +70,7 @@
                     <td>{{s.YEAR_STATEMENT}}</td>
                     <td>{{s.STATE == 1 ? 'Enviada': 'Borrador'}}</td>
                     <td>{{s.AMOUNT.toFixed(2).replace(".",",")}}</td>
-                    <td>{{s.UPDATED_AT | date: 'dd-MM-yyyy H:m:ss'}}</td>
+                    <td>{{s.UPDATED_AT | date: 'dd-MM-yyyy H:mm:ss'}}</td>
                     <td class="text-center text-nowrap">
                         <!-- <a href="#"><i class="fa fa-file-text-o fa-fw fa-lg color-blue" aria-hidden="true"></i></a> -->
                         <button class="btn" (click)="downloadPDF(s.CODE_BUSINESS, s.YEAR_STATEMENT)" *ngIf="s.STATE == 1 "><i class="fa fa-file-pdf-o fa-fw fa-lg color-blue" aria-hidden="true"></i></button>

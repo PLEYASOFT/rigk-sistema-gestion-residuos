@@ -10,16 +10,16 @@ import { BusinessService } from '../../../../core/services/business.service';
 })
 export class MantainerUsersComponent implements OnInit {
   verifyEmailMW = (control: FormControl) => {
-    const email = control.value;
+    const email = control.value.trim();
 
     if (!email) {
       return null;
     }
     let user;
     if (this.dbTmp.length > 0) {
-      user = this.dbTmp.find(r => r.EMAIL.toLowerCase() == email);
+      user = this.dbTmp.find(r => r.EMAIL.toLowerCase().trim() == email);
     } else {
-      user = this.listUser.find(r => r.EMAIL.toLowerCase() === email);
+      user = this.listUser.find(r => r.EMAIL.toLowerCase().trim() === email);
     }
     if (user && user.ID != this.userForm.value.ID) {
       return { used: true };  // el código se encuentra en el arreglo, hay errores
@@ -175,8 +175,8 @@ export class MantainerUsersComponent implements OnInit {
     });
   }
   verifyEmail() {
-    const email = this.userForm.value.EMAIL;
-    const user = this.listUser.find(r => r.EMAIL == email);
+    const email = this.userForm.value.EMAIL?.toLocaleLowerCase().trim();
+    const user = this.listUser.find(r => r.EMAIL.toLocaleLowerCase().trim() == email);
     if (!user || user.ID == this.userForm.value.ID) {
       this.showErrorEmail = true;
       this.userForm.controls['EMAIL'].setErrors({ used: true });
