@@ -161,7 +161,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     public productorService: ProductorService,
     public ratesService: RatesTsService) {
     const currentYear = new Date().getFullYear();
-    for (let year = 2000; year <= currentYear + 1; year++) {
+    for (let year = 1900; year <= currentYear + 1; year++) {
       this.years.push(year);
     }
   }
@@ -304,7 +304,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
       for (let i = 0; i < this.datos.length; i++) {
         let value = <any>Object.values(this.datos[i]);
         for (let j = 0; j < value.length; j++) {
-          objectMaxLength[j] = 10;
+          objectMaxLength[j] = 30;
         }
       }
   
