@@ -202,59 +202,63 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     })
   }
 
+  delay = (ms: number | undefined) => new Promise((resolve) => setTimeout(resolve, ms));
+
   generarExcel = async (nombreArchivo: string) => {
     try {
       const y = parseInt((document.getElementById('f_year') as HTMLSelectElement).value);
-      // Esperar a que se complete la petición y obtener los datos
-      const r = await this.productorService.getAllStatementByYear(y).toPromise();
-      if (r.status) {
-        Swal.fire({
-          title: 'Cargando Datos',
-          text: 'Se está recuperando datos',
-          timerProgressBar: true,
-          showConfirmButton: false,
-          allowEscapeKey: false,
-          allowOutsideClick: false
-        });
-        Swal.showLoading();
-        this.listStatements = r.data.res_business.sort((a: { STATE: number; ID_BUSINESS: number; }, b: { STATE: number; ID_BUSINESS: number; }) => {
-          if (a.STATE === b.STATE) {
-            return a.ID_BUSINESS - b.ID_BUSINESS;
-          } else {
-            return b.STATE - a.STATE;
-          }
-        });
-        this.filteredListBusiness = this.listBusiness.filter(business => {
-          return !this.listStatements.some(statement => statement.ID_BUSINESS === business.ID);
-        });
+    // Esperar a que se complete la petición y obtener los datos
+    const r = await this.productorService.getAllStatementByYear(y).toPromise();
+    if (r.status) {
+      Swal.fire({
+        title: 'Cargando Datos',
+        text: 'Se está recuperando datos',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowEscapeKey: false,
+        allowOutsideClick: false
+      });
+      Swal.showLoading();
+      this.listStatements = r.data.res_business.sort((a: { STATE: number; ID_BUSINESS: number; }, b: { STATE: number; ID_BUSINESS: number; }) => {
+        if (a.STATE === b.STATE) {
+          return a.ID_BUSINESS - b.ID_BUSINESS;
+        } else {
+          return b.STATE - a.STATE;
+        }
+      });
+      this.filteredListBusiness = this.listBusiness.filter(business => {
+        return !this.listStatements.some(statement => statement.ID_BUSINESS === business.ID);
+      });
       
-  
-      for (let i = 0; i < this.listStatements.length; i++) {
-        const f = await this.productorService.getDetailByIdHeader(this.listStatements[i].ID_HEADER).toPromise();
-        const lt = await this.productorService.getValueStatementByYear(this.listStatements[i].CODE_BUSINESS, y - 1, 0).toPromise();
-        
+      
+      const getDetailsAndValues = async (statement: { ID_HEADER: number; CODE_BUSINESS: any; CREATED_BY: number; }) => {
+        const [f, lt, user] = await Promise.all([
+          this.productorService.getDetailByIdHeader(statement.ID_HEADER).toPromise(),
+          this.productorService.getValueStatementByYear(statement.CODE_BUSINESS, y - 1, 0).toPromise(),
+          this.productorService.getProductor(statement.CREATED_BY).toPromise()
+        ]);
+        return { f, lt, user };
+      };
+
+      for (const statement of this.listStatements) {
+        const { f, lt, user } = await getDetailsAndValues(statement);
+
         if (lt.status) {
-          for (let j = 0; j < lt.data.detail.length; j++) {
-            this.setLastDeclaration(lt.data.detail[j]);
-          }
+          lt.data.detail.forEach((detail: any) => {
+            this.setLastDeclaration(detail);
+          });
         }
-        for (let j = 0; j < f.data.length; j++) {
-          this.setDeclaration(f.data[j]);
-        }
-        this.R_Total_Ton = this.R_Total_Ton.toFixed(2);
-        this.R_Total_UF = this.R_Total_UF.toFixed(2);
-        this.NR_Total_Ton = this.NR_Total_Ton.toFixed(2);
-        this.NR_Total_UF = this.NR_Total_UF.toFixed(2);
-        this.RET_Total_Ton = this.RET_Total_Ton.toFixed(2);
-        this.RET_Total_UF = this.RET_Total_UF.toFixed(2);
-  
+        f.data.forEach((detail: any) => {
+          this.setDeclaration(detail);
+        });
+
         this.calculoAjustes();
-        const user = await this.productorService.getProductor(this.listStatements[i].CREATED_BY).toPromise();
-        if (this.listStatements[i].STATE) {
-          const fecha = this.listStatements[i].UPDATED_AT;
+        console.log(user.data.statements[0].FIRST_NAME+ ' ' + user.data.statements[0].LAST_NAME)
+        if (statement.STATE) {
+          const fecha = statement.UPDATED_AT;
           const fechaFormateada = new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
           this.datos.push({
-            'ID empresa': this.listStatements[i].CODE_BUSINESS, 'Nombre empresa': this.listStatements[i].NAME, 'Año declaración': y.toString(), 'Estado declaración': 'Enviada',
+            'ID empresa': statement.CODE_BUSINESS, 'Nombre empresa': statement.NAME, 'Año declaración': y.toString(), 'Estado declaración': 'Enviada',
             'Fecha de envío': fechaFormateada, 'Usuario': user.data.statements[0].FIRST_NAME+ ' ' + user.data.statements[0].LAST_NAME, 'R. Papel/cartón NP': this.setFormato(this.R_PapelCarton_NP),
             'R. Papel/cartón P': this.setFormato(this.R_PapelCarton_P), 'R. Papel/cartón ST': this.setFormato(this.R_PapelCarton_ST), 'R. Metal NP': this.setFormato(this.R_Metal_NP), 'R. Metal P': this.setFormato(this.R_Metal_P), 'R. Metal ST': this.setFormato(this.R_Metal_ST),
             'R. Plástico NP': this.setFormato(this.R_Plastico_NP), 'R. Plástico P': this.setFormato(this.R_Plastico_P), 'R. Plástico ST': this.setFormato(this.R_Plastico_ST), 'R. Madera NP': this.setFormato(this.R_Madera_NP), 'R. Madera P': this.setFormato(this.R_Madera_P), 'R. Madera ST': this.setFormato(this.R_Madera_ST),
@@ -272,7 +276,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
         }
         else {
           this.datos.push({
-            'ID empresa': this.listStatements[i].CODE_BUSINESS, 'Nombre empresa': this.listStatements[i].NAME, 'Año declaración': y.toString(), 'Estado declaración': 'Borrador',
+            'ID empresa': statement.CODE_BUSINESS, 'Nombre empresa': statement.NAME, 'Año declaración': y.toString(), 'Estado declaración': 'Borrador',
             'Fecha de envío': 'NA', 'Usuario': user.data.statements[0].FIRST_NAME+ ' ' + user.data.statements[0].LAST_NAME, 'R. Papel/cartón NP': '',
             'R. Papel/cartón P': '', 'R. Papel/cartón ST': '', 'R. Metal NP': '', 'R. Metal P': '', 'R. Metal ST': '',
             'R. Plástico NP': '', 'R. Plástico P': '', 'R. Plástico ST': '', 'R. Madera NP': '', 'R. Madera P': '', 'R. Madera ST': '',
@@ -289,7 +293,9 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
           });
         }
         this.resetDatos();
+        await this.delay(25); // Agregue un retardo de 20 ms entre las solicitudes
       }
+      
       for (let i = 0; i < this.filteredListBusiness.length; i++) {
         this.datos.push({
           'ID empresa': this.filteredListBusiness[i].CODE_BUSINESS, 'Nombre empresa': this.filteredListBusiness[i].NAME, 'Año declaración': '', 'Estado declaración': 'NA',
@@ -335,7 +341,6 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
       });
       console.log(error);
     }
-    
   }
 
   setFormato(num: number | string): string {
@@ -343,8 +348,8 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     const decimal = Math.round(numero * 100) / 100;
     const [entero, decimales] = decimal.toString().split('.');
     const enteroConPuntos = entero.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-    return decimales ? `${enteroConPuntos},${decimales}` : enteroConPuntos;
+  
+    return decimales && decimales !== '0' ? `${enteroConPuntos},${decimales.padEnd(2, '0')}` : enteroConPuntos;
   }
   setDeclaration(datos: any) {
     const { RECYCLABILITY, TYPE_RESIDUE, HAZARD, PRECEDENCE, VALUE, AMOUNT } = datos;
