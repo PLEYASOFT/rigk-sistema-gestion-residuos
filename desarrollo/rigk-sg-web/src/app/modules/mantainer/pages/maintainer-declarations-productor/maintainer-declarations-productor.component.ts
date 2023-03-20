@@ -253,7 +253,6 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
         });
 
         this.calculoAjustes();
-        console.log(user.data.statements[0].FIRST_NAME+ ' ' + user.data.statements[0].LAST_NAME)
         if (statement.STATE) {
           const fecha = statement.UPDATED_AT;
           const fechaFormateada = new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
