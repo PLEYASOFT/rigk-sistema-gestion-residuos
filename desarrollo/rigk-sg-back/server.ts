@@ -46,7 +46,7 @@ class Server {
     }
     config() {
         const opts = {
-            points: 12,
+            points: 20,
             duration: 1,
             blockDuration: 300
         };
