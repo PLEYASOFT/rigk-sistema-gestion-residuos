@@ -20,27 +20,27 @@ export class SidebarComponent implements OnInit {
   menuProductor = [
     { title: "Inicio", path: "#/productor/home", icon: "fa-home" },
     { title: "Mi Perfil", path: "#/productor/profile", icon: "fa-user" },
+    { title: "Preguntas frecuentes", path: "#/productor/faq", icon: "fa-search" },
     { title: "Registro de declaración", path: "#/productor/form", icon: "fa-file-text" },
     { title: "Consulta de declaración", path: "#/productor/statements", icon: "fa-search" },
-    { title: "Preguntas frecuentes", path: "#/productor/faq", icon: "fa-search" },
   ];
 
   menuConsumidor = [
     { title: "Inicio", path: "#/consumidor/home", icon: "fa-home" },
     { title: "Mi Perfil", path: "#/consumidor/profile", icon: "fa-user" },
+    { title: "Preguntas frecuentes", path: "#/consumidor/faq", icon: "fa-search" },
     { title: "Registro de declaración", path: "#/consumidor/form", icon: "fa-file-text" },
     { title: "Consulta de declaración", path: "#/consumidor/statements", icon: "fa-search" },
-    { title: "Preguntas frecuentes", path: "#/consumidor/faq", icon: "fa-search" },
   ];
 
   menuAdmin = [
     { title: "Inicio", path: "#/mantenedor/home", icon: "fa-home" },
     { title: "Mi Perfil", path: "#/mantenedor/profile", icon: "fa-user" },
+    { title: "Preguntas frecuentes", path: "#/mantenedor/faq", icon: "fa-search" },
     { title: "Mantenedor Empresas", path: "#/mantenedor/business", icon: "fa-file-text" },
     { title: "Mantenedor Establecimientos", path: "#/mantenedor/establishment", icon: "fa-file-text" },
     { title: "Mantenedor Usuarios", path: "#/mantenedor/users", icon: "fa-users" },
     { title: "Declaraciones Productores", path: "#/mantenedor/declarations", icon: "fa fa-database" },
-    { title: "Preguntas frecuentes", path: "#/mantenedor/faq", icon: "fa-search" },
   ];
 
   constructor(private router: Router,
