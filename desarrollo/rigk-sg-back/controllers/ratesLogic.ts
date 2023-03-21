@@ -51,6 +51,22 @@ class RatesLogic {
         }
 
     }
+
+    public async getUfDate(req: Request, res: Response) {
+        const {date} = req.params;
+
+        try {
+            const uf = await ratesDao.getUF(date);
+            res.json({ status: true, data: uf });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+
+    }
 }
 const ratesLogic = new RatesLogic();
 export default ratesLogic;

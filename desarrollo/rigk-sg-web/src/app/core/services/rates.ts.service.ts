@@ -18,4 +18,8 @@ export class RatesTsService {
   get getUF() {
     return this.http.get<any>(`${this.url}/uf`);
   }
+
+  getUfDate(date: any) {
+    return this.http.get<any>(`${this.url}/uf/${date}`);
+  }
 }

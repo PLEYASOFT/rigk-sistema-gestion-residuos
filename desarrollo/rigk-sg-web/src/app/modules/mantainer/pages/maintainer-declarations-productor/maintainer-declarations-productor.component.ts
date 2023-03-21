@@ -59,6 +59,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
   RET_Madera_ST: any = 0;
   RET_Total_Ton: any = 0;
   RET_Total_UF: any = 0;
+  Total_EyE: any = 0;
   Ajuste_PapelCarton_Reciclable_Ton: any = 0;
   Ajuste_Metal_Reciclable_Ton: any = 0;
   Ajuste_Plastico_Reciclable_Ton: any = 0;
@@ -70,6 +71,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
   Ajuste_No_Reciclables_UF: any = 0;
   TotalCorregido: any = 0;
   TotalBruto: any = 0;
+  TotalBruto_IVA: any = 0;
 
   l_R_PapelCarton_NP: any = 0;
   l_R_PapelCarton_P: any = 0;
@@ -252,8 +254,9 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
           this.setDeclaration(detail);
         });
 
-        this.calculoAjustes();
+        
         if (statement.STATE) {
+          this.calculoAjustes(statement.UPDATED_AT,statement.CODE_BUSINESS);
           const fecha = statement.UPDATED_AT;
           const fechaFormateada = new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
           this.datos.push({
@@ -267,10 +270,11 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
             'NR. Total Ton': this.setFormato(this.NR_Total_Ton), 'NR. Total UF': this.setFormato(this.NR_Total_UF), 'RET. Papel/cartón NP': this.setFormato(this.RET_PapelCarton_NP), 'RET. Papel/cartón P': this.setFormato(this.RET_PapelCarton_P), 'RET. Papel/cartón ST': this.setFormato(this.RET_PapelCarton_ST),
             'RET. Metal NP': this.setFormato(this.RET_Metal_NP), 'RET. Metal P': this.setFormato(this.RET_Metal_P), 'RET. Metal ST': this.setFormato(this.RET_Metal_ST), 'RET. Plástico NP': this.setFormato(this.RET_Plastico_NP), 'RET. Plástico P': this.setFormato(this.RET_Plastico_P), 'RET. Plástico ST': this.setFormato(this.RET_Plastico_ST),
             'RET. Madera NP': this.setFormato(this.RET_Madera_NP), 'RET. Madera P': this.setFormato(this.RET_Madera_P), 'RET. Madera ST': this.setFormato(this.RET_Madera_ST), 'RET. Total Ton': this.setFormato(this.RET_Total_Ton), 'RET. Total UF': this.setFormato(this.RET_Total_UF),
-            'Ajuste Papel/Cartón Reciclable Ton': this.setFormato(this.Ajuste_PapelCarton_Reciclable_Ton), 'Ajuste Metal Reciclable Ton': this.setFormato(this.Ajuste_Metal_Reciclable_Ton),
+            'TOTAL EyE': this.setFormato(this.Total_EyE),'Ajuste Papel/Cartón Reciclable Ton': this.setFormato(this.Ajuste_PapelCarton_Reciclable_Ton), 'Ajuste Metal Reciclable Ton': this.setFormato(this.Ajuste_Metal_Reciclable_Ton),
             'Ajuste Plástico Reciclable Ton': this.setFormato(this.Ajuste_Plastico_Reciclable_Ton), 'Ajuste No Reciclables Ton': this.setFormato(this.Ajuste_No_Reciclables_Ton),
-            'Ajuste Retornables Ton': this.setFormato(this.Ajuste_Retornables_Ton.toString()), 'Ajuste Papel/Cartón Reciclable UF': this.setFormato(this.Ajuste_PapelCarton_Reciclable_UF), 'Ajuste Metal Reciclable UF': this.setFormato(this.Ajuste_Metal_Reciclable_UF),
-            'Ajuste Plástico Reciclable UF': this.setFormato(this.Ajuste_Plastico_Reciclable_UF), 'Ajuste No Reciclables UF': this.setFormato(this.Ajuste_No_Reciclables_UF), 'Total corregido (UF)': this.setFormato(this.TotalCorregido), 'Total Bruto (CLP) + IVA': this.setFormato(this.TotalBruto)
+            'Ajuste Retornables Ton': this.setFormato(this.Ajuste_Retornables_Ton), 'Ajuste Papel/Cartón Reciclable UF': this.setFormato(this.Ajuste_PapelCarton_Reciclable_UF), 'Ajuste Metal Reciclable UF': this.setFormato(this.Ajuste_Metal_Reciclable_UF),
+            'Ajuste Plástico Reciclable UF': this.setFormato(this.Ajuste_Plastico_Reciclable_UF), 'Ajuste No Reciclables UF': this.setFormato(this.Ajuste_No_Reciclables_UF),
+            'Total corregido (UF)': this.setFormato(this.TotalCorregido),'Total Neto (CLP)': this.setFormato(this.TotalBruto), 'Total Bruto (CLP) + IVA': this.setFormato(this.TotalBruto_IVA)
           });
         }
         else {
@@ -285,10 +289,10 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
             'NR. Total Ton': '', 'NR. Total UF': '', 'RET. Papel/cartón NP': '', 'RET. Papel/cartón P': '', 'RET. Papel/cartón ST': '',
             'RET. Metal NP': '', 'RET. Metal P': '', 'RET. Metal ST': '', 'RET. Plástico NP': '', 'RET. Plástico P': '', 'RET. Plástico ST': '',
             'RET. Madera NP': '', 'RET. Madera P': '', 'RET. Madera ST': '', 'RET. Total Ton': '', 'RET. Total UF': '',
-            'Ajuste Papel/Cartón Reciclable Ton': '', 'Ajuste Metal Reciclable Ton': '',
+            'TOTAL EyE': '','Ajuste Papel/Cartón Reciclable Ton': '', 'Ajuste Metal Reciclable Ton': '',
             'Ajuste Plástico Reciclable Ton': '', 'Ajuste No Reciclables Ton': '',
             'Ajuste Retornables Ton': '', 'Ajuste Papel/Cartón Reciclable UF': '', 'Ajuste Metal Reciclable UF': '',
-            'Ajuste Plástico Reciclable UF': '', 'Ajuste No Reciclables UF': '', 'Total corregido (UF)': '', 'Total Bruto (CLP) + IVA': ''
+            'Ajuste Plástico Reciclable UF': '', 'Ajuste No Reciclables UF': '', 'Total corregido (UF)': '', 'Total Neto (CLP)': '','Total Bruto (CLP) + IVA': ''
           });
         }
         this.resetDatos();
@@ -573,11 +577,13 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     this.Ajuste_Metal_Reciclable_UF = 0;
     this.Ajuste_Plastico_Reciclable_UF = 0;
     this.Ajuste_No_Reciclables_UF = 0;
+    this.Total_EyE = 0;
     this.TotalCorregido = 0;
     this.TotalBruto = 0;
+    this.TotalBruto_IVA = 0;
   }
 
-  async calculoAjustes() {
+  async calculoAjustes(date:any,business:any) {
     // Ajuste para los totales
     if ((this.l_R_PapelCarton_P + this.l_R_PapelCarton_ST + this.l_R_PapelCarton_NP) != 0) {
 
@@ -595,6 +601,8 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     if ((this.l_RET_PapelCarton_P + this.l_RET_PapelCarton_ST + this.l_RET_PapelCarton_NP + this.l_RET_Metal_P + this.l_RET_Metal_ST + this.l_RET_Metal_NP + this.l_RET_Plastico_P + this.l_RET_Plastico_ST + this.l_RET_Plastico_NP + this.l_RET_Madera_P + this.l_RET_Madera_ST + this.l_RET_Madera_NP) != 0) {
       this.Ajuste_Retornables_Ton = this.RET_PapelCarton_P + this.RET_PapelCarton_ST + this.RET_PapelCarton_NP + this.RET_Metal_P + this.RET_Metal_ST + this.RET_Metal_NP + this.RET_Plastico_P + this.RET_Plastico_ST + this.RET_Plastico_NP + this.RET_Madera_P + this.RET_Madera_ST + this.RET_Madera_NP - (this.l_RET_PapelCarton_P + this.l_RET_PapelCarton_ST + this.l_RET_PapelCarton_NP + this.l_RET_Metal_P + this.l_RET_Metal_ST + this.l_RET_Metal_NP + this.l_RET_Plastico_P + this.l_RET_Plastico_ST + this.l_RET_Plastico_NP + this.l_RET_Madera_P + this.l_RET_Madera_ST + this.l_RET_Madera_NP);
     }
+
+    this.Total_EyE = this.R_Total_Ton+this.NR_Total_Ton - (this.R_Madera_P+this.R_Madera_NP+this.R_Madera_ST + this.NR_Madera_P+this.NR_Madera_NP+this.NR_Madera_ST);
     this.Ajuste_PapelCarton_Reciclable_UF = (this.Ajuste_PapelCarton_Reciclable_Ton * this.rates[0].price).toFixed(2);
     this.Ajuste_Metal_Reciclable_UF = (this.Ajuste_Metal_Reciclable_Ton * this.rates[1].price).toFixed(2);
     this.Ajuste_Plastico_Reciclable_UF = (this.Ajuste_Plastico_Reciclable_Ton * this.rates[2].price).toFixed(2);
@@ -604,8 +612,13 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     const c2 = this.rates[1].price * parseFloat((this.R_Metal_P + this.R_Metal_ST + this.R_Metal_NP));
     const c3 = this.rates[2].price * parseFloat((this.R_Plastico_P + this.R_Plastico_ST + this.R_Plastico_NP));
     const c4 = this.rates[3].price * parseFloat((this.NR_PapelCarton_P + this.NR_PapelCarton_ST + this.NR_PapelCarton_NP + this.NR_Metal_P + this.NR_Metal_ST + this.NR_Metal_NP + this.NR_Plastico_P + this.NR_Plastico_ST + this.NR_Plastico_NP + this.NR_Compuestos_P + this.NR_Compuestos_ST + this.NR_Compuestos_NP));
-
+    
+    const fechaFormateada = new Date(date).toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' }).split('/').reverse().join('-');
+    const clp = await this.ratesService.getUfDate(fechaFormateada).toPromise();
+    console.log('rates: ',this.ratesUF,' clp: ',clp)
+    console.log(c1 ,c2 ,c3 ,c4, business)
     this.TotalCorregido = ((c1 + parseFloat(this.Ajuste_PapelCarton_Reciclable_UF)) + (c2 + parseFloat(this.Ajuste_Metal_Reciclable_UF)) + (c3 + parseFloat(this.Ajuste_Plastico_Reciclable_UF)) + (c4 + parseFloat(this.Ajuste_No_Reciclables_UF))).toFixed(2);
-    this.TotalBruto = (parseFloat(this.TotalCorregido) * this.ratesUF * 1.19).toFixed(0);
+    this.TotalBruto = (parseFloat(this.TotalCorregido) * this.ratesUF).toFixed(0);
+    this.TotalBruto_IVA = (parseFloat(this.TotalCorregido) * this.ratesUF * 1.19).toFixed(0);
   }
 }
