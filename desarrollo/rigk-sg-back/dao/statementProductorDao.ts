@@ -32,15 +32,15 @@ class statementProductorDao {
 
     public async getAllStatementByYear(year: string) {
         const conn = mysqlcon.getConnection();
-        
+
         const res_business: any = await conn?.execute("SELECT h.ID AS ID_HEADER, h.ID_BUSINESS, h.STATE, h.CREATED_BY, h.UPDATED_AT, b.AM_FIRST_NAME, b.AM_LAST_NAME, b.CODE_BUSINESS, b.EMAIL, b.GIRO, b.INVOICE_EMAIL, b.INVOICE_NAME, b.INVOICE_PHONE, b.LOC_ADDRESS, b.NAME, b.PHONE, b.VAT FROM header_statement_form h JOIN business b ON h.ID_BUSINESS = b.ID WHERE h.YEAR_STATEMENT = ?", [year]).then((res) => res[0]).catch(error => { undefined });
 
         if (res_business.length == 0) {
             return false;
         }
-        
+
         conn?.end();
-        return { res_business};
+        return { res_business };
     }
     public async saveDeclaretion(header: any, detail: any[]) {
         const { id_business, year_statement, state, created_by } = header;
@@ -68,7 +68,13 @@ class statementProductorDao {
                 if (detail[i].id) {
                     await conn?.execute("UPDATE detail_statement_form SET VALUE = ? WHERE ID=?", [value, detail[i].id]);
                 } else {
-                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, precedence, hazard, recyclability, type_residue, value, amount]).catch(err => console.log(err));
+                    const tmp: any = await conn?.execute("SELECT ID FROM detail_statement_form WHERE PRECEDENCE=? AND HAZARD=? AND RECYCLABILITY=? AND TYPE_RESIDUE=? AND ID_HEADER=?", [precedence, hazard, recyclability, type_residue, id_header]).then((res) => res[0]).catch(error => undefined);
+                    if (tmp.length > 0) {
+                        await conn?.execute("UPDATE detail_statement_form SET VALUE = ?, AMOUNT=? WHERE ID=?", [value, amount, tmp[0].ID]);
+                    } else {
+                        await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, precedence, hazard, recyclability, type_residue, value, amount]).catch(err => console.log(err));
+                    }
+                    // await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, precedence, hazard, recyclability, type_residue, value, amount]).catch(err => console.log(err));
                 }
             }
         }
@@ -83,7 +89,12 @@ class statementProductorDao {
             if (detail[i].id) {
                 await conn?.execute("UPDATE detail_statement_form SET VALUE = ?, AMOUNT=? WHERE ID=?", [value, amount, detail[i].id]);
             } else {
-                await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, precedence, hazard, recyclability, type_residue, value, amount]).catch(err => console.log(err));
+                const tmp: any = await conn?.execute("SELECT ID FROM detail_statement_form WHERE PRECEDENCE=? AND HAZARD=? AND RECYCLABILITY=? AND TYPE_RESIDUE=? AND ID_HEADER=?", [precedence, hazard, recyclability, type_residue, id_header]).then((res) => res[0]).catch(error => undefined);
+                if (tmp.length > 0) {
+                    await conn?.execute("UPDATE detail_statement_form SET VALUE = ?, AMOUNT=? WHERE ID=?", [value, amount, tmp[0].ID]);
+                } else {
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, precedence, hazard, recyclability, type_residue, value, amount]).catch(err => console.log(err));
+                }
             }
         }
         conn?.end();
