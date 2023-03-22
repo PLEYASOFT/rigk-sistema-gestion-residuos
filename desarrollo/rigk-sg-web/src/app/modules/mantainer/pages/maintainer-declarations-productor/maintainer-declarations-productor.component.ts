@@ -724,7 +724,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     this.EyE_NR_Total = this.EyE_NR + this.Ajuste_No_Reciclables_Ton;
     this.EyE_Ret_Total = this.EyE_Ret + this.Ajuste_Retornables_Ton;
 
-    this.Total_EyE = this.EyE_PapelCarton_Rec+ this.EyE_Metal_Rec+ this.EyE_Plastico_Rec+ this.EyE_NR+ this.EyE_Ret;
+    this.Total_EyE = this.EyE_PapelCarton_Rec+ this.EyE_Metal_Rec+ this.EyE_Plastico_Rec+ this.EyE_NR;
     this.Total_Peso = this.EyE_PapelCarton_Rec_Total+ this.EyE_Metal_Rec_Total + this.EyE_Plastico_Rec_Total + this.EyE_NR_Total + this.EyE_Ret_Total;
     this.Total_Ajuste = this.Ajuste_PapelCarton_Reciclable_Ton + this.Ajuste_Metal_Reciclable_Ton + this.Ajuste_Plastico_Reciclable_Ton + this.Ajuste_No_Reciclables_Ton + this.Ajuste_Retornables_Ton;
 
