@@ -620,70 +620,34 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     this.l_RET_Plastico_NP = 0; this.l_RET_Plastico_P = 0; this.l_RET_Plastico_ST = 0;
     this.l_RET_Madera_NP = 0; this.l_RET_Madera_P = 0; this.l_RET_Madera_ST = 0;
 
-    this.Ajuste_PapelCarton_Reciclable_Ton = 0;
-    this.Ajuste_Metal_Reciclable_Ton = 0;
-    this.Ajuste_Plastico_Reciclable_Ton = 0;
-    this.Ajuste_No_Reciclables_Ton = 0;
-    this.Ajuste_Retornables_Ton = 0;
-    this.Total_Ajuste = 0;
-    this.Ajuste_PapelCarton_Reciclable_UF = 0;
-    this.Ajuste_Metal_Reciclable_UF = 0;
-    this.Ajuste_Plastico_Reciclable_UF = 0;
-    this.Ajuste_No_Reciclables_UF = 0;
-    this.Total_EyE = 0;
-    this.Total_Peso = 0;
-    this.TotalCorregido = 0;
-    this.TotalBruto = 0;
-    this.TotalBruto_IVA = 0;
+    this.Ajuste_PapelCarton_Reciclable_Ton = 0; this.Ajuste_Metal_Reciclable_Ton = 0;
+    this.Ajuste_Plastico_Reciclable_Ton = 0; this.Ajuste_No_Reciclables_Ton = 0;
+    this.Ajuste_Retornables_Ton = 0; this.Total_Ajuste = 0;
+    this.Ajuste_PapelCarton_Reciclable_UF = 0; this.Ajuste_Metal_Reciclable_UF = 0;
+    this.Ajuste_Plastico_Reciclable_UF = 0; this.Ajuste_No_Reciclables_UF = 0;
+    this.Total_EyE = 0; this.Total_Peso = 0; this.TotalCorregido = 0;
+    this.TotalBruto = 0; this.TotalBruto_IVA = 0;
 
-    this.R_PapelCarton_Total = 0;
-    this.R_Metal_Total = 0;
-    this.R_Plastico_Total = 0;
-    this.R_Madera_Total = 0;
-    this.NR_PapelCarton_Total = 0;
-    this.NR_Metal_Total = 0;
-    this.NR_Plastico_Total = 0;
-    this.NR_Madera_Total = 0;
-    this.NR_Compuestos_Total = 0;
-    this.RET_PapelCarton_Total = 0;
-    this.RET_Metal_Total = 0;
-    this.RET_Plastico_Total = 0;
-    this.RET_Madera_Total = 0;
-    this.EyE_PapelCarton_Rec = 0;
-    this.EyE_Metal_Rec = 0;
-    this.EyE_Plastico_Rec = 0;
-    this.EyE_NR = 0;
-    this.EyE_Ret = 0;
-    this.EyE_PapelCarton_Rec_Total = 0;
-    this.EyE_Metal_Rec_Total = 0;
-    this.EyE_Plastico_Rec_Total = 0;
-    this.EyE_NR_Total = 0;
-    this.EyE_Ret_Total = 0;
-    this.PapelCarton_Rec_Uf = 0;
-    this.Metal_Rec_Uf = 0;
-    this.Plastico_Rec_Uf = 0;
-    this.NR_Uf = 0;
-    this.Total_Uf = 0;
-    this.Total_Ajuste_Uf = 0;
+    this.R_PapelCarton_Total = 0; this.R_Metal_Total = 0; this.R_Plastico_Total = 0;
+    this.R_Madera_Total = 0; this.NR_PapelCarton_Total = 0; this.NR_Metal_Total = 0;
+    this.NR_Plastico_Total = 0; this.NR_Madera_Total = 0; this.NR_Compuestos_Total = 0;
+    this.RET_PapelCarton_Total = 0; this.RET_Metal_Total = 0; this.RET_Plastico_Total = 0;
+    this.RET_Madera_Total = 0; this.EyE_PapelCarton_Rec = 0; this.EyE_Metal_Rec = 0;
+    this.EyE_Plastico_Rec = 0; this.EyE_NR = 0; this.EyE_Ret = 0;
+    this.EyE_PapelCarton_Rec_Total = 0; this.EyE_Metal_Rec_Total = 0; this.EyE_Plastico_Rec_Total = 0;
+    this.EyE_NR_Total = 0; this.EyE_Ret_Total = 0; this.PapelCarton_Rec_Uf = 0;
+    this.Metal_Rec_Uf = 0; this.Plastico_Rec_Uf = 0; this.NR_Uf = 0;
+    this.Total_Uf = 0; this.Total_Ajuste_Uf = 0;
 
-    this.PapelCarton_Rec_Uf_Corregido = 0;
-    this.Metal_Rec_Uf_Corregido = 0;
-    this.Plastico_Rec_Uf_Corregido = 0;
-    this.NR_Uf_Corregido = 0;
-    this.PapelCarton_Neto= 0;
-    this.Metal_Neto= 0;
-    this.Plastico_Neto= 0;
-    this.NR_Neto= 0;
-    this.PapelCarton_Bruto= 0;
-    this.Metal_Bruto= 0;
-    this.Plastico_Bruto= 0;
-    this.NR_Bruto= 0;
+    this.PapelCarton_Rec_Uf_Corregido = 0; this.Metal_Rec_Uf_Corregido = 0; this.Plastico_Rec_Uf_Corregido = 0;
+    this.NR_Uf_Corregido = 0; this.PapelCarton_Neto= 0; this.Metal_Neto= 0;
+    this.Plastico_Neto= 0; this.NR_Neto= 0; this.PapelCarton_Bruto= 0;
+    this.Metal_Bruto= 0; this.Plastico_Bruto= 0; this.NR_Bruto= 0;
   }
 
   calculoAjustes() {
 
     if ((this.l_R_PapelCarton_P + this.l_R_PapelCarton_ST + this.l_R_PapelCarton_NP) != 0) {
-
       this.Ajuste_PapelCarton_Reciclable_Ton = this.R_PapelCarton_P + this.R_PapelCarton_ST + this.R_PapelCarton_NP - (this.l_R_PapelCarton_P + this.l_R_PapelCarton_ST + this.l_R_PapelCarton_NP)
     }
     if ((this.l_R_Metal_P + this.l_R_Metal_ST + this.l_R_Metal_NP) != 0) {
