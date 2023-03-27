@@ -185,7 +185,7 @@ class StatementProductorLogic {
     }
     public async getProductor(req: Request, res: Response) {
         const { id } = req.params;
-        
+
         try {
             const data = await statementDao.getProductor(id);
             res.status(200).json({ status: true, data });
@@ -313,23 +313,24 @@ class StatementProductorLogic {
                 paragraphLoop: true,
                 linebreaks: true,
             });
-            const val1 = lrp == 0 ? "0.00" : (pr - lrp).toFixed(2);
-            const val2 = lrme == 0 ? "0.00" : (mer - lrme).toFixed(2);
-            const val3 = lrpl == 0 ? "0.00" : (plr - lrpl).toFixed(2);
-            const val4 = lnr == 0 ? "0.00" : ((pnr + menr + plnr + onr) - lnr).toFixed(2);
-            const val11 = (parseFloat(val1) + pr).toFixed(2);
-            const val22 = (parseFloat(val2) + mer).toFixed(2);
-            const val33 = (parseFloat(val3) + plr).toFixed(2);
-            const val44 = (parseFloat(val4) + (pnr + menr + plnr + onr)).toFixed(2);
-            const eval1 = (parseFloat(val1) * ep).toFixed(2);
-            const eval2 = (parseFloat(val2) * eme).toFixed(2);
-            const eval3 = (parseFloat(val3) * epl).toFixed(2);
-            const eval4 = (parseFloat(val4) * enr).toFixed(2);
-            const eval11 = (parseFloat(eval1) + (ep * pr)).toFixed(2);
-            const eval22 = (parseFloat(eval2) + (eme * mer)).toFixed(2);
-            const eval33 = (parseFloat(eval3) + (plr * epl)).toFixed(2);
-            const eval44 = (parseFloat(eval4) + ((pnr + menr + plnr + onr) * enr)).toFixed(2);
-            const neto = ((parseFloat(eval11) + parseFloat(eval22) + parseFloat(eval33) + parseFloat(eval44)) * uf);
+            const val1 = lrp == 0 ? "0.00" : (pr - lrp);
+            const val2 = lrme == 0 ? "0.00" : (mer - lrme);
+            const val3 = lrpl == 0 ? "0.00" : (plr - lrpl);
+            const val4 = lnr == 0 ? "0.00" : ((pnr + menr + plnr + onr) - lnr);
+
+            const val11 = (parseFloat(val1.toString()) + pr);
+            const val22 = (parseFloat(val2.toString()) + mer);
+            const val33 = (parseFloat(val3.toString()) + plr);
+            const val44 = (parseFloat(val4.toString()) + (pnr + menr + plnr + onr));
+            const eval1 = (parseFloat(val1.toString()) * ep);
+            const eval2 = (parseFloat(val2.toString()) * eme);
+            const eval3 = (parseFloat(val3.toString()) * epl);
+            const eval4 = (parseFloat(val4.toString()) * enr);
+            const eval11 = (parseFloat(eval1.toString()) + (ep * pr));
+            const eval22 = (parseFloat(eval2.toString()) + (eme * mer));
+            const eval33 = (parseFloat(eval3.toString()) + (plr * epl));
+            const eval44 = (parseFloat(eval4.toString()) + ((pnr + menr + plnr + onr) * enr));
+            const neto = ((parseFloat(eval11.toString()) + parseFloat(eval22.toString()) + parseFloat(eval33.toString()) + parseFloat(eval44.toString())) * uf);
             const iva = neto * 0.19;
             doc.render({
                 // Table 1
@@ -344,16 +345,17 @@ class StatementProductorLogic {
                 plr: plr.toFixed(2).replace(".", ","),
                 pomnr: (pnr + menr + plnr + onr).toFixed(2).replace(".", ","),
                 // C3
-                val1: val1.replace(".", ","),
-                val2: val2.replace(".", ","),
-                val3: val3.replace(".", ","),
-                val4: val4.replace(".", ","),
+                val1: parseFloat(val1.toString()).toFixed(2).replace(".", ","),
+                val2: parseFloat(val2.toString()).toFixed(2).replace(".", ","),
+                val3: parseFloat(val3.toString()).toFixed(2).replace(".", ","),
+                val4: parseFloat(val4.toString()).toFixed(2).replace(".", ","),
                 // C4
-                val11: val11.replace('.', ','),
-                val22: val22.replace('.', ','),
-                val33: val33.replace('.', ','),
-                val44: val44.replace('.', ','),
-                valtt: (parseFloat(val11) + parseFloat(val22) + parseFloat(val33) + parseFloat(val44)).toFixed(2).replace(".", ","),
+                val11: parseFloat(val11.toString()).toFixed(2).replace('.', ','),
+                val22: parseFloat(val22.toString()).toFixed(2).replace('.', ','),
+                val33: parseFloat(val33.toString()).toFixed(2).replace('.', ','),
+                val44: parseFloat(val44.toString()).toFixed(2).replace('.', ','),
+
+                valtt: (parseFloat(val11.toString()) + parseFloat(val22.toString()) + parseFloat(val33.toString()) + parseFloat(val44.toString())).toFixed(2).replace(".", ","),
                 evaltt1: (pr + mer + plr + (pnr + menr + plnr + onr)).toFixed(2).replace(".", ","),
                 evaltt2: ((ep * pr) + (eme * mer) + (plr * epl) + ((pnr + menr + plnr + onr) * enr)).toFixed(2).replace(".", ","),
                 // ----
@@ -369,16 +371,16 @@ class StatementProductorLogic {
                 eplpompl: (plr * epl).toFixed(2).replace(".", ","),
                 enrpomnr: ((pnr + menr + plnr + onr) * enr).toFixed(2).replace(".", ","),
                 // C3
-                eval1: eval1.replace(".", ","),
-                eval2: eval2.replace(".", ","),
-                eval3: eval3.replace(".", ","),
-                eval4: eval4.replace(".", ","),
+                eval1: eval1.toFixed(2).replace(".", ","),
+                eval2: eval2.toFixed(2).replace(".", ","),
+                eval3: eval3.toFixed(2).replace(".", ","),
+                eval4: eval4.toFixed(2).replace(".", ","),
                 // C4
-                eval11: eval11.replace('.', ','),
-                eval22: eval22.replace('.', ','),
-                eval33: eval33.replace('.', ','),
-                eval44: eval44.replace('.', ','),
-                evaltt: (parseFloat(eval11) + parseFloat(eval22) + parseFloat(eval33) + parseFloat(eval44)).toFixed(2).replace(".", ","),
+                eval11: eval11.toFixed(2).replace('.', ','),
+                eval22: eval22.toFixed(2).replace('.', ','),
+                eval33: eval33.toFixed(2).replace('.', ','),
+                eval44: eval44.toFixed(2).replace('.', ','),
+                evaltt: (parseFloat(eval11.toString()) + parseFloat(eval22.toString()) + parseFloat(eval33.toString()) + parseFloat(eval44.toString())).toFixed(2).replace(".", ","),
                 // Resume
                 neto: neto.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' }),
                 iva: iva.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' }),
