@@ -23,7 +23,7 @@
     </div>
 </div>
 <div style="text-align: right;">
-    <button class="btn btn-warning" *ngIf="position > 1" (click)="changeStep(-1)">Atrás</button>
+    <button class="btn btn-warning" *ngIf="position > 1" [disabled]="_saving" (click)="changeStep(-1)">Atrás</button>
     <button class="btn btn-primary" *ngIf="position < 3" (click)="changeStep(1)">Siguiente</button>
     <button class="btn btn-primary" *ngIf="position == 3" (click)="updateFormState()">Enviar</button>
 </div>

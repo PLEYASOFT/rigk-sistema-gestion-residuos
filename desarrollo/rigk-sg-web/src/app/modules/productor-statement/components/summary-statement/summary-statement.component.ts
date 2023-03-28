@@ -53,7 +53,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   tonRetornable = 0;
   l_tonNoReciclable = 0;
   l_tonRetornable = 0;
-  result: string = "";
+  result: any = 0;
   dif = Array.from({length: 5}, () => 0);
   ajuste = Array.from({length: 5}, () => 0);
   costoAnual = Array.from({length: 5}, () => 0);
@@ -85,29 +85,29 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       if(r.recyclability == 1)
       {
         this.tonSums.tonSum[r?.type_residue-1] = this.tonSums.tonSum[r?.type_residue-1] + parseFloat(r?.value);
-        this.result = this.verifyNumber(this.tonSums.tonSum[r?.type_residue-1]);
+        this.result = this.tonSums.tonSum[r?.type_residue-1];
 
         if(r?.type_residue!=4){
-          document.getElementById(`actual_weight_${r?.type_residue}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-          this.costoAnual[r?.type_residue-1] = parseFloat(this.result);
+          document.getElementById(`actual_weight_${r?.type_residue}`)!.innerHTML = this.setFormato(this.result)
+          this.costoAnual[r?.type_residue-1] = this.result;
           }
       }
       else if(r.recyclability == 2)
       {
         if(r?.type_residue != 4){
           this.tonNoReciclable = this.tonNoReciclable + parseFloat(r?.value);
-          this.result = this.verifyNumber(this.tonNoReciclable);
-          document.getElementById(`actual_weight_4`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-          this.costoAnual[3] = parseFloat(this.result);
+          this.result = this.tonNoReciclable;
+          document.getElementById(`actual_weight_4`)!.innerHTML = this.setFormato(this.result)
+          this.costoAnual[3] = this.result;
         }
         }
 
       else if(r.recyclability == 3)
       {
           this.tonRetornable = this.tonRetornable + parseFloat(r?.value);
-          this.result = this.verifyNumber(this.tonRetornable);
-          document.getElementById(`actual_weight_5`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-          this.costoAnual[4] = parseFloat(this.result);
+          this.result = this.tonRetornable;
+          document.getElementById(`actual_weight_5`)!.innerHTML = this.setFormato(this.result);
+          this.costoAnual[4] = this.result;
         }
     }
 
@@ -116,10 +116,10 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       if(r.RECYCLABILITY == 1)
       {
         this.tonSums.l_tonSum[r?.TYPE_RESIDUE-1] = this.tonSums.l_tonSum[r?.TYPE_RESIDUE-1] + parseFloat(r?.VALUE);
-        this.result = this.verifyNumber(this.tonSums.l_tonSum[r?.TYPE_RESIDUE-1]);
+        this.result = this.tonSums.l_tonSum[r?.TYPE_RESIDUE-1];
 
         if(r?.TYPE_RESIDUE != 4){
-          document.getElementById(`last_weight_${r?.TYPE_RESIDUE}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          document.getElementById(`last_weight_${r?.TYPE_RESIDUE}`)!.innerHTML = this.setFormato(this.result);
           }
       }
 
@@ -128,75 +128,75 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
 
         if(r?.TYPE_RESIDUE != 4){
           this.l_tonNoReciclable = this.l_tonNoReciclable + parseFloat(r?.VALUE);
-          this.result = this.verifyNumber(this.l_tonNoReciclable);
-          document.getElementById(`last_weight_4`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          this.result = this.l_tonNoReciclable;
+          document.getElementById(`last_weight_4`)!.innerHTML = this.setFormato(this.result);
         }
       }
 
       else if(r.RECYCLABILITY == 3)
       {
         this.l_tonRetornable = this.l_tonRetornable + parseFloat(r?.VALUE);
-        this.result = this.verifyNumber(this.l_tonRetornable);
+        this.result = this.l_tonRetornable;
 
-        document.getElementById(`last_weight_5`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        document.getElementById(`last_weight_5`)!.innerHTML = this.setFormato(this.result);
         }
     }
     for(let i = 1; i<= 5; i++){
       if(i <= 3){
-        this.result =  this.verifyNumber(this.tonSums.tonSum[i-1] -  this.tonSums.l_tonSum[i-1]);
-        document.getElementById(`ajuste_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        this.ajuste[i-1] = parseFloat(this.result);
+        this.result =  this.tonSums.tonSum[i-1] -  this.tonSums.l_tonSum[i-1];
+        document.getElementById(`ajuste_${i}`)!.innerHTML = this.setFormato(this.result);
+        this.ajuste[i-1] = this.result;
         
         if(this.tonSums.l_tonSum[i-1] == 0){
-          document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.setFormato(this.result);
           document.getElementById(`ajuste_${i}`)!.innerHTML = '0';
           this.ajuste[i-1] = 0;
-          this.sumaAmount = this.sumaAmount + parseFloat(this.result);
+          this.sumaAmount = this.sumaAmount + this.result;
         }
         else{
-          this.result = this.verifyNumber(this.tonSums.tonSum[i-1] + (this.tonSums.tonSum[i-1] -  this.tonSums.l_tonSum[i-1]));
-          document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-          this.sumaAmount = this.sumaAmount + parseFloat(this.result);
+          this.result = this.tonSums.tonSum[i-1] + (this.tonSums.tonSum[i-1] -  this.tonSums.l_tonSum[i-1]);
+          document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.setFormato(this.result);
+          this.sumaAmount = this.sumaAmount + this.result;
         }
       }
       else if( i == 4){
-        this.result =  this.verifyNumber(this.tonNoReciclable -  this.l_tonNoReciclable);
-        document.getElementById(`ajuste_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        this.ajuste[i-1] = parseFloat(this.result);
+        this.result =  this.tonNoReciclable -  this.l_tonNoReciclable;
+        document.getElementById(`ajuste_${i}`)!.innerHTML = this.setFormato(this.result);
+        this.ajuste[i-1] = this.result;
 
         if(this.l_tonNoReciclable == 0){
-          document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.setFormato(this.result);
           document.getElementById(`ajuste_${i}`)!.innerHTML = '0';
           this.ajuste[i-1] = 0;
-          this.sumaAmount = this.sumaAmount + parseFloat(this.result);
+          this.sumaAmount = this.sumaAmount + this.result;
         }
         else{
-          this.result = this.verifyNumber(this.tonNoReciclable + (this.tonNoReciclable -  this.l_tonNoReciclable));
-          document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-          this.sumaAmount = this.sumaAmount + parseFloat(this.result);
+          this.result = this.tonNoReciclable + (this.tonNoReciclable -  this.l_tonNoReciclable);
+          document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.setFormato(this.result);
+          this.sumaAmount = this.sumaAmount + this.result;
         }
         
       }
       else{
-        this.result =  this.verifyNumber(this.tonRetornable -  this.l_tonRetornable);
-        document.getElementById(`ajuste_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        this.ajuste[i-1] = parseFloat(this.result);
+        this.result =  this.tonRetornable -  this.l_tonRetornable;
+        document.getElementById(`ajuste_${i}`)!.innerHTML = this.setFormato(this.result);
+        this.ajuste[i-1] = this.result;
 
         if(this.l_tonRetornable == 0){
-          document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.setFormato(this.result);
           document.getElementById(`ajuste_${i}`)!.innerHTML = '0';
           this.ajuste[i-1] = 0;
-          this.sumaAmount = this.sumaAmount + parseFloat(this.result);
+          this.sumaAmount = this.sumaAmount + this.result;
         }
         else{
-          this.result = this.verifyNumber(this.tonRetornable + (this.tonRetornable -  this.l_tonRetornable));
-          document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.result.replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-          this.sumaAmount = this.sumaAmount + parseFloat(this.result);
+          this.result = this.tonRetornable + (this.tonRetornable -  this.l_tonRetornable);
+          document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.setFormato(this.result);
+          this.sumaAmount = this.sumaAmount + this.result;
         }
       }
     }
 
-    document.getElementById(`total_ton`)!.innerHTML = this.verifyNumber(this.sumaAmount).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    document.getElementById(`total_ton`)!.innerHTML = this.setFormato(this.sumaAmount);
     document.getElementById(`pom_total`)!.innerHTML = document.getElementById(`total_ton`)!.innerHTML 
 
     this.ratesService.getCLP.pipe(
@@ -205,18 +205,18 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         // Procesamiento de los datos de la primera suscripción
         for(let i = 0; i< 4; i++){
           document.getElementById(`actual_amount_${i}`)!.innerHTML = clp.data[i].price.toString();
-          document.getElementById(`amount_anual_${i}`)!.innerHTML = (clp.data[i].price * this.costoAnual[i]).toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-          document.getElementById(`amount_corregido_${i}`)!.innerHTML = (clp.data[i].price * this.ajuste[i]).toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-          document.getElementById(`total_category_amount_${i}`)!.innerHTML = ( parseFloat((clp.data[i].price * this.costoAnual[i]).toFixed(2)) + parseFloat((clp.data[i].price * this.ajuste[i]).toFixed(2)) ).toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-          this.sumaAmount = this.sumaAmount + parseFloat((clp.data[i].price * this.costoAnual[i]).toFixed(2)) + parseFloat((clp.data[i].price * this.ajuste[i]).toFixed(2));
+          document.getElementById(`amount_anual_${i}`)!.innerHTML = this.setFormato(clp.data[i].price * this.costoAnual[i]);
+          document.getElementById(`amount_corregido_${i}`)!.innerHTML = this.setFormato(clp.data[i].price * this.ajuste[i]);
+          document.getElementById(`total_category_amount_${i}`)!.innerHTML = this.setFormato((clp.data[i].price * this.costoAnual[i]) + (clp.data[i].price * this.ajuste[i]));
+          this.sumaAmount = this.sumaAmount + (clp.data[i].price * this.costoAnual[i]) + (clp.data[i].price * this.ajuste[i]);
           this.dif[i] = clp.data[i].price * this.costoAnual[i] + clp.data[i].price * this.ajuste[i];
-          this.sumaAjuste = this.sumaAjuste + clp.data[i].price * this.ajuste[i];
+          this.sumaAjuste = this.sumaAjuste +  clp.data[i].price * this.ajuste[i];
           this.amountAnual = this.amountAnual + clp.data[i].price * this.costoAnual[i];
         }
         // Se regresa un observable para la segunda suscripción
-        document.getElementById(`anual_amount`)!.innerHTML = this.amountAnual.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        document.getElementById(`ajuste_amount`)!.innerHTML = this.sumaAjuste.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        document.getElementById(`total_amount`)!.innerHTML = this.sumaAmount.toFixed(2).replace(/[.]/g,',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        document.getElementById(`anual_amount`)!.innerHTML = this.setFormato(this.amountAnual);
+        document.getElementById(`ajuste_amount`)!.innerHTML = this.setFormato(this.sumaAjuste);
+        document.getElementById(`total_amount`)!.innerHTML = this.setFormato(this.sumaAmount);
         document.getElementById(`amount_total`)!.innerHTML = document.getElementById(`total_amount`)!.innerHTML 
         return this.ratesService.getUF;
       }),
@@ -225,10 +225,10 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       // Procesamiento de los datos de la segunda suscripción
       this.sumaAmount = 0;
       for(let i = 0; i< 4; i++){
-        this.sumaAmount = parseInt((this.sumaAmount + this.dif[i]*uf.data*1.19).toFixed(0));
-        document.getElementById(`uf_clp_${i}`)!.innerHTML = '$'+ (this.dif[i]*uf.data*1.19).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        this.sumaAmount = this.sumaAmount + parseInt((this.dif[i]*uf.data*1.19).toFixed(0));
+        document.getElementById(`uf_clp_${i}`)!.innerHTML = '$'+ this.setFormato(parseInt((this.dif[i]*uf.data*1.19).toFixed(0)));
       }
-      document.getElementById(`total_uf_clp`)!.innerHTML = '$'+ this.sumaAmount.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      document.getElementById(`total_uf_clp`)!.innerHTML = '$'+ this.setFormato(this.sumaAmount);
     });
   }
 
@@ -249,5 +249,14 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     } else {
       return number.toFixed(2);  
     }
+  }
+
+  setFormato(num: number | string): string {
+    const numero = typeof num === 'string' ? parseFloat(num.replace(/,/g, '')) : num;
+    const decimal = Math.round(numero * 100) / 100;
+    const [entero, decimales] = decimal.toString().split('.');
+    const enteroConPuntos = entero.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+    return decimales && decimales !== '0' ? `${enteroConPuntos},${decimales.padEnd(2, '0')}` : enteroConPuntos;
   }
 }
