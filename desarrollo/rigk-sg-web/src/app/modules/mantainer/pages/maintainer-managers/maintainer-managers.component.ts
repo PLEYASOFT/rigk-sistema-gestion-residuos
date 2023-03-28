@@ -3,7 +3,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import Swal from 'sweetalert2';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { BusinessService } from '../../../../core/services/business.service';
-import { EstablishmentService } from 'src/app/core/services/establishment.service';
+import { ManagerService } from 'src/app/core/services/manager.service';
 
 @Component({
   selector: 'app-maintainer-managers',
@@ -31,12 +31,32 @@ export class MaintainerManagersComponent implements OnInit {
     'Región de Magallanes'
   ];
 
+  listMateriales: any[] = [
+    'Papel',
+    'Papel Compuesto (cemento)',
+    'Caja Cartón',
+    'Papel/Cartón Otro',
+    'Envase Aluminio',
+    'Malla o Reja (IBC)',
+    'Envase Hojalata', 
+    'Metal Otro',
+    'Plástico Film Embalaje',
+    'Plástico Envases Rígidos (Incl. Tapas)',
+    'Plástico Sacos o Maxisacos',
+    'Plástico EPS (Poliestireno Expandido)',
+    'Plástico Zuncho',
+    'Plástico Otro',
+    'Caja de Madera',
+    'Pallet de Madera'
+    
+  ];
+
   listBusiness: any[] = [];
   pos = 1;
   db: any[] = [];
   cant = 0;
 
-  establishmentStatus: any = [];
+  managerStatus: any = [];
   pos2 = 1;
   db2: any[] = [];
   cant2 = 0;
@@ -45,14 +65,12 @@ export class MaintainerManagersComponent implements OnInit {
 
   userData: any | null;
 
-  FIRST_NAME: any = [];
+  MATERIAL: any = "";
   REGION: any = "";
   userForm: any;
 
-  direction = 'asc';
-  directionEstablishment = 'asc';
   constructor(private businesService: BusinessService,
-    private establishmentService: EstablishmentService,
+    private managerService: ManagerService,
     private fb: FormBuilder) {
   }
 
@@ -61,7 +79,7 @@ export class MaintainerManagersComponent implements OnInit {
     this.getAllBusiness();
 
     this.userForm = this.fb.group({
-      FIRST_NAME: [[], [Validators.required]], // Campo requerido
+      MATERIAL: ["", [Validators.required]], // Campo requerido
       REGION: ["", [Validators.required]], // Campo requerido
     });
   }
@@ -84,16 +102,16 @@ export class MaintainerManagersComponent implements OnInit {
     });
   }
 
-  getEstablishment(id_business: any) {
-    this.establishmentService.getEstablishment(id_business).subscribe({
+  getManager(id_business: any) {
+    this.managerService.getManager(id_business).subscribe({
       next: resp => {
         if (resp.status) {
-          this.establishmentStatus = resp.status;
-          this.cant2 = Math.ceil(this.establishmentStatus.length / 10);
-          this.db2 = this.establishmentStatus.slice(0, 10).sort((a: { ID_ESTABLISHMENT: number; }, b: { ID_ESTABLISHMENT: number; }) => b.ID_ESTABLISHMENT - a.ID_ESTABLISHMENT);
+          this.managerStatus = resp.status;
+          this.cant2 = Math.ceil(this.managerStatus.length / 10);
+          this.db2 = this.managerStatus.slice(0, 10).sort((a: { ID_MANAGER: number; }, b: { ID_MANAGER: number; }) => b.ID_MANAGER - a.ID_MANAGER);
         }
         else {
-          this.establishmentStatus = [];
+          this.managerStatus = [];
         }
         this.reset()
       },
@@ -109,13 +127,13 @@ export class MaintainerManagersComponent implements OnInit {
     });
   }
 
-  addEstablishment(id_business: any) {
+  addManager(id_business: any) {
 
     if (this.verificarEstablecimiento()) {
-      const { FIRST_NAME, REGION } = this.userForm.value;
-      this.establishmentStatus.push(id_business);
+      const { MATERIAL, REGION } = this.userForm.value;
+      this.managerStatus.push(id_business);
 
-      this.establishmentService.addEstablishment(FIRST_NAME, REGION, id_business).subscribe({
+      this.managerService.addManager(MATERIAL, REGION, id_business).subscribe({
         next: resp => {
           if (resp.status) {
             this.pagTo2(0);
@@ -125,7 +143,7 @@ export class MaintainerManagersComponent implements OnInit {
               icon: "success",
             })
           }
-          this.getEstablishment(id_business);
+          this.getManager(id_business);
         },
         error: err => {
           Swal.fire({
@@ -146,7 +164,7 @@ export class MaintainerManagersComponent implements OnInit {
     }
   }
 
-  deleteEstablishment(id_establishment: any) {
+  deleteManager(id_manager: any) {
     Swal.fire({
       title: '¿Estás seguro que quieres eliminar el establecimiento?',
       showDenyButton: true,
@@ -155,7 +173,7 @@ export class MaintainerManagersComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.pagTo2(0)
-        this.establishmentService.deleteEstablishment(id_establishment).subscribe({
+        this.managerService.deleteManager(id_manager).subscribe({
           next: resp => {
             if (resp.status) {
               Swal.fire({
@@ -163,7 +181,7 @@ export class MaintainerManagersComponent implements OnInit {
                 text: "",
                 icon: "error",
               })
-              this.getEstablishment(this.index);
+              this.getManager(this.index);
             }
             else {
               Swal.fire({
@@ -205,17 +223,17 @@ export class MaintainerManagersComponent implements OnInit {
 
   pagTo2(i: number) {
     this.pos2 = i + 1;
-    this.db2 = this.establishmentStatus.slice((i * 10), (i + 1) * 10).sort((a: { ID_ESTABLISHMENT: number; }, b: { ID_ESTABLISHMENT: number; }) => a.ID_ESTABLISHMENT - b.ID_ESTABLISHMENT);
+    this.db2 = this.managerStatus.slice((i * 10), (i + 1) * 10).sort((a: { ID_MANAGER: number; }, b: { ID_MANAGER: number; }) => a.ID_MANAGER - b.ID_MANAGER);
   }
   next2() {
     if (this.pos2 >= this.cant) return;
     this.pos2++;
-    this.db2 = this.establishmentStatus.slice((this.pos2 - 1) * 10, (this.pos2) * 10).sort((a: { ID_ESTABLISHMENT: number; }, b: { ID_ESTABLISHMENT: number; }) => a.ID_ESTABLISHMENT - b.ID_ESTABLISHMENT);
+    this.db2 = this.managerStatus.slice((this.pos2 - 1) * 10, (this.pos2) * 10).sort((a: { ID_MANAGER: number; }, b: { ID_MANAGER: number; }) => a.ID_MANAGER - b.ID_MANAGER);
   }
   previus2() {
     if (this.pos2 - 1 <= 0 || this.pos2 >= this.cant + 1) return;
     this.pos2 = this.pos2 - 1;
-    this.db2 = this.establishmentStatus.slice((this.pos2 - 1) * 10, (this.pos2) * 10).sort((a: { ID_ESTABLISHMENT: number; }, b: { ID_ESTABLISHMENT: number; }) => a.ID_ESTABLISHMENT - b.ID_ESTABLISHMENT);
+    this.db2 = this.managerStatus.slice((this.pos2 - 1) * 10, (this.pos2) * 10).sort((a: { ID_MANAGER: number; }, b: { ID_MANAGER: number; }) => a.ID_MANAGER - b.ID_MANAGER);
   }
   setArrayFromNumber2() {
     return new Array(this.cant2);
@@ -229,12 +247,12 @@ export class MaintainerManagersComponent implements OnInit {
   }
 
   verificarEstablecimiento() {
-    const { FIRST_NAME, REGION } = this.userForm.value;
+    const { MATERIAL, REGION } = this.userForm.value;
     let existe = false;
-    const nombreEstablecimiento = FIRST_NAME.trim(); // eliminando espacios en blanco adicionales al inicio y al final de la cadena de texto
+    const nombreEstablecimiento = MATERIAL.trim(); // eliminando espacios en blanco adicionales al inicio y al final de la cadena de texto
 
-    for (let i = 0; i < this.establishmentStatus.length; i++) {
-      if (this.establishmentStatus[i].NAME_ESTABLISHMENT.toLowerCase() === nombreEstablecimiento.toLowerCase() && this.establishmentStatus[i].REGION === REGION) {
+    for (let i = 0; i < this.managerStatus.length; i++) {
+      if (this.managerStatus[i].TYPE_MATERIAL.toLowerCase() === nombreEstablecimiento.toLowerCase() && this.managerStatus[i].REGION === REGION) {
         existe = true;
         break;
       }
@@ -244,20 +262,6 @@ export class MaintainerManagersComponent implements OnInit {
     } else {
       return true;  // el código NO se encuentra en el arreglo, no hay error
     }
-  }
-
-  toggleDirection() {
-    this.direction = this.direction === 'asc' ? 'desc' : 'asc';
-    this.listBusiness.reverse();
-    this.cant = Math.ceil(this.listBusiness.length / 10);
-    this.db = this.listBusiness.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
-  }
-
-  toggleDirectionEstablishments() {
-    this.directionEstablishment = this.directionEstablishment === 'asc' ? 'desc' : 'asc';
-    this.establishmentStatus.reverse();
-    this.cant2 = Math.ceil(this.establishmentStatus.length / 10);
-    this.db2 = this.establishmentStatus.slice(0, 10).reverse();
   }
 
   filter(target: any) {
@@ -286,8 +290,8 @@ export class MaintainerManagersComponent implements OnInit {
     const listIndex:any = []
     if(target.value != ''){
       this.cant2 = 1;
-      this.db2 = this.establishmentStatus.filter((r: any)=>{
-        if(r.NAME_ESTABLISHMENT?.toLowerCase().indexOf(value) > -1 || r.REGION?.toLowerCase().indexOf(value) > -1) {
+      this.db2 = this.managerStatus.filter((r: any)=>{
+        if(r.TYPE_MATERIAL?.toLowerCase().indexOf(value) > -1 || r.REGION?.toLowerCase().indexOf(value) > -1) {
           listIndex.push(r);
         };
       });
@@ -295,8 +299,8 @@ export class MaintainerManagersComponent implements OnInit {
       this.cant2 = Math.ceil(listIndex.length / 10);
       return this.db2;
     }
-    this.db2 = this.establishmentStatus.slice(0,10);
-    this.cant2 = Math.ceil(this.establishmentStatus.length / 10);
+    this.db2 = this.managerStatus.slice(0,10);
+    this.cant2 = Math.ceil(this.managerStatus.length / 10);
     return this.db2;     
   }
 }

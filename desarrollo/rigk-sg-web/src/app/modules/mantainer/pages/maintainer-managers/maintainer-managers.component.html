@@ -2,7 +2,7 @@
 <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
-        <li class="breadcrumb-item"><a href="#">Mantenedor Establecimientos</a></li>
+        <li class="breadcrumb-item"><a href="#">Mantenedor Gestores</a></li>
     </ol>
 </nav>
 <div style="height: 50px;"></div>
@@ -12,7 +12,7 @@
         <input type="text" class="form-control" placeholder="Filtro de búsqueda" (keyup)="filter($event.target)">
     </div>
 </div>
-<h1>Establecimientos</h1>
+<h1>Gestores</h1>
 <div class="table-responsive mb-4">
     <!-- inicio Consulta de Declaración -->
     <section>
@@ -29,7 +29,7 @@
                                 <th>CÓDIGO EMPRESA </th>
                                 <th>NOMBRE </th>
                                 <th>DIRECCIÓN </th>
-                                <th>ESTABLECIMIENTOS </th>
+                                <th>MATERIALES/REGIÓN </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -41,7 +41,7 @@
                                     <div class="btn-group">
                                         <button class="btn btn-success btn-sm rounded-pill" data-bs-toggle="modal"
                                             data-bs-target="#exampleModal"
-                                            (click)="this.getEstablishment(r.ID); index =r.ID;">Establecimientos</button>
+                                            (click)="this.getManager(r.ID); index =r.ID;">Materiales/Región</button>
                                     </div>
                                 </td>
                             </tr>
@@ -69,7 +69,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Formulario Establecimientos</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Formulario Gestores</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -77,15 +77,14 @@
                     <form #miFormulario="ngForm" [formGroup]="userForm">
                         <div class="row">
                             <div class="col-md-6">
-                                <label for="inp_nom">NOMBRE:</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" formControlName="FIRST_NAME" id="inp_nom"
-                                        placeholder="Nombre" class="form-control">
-                                </div>
-                                <div *ngIf="userForm.controls['FIRST_NAME'].errors && userForm.controls['FIRST_NAME'].touched"
+                                <label for="inp_nom">MATERIAL</label>
+                                <select formControlName="MATERIAL" id="inp_nom" class="form-select" required>
+                                    <option value="">Selecciona Material</option>
+                                    <option *ngFor="let r of listMateriales">{{r}}</option>
+                                </select>
+                                <div *ngIf="userForm.controls['MATERIAL'].errors && userForm.controls['MATERIAL'].touched"
                                     class="text-danger pl-0">
-                                    <p *ngIf="userForm.controls['FIRST_NAME'].errors['required']">El nombre del
-                                        establecimiento es requerido.</p>
+                                    <p *ngIf="userForm.controls['MATERIAL'].errors['required']">Debe seleccionar algun material.</p>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -105,11 +104,11 @@
                             <button type="button" id="btnCloseModal" class="btn btn-secondary" data-bs-dismiss="modal"
                                 (click)="reset()">Cerrar</button>
                             <button type="button" class="btn btn-primary" [disabled]="miFormulario.invalid"
-                                (click)="addEstablishment( this.index ) ; ">Agregar</button>
+                                (click)="addManager( this.index ) ; ">Agregar</button>
                         </div>
                         <div style="visibility: hidden;">a</div>
                         <div style="visibility: hidden;">a</div>
-                        <div *ngIf="this.establishmentStatus && this.establishmentStatus.length > 0">
+                        <div *ngIf="this.managerStatus && this.managerStatus.length > 0">
                             <div style="height: 50px;"></div>
                             <div class="row mb-3">
                                 <div class="col-md-12">
@@ -129,11 +128,11 @@
                                 </thead>
                                 <tbody>
                                     <tr class="text-center w-100" *ngFor="let r of db2; let x = index">
-                                        <td>{{r.NAME_ESTABLISHMENT}}</td>
+                                        <td>{{r.TYPE_MATERIAL}}</td>
                                         <td>{{r.REGION}}</td>
                                         <td>
                                             <button type="button" class="btn btn-danger btn-sm rounded-pill"
-                                                (click)="deleteEstablishment(r.ID_ESTABLISHMENT)">
+                                                (click)="deleteManager(r.ID_MANAGER)">
                                                 X
                                             </button>
                                         </td>
