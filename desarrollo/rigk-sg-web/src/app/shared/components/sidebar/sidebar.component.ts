@@ -40,6 +40,7 @@ export class SidebarComponent implements OnInit {
     { title: "Mantenedor Empresas", path: "#/mantenedor/business", icon: "fa-file-text" },
     { title: "Mantenedor Establecimientos", path: "#/mantenedor/establishment", icon: "fa-file-text" },
     { title: "Mantenedor Usuarios", path: "#/mantenedor/users", icon: "fa-users" },
+    { title: "Mantenedor Gestores", path: "#/mantenedor/managers", icon: "fa-male" },
     { title: "Declaraciones Productores", path: "#/mantenedor/declarations", icon: "fa fa-database" },
   ];
 

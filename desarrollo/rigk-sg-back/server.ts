@@ -19,7 +19,8 @@ class Server {
         form: '/api/v1/statement',
         consumer: '/api/v1/consumer',
         rates: '/api/v1/rates',
-        establishment: '/api/v1/establishment'
+        establishment: '/api/v1/establishment',
+        manager: '/api/v1/manager'
     };
     constructor() {
         this.app = express();
