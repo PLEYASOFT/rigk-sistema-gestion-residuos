@@ -151,12 +151,12 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
           document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.setFormato(this.result);
           document.getElementById(`ajuste_${i}`)!.innerHTML = '0';
           this.ajuste[i-1] = 0;
-          this.sumaAmount = this.sumaAmount + this.result;
+          this.sumaAmount = this.sumaAmount + parseFloat( (this.result).toFixed(2));
         }
         else{
           this.result = this.tonSums.tonSum[i-1] + (this.tonSums.tonSum[i-1] -  this.tonSums.l_tonSum[i-1]);
           document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.setFormato(this.result);
-          this.sumaAmount = this.sumaAmount + this.result;
+          this.sumaAmount = this.sumaAmount + parseFloat( (this.result).toFixed(2));
         }
       }
       else if( i == 4){
@@ -168,12 +168,12 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
           document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.setFormato(this.result);
           document.getElementById(`ajuste_${i}`)!.innerHTML = '0';
           this.ajuste[i-1] = 0;
-          this.sumaAmount = this.sumaAmount + this.result;
+          this.sumaAmount = this.sumaAmount + parseFloat( (this.result).toFixed(2));
         }
         else{
           this.result = this.tonNoReciclable + (this.tonNoReciclable -  this.l_tonNoReciclable);
           document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.setFormato(this.result);
-          this.sumaAmount = this.sumaAmount + this.result;
+          this.sumaAmount = this.sumaAmount + parseFloat( (this.result).toFixed(2));
         }
         
       }
@@ -186,12 +186,12 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
           document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.setFormato(this.result);
           document.getElementById(`ajuste_${i}`)!.innerHTML = '0';
           this.ajuste[i-1] = 0;
-          this.sumaAmount = this.sumaAmount + this.result;
+          this.sumaAmount = this.sumaAmount + parseFloat( (this.result).toFixed(2));
         }
         else{
           this.result = this.tonRetornable + (this.tonRetornable -  this.l_tonRetornable);
           document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.setFormato(this.result);
-          this.sumaAmount = this.sumaAmount + this.result;
+          this.sumaAmount = this.sumaAmount + parseFloat( (this.result).toFixed(2));
         }
       }
     }
@@ -204,14 +204,14 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         this.sumaAmount = 0;
         // Procesamiento de los datos de la primera suscripción
         for(let i = 0; i< 4; i++){
-          document.getElementById(`actual_amount_${i}`)!.innerHTML = clp.data[i].price.toString();
+          document.getElementById(`actual_amount_${i}`)!.innerHTML = this.setFormato(clp.data[i].price);
           document.getElementById(`amount_anual_${i}`)!.innerHTML = this.setFormato(clp.data[i].price * this.costoAnual[i]);
           document.getElementById(`amount_corregido_${i}`)!.innerHTML = this.setFormato(clp.data[i].price * this.ajuste[i]);
           document.getElementById(`total_category_amount_${i}`)!.innerHTML = this.setFormato((clp.data[i].price * this.costoAnual[i]) + (clp.data[i].price * this.ajuste[i]));
-          this.sumaAmount = this.sumaAmount + (clp.data[i].price * this.costoAnual[i]) + (clp.data[i].price * this.ajuste[i]);
-          this.dif[i] = clp.data[i].price * this.costoAnual[i] + clp.data[i].price * this.ajuste[i];
-          this.sumaAjuste = this.sumaAjuste +  clp.data[i].price * this.ajuste[i];
-          this.amountAnual = this.amountAnual + clp.data[i].price * this.costoAnual[i];
+          this.sumaAmount = this.sumaAmount + parseFloat((clp.data[i].price * this.costoAnual[i]).toFixed(2)) + parseFloat((clp.data[i].price * this.ajuste[i]).toFixed(2));
+          this.dif[i] =clp.data[i].price * this.costoAnual[i] +clp.data[i].price * this.ajuste[i];
+          this.sumaAjuste = this.sumaAjuste +  parseFloat((clp.data[i].price * this.ajuste[i]).toFixed(2));
+          this.amountAnual = this.amountAnual + parseFloat((clp.data[i].price * this.costoAnual[i]).toFixed(2));
         }
         // Se regresa un observable para la segunda suscripción
         document.getElementById(`anual_amount`)!.innerHTML = this.setFormato(this.amountAnual);

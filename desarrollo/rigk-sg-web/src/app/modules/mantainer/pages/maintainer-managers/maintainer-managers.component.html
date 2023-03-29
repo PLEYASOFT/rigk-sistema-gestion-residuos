@@ -1,0 +1,161 @@
+<!-- inicio breadcrumbs -->
+<nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+        <li class="breadcrumb-item"><a href="#">Mantenedor Gestores</a></li>
+    </ol>
+</nav>
+<div style="height: 50px;"></div>
+<div class="row mb-3">
+    <div class="col-md-12">
+        <label>Filtro:</label>
+        <input type="text" class="form-control" placeholder="Filtro de búsqueda" (keyup)="filter($event.target)">
+    </div>
+</div>
+<h1>Gestores</h1>
+<div class="table-responsive mb-4">
+    <!-- inicio Consulta de Declaración -->
+    <section>
+        <div class="row w-100 ">
+            <!-- Columna 1 -->
+            <div id="table" #table1 class="w-100 ">
+                <div class="w-100">
+                    <!-- Tabla Desktop -->
+                    <table
+                        class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
+
+                        <thead>
+                            <tr class="text-center w-100">
+                                <th>CÓDIGO EMPRESA </th>
+                                <th>NOMBRE </th>
+                                <th>DIRECCIÓN </th>
+                                <th>MATERIALES/REGIÓN </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text-center w-100" *ngFor="let r of db; let x = index">
+                                <td>{{r.CODE_BUSINESS}}</td>
+                                <td>{{r.NAME}}</td>
+                                <td>{{r.LOC_ADDRESS}}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-success btn-sm rounded-pill" data-bs-toggle="modal"
+                                            data-bs-target="#exampleModal"
+                                            (click)="this.getManager(r.ID); index =r.ID;">Materiales/Región</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- Pagination -->
+                    <nav aria-label="Navegación resultados">
+                        <ul class="pagination">
+                            <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
+                            <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
+                            <li *ngFor="let in of setArrayFromNumber(); let i = index"><button class="border btn btn-sm"
+                                    [ngClass]="{ 'btn-info':pos==(i+1), 'btn-primary': pos != (i+1)}"
+                                    (click)="pagTo(i)">{{i+1}}</button></li>
+                            <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
+                            <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Formulario Gestores</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <form #miFormulario="ngForm" [formGroup]="userForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="inp_nom">MATERIAL</label>
+                                <select formControlName="MATERIAL" id="inp_nom" class="form-select" required>
+                                    <option value="">Selecciona Material</option>
+                                    <option *ngFor="let r of listMateriales">{{r}}</option>
+                                </select>
+                                <div *ngIf="userForm.controls['MATERIAL'].errors && userForm.controls['MATERIAL'].touched"
+                                    class="text-danger pl-0">
+                                    <p *ngIf="userForm.controls['MATERIAL'].errors['required']">Debe seleccionar algun material.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inp_region">REGIÓN</label>
+                                <select formControlName="REGION" id="inp_region" class="form-select" required>
+                                    <option value="">Selecciona Región</option>
+                                    <option *ngFor="let r of listRegiones">{{r}}</option>
+                                </select>
+                                <div *ngIf="userForm.controls['REGION'].errors && userForm.controls['REGION'].touched"
+                                    class="text-danger pl-0">
+                                    <p *ngIf="userForm.controls['REGION'].errors['required']">Debe seleccionar alguna
+                                        región.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="btnCloseModal" class="btn btn-secondary" data-bs-dismiss="modal"
+                                (click)="reset()">Cerrar</button>
+                            <button type="button" class="btn btn-primary" [disabled]="miFormulario.invalid"
+                                (click)="addManager( this.index ) ; ">Agregar</button>
+                        </div>
+                        <div style="visibility: hidden;">a</div>
+                        <div style="visibility: hidden;">a</div>
+                        <div *ngIf="this.managerStatus && this.managerStatus.length > 0">
+                            <div style="height: 50px;"></div>
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label>Filtro:</label>
+                                    <input type="text" class="form-control" placeholder="Filtro de búsqueda"
+                                        (keyup)="filterForm($event.target)">
+                                </div>
+                            </div>
+                            <table
+                                class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
+                                <thead>
+                                    <tr class="text-center w-100">
+                                        <th>Establecimiento</th>
+                                        <th>Región</th>
+                                        <th>Eliminar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="text-center w-100" *ngFor="let r of db2; let x = index">
+                                        <td>{{r.TYPE_MATERIAL}}</td>
+                                        <td>{{r.REGION}}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-sm rounded-pill"
+                                                (click)="deleteManager(r.ID_MANAGER)">
+                                                X
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <!-- Pagination -->
+                            <nav aria-label="Navegación resultados">
+                                <ul class="pagination">
+                                    <li><button class="btn btn-primary" (click)="pagTo2(0)">Primero</button></li>
+                                    <li><button class="btn btn-primary" (click)="previus2()">Anterior</button></li>
+                                    <li *ngFor="let in of setArrayFromNumber2(); let i = index"><button
+                                            class="border btn btn-sm"
+                                            [ngClass]="{ 'btn-info':pos2==(i+1), 'btn-primary': pos2 != (i+1)}"
+                                            (click)="pagTo2(i)">{{i+1}}</button></li>
+                                    <li><button class="btn btn-primary" (click)="next2()">Siguiente</button></li>
+                                    <li><button class="btn btn-primary" (click)="pagTo2(cant2-1)">Último</button></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

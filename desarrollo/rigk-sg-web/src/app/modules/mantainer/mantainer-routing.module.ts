@@ -8,6 +8,7 @@ import { MaintainerEstablishmentComponent } from './pages/maintainer-establishme
 import { MantainerUsersComponent } from './pages/mantainer-users/mantainer-users.component';
 import { FaqComponent } from 'src/app/shared/components/faq/faq.component';
 import { MaintainerDeclarationsProductorComponent } from './pages/maintainer-declarations-productor/maintainer-declarations-productor.component';
+import { MaintainerManagersComponent } from './pages/maintainer-managers/maintainer-managers.component';
 
 const routes: Routes = [{
   path: '',
@@ -20,6 +21,7 @@ const routes: Routes = [{
   { path: 'users', component: MantainerUsersComponent },
   { path: 'declarations', component: MaintainerDeclarationsProductorComponent },
   { path: 'faq', component: FaqComponent },
+  { path: 'managers', component: MaintainerManagersComponent },
   { path: '**', redirectTo: 'home', pathMatch: 'full' }]
 }
   
