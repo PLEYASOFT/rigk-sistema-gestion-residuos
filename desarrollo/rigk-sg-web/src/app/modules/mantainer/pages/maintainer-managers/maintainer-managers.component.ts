@@ -138,8 +138,8 @@ export class MaintainerManagersComponent implements OnInit {
           if (resp.status) {
             this.pagTo2(0);
             Swal.fire({
-              title: "Establecimiento agregado",
-              text: "El establecimiento fue agregado exitosamente",
+              title: "Gestor agregado",
+              text: "El gestor fue agregado exitosamente",
               icon: "success",
             })
           }
@@ -148,7 +148,7 @@ export class MaintainerManagersComponent implements OnInit {
         error: err => {
           Swal.fire({
             title: 'Error',
-            text: 'Error al agregar el establecimiento',
+            text: 'Error al agregar el Gestor',
             icon: 'error'
           })
         }
@@ -157,7 +157,7 @@ export class MaintainerManagersComponent implements OnInit {
 
     else{
       Swal.fire({
-        title: 'Establecimiento y Región ya se encuentran registrados',
+        title: 'Gestor y Región ya se encuentran registrados',
         text: '',
         icon: 'error'
       })
@@ -166,7 +166,7 @@ export class MaintainerManagersComponent implements OnInit {
 
   deleteManager(id_manager: any) {
     Swal.fire({
-      title: '¿Estás seguro que quieres eliminar el establecimiento?',
+      title: '¿Estás seguro que quieres eliminar el gestor?',
       showDenyButton: true,
       confirmButtonText: 'Confirmar',
       denyButtonText: `Cancelar`,
@@ -177,7 +177,7 @@ export class MaintainerManagersComponent implements OnInit {
           next: resp => {
             if (resp.status) {
               Swal.fire({
-                title: "Establecimiento Eliminado",
+                title: "Gestor Eliminado",
                 text: "",
                 icon: "error",
               })
@@ -242,6 +242,7 @@ export class MaintainerManagersComponent implements OnInit {
   reset() {
     this.userForm.reset();
     this.userForm.patchValue({
+      MATERIAL: "",
       REGION: ""
     });
   }
