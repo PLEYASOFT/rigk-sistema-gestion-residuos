@@ -16,7 +16,7 @@ class DBConnection {
                 password: process.env.PASSWORD,
             });
         } catch (error) {
-            console.log("El error es error: ", error);
+            console.log("El error es: ", error);
         }
     };
 }
