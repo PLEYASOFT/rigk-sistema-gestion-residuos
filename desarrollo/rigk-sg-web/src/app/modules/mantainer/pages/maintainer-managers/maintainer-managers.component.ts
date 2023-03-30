@@ -31,25 +31,7 @@ export class MaintainerManagersComponent implements OnInit {
     'Región de Magallanes'
   ];
 
-  listMateriales: any[] = [
-    'Papel',
-    'Papel Compuesto (cemento)',
-    'Caja Cartón',
-    'Papel/Cartón Otro',
-    'Envase Aluminio',
-    'Malla o Reja (IBC)',
-    'Envase Hojalata', 
-    'Metal Otro',
-    'Plástico Film Embalaje',
-    'Plástico Envases Rígidos (Incl. Tapas)',
-    'Plástico Sacos o Maxisacos',
-    'Plástico EPS (Poliestireno Expandido)',
-    'Plástico Zuncho',
-    'Plástico Otro',
-    'Caja de Madera',
-    'Pallet de Madera'
-    
-  ];
+  listMateriales: any[] = [];
 
   listBusiness: any[] = [];
   pos = 1;
@@ -77,7 +59,7 @@ export class MaintainerManagersComponent implements OnInit {
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
     this.getAllBusiness();
-
+    this.getMaterials();
     this.userForm = this.fb.group({
       MATERIAL: ["", [Validators.required]], // Campo requerido
       REGION: ["", [Validators.required]], // Campo requerido
@@ -102,11 +84,28 @@ export class MaintainerManagersComponent implements OnInit {
     });
   }
 
+  getMaterials() {
+    this.managerService.getAllMaterials().subscribe({
+      next: resp => {
+        this.listMateriales = resp.status.map((material: { MATERIAL: any; }) => material.MATERIAL);
+      },
+      error: r => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          text: r.msg,
+          title: '¡Ups!'
+        });
+      }
+    });
+  }
+
   getManager(id_business: any) {
     this.managerService.getManager(id_business).subscribe({
       next: resp => {
         if (resp.status) {
           this.managerStatus = resp.status;
+          console.log(this.managerStatus);
           this.cant2 = Math.ceil(this.managerStatus.length / 10);
           this.db2 = this.managerStatus.slice(0, 10).sort((a: { ID_MANAGER: number; }, b: { ID_MANAGER: number; }) => b.ID_MANAGER - a.ID_MANAGER);
         }

@@ -34,6 +34,16 @@ class ManagerDao {
         conn.end();
         return res;
     }
+
+    public async getAllMaterials() {
+        const conn = mysqlcon.getConnection()!;
+        const material: any = await conn.query("SELECT * FROM type_material").then(res => res[0]).catch(erro => undefined);
+        if (material == null || material.length == 0) {
+            return false;
+        }
+        conn.end();
+        return material;
+    }
 }
 const managerDao = new ManagerDao();
 export default managerDao;
