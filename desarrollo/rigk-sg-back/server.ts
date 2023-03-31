@@ -10,6 +10,7 @@ import statementRoutes from './routes/statmentProductor';
 import ratesRoutes from './routes/rates';
 import establishmentRoutes from './routes/establishment';
 import consumerRoutes from './routes/consumer';
+import managerRoutes from './routes/manager';
 class Server {
     private app: Application;
     private port: string;
@@ -35,6 +36,7 @@ class Server {
         this.app.use(this.apiPath.form, statementRoutes);
         this.app.use(this.apiPath.rates, ratesRoutes);
         this.app.use(this.apiPath.establishment, establishmentRoutes);
+        this.app.use(this.apiPath.manager, managerRoutes);
         this.app.use((error: any, req: any, res: any, next: any) => {
             if (error) {
                 console.log(error)
