@@ -163,7 +163,6 @@ class statementProductorDao {
                 if(PNP) {
                     const value = parseFloat(REC[types_A[i]].PNP.replace(',','.'));
                     const amount = rate * value;
-                    console.log(value,amount);
                     await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 0, 1, type, value, amount]).catch(err => console.log(err));
                 }
                 if(PP) {
