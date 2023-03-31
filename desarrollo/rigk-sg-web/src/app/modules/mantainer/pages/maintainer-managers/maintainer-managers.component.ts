@@ -105,7 +105,6 @@ export class MaintainerManagersComponent implements OnInit {
       next: resp => {
         if (resp.status) {
           this.managerStatus = resp.status;
-          console.log(this.managerStatus);
           this.cant2 = Math.ceil(this.managerStatus.length / 10);
           this.db2 = this.managerStatus.slice(0, 10).sort((a: { ID_MANAGER: number; }, b: { ID_MANAGER: number; }) => b.ID_MANAGER - a.ID_MANAGER);
         }
@@ -235,7 +234,6 @@ export class MaintainerManagersComponent implements OnInit {
     if (this.pos2 >= this.cant2) return;
     this.pos2++;
     this.db2 = this.managerStatus.slice((this.pos2 - 1) * 10, (this.pos2) * 10).sort((a: { ID_MANAGER: number; }, b: { ID_MANAGER: number; }) => a.ID_MANAGER - b.ID_MANAGER);
-    console.log(this.pos2)
   }
   previus2() {
     if (this.pos2 - 1 <= 0 || this.pos2 >= this.cant + 1) return;
