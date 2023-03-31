@@ -207,7 +207,7 @@ export class MaintainerEstablishmentComponent implements OnInit {
     this.db2 = this.establishmentStatus.slice((i * 10), (i + 1) * 10).sort((a: { ID_ESTABLISHMENT: number; }, b: { ID_ESTABLISHMENT: number; }) => a.ID_ESTABLISHMENT - b.ID_ESTABLISHMENT);
   }
   next2() {
-    if (this.pos2 >= this.cant) return;
+    if (this.pos2 >= this.cant2) return;
     this.pos2++;
     this.db2 = this.establishmentStatus.slice((this.pos2 - 1) * 10, (this.pos2) * 10).sort((a: { ID_ESTABLISHMENT: number; }, b: { ID_ESTABLISHMENT: number; }) => a.ID_ESTABLISHMENT - b.ID_ESTABLISHMENT);
   }

@@ -27,5 +27,7 @@ export class ManagerService {
     return this.http.get<any>(`${this.url}/${id}`);
   }
 
-
+  getAllMaterials(){
+    return this.http.get<any>(`${this.url}/allMaterials/`);
+  }
 }

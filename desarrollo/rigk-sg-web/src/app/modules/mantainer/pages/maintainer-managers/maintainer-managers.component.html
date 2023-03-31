@@ -5,14 +5,15 @@
         <li class="breadcrumb-item"><a href="#">Mantenedor Gestores</a></li>
     </ol>
 </nav>
-<div style="height: 50px;"></div>
+<div style="height: 30px;"></div>
+<h1>Gestores</h1>
 <div class="row mb-3">
     <div class="col-md-12">
         <label>Filtro:</label>
         <input type="text" class="form-control" placeholder="Filtro de búsqueda" (keyup)="filter($event.target)">
     </div>
 </div>
-<h1>Gestores</h1>
+
 <div class="table-responsive mb-4">
     <!-- inicio Consulta de Declaración -->
     <section>
@@ -121,14 +122,14 @@
                                 class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
                                 <thead>
                                     <tr class="text-center w-100">
-                                        <th>Gestor</th>
+                                        <th>Material</th>
                                         <th>Región</th>
                                         <th>Eliminar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr class="text-center w-100" *ngFor="let r of db2; let x = index">
-                                        <td>{{r.TYPE_MATERIAL}}</td>
+                                        <td>{{r.MATERIAL}}</td>
                                         <td>{{r.REGION}}</td>
                                         <td>
                                             <button type="button" class="btn btn-danger btn-sm rounded-pill"

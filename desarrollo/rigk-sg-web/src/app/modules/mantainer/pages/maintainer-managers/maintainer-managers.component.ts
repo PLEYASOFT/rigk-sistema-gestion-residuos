@@ -31,25 +31,7 @@ export class MaintainerManagersComponent implements OnInit {
     'Región de Magallanes'
   ];
 
-  listMateriales: any[] = [
-    'Papel',
-    'Papel Compuesto (cemento)',
-    'Caja Cartón',
-    'Papel/Cartón Otro',
-    'Envase Aluminio',
-    'Malla o Reja (IBC)',
-    'Envase Hojalata', 
-    'Metal Otro',
-    'Plástico Film Embalaje',
-    'Plástico Envases Rígidos (Incl. Tapas)',
-    'Plástico Sacos o Maxisacos',
-    'Plástico EPS (Poliestireno Expandido)',
-    'Plástico Zuncho',
-    'Plástico Otro',
-    'Caja de Madera',
-    'Pallet de Madera'
-    
-  ];
+  listMateriales: any[] = [];
 
   listBusiness: any[] = [];
   pos = 1;
@@ -77,7 +59,7 @@ export class MaintainerManagersComponent implements OnInit {
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
     this.getAllBusiness();
-
+    this.getMaterials();
     this.userForm = this.fb.group({
       MATERIAL: ["", [Validators.required]], // Campo requerido
       REGION: ["", [Validators.required]], // Campo requerido
@@ -90,6 +72,22 @@ export class MaintainerManagersComponent implements OnInit {
         this.listBusiness = resp.status;
         this.cant = Math.ceil(this.listBusiness.length / 10);
         this.db = this.listBusiness.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+      },
+      error: r => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          text: r.msg,
+          title: '¡Ups!'
+        });
+      }
+    });
+  }
+
+  getMaterials() {
+    this.managerService.getAllMaterials().subscribe({
+      next: resp => {
+        this.listMateriales = resp.status.map((material: { MATERIAL: any; }) => material.MATERIAL);
       },
       error: r => {
         Swal.close();
@@ -127,10 +125,17 @@ export class MaintainerManagersComponent implements OnInit {
     });
   }
 
-  addManager(id_business: any) {
+  getMaterialID(materialName: string) {
+    const material = this.listMateriales.find(m => m === materialName);
+    const index = this.listMateriales.indexOf(material);
+    const id = index >= 0 ? index + 1 : null; // sumar 1 al índice para obtener el ID correspondiente
+    return id;
+  }
 
+  addManager(id_business: any) {
     if (this.verificarEstablecimiento()) {
-      const { MATERIAL, REGION } = this.userForm.value;
+      const MATERIAL = this.getMaterialID(this.userForm.value.MATERIAL);
+      const { REGION } = this.userForm.value;
       this.managerStatus.push(id_business);
 
       this.managerService.addManager(MATERIAL, REGION, id_business).subscribe({
@@ -155,9 +160,9 @@ export class MaintainerManagersComponent implements OnInit {
       });
     }
 
-    else{
+    else {
       Swal.fire({
-        title: 'Gestor y Región ya se encuentran registrados',
+        title: 'Material y Región ya se encuentran registrados',
         text: '',
         icon: 'error'
       })
@@ -226,7 +231,7 @@ export class MaintainerManagersComponent implements OnInit {
     this.db2 = this.managerStatus.slice((i * 10), (i + 1) * 10).sort((a: { ID_MANAGER: number; }, b: { ID_MANAGER: number; }) => a.ID_MANAGER - b.ID_MANAGER);
   }
   next2() {
-    if (this.pos2 >= this.cant) return;
+    if (this.pos2 >= this.cant2) return;
     this.pos2++;
     this.db2 = this.managerStatus.slice((this.pos2 - 1) * 10, (this.pos2) * 10).sort((a: { ID_MANAGER: number; }, b: { ID_MANAGER: number; }) => a.ID_MANAGER - b.ID_MANAGER);
   }
@@ -253,7 +258,7 @@ export class MaintainerManagersComponent implements OnInit {
     const nombreEstablecimiento = MATERIAL.trim(); // eliminando espacios en blanco adicionales al inicio y al final de la cadena de texto
 
     for (let i = 0; i < this.managerStatus.length; i++) {
-      if (this.managerStatus[i].TYPE_MATERIAL.toLowerCase() === nombreEstablecimiento.toLowerCase() && this.managerStatus[i].REGION === REGION) {
+      if (this.managerStatus[i].MATERIAL.toLowerCase() === nombreEstablecimiento.toLowerCase() && this.managerStatus[i].REGION === REGION) {
         existe = true;
         break;
       }
@@ -268,11 +273,11 @@ export class MaintainerManagersComponent implements OnInit {
   filter(target: any) {
     const value = target.value?.toLowerCase();
     this.pos = 1;
-    const listIndex:any = []
-    if(target.value != ''){
+    const listIndex: any = []
+    if (target.value != '') {
       this.cant = 1;
-      this.db = this.listBusiness.filter(r=>{
-        if(r.NAME?.toLowerCase().indexOf(value) > -1 || r.CODE_BUSINESS?.toLowerCase().indexOf(value) > -1 || r.LOC_ADDRESS?.toLowerCase().indexOf(value) > -1) {
+      this.db = this.listBusiness.filter(r => {
+        if (r.NAME?.toLowerCase().indexOf(value) > -1 || r.CODE_BUSINESS?.toLowerCase().indexOf(value) > -1 || r.LOC_ADDRESS?.toLowerCase().indexOf(value) > -1) {
           listIndex.push(r);
         };
       });
@@ -282,17 +287,17 @@ export class MaintainerManagersComponent implements OnInit {
     }
     this.db = this.listBusiness.slice(0, 10);
     this.cant = Math.ceil(this.listBusiness.length / 10);
-    return this.db; 
+    return this.db;
   }
 
   filterForm(target: any) {
     const value = target.value?.toLowerCase();
     this.pos2 = 1;
-    const listIndex:any = []
-    if(target.value != ''){
+    const listIndex: any = []
+    if (target.value != '') {
       this.cant2 = 1;
-      this.db2 = this.managerStatus.filter((r: any)=>{
-        if(r.TYPE_MATERIAL?.toLowerCase().indexOf(value) > -1 || r.REGION?.toLowerCase().indexOf(value) > -1) {
+      this.db2 = this.managerStatus.filter((r: any) => {
+        if (r.MATERIAL?.toLowerCase().indexOf(value) > -1 || r.REGION?.toLowerCase().indexOf(value) > -1) {
           listIndex.push(r);
         };
       });
@@ -300,8 +305,8 @@ export class MaintainerManagersComponent implements OnInit {
       this.cant2 = Math.ceil(listIndex.length / 10);
       return this.db2;
     }
-    this.db2 = this.managerStatus.slice(0,10);
+    this.db2 = this.managerStatus.slice(0, 10);
     this.cant2 = Math.ceil(this.managerStatus.length / 10);
-    return this.db2;     
+    return this.db2;
   }
 }
