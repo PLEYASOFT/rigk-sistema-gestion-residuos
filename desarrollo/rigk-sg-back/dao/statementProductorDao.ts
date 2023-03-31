@@ -45,6 +45,9 @@ class statementProductorDao {
     }
     public async restApi_save(header: any, detail: any) {
         const { codigo_emp, year } = header;
+        if(year >= new Date().getFullYear()) {
+            return {'cod': 'E014', 'descr': `Solo se aceptan antes del año ${new Date().getFullYear()}`};
+        }
         const conn = mysqlcon.getConnection();
 
         const res_business: any = await conn?.execute("SELECT * FROM business WHERE CODE_BUSINESS = ?", [codigo_emp]).then((res) => res[0]).catch(error => { console.log(error); return undefined });
@@ -59,12 +62,6 @@ class statementProductorDao {
         if (res_declaretion.length > 0) {
             return {'cod': 'E011', 'descr': 'ya existe declaración envida para este año'};
         }
-        
-        const rates: any[] = await ratesDao.ratesID(year);
-        let id_header = -1;
-        const business = res_business[0].ID;
-        const resp: any = await conn?.execute("INSERT INTO header_statement_form(ID_BUSINESS,YEAR_STATEMENT,STATE,CREATED_BY) VALUES (?,?,1,?)", [business, year, header.created_by]).then(res => res[0]).catch(error => { console.log(error) });
-        id_header = resp.insertId;
 
         const { REC, RET, NREC } = detail;
         let types_A;
@@ -76,21 +73,22 @@ class statementProductorDao {
             for (let i = 0; i < types_A.length; i++) {
                 const {PNP,PP,ST} = REC[types_A[i]];
                 if(PNP) {
-                    const value = parseFloat(REC[types_A[i]].PNP.replace(',','.')).toString();
+                    const value = REC[types_A[i]].PNP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
+                        console.log(value)
                         return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
                     }
                 }
                 if(PP) {
-                    const value = parseFloat(REC[types_A[i]].PP.replace(',','.')).toString();
+                    const value = REC[types_A[i]].PP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
                         return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
                     }
                 }
                 if(ST) {
-                    const value = parseFloat(REC[types_A[i]].ST.replace(',','.')).toString();
+                    const value = REC[types_A[i]].ST;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
                         return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
@@ -103,21 +101,21 @@ class statementProductorDao {
             for (let i = 0; i < types_B.length; i++) {
                 const {PNP,PP,ST} = NREC[types_B[i]];
                 if(PNP) {
-                    const value = parseFloat(NREC[types_B[i]].PNP.replace(',','.')).toString();
+                    const value = NREC[types_B[i]].PNP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
                         return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
                     }
                 }
                 if(PP) {
-                    const value = parseFloat(NREC[types_B[i]].PP.replace(',','.')).toString();
+                    const value = NREC[types_B[i]].PP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
                         return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
                     }
                 }
                 if(ST) {
-                    const value = parseFloat(NREC[types_B[i]].ST.replace(',','.')).toString();
+                    const value = NREC[types_B[i]].ST;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
                         return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
@@ -130,21 +128,21 @@ class statementProductorDao {
             for (let i = 0; i < types_C.length; i++) {
                 const {PNP,PP,ST} = RET[types_C[i]];
                 if(PNP) {
-                    const value = parseFloat(RET[types_C[i]].PNP.replace(',','.')).toString();
+                    const value = RET[types_C[i]].PNP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
                         return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
                     }
                 }
                 if(PP) {
-                    const value = parseFloat(RET[types_C[i]].PP.replace(',','.')).toString();
+                    const value = RET[types_C[i]].PP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
                         return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
                     }
                 }
                 if(ST) {
-                    const value = parseFloat(RET[types_C[i]].ST.replace(',','.')).toString();
+                    const value = RET[types_C[i]].ST;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
                         return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
@@ -153,6 +151,11 @@ class statementProductorDao {
             }
         }
 
+        const rates: any[] = await ratesDao.ratesID(year);
+        let id_header = -1;
+        const business = res_business[0].ID;
+        const resp: any = await conn?.execute("INSERT INTO header_statement_form(ID_BUSINESS,YEAR_STATEMENT,STATE,CREATED_BY) VALUES (?,?,1,?)", [business, year, header.created_by]).then(res => res[0]).catch(error => { console.log(error) });
+        id_header = resp.insertId;
 
         if (REC) {
             types_A = Object.keys(REC);
