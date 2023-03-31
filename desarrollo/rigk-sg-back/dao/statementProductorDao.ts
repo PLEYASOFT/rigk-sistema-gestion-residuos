@@ -74,6 +74,89 @@ class statementProductorDao {
         if (REC) {
             types_A = Object.keys(REC);
             for (let i = 0; i < types_A.length; i++) {
+                const {PNP,PP,ST} = REC[types_A[i]];
+                if(PNP) {
+                    const value = parseFloat(REC[types_A[i]].PNP.replace(',','.')).toString();
+                    const pattern = /^[0-9]+(,[0-9]+)?$/;
+                    if (!pattern.test(value)) {
+                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                    }
+                }
+                if(PP) {
+                    const value = parseFloat(REC[types_A[i]].PP.replace(',','.')).toString();
+                    const pattern = /^[0-9]+(,[0-9]+)?$/;
+                    if (!pattern.test(value)) {
+                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                    }
+                }
+                if(ST) {
+                    const value = parseFloat(REC[types_A[i]].ST.replace(',','.')).toString();
+                    const pattern = /^[0-9]+(,[0-9]+)?$/;
+                    if (!pattern.test(value)) {
+                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                    }
+                }
+            }
+        }
+        if (NREC) {
+            types_B = Object.keys(NREC);
+            for (let i = 0; i < types_B.length; i++) {
+                const {PNP,PP,ST} = NREC[types_B[i]];
+                if(PNP) {
+                    const value = parseFloat(NREC[types_B[i]].PNP.replace(',','.')).toString();
+                    const pattern = /^[0-9]+(,[0-9]+)?$/;
+                    if (!pattern.test(value)) {
+                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                    }
+                }
+                if(PP) {
+                    const value = parseFloat(NREC[types_B[i]].PP.replace(',','.')).toString();
+                    const pattern = /^[0-9]+(,[0-9]+)?$/;
+                    if (!pattern.test(value)) {
+                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                    }
+                }
+                if(ST) {
+                    const value = parseFloat(NREC[types_B[i]].ST.replace(',','.')).toString();
+                    const pattern = /^[0-9]+(,[0-9]+)?$/;
+                    if (!pattern.test(value)) {
+                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                    }
+                }
+            }
+        }
+        if (RET) {
+            types_C = Object.keys(RET);
+            for (let i = 0; i < types_C.length; i++) {
+                const {PNP,PP,ST} = RET[types_C[i]];
+                if(PNP) {
+                    const value = parseFloat(RET[types_C[i]].PNP.replace(',','.')).toString();
+                    const pattern = /^[0-9]+(,[0-9]+)?$/;
+                    if (!pattern.test(value)) {
+                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                    }
+                }
+                if(PP) {
+                    const value = parseFloat(RET[types_C[i]].PP.replace(',','.')).toString();
+                    const pattern = /^[0-9]+(,[0-9]+)?$/;
+                    if (!pattern.test(value)) {
+                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                    }
+                }
+                if(ST) {
+                    const value = parseFloat(RET[types_C[i]].ST.replace(',','.')).toString();
+                    const pattern = /^[0-9]+(,[0-9]+)?$/;
+                    if (!pattern.test(value)) {
+                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                    }
+                }
+            }
+        }
+
+
+        if (REC) {
+            types_A = Object.keys(REC);
+            for (let i = 0; i < types_A.length; i++) {
                 const type = parseInt(types_A[i]);
                 const rate = (rates.find(r=>r.type == type))?.price || 0;
                 const {PNP,PP,ST} = REC[types_A[i]];
