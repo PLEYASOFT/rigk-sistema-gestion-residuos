@@ -1,4 +1,5 @@
 import mysqlcon from '../db';
+import ratesDao from '../dao/ratesDao';
 class statementProductorDao {
     public async getDeclaretionsByUser(user: string) {
         const conn = mysqlcon.getConnection();
@@ -41,6 +42,189 @@ class statementProductorDao {
 
         conn?.end();
         return { res_business };
+    }
+    public async restApi_save(header: any, detail: any) {
+        const { codigo_emp, year } = header;
+        const conn = mysqlcon.getConnection();
+
+        const res_business: any = await conn?.execute("SELECT * FROM business WHERE CODE_BUSINESS = ?", [codigo_emp]).then((res) => res[0]).catch(error => { console.log(error); return undefined });
+        if (res_business.length == 0) {
+            return {'cod': 'E013', 'descr': 'Empresa no existe'};
+        }
+        const res_business_user: any = await conn?.execute("SELECT * FROM user_business WHERE ID_USER = ? AND ID_BUSINESS=?", [header.created_by, res_business[0].ID]).then((res) => res[0]).catch(error => { console.log(error); return undefined });
+        if (res_business_user.length == 0) {
+            return {'cod': 'E010', 'descr': 'usuario no está asociado a empresa'};
+        }
+        const res_declaretion: any = await conn?.execute("SELECT * FROM header_statement_form WHERE ID_BUSINESS=? AND YEAR_STATEMENT=?", [res_business[0].ID, year]).then((res) => res[0]).catch(error => { console.log(error); return undefined });
+        if (res_declaretion.length > 0) {
+            return {'cod': 'E011', 'descr': 'ya existe declaración envida para este año'};
+        }
+        
+        const rates: any[] = await ratesDao.ratesID(year);
+        let id_header = -1;
+        const business = res_business[0].ID;
+        const resp: any = await conn?.execute("INSERT INTO header_statement_form(ID_BUSINESS,YEAR_STATEMENT,STATE,CREATED_BY) VALUES (?,?,1,?)", [business, year, header.created_by]).then(res => res[0]).catch(error => { console.log(error) });
+        id_header = resp.insertId;
+
+        const { REC, RET, NREC } = detail;
+        let types_A;
+        let types_B;
+        let types_C;
+
+        if (REC) {
+            types_A = Object.keys(REC);
+            for (let i = 0; i < types_A.length; i++) {
+                const {PNP,PP,ST} = REC[types_A[i]];
+                if(PNP) {
+                    const value = parseFloat(REC[types_A[i]].PNP.replace(',','.')).toString();
+                    const pattern = /^[0-9]+(,[0-9]+)?$/;
+                    if (!pattern.test(value)) {
+                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                    }
+                }
+                if(PP) {
+                    const value = parseFloat(REC[types_A[i]].PP.replace(',','.')).toString();
+                    const pattern = /^[0-9]+(,[0-9]+)?$/;
+                    if (!pattern.test(value)) {
+                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                    }
+                }
+                if(ST) {
+                    const value = parseFloat(REC[types_A[i]].ST.replace(',','.')).toString();
+                    const pattern = /^[0-9]+(,[0-9]+)?$/;
+                    if (!pattern.test(value)) {
+                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                    }
+                }
+            }
+        }
+        if (NREC) {
+            types_B = Object.keys(NREC);
+            for (let i = 0; i < types_B.length; i++) {
+                const {PNP,PP,ST} = NREC[types_B[i]];
+                if(PNP) {
+                    const value = parseFloat(NREC[types_B[i]].PNP.replace(',','.')).toString();
+                    const pattern = /^[0-9]+(,[0-9]+)?$/;
+                    if (!pattern.test(value)) {
+                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                    }
+                }
+                if(PP) {
+                    const value = parseFloat(NREC[types_B[i]].PP.replace(',','.')).toString();
+                    const pattern = /^[0-9]+(,[0-9]+)?$/;
+                    if (!pattern.test(value)) {
+                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                    }
+                }
+                if(ST) {
+                    const value = parseFloat(NREC[types_B[i]].ST.replace(',','.')).toString();
+                    const pattern = /^[0-9]+(,[0-9]+)?$/;
+                    if (!pattern.test(value)) {
+                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                    }
+                }
+            }
+        }
+        if (RET) {
+            types_C = Object.keys(RET);
+            for (let i = 0; i < types_C.length; i++) {
+                const {PNP,PP,ST} = RET[types_C[i]];
+                if(PNP) {
+                    const value = parseFloat(RET[types_C[i]].PNP.replace(',','.')).toString();
+                    const pattern = /^[0-9]+(,[0-9]+)?$/;
+                    if (!pattern.test(value)) {
+                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                    }
+                }
+                if(PP) {
+                    const value = parseFloat(RET[types_C[i]].PP.replace(',','.')).toString();
+                    const pattern = /^[0-9]+(,[0-9]+)?$/;
+                    if (!pattern.test(value)) {
+                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                    }
+                }
+                if(ST) {
+                    const value = parseFloat(RET[types_C[i]].ST.replace(',','.')).toString();
+                    const pattern = /^[0-9]+(,[0-9]+)?$/;
+                    if (!pattern.test(value)) {
+                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                    }
+                }
+            }
+        }
+
+
+        if (REC) {
+            types_A = Object.keys(REC);
+            for (let i = 0; i < types_A.length; i++) {
+                const type = parseInt(types_A[i]);
+                const rate = (rates.find(r=>r.type == type))?.price || 0;
+                const {PNP,PP,ST} = REC[types_A[i]];
+                if(PNP) {
+                    const value = parseFloat(REC[types_A[i]].PNP.replace(',','.'));
+                    const amount = rate * value;
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 0, 1, type, value, amount]).catch(err => console.log(err));
+                }
+                if(PP) {
+                    const value = parseFloat(REC[types_A[i]].PP.replace(',','.'));
+                    const amount = rate * value;
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 1, 1, type, value, amount]).catch(err => console.log(err));
+                }
+                if(ST) {
+                    const value = parseFloat(REC[types_A[i]].ST.replace(',','.'));
+                    const amount = rate * value;
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 2, 0, 1, type, value, amount]).catch(err => console.log(err));
+                }
+            }
+        }
+        if(NREC) {
+            types_B = Object.keys(NREC);
+            for (let i = 0; i < types_B.length; i++) {
+                const type = parseInt(types_B[i])
+                const rate = (rates.find(r=>r.type == 4))?.price || 0;
+                const {PNP,PP,ST} = NREC[types_B[i]];
+                if(PNP) {
+                    const value = parseFloat(NREC[types_B[i]].PNP.replace(',','.'));
+                    const amount = rate * value;
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 0, 2, type, value, amount]).catch(err => console.log(err));
+                }
+                if(PP) {
+                    const value = parseFloat(NREC[types_B[i]].PP.replace(',','.'));
+                    const amount = rate * value;
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 1, 2, type, value, amount]).catch(err => console.log(err));
+                }
+                if(ST) {
+                    const value = parseFloat(NREC[types_B[i]].ST.replace(',','.'));
+                    const amount = rate * value;
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 2, 0, 2, type, value, amount]).catch(err => console.log(err));
+                }
+            }
+        }
+        if(RET) {
+            types_C = Object.keys(RET);
+            for (let i = 0; i < types_C.length; i++) {
+                const type = parseInt(types_C[i])
+                const rate = 0;
+                const {PNP,PP,ST} = RET[types_C[i]];
+                if(PNP) {
+                    const value = parseFloat(RET[types_C[i]].PNP.replace(',','.'));
+                    const amount = rate * value;
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 0, 3, type, value, amount]).catch(err => console.log(err));
+                }
+                if(PP) {
+                    const value = parseFloat(RET[types_C[i]].PP.replace(',','.'));
+                    const amount = rate * value;
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 1, 3, type, value, amount]).catch(err => console.log(err));
+                }
+                if(ST) {
+                    const value = parseFloat(RET[types_C[i]].ST.replace(',','.'));
+                    const amount = rate * value;
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 2, 0, 3, type, value, amount]).catch(err => console.log(err));
+                }
+            }
+        }
+        return {'cod': 'I001', 'descr': 'declaracion ingresada'};
+
     }
     public async saveDeclaretion(header: any, detail: any[]) {
         const { id_business, year_statement, state, created_by } = header;
