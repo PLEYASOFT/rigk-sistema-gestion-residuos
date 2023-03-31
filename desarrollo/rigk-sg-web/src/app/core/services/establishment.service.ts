@@ -15,7 +15,6 @@ export class EstablishmentService {
   }
 
   addEstablishment(name:any, region:any, id_business:any){
-    console.log(name, region, id_business)
     return this.http.post<any>(`${this.url}/add/`, {name, region,id_business});
   }
 

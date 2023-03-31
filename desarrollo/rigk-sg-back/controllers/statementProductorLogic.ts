@@ -408,6 +408,17 @@ class StatementProductorLogic {
             });
         }
     }
+    public async respApiSaveStatement(req: any,res: Response) {
+        const {header, body} = req.body;
+        header.created_by = req['uid'];
+        try {
+            const response = await statementDao.restApi_save(header, body);
+            return res.json({response});
+        } catch (error) {
+            console.log(error);
+            return res.json({response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}});
+        }
+    }
 }
 export const convertWordToPDF = async (id: any, res: Response) => {
     const path = require('path');
