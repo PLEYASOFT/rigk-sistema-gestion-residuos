@@ -64,6 +64,19 @@ class ManagerLogic {
             });
         }
     }
+    async getManagersByMaterial(req: any, res: Response) {
+        const {type_material,region} = req.params;
+        try {
+            const material = await managerDao.getManagersByMaterial(type_material,region);
+            res.status(200).json({ status: material, data: {}, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
 }
 const managerLogic = new ManagerLogic();
 export default managerLogic;
