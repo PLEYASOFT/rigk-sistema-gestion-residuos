@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EstablishmentService } from '../../../../core/services/establishment.service';
 import { ConsumerService } from '../../../../core/services/consumer.service';
 import Swal from 'sweetalert2';
+import { ManagerService } from 'src/app/core/services/manager.service';
 @Component({
   selector: 'app-form',
   templateUrl: './form.component.html',
@@ -58,7 +59,8 @@ export class FormComponent implements OnInit {
   constructor(public establishmentService: EstablishmentService,
     public consumerService: ConsumerService,
     private router: Router,
-    private actived: ActivatedRoute,) {
+    private actived: ActivatedRoute,
+    private managerService: ManagerService) {
     this.actived.data.subscribe((r: any) => {
       if (r.show) {
         const id = this.actived.snapshot.params['id'];
