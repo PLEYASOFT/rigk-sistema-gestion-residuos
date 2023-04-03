@@ -76,22 +76,21 @@ class statementProductorDao {
                     const value = REC[types_A[i]].PNP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        console.log(value)
-                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
                     }
                 }
                 if(PP) {
                     const value = REC[types_A[i]].PP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
                     }
                 }
                 if(ST) {
                     const value = REC[types_A[i]].ST;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
                     }
                 }
             }
@@ -104,21 +103,21 @@ class statementProductorDao {
                     const value = NREC[types_B[i]].PNP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
                     }
                 }
                 if(PP) {
                     const value = NREC[types_B[i]].PP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
                     }
                 }
                 if(ST) {
                     const value = NREC[types_B[i]].ST;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
                     }
                 }
             }
@@ -131,21 +130,21 @@ class statementProductorDao {
                     const value = RET[types_C[i]].PNP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
                     }
                 }
                 if(PP) {
                     const value = RET[types_C[i]].PP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
                     }
                 }
                 if(ST) {
                     const value = RET[types_C[i]].ST;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
                     }
                 }
             }
