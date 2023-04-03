@@ -221,6 +221,7 @@ export class MaintainerEstablishmentComponent implements OnInit {
   }
 
   reset() {
+    this.pagTo2(0);
     this.userForm.reset();
     this.userForm.patchValue({
       REGION: ""
