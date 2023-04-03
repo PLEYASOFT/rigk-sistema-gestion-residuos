@@ -15,8 +15,8 @@
             <div class="col-md-5">
                 <p-multiSelect *ngIf="!disableAll" [options]="establishments" optionLabel="name"
                     [(ngModel)]="selectedEstablishment" optionValue="ID_ESTABLISHMENT" [selectionLimit]="1"
-                    defaultLabel="Seleccione Establecimiento"
-                    [selectedItemsLabel]="'{0} Empresas seleccionadas'"></p-multiSelect>
+                    defaultLabel="Seleccione Establecimiento" [selectedItemsLabel]="'{0} Empresas seleccionadas'"
+                    (onChange)="onEstablishmentChange($event)"></p-multiSelect>
                 <h4 *ngIf="disableAll">Establecimiento: {{establishment}}</h4>
             </div>
         </div>
@@ -59,9 +59,8 @@
                                 (change)="updateGestor(i,type.id,$event.target)">
                                 <option value="0" selected>Seleccione</option>
                                 <option value="1">Reciclaje Interno</option>
-                                <option value="2">Gestor 1</option>
-                                <option value="3">Gestor 2</option>
-                                <option value="4">Gestor 3</option>
+                                <option *ngFor="let manager of getManagersForMaterial(type.id)" [value]="manager">{{
+                                    manager }}</option>
                             </select>
                         </td>
                         <td *ngIf="type.id">

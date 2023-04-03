@@ -57,6 +57,16 @@ class EstablishmentDao {
         conn.end();
         return data;
     }
+
+    public async getEstablishmentByID(ID: any) {
+        const conn = mysqlcon.getConnection()!;
+        const establishment: any = await conn.query("SELECT * FROM establishment WHERE establishment.ID = ?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
+        if (establishment == null || establishment.length == 0) {
+            return false;
+        }
+        conn.end();
+        return establishment;
+    }
 }
 const establishmentDao = new EstablishmentDao();
 export default establishmentDao;
