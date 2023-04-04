@@ -3,6 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EstablishmentService } from '../../../../core/services/establishment.service';
 import { ConsumerService } from '../../../../core/services/consumer.service';
 import Swal from 'sweetalert2';
+import { ManagerService } from 'src/app/core/services/manager.service';
+import { forkJoin } from 'rxjs';
+import { map } from 'rxjs/operators';
 @Component({
   selector: 'app-form',
   templateUrl: './form.component.html',
@@ -50,6 +53,7 @@ export class FormComponent implements OnInit {
   establishments: any[] = [];
   selectedEstablishment: any = [];
   attached: any[] = [];
+  managers: any[] = [];
   id_business = "0";
   year_statement = 0;
   establishment = "";
@@ -58,7 +62,8 @@ export class FormComponent implements OnInit {
   constructor(public establishmentService: EstablishmentService,
     public consumerService: ConsumerService,
     private router: Router,
-    private actived: ActivatedRoute,) {
+    private actived: ActivatedRoute,
+    private managerService: ManagerService) {
     this.actived.data.subscribe((r: any) => {
       if (r.show) {
         const id = this.actived.snapshot.params['id'];
@@ -75,6 +80,40 @@ export class FormComponent implements OnInit {
   }
   ngOnInit(): void {
   }
+  getManagersForMaterial(materialId: number): any[] {
+    const managersForMaterial = this.managers.find(m => m.material === materialId)?.managers || [];
+    return managersForMaterial.map((manager: { BUSINESS_NAME: any; }) => manager.BUSINESS_NAME || 'Reciclaje Interno');
+  }
+  onEstablishmentChange(event: any) {
+    this.establishmentService.getEstablishmentByID(this.selectedEstablishment).subscribe( r =>{
+      if (r.status) {
+        this.fetchManagersForAllMaterials(r.status[0].REGION);
+      }
+      else{
+        this.managers = [];
+      }
+    })
+  }
+
+  fetchManagersForAllMaterials(region: any) {
+    // Crear un array de observables
+    const observables = this.materials
+      .filter(material => material.id !== undefined) // Filtrar los materiales con id definido
+      .map(material => {
+        return this.managerService.getManagersByMaterial(material.id, region).pipe(
+          map(managers => ({
+            material: material.id,
+            managers: managers.status
+          }))
+        );
+      });
+
+    // Ejecutar todas las consultas y obtener los resultados una vez que se completen
+    forkJoin(observables).subscribe(results => {
+      this.managers = results;
+    });
+  }
+
   loadForm(id: any) {
     Swal.fire({
       title: 'Cargando Datos',
