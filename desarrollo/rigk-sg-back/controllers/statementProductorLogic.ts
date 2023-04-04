@@ -413,10 +413,14 @@ class StatementProductorLogic {
         header.created_by = req['uid'];
         try {
             const response = await statementDao.restApi_save(header, body);
-            return res.json({response});
+            if(response.cod == "I001") {
+                return res.json({response});
+            } else {
+                return res.status(400).json({response});
+            }
         } catch (error) {
             console.log(error);
-            return res.json({response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}});
+            return res.status(400).json({response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}});
         }
     }
 }

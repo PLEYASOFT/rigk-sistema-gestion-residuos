@@ -45,6 +45,9 @@ class statementProductorDao {
     }
     public async restApi_save(header: any, detail: any) {
         const { codigo_emp, year } = header;
+        if(!codigo_emp || !year) {
+            return {'cod': 'E012', 'descr': `Son necesario parámetros en header`};
+        }
         if(year >= new Date().getFullYear()) {
             return {'cod': 'E014', 'descr': `Solo se aceptan antes del año ${new Date().getFullYear()}`};
         }
@@ -165,7 +168,7 @@ class statementProductorDao {
                 if(PNP) {
                     const value = parseFloat(REC[types_A[i]].PNP.replace(',','.'));
                     const amount = rate * value;
-                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 0, 1, type, value, amount]).catch(err => console.log(err));
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 2, 1, type, value, amount]).catch(err => console.log(err));
                 }
                 if(PP) {
                     const value = parseFloat(REC[types_A[i]].PP.replace(',','.'));
@@ -175,7 +178,7 @@ class statementProductorDao {
                 if(ST) {
                     const value = parseFloat(REC[types_A[i]].ST.replace(',','.'));
                     const amount = rate * value;
-                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 2, 0, 1, type, value, amount]).catch(err => console.log(err));
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 2, 1, 1, type, value, amount]).catch(err => console.log(err));
                 }
             }
         }
@@ -188,7 +191,7 @@ class statementProductorDao {
                 if(PNP) {
                     const value = parseFloat(NREC[types_B[i]].PNP.replace(',','.'));
                     const amount = rate * value;
-                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 0, 2, type, value, amount]).catch(err => console.log(err));
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 2, 2, type, value, amount]).catch(err => console.log(err));
                 }
                 if(PP) {
                     const value = parseFloat(NREC[types_B[i]].PP.replace(',','.'));
@@ -198,7 +201,7 @@ class statementProductorDao {
                 if(ST) {
                     const value = parseFloat(NREC[types_B[i]].ST.replace(',','.'));
                     const amount = rate * value;
-                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 2, 0, 2, type, value, amount]).catch(err => console.log(err));
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 2, 1, 2, type, value, amount]).catch(err => console.log(err));
                 }
             }
         }
@@ -211,7 +214,7 @@ class statementProductorDao {
                 if(PNP) {
                     const value = parseFloat(RET[types_C[i]].PNP.replace(',','.'));
                     const amount = rate * value;
-                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 0, 3, type, value, amount]).catch(err => console.log(err));
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 2, 3, type, value, amount]).catch(err => console.log(err));
                 }
                 if(PP) {
                     const value = parseFloat(RET[types_C[i]].PP.replace(',','.'));
@@ -221,7 +224,7 @@ class statementProductorDao {
                 if(ST) {
                     const value = parseFloat(RET[types_C[i]].ST.replace(',','.'));
                     const amount = rate * value;
-                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 2, 0, 3, type, value, amount]).catch(err => console.log(err));
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 2, 1, 3, type, value, amount]).catch(err => console.log(err));
                 }
             }
         }
