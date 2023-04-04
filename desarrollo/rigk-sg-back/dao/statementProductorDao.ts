@@ -46,7 +46,7 @@ class statementProductorDao {
     public async restApi_save(header: any, detail: any) {
         const { codigo_emp, year } = header;
         if(!codigo_emp || !year) {
-            return {'cod': 'E012', 'descr': `Son necesario parámetros en header`};
+            return {'cod': 'E012', 'descr': `Solo se aceptan antes del año ${new Date().getFullYear()}`};
         }
         if(year >= new Date().getFullYear()) {
             return {'cod': 'E014', 'descr': `Solo se aceptan antes del año ${new Date().getFullYear()}`};
