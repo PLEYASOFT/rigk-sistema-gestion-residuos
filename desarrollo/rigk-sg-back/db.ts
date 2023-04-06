@@ -1,7 +1,9 @@
 import mysql from 'mysql2/promise';
 import { env } from 'process';
 import dotenv from 'dotenv';
+
 dotenv.config();
+
 class DBConnection {
     constructor() {
         this.getConnection();
@@ -14,10 +16,13 @@ class DBConnection {
                 database: process.env.DATABASE,
                 user: process.env.USERDB,
                 password: process.env.PASSWORD,
+                port: Number(process.env.PORT)
             });
         } catch (error) {
             console.log("El error es: ", error);
+            throw error;
         }
     };
 }
+
 export default new DBConnection();

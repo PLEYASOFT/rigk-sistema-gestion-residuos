@@ -30,4 +30,8 @@ export class ManagerService {
   getAllMaterials(){
     return this.http.get<any>(`${this.url}/allMaterials/`);
   }
+
+  getManagersByMaterial(type_material: any, region: string) {
+    return this.http.get<any>(`${this.url}/type_material/${type_material}/region/${region}`);
+  }
 }

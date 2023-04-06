@@ -45,6 +45,9 @@ class statementProductorDao {
     }
     public async restApi_save(header: any, detail: any) {
         const { codigo_emp, year } = header;
+        if(!codigo_emp || !year) {
+            return {'cod': 'E012', 'descr': `Solo se aceptan antes del año ${new Date().getFullYear()}`};
+        }
         if(year >= new Date().getFullYear()) {
             return {'cod': 'E014', 'descr': `Solo se aceptan antes del año ${new Date().getFullYear()}`};
         }
@@ -76,22 +79,21 @@ class statementProductorDao {
                     const value = REC[types_A[i]].PNP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        console.log(value)
-                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
                     }
                 }
                 if(PP) {
                     const value = REC[types_A[i]].PP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
                     }
                 }
                 if(ST) {
                     const value = REC[types_A[i]].ST;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
                     }
                 }
             }
@@ -104,21 +106,21 @@ class statementProductorDao {
                     const value = NREC[types_B[i]].PNP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
                     }
                 }
                 if(PP) {
                     const value = NREC[types_B[i]].PP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
                     }
                 }
                 if(ST) {
                     const value = NREC[types_B[i]].ST;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
                     }
                 }
             }
@@ -131,21 +133,21 @@ class statementProductorDao {
                     const value = RET[types_C[i]].PNP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
                     }
                 }
                 if(PP) {
                     const value = RET[types_C[i]].PP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
                     }
                 }
                 if(ST) {
                     const value = RET[types_C[i]].ST;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}};
+                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
                     }
                 }
             }
@@ -166,7 +168,7 @@ class statementProductorDao {
                 if(PNP) {
                     const value = parseFloat(REC[types_A[i]].PNP.replace(',','.'));
                     const amount = rate * value;
-                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 0, 1, type, value, amount]).catch(err => console.log(err));
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 2, 1, type, value, amount]).catch(err => console.log(err));
                 }
                 if(PP) {
                     const value = parseFloat(REC[types_A[i]].PP.replace(',','.'));
@@ -176,7 +178,7 @@ class statementProductorDao {
                 if(ST) {
                     const value = parseFloat(REC[types_A[i]].ST.replace(',','.'));
                     const amount = rate * value;
-                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 2, 0, 1, type, value, amount]).catch(err => console.log(err));
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 2, 1, 1, type, value, amount]).catch(err => console.log(err));
                 }
             }
         }
@@ -189,7 +191,7 @@ class statementProductorDao {
                 if(PNP) {
                     const value = parseFloat(NREC[types_B[i]].PNP.replace(',','.'));
                     const amount = rate * value;
-                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 0, 2, type, value, amount]).catch(err => console.log(err));
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 2, 2, type, value, amount]).catch(err => console.log(err));
                 }
                 if(PP) {
                     const value = parseFloat(NREC[types_B[i]].PP.replace(',','.'));
@@ -199,7 +201,7 @@ class statementProductorDao {
                 if(ST) {
                     const value = parseFloat(NREC[types_B[i]].ST.replace(',','.'));
                     const amount = rate * value;
-                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 2, 0, 2, type, value, amount]).catch(err => console.log(err));
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 2, 1, 2, type, value, amount]).catch(err => console.log(err));
                 }
             }
         }
@@ -212,7 +214,7 @@ class statementProductorDao {
                 if(PNP) {
                     const value = parseFloat(RET[types_C[i]].PNP.replace(',','.'));
                     const amount = rate * value;
-                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 0, 3, type, value, amount]).catch(err => console.log(err));
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 2, 3, type, value, amount]).catch(err => console.log(err));
                 }
                 if(PP) {
                     const value = parseFloat(RET[types_C[i]].PP.replace(',','.'));
@@ -222,7 +224,7 @@ class statementProductorDao {
                 if(ST) {
                     const value = parseFloat(RET[types_C[i]].ST.replace(',','.'));
                     const amount = rate * value;
-                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 2, 0, 3, type, value, amount]).catch(err => console.log(err));
+                    await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 2, 1, 3, type, value, amount]).catch(err => console.log(err));
                 }
             }
         }
