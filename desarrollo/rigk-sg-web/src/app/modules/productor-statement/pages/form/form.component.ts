@@ -31,6 +31,7 @@ export class FormComponent implements OnInit, OnDestroy {
 
   isSubmited = false;
   isEdited = false;
+  _saving = false;
 
   id_business: number = 0;
   name_business: string = "";
@@ -85,6 +86,7 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   saveDraft() {
+    this._saving = true;
     const _continue = sessionStorage.getItem('saving') || false;
     const edited = sessionStorage.getItem('isEdited') || false;
     this.id_statement = parseInt(sessionStorage.getItem('id_statement')!) || null;
@@ -129,6 +131,7 @@ export class FormComponent implements OnInit, OnDestroy {
             sessionStorage.setItem('saving', 'true');
             this.productorService.saveForm({ header, detail }).subscribe(r => {
               this.hour = new Date();
+              this._saving = false;
               if (r.status) {
                 sessionStorage.setItem('id_statement', r.data);
                 Swal.close()
@@ -140,6 +143,7 @@ export class FormComponent implements OnInit, OnDestroy {
             if (_continue) return;
             this.productorService.updateValuesStatement(this.id_statement, detail, header).subscribe(r => {
               if (r.status) {
+                this._saving = false;
                 this.hour = new Date();
                 Swal.close()
               }
@@ -157,6 +161,7 @@ export class FormComponent implements OnInit, OnDestroy {
       if (this.id_statement == null && !_continue) {
         sessionStorage.setItem('saving', 'true');
         this.productorService.saveForm({ header, detail }).subscribe(r => {
+          this._saving = false;
           this.hour = new Date();
           if (r.status) {
             sessionStorage.setItem('id_statement', r.data);
@@ -168,6 +173,7 @@ export class FormComponent implements OnInit, OnDestroy {
         if (_continue) return;
         this.productorService.updateValuesStatement(this.id_statement, detail, header).subscribe(r => {
           if (r.status) {
+            this._saving = false;
             this.hour = new Date();
           }
         });

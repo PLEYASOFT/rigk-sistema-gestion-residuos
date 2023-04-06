@@ -17,6 +17,7 @@ router.get('/pdf/:id/year/:year', [validarJWT], statementProductorLogic.generate
 router.get('/year/:year', [validarJWT], statementProductorLogic.getAllStatementByYear);
 router.get('/detail/:id_header', [validarJWT], statementProductorLogic.getDetailByIdHeader);
 router.post('/', [validarJWT, verifyRolProductor, verifyParametersProductorForm], statementProductorLogic.saveForm);
+router.post('/restapi', [validarJWT, verifyRolProductor], statementProductorLogic.respApiSaveStatement);
 router.put('/:id/state/:state', [validarJWT, verifyRolProductor, verifyParametersUpdateStateForm], statementProductorLogic.updateStateForm);
 router.put('/:id', [validarJWT, verifyRolProductor], statementProductorLogic.updateValuesForm);
 router.all('**', (req: Request, res: Response) => { res.status(500).json({ status: false, msg: "Ruta incorrecta" }) });
