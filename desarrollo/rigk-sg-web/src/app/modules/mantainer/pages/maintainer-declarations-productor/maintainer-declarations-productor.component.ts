@@ -207,7 +207,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     public productorService: ProductorService,
     public ratesService: RatesTsService) {
     const currentYear = new Date().getFullYear();
-    for (let year = 2000; year <= currentYear; year++) {
+    for (let year = 2022; year <= currentYear; year++) {
       this.years.push(year);
     }
   }
@@ -409,7 +409,6 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
   setDeclaration(datos: any) {
     const { RECYCLABILITY, TYPE_RESIDUE, HAZARD, PRECEDENCE, VALUE, AMOUNT } = datos;
 
-    console.log(TYPE_RESIDUE)
     if (RECYCLABILITY == 1) {
       TYPE_RESIDUE == 1
         ? HAZARD == 1
