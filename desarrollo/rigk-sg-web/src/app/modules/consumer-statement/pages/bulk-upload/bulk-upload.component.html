@@ -1,0 +1,44 @@
+<div class="container mt-4">
+    <!-- inicio breadcrumbs -->
+    <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Carga Masiva</li>
+        </ol>
+    </nav>
+    <!-- fin breadcrumbs -->
+
+    <!-- inicio Consulta de declaración -->
+    <section class="declaracion">
+        <h1>Carga Masiva</h1>
+        <div class="d-sm-flex justify-content-between mb-3 mb-md-0">
+        </div>
+
+        <div class="box box-form mb-4">
+            <div class="row align-items-end">
+                <div class="col-12 col-xl-4 mb-3 mb-xl-0">
+                    <label class="form-label">Empresa:</label>
+                    <div class="input-group">
+                        <select id="f_name" class="form-select">
+                            <option value="-1" selected>Seleccionar Empresa</option>
+                            <option *ngFor="let b of dbBusiness" value="{{b.ID}}">{{b.NAME}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-3 mb-5 mb-xl-0">
+                    <label class="form-label">Año:</label>
+                    <div class="input-group">
+                        <input id="inp_year" type="number" placeholder="AÑO Declaración" class="form-control">
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 mb-3 mb-xl-0">
+                    <div class="row">
+                        <div class="col-6">
+                            <button class="btn btn-primary col-12" (click)="downloadExcel()">Descargar Excel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

@@ -6,6 +6,7 @@ import { FormComponent } from './pages/form/form.component';
 import { HomeComponent } from './pages/home/home.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { StatementsComponent } from './pages/statements/statements.component';
+import { BulkUploadComponent } from './pages/bulk-upload/bulk-upload.component';
 
 const routes: Routes = [{
     path: '',
@@ -13,6 +14,7 @@ const routes: Routes = [{
     children: 
     [
       { path: 'home', component: HomeComponent },
+      { path: 'bulk-upload', component: BulkUploadComponent },
       { path: 'form', component: FormComponent, data: {show:false} },
       { path: 'form/:id', component: FormComponent, data:{show: true} },
       { path: 'profile', component: ProfileComponent },

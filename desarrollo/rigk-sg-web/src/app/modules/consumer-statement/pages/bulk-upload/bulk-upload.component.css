@@ -1,0 +1,21 @@
+:host
+{
+    width: 90% !important;
+    padding: 1%;
+}
+
+.circle {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+  }
+  
+.green-circle {
+    background-color: green;
+}
+  
+.red-circle {
+    background-color: red;
+}

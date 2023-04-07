@@ -28,6 +28,19 @@ class BusinessLogic {
             });
         }
     }
+    async getBusinessByUser(req: any, res: Response) {
+        const { uid } = req;
+        try {
+            const business = await businessDao.getBusinessByUser(uid);
+            res.status(200).json({ status: true, data: business, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
     async getAllBusiness(req: any, res: Response) {
         try {
             const business = await businessDao.getAllBusiness();

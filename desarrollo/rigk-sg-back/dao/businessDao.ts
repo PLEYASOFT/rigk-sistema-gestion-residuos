@@ -19,6 +19,15 @@ class BusinessDao {
         conn.end();
         return business;
     }
+    public async getBusinessByUser(id: string) {
+        const conn = mysqlcon.getConnection()!;
+        const business: any = await conn.query("SELECT business.ID, business.NAME FROM business INNER JOIN user_business ON user_business.ID_BUSINESS = business.ID WHERE user_business.ID_USER = ?", [id]).then(res => res[0]).catch(erro => undefined);
+        if (business == null || business.length == 0) {
+            return false;
+        }
+        conn.end();
+        return business;
+    }
     public async getAllBusiness() {
         const conn = mysqlcon.getConnection()!;
         const business: any = await conn.query("SELECT * FROM business").then(res => res[0]).catch(erro => undefined);

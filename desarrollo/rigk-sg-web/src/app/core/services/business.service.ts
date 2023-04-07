@@ -17,6 +17,9 @@ export class BusinessService {
   getBusiness(id: string) {
     return this.http.get<any>(`${this.url}/business/${id}`);
   }
+  get getBusinessByUser() {
+    return this.http.get<any>(`${this.url}/user`);
+  }
 
   getAllBusiness(){
     return this.http.get<any>(`${this.url}/business/`);
