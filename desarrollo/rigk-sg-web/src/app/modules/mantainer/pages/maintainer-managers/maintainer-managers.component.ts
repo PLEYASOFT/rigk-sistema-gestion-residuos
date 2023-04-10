@@ -32,7 +32,8 @@ export class MaintainerManagersComponent implements OnInit {
   ];
 
   listMateriales: any[] = [];
-
+  filteredList: any[] = [];
+  filteredForm: any[] = [];
   listBusiness: any[] = [];
   pos = 1;
   db: any[] = [];
@@ -70,6 +71,7 @@ export class MaintainerManagersComponent implements OnInit {
     this.businesService.getAllBusiness().subscribe({
       next: resp => {
         this.listBusiness = resp.status;
+        this.filteredList = resp.status;
         this.cant = Math.ceil(this.listBusiness.length / 10);
         this.db = this.listBusiness.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
       },
@@ -105,6 +107,7 @@ export class MaintainerManagersComponent implements OnInit {
       next: resp => {
         if (resp.status) {
           this.managerStatus = resp.status;
+          this.filteredForm = resp.status;
           this.cant2 = Math.ceil(this.managerStatus.length / 10);
           this.db2 = this.managerStatus.slice(0, 10).sort((a: { ID_MANAGER: number; }, b: { ID_MANAGER: number; }) => b.ID_MANAGER - a.ID_MANAGER);
         }
@@ -210,17 +213,17 @@ export class MaintainerManagersComponent implements OnInit {
 
   pagTo(i: number) {
     this.pos = i + 1;
-    this.db = this.listBusiness.slice((i * 10), (i + 1) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+    this.db = this.filteredList.slice((i * 10), (i + 1) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
   }
   next() {
     if (this.pos >= this.cant) return;
     this.pos++;
-    this.db = this.listBusiness.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+    this.db = this.filteredList.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
   }
   previus() {
     if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
     this.pos = this.pos - 1;
-    this.db = this.listBusiness.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+    this.db = this.filteredList.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
   }
   setArrayFromNumber() {
     return new Array(this.cant);
@@ -228,17 +231,17 @@ export class MaintainerManagersComponent implements OnInit {
 
   pagTo2(i: number) {
     this.pos2 = i + 1;
-    this.db2 = this.managerStatus.slice((i * 10), (i + 1) * 10).sort((a: { ID_MANAGER: number; }, b: { ID_MANAGER: number; }) => a.ID_MANAGER - b.ID_MANAGER);
+    this.db2 = this.filteredForm.slice((i * 10), (i + 1) * 10).sort((a: { ID_MANAGER: number; }, b: { ID_MANAGER: number; }) => a.ID_MANAGER - b.ID_MANAGER);
   }
   next2() {
     if (this.pos2 >= this.cant2) return;
     this.pos2++;
-    this.db2 = this.managerStatus.slice((this.pos2 - 1) * 10, (this.pos2) * 10).sort((a: { ID_MANAGER: number; }, b: { ID_MANAGER: number; }) => a.ID_MANAGER - b.ID_MANAGER);
+    this.db2 = this.filteredForm.slice((this.pos2 - 1) * 10, (this.pos2) * 10).sort((a: { ID_MANAGER: number; }, b: { ID_MANAGER: number; }) => a.ID_MANAGER - b.ID_MANAGER);
   }
   previus2() {
-    if (this.pos2 - 1 <= 0 || this.pos2 >= this.cant + 1) return;
+    if (this.pos2 - 1 <= 0 || this.pos2 >= this.cant2 + 1) return;
     this.pos2 = this.pos2 - 1;
-    this.db2 = this.managerStatus.slice((this.pos2 - 1) * 10, (this.pos2) * 10).sort((a: { ID_MANAGER: number; }, b: { ID_MANAGER: number; }) => a.ID_MANAGER - b.ID_MANAGER);
+    this.db2 = this.filteredForm.slice((this.pos2 - 1) * 10, (this.pos2) * 10).sort((a: { ID_MANAGER: number; }, b: { ID_MANAGER: number; }) => a.ID_MANAGER - b.ID_MANAGER);
   }
   setArrayFromNumber2() {
     return new Array(this.cant2);
@@ -281,11 +284,13 @@ export class MaintainerManagersComponent implements OnInit {
         if (r.NAME?.toLowerCase().indexOf(value) > -1 || r.CODE_BUSINESS?.toLowerCase().indexOf(value) > -1 || r.LOC_ADDRESS?.toLowerCase().indexOf(value) > -1) {
           listIndex.push(r);
         };
-      });
+      })
+      this.filteredList = listIndex;
       this.db = listIndex.slice(0, 10);
       this.cant = Math.ceil(listIndex.length / 10);
       return this.db;
     }
+    this.filteredList = this.listBusiness;
     this.db = this.listBusiness.slice(0, 10);
     this.cant = Math.ceil(this.listBusiness.length / 10);
     return this.db;
@@ -302,10 +307,12 @@ export class MaintainerManagersComponent implements OnInit {
           listIndex.push(r);
         };
       });
+      this.filteredForm = listIndex;
       this.db2 = listIndex.slice(0, 10);
       this.cant2 = Math.ceil(listIndex.length / 10);
       return this.db2;
     }
+    this.filteredForm = this.managerStatus;
     this.db2 = this.managerStatus.slice(0, 10);
     this.cant2 = Math.ceil(this.managerStatus.length / 10);
     return this.db2;

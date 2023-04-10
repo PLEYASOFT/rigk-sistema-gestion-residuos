@@ -320,31 +320,31 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
               'Ajuste Papel/Cartón Reciclable UF': this.setFormato(this.Ajuste_PapelCarton_Reciclable_UF), 'Ajuste Metal Reciclable UF': this.setFormato(this.Ajuste_Metal_Reciclable_UF),
               'Ajuste Plástico Reciclable UF': this.setFormato(this.Ajuste_Plastico_Reciclable_UF), 'Ajuste No Reciclables UF': this.setFormato(this.Ajuste_No_Reciclables_UF),
               'TOTAL Ajuste UF': this.setFormato(this.Total_Ajuste_Uf), 'Papel/cartón Rec UF TOTAL': this.setFormato(this.PapelCarton_Rec_Uf_Corregido), 'Metal Rec UF TOTAL': this.setFormato(this.Metal_Rec_Uf_Corregido), 'Plastico Rec UF TOTAL': this.setFormato(this.Plastico_Rec_Uf_Corregido), 'NR UF TOTAL': this.setFormato(this.NR_Uf_Corregido), 'Total corregido (UF)': this.setFormato(this.TotalCorregido),
-              'Papel/cartón Neto CLP': this.setFormato(this.PapelCarton_Neto),'Metal Rec UF Neto CLP': this.setFormato(this.Metal_Neto),'Plastico Rec UF Neto CLP': this.setFormato(this.Plastico_Neto),'NR UF Neto CLP': this.setFormato(this.NR_Neto),'Total Neto (CLP)': this.setFormato(this.TotalBruto),
-              'Papel/cartón Bruto CLP': this.setFormato(this.PapelCarton_Bruto),'Metal Rec UF Bruto CLP': this.setFormato(this.Metal_Bruto),'Plastico Rec UF Bruto CLP': this.setFormato(this.Plastico_Bruto),'NR UF Bruto CLP': this.setFormato(this.NR_Bruto),'Total Bruto (CLP) + IVA': this.setFormato(this.TotalBruto_IVA)
+              'Papel/cartón Neto CLP': this.setFormato(this.PapelCarton_Neto), 'Metal Rec UF Neto CLP': this.setFormato(this.Metal_Neto), 'Plastico Rec UF Neto CLP': this.setFormato(this.Plastico_Neto), 'NR UF Neto CLP': this.setFormato(this.NR_Neto), 'Total Neto (CLP)': this.setFormato(this.TotalBruto),
+              'Papel/cartón Bruto CLP': this.setFormato(this.PapelCarton_Bruto), 'Metal Rec UF Bruto CLP': this.setFormato(this.Metal_Bruto), 'Plastico Rec UF Bruto CLP': this.setFormato(this.Plastico_Bruto), 'NR UF Bruto CLP': this.setFormato(this.NR_Bruto), 'Total Bruto (CLP) + IVA': this.setFormato(this.TotalBruto_IVA)
             });
           }
           else {
             this.datos.push({
               'ID empresa': statement.CODE_BUSINESS, 'Nombre empresa': statement.NAME, 'Año declaración': y.toString(), 'Estado declaración': 'Borrador',
-              'Fecha de envío': 'NA', 'Usuario': user.data.statements[0].FIRST_NAME + ' ' + user.data.statements[0].LAST_NAME, 'R. Papel/cartón NP':'',
+              'Fecha de envío': 'NA', 'Usuario': user.data.statements[0].FIRST_NAME + ' ' + user.data.statements[0].LAST_NAME, 'R. Papel/cartón NP': '',
               'R. Papel/cartón P': '', 'R. Papel/cartón ST': '', 'R. Papel/cartón TOTAL': '', 'R. Metal NP': '', 'R. Metal P': '', 'R. Metal ST': '', 'R. Metal TOTAL': '',
-              'R. Plástico NP':'', 'R. Plástico P':'', 'R. Plástico ST':'', 'R. Plástico TOTAL':'', 'R. Madera NP':'', 'R. Madera P':'', 'R. Madera ST':'', 'R. Madera TOTAL':'',
-              'R. Total Ton':'', 'R. Total UF':'', 'NR. Papel/cartón NP':'', 'NR. Papel/cartón P':'', 'NR. Papel/cartón ST':'', 'NR. Papel/cartón TOTAL':'',
-              'NR. Metal NP':'', 'NR. Metal P':'', 'NR. Metal ST':'', 'NR. Metal TOTAL':'', 'NR. Plástico NP':'', 'NR. Plástico P':'', 'NR. Plástico ST':'', 'NR. Plástico TOTAL':'',
-              'NR. Madera NP':'', 'NR. Madera P':'', 'NR. Madera ST':'', 'NR. Madera TOTAL':'', 'NR. Compuestos NP':'', 'NR. Compuestos P':'', 'NR. Compuestos ST':'', 'NR. Compuestos TOTAL':'',
-              'NR. Total Ton':'', 'NR. Total UF':'', 'RET. Papel/cartón NP':'', 'RET. Papel/cartón P':'', 'RET. Papel/cartón ST':'', 'RET. Papel/cartón TOTAL':'',
-              'RET. Metal NP':'', 'RET. Metal P':'', 'RET. Metal ST':'', 'RET. Metal TOTAL':'', 'RET. Plástico NP':'', 'RET. Plástico P':'', 'RET. Plástico ST':'', 'RET. Plástico TOTAL':'',
-              'RET. Madera NP':'', 'RET. Madera P':'', 'RET. Madera ST':'', 'RET. Madera TOTAL':'', 'RET. Total Ton':'', 'RET. Total UF':'',
-              'EyE Papel/cartón Rec':'', 'EyE Metal Rec':'', 'EyE Plastico Rec':'', 'EyE NR':'', 'EyE Ret':'', 'TOTAL EyE':'',
-              'Papel/cartón Rec UF':'', 'Metal Rec UF':'', 'Plastico Rec UF':'', 'NR UF':'', 'TOTAL UF':'', 'Ajuste Papel/Cartón Reciclable Ton':'', 'Ajuste Metal Reciclable Ton':'',
-              'Ajuste Plástico Reciclable Ton':'', 'Ajuste No Reciclables Ton':'', 'Ajuste Retornables Ton':'', 'TOTAL Ajuste':'',
-              'EyE Papel/cartón Rec TOTAL':'', 'EyE Metal Rec TOTAL':'', 'EyE Plastico Rec TOTAL':'', 'EyE NR TOTAL':'', 'EyE Ret TOTAL':'', 'TOTAL PESO':'',
-              'Ajuste Papel/Cartón Reciclable UF':'', 'Ajuste Metal Reciclable UF':'',
-              'Ajuste Plástico Reciclable UF':'', 'Ajuste No Reciclables UF':'',
-              'TOTAL Ajuste UF':'', 'Papel/cartón Rec UF TOTAL':'', 'Metal Rec UF TOTAL':'', 'Plastico Rec UF TOTAL':'', 'NR UF TOTAL':'', 'Total corregido (UF)':'',
-              'Papel/cartón Neto CLP':'','Metal Rec UF Neto CLP':'','Plastico Rec UF Neto CLP':'','NR UF Neto CLP':'','Total Neto (CLP)':'',
-              'Papel/cartón Bruto CLP':'','Metal Rec UF Bruto CLP':'','Plastico Rec UF Bruto CLP':'','NR UF Bruto CLP':'','Total Bruto (CLP) + IVA':''
+              'R. Plástico NP': '', 'R. Plástico P': '', 'R. Plástico ST': '', 'R. Plástico TOTAL': '', 'R. Madera NP': '', 'R. Madera P': '', 'R. Madera ST': '', 'R. Madera TOTAL': '',
+              'R. Total Ton': '', 'R. Total UF': '', 'NR. Papel/cartón NP': '', 'NR. Papel/cartón P': '', 'NR. Papel/cartón ST': '', 'NR. Papel/cartón TOTAL': '',
+              'NR. Metal NP': '', 'NR. Metal P': '', 'NR. Metal ST': '', 'NR. Metal TOTAL': '', 'NR. Plástico NP': '', 'NR. Plástico P': '', 'NR. Plástico ST': '', 'NR. Plástico TOTAL': '',
+              'NR. Madera NP': '', 'NR. Madera P': '', 'NR. Madera ST': '', 'NR. Madera TOTAL': '', 'NR. Compuestos NP': '', 'NR. Compuestos P': '', 'NR. Compuestos ST': '', 'NR. Compuestos TOTAL': '',
+              'NR. Total Ton': '', 'NR. Total UF': '', 'RET. Papel/cartón NP': '', 'RET. Papel/cartón P': '', 'RET. Papel/cartón ST': '', 'RET. Papel/cartón TOTAL': '',
+              'RET. Metal NP': '', 'RET. Metal P': '', 'RET. Metal ST': '', 'RET. Metal TOTAL': '', 'RET. Plástico NP': '', 'RET. Plástico P': '', 'RET. Plástico ST': '', 'RET. Plástico TOTAL': '',
+              'RET. Madera NP': '', 'RET. Madera P': '', 'RET. Madera ST': '', 'RET. Madera TOTAL': '', 'RET. Total Ton': '', 'RET. Total UF': '',
+              'EyE Papel/cartón Rec': '', 'EyE Metal Rec': '', 'EyE Plastico Rec': '', 'EyE NR': '', 'EyE Ret': '', 'TOTAL EyE': '',
+              'Papel/cartón Rec UF': '', 'Metal Rec UF': '', 'Plastico Rec UF': '', 'NR UF': '', 'TOTAL UF': '', 'Ajuste Papel/Cartón Reciclable Ton': '', 'Ajuste Metal Reciclable Ton': '',
+              'Ajuste Plástico Reciclable Ton': '', 'Ajuste No Reciclables Ton': '', 'Ajuste Retornables Ton': '', 'TOTAL Ajuste': '',
+              'EyE Papel/cartón Rec TOTAL': '', 'EyE Metal Rec TOTAL': '', 'EyE Plastico Rec TOTAL': '', 'EyE NR TOTAL': '', 'EyE Ret TOTAL': '', 'TOTAL PESO': '',
+              'Ajuste Papel/Cartón Reciclable UF': '', 'Ajuste Metal Reciclable UF': '',
+              'Ajuste Plástico Reciclable UF': '', 'Ajuste No Reciclables UF': '',
+              'TOTAL Ajuste UF': '', 'Papel/cartón Rec UF TOTAL': '', 'Metal Rec UF TOTAL': '', 'Plastico Rec UF TOTAL': '', 'NR UF TOTAL': '', 'Total corregido (UF)': '',
+              'Papel/cartón Neto CLP': '', 'Metal Rec UF Neto CLP': '', 'Plastico Rec UF Neto CLP': '', 'NR UF Neto CLP': '', 'Total Neto (CLP)': '',
+              'Papel/cartón Bruto CLP': '', 'Metal Rec UF Bruto CLP': '', 'Plastico Rec UF Bruto CLP': '', 'NR UF Bruto CLP': '', 'Total Bruto (CLP) + IVA': ''
             });
           }
           this.resetDatos();
@@ -436,7 +436,9 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
               : (this.R_Madera_NP = VALUE));
 
       this.R_Total_Ton += VALUE;
-      this.R_Total_UF += AMOUNT;
+      if (TYPE_RESIDUE != 4) {
+        this.R_Total_UF += AMOUNT;
+      }
     } else if (RECYCLABILITY == 2) {
       TYPE_RESIDUE == 1
         ? HAZARD == 1
@@ -470,7 +472,9 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
                 : (this.NR_Compuestos_NP = VALUE));
 
       this.NR_Total_Ton += VALUE;
-      this.NR_Total_UF += AMOUNT;
+      if (TYPE_RESIDUE != 4) {
+        this.NR_Total_UF += AMOUNT;
+      }
     } else {
       TYPE_RESIDUE == 1
         ? HAZARD == 1
@@ -640,9 +644,9 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     this.Total_Uf = 0; this.Total_Ajuste_Uf = 0;
 
     this.PapelCarton_Rec_Uf_Corregido = 0; this.Metal_Rec_Uf_Corregido = 0; this.Plastico_Rec_Uf_Corregido = 0;
-    this.NR_Uf_Corregido = 0; this.PapelCarton_Neto= 0; this.Metal_Neto= 0;
-    this.Plastico_Neto= 0; this.NR_Neto= 0; this.PapelCarton_Bruto= 0;
-    this.Metal_Bruto= 0; this.Plastico_Bruto= 0; this.NR_Bruto= 0;
+    this.NR_Uf_Corregido = 0; this.PapelCarton_Neto = 0; this.Metal_Neto = 0;
+    this.Plastico_Neto = 0; this.NR_Neto = 0; this.PapelCarton_Bruto = 0;
+    this.Metal_Bruto = 0; this.Plastico_Bruto = 0; this.NR_Bruto = 0;
   }
 
   calculoAjustes() {
@@ -688,8 +692,8 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     this.EyE_NR_Total = this.EyE_NR + this.Ajuste_No_Reciclables_Ton;
     this.EyE_Ret_Total = this.EyE_Ret + this.Ajuste_Retornables_Ton;
 
-    this.Total_EyE = this.EyE_PapelCarton_Rec+ this.EyE_Metal_Rec+ this.EyE_Plastico_Rec+ this.EyE_NR;
-    this.Total_Peso = this.EyE_PapelCarton_Rec_Total+ this.EyE_Metal_Rec_Total + this.EyE_Plastico_Rec_Total + this.EyE_NR_Total + this.EyE_Ret_Total;
+    this.Total_EyE = this.EyE_PapelCarton_Rec + this.EyE_Metal_Rec + this.EyE_Plastico_Rec + this.EyE_NR;
+    this.Total_Peso = this.EyE_PapelCarton_Rec_Total + this.EyE_Metal_Rec_Total + this.EyE_Plastico_Rec_Total + this.EyE_NR_Total + this.EyE_Ret_Total;
     this.Total_Ajuste = this.Ajuste_PapelCarton_Reciclable_Ton + this.Ajuste_Metal_Reciclable_Ton + this.Ajuste_Plastico_Reciclable_Ton + this.Ajuste_No_Reciclables_Ton + this.Ajuste_Retornables_Ton;
 
     this.PapelCarton_Rec_Uf = this.EyE_PapelCarton_Rec * this.rates[0].price;
@@ -714,14 +718,14 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     const c3 = this.rates[2].price * (this.R_Plastico_P + this.R_Plastico_ST + this.R_Plastico_NP);
     const c4 = this.rates[3].price * (this.NR_PapelCarton_P + this.NR_PapelCarton_ST + this.NR_PapelCarton_NP + this.NR_Metal_P + this.NR_Metal_ST + this.NR_Metal_NP + this.NR_Plastico_P + this.NR_Plastico_ST + this.NR_Plastico_NP + this.NR_Compuestos_P + this.NR_Compuestos_ST + this.NR_Compuestos_NP);
 
-    this.PapelCarton_Neto= (this.PapelCarton_Rec_Uf_Corregido * this.ratesUF.data).toFixed(0);
-    this.Metal_Neto= (this.Metal_Rec_Uf_Corregido * this.ratesUF.data).toFixed(0);
-    this.Plastico_Neto= (this.Plastico_Rec_Uf_Corregido * this.ratesUF.data).toFixed(0);
-    this.NR_Neto= (this.NR_Uf_Corregido * this.ratesUF.data).toFixed(0);
-    this.PapelCarton_Bruto= (this.PapelCarton_Rec_Uf_Corregido * this.ratesUF.data * 1.19).toFixed(0);
-    this.Metal_Bruto= (this.Metal_Rec_Uf_Corregido * this.ratesUF.data * 1.19).toFixed(0);
-    this.Plastico_Bruto= (this.Plastico_Rec_Uf_Corregido * this.ratesUF.data * 1.19).toFixed(0);
-    this.NR_Bruto= (this.NR_Uf_Corregido * this.ratesUF.data * 1.19).toFixed(0);
+    this.PapelCarton_Neto = (this.PapelCarton_Rec_Uf_Corregido * this.ratesUF.data).toFixed(0);
+    this.Metal_Neto = (this.Metal_Rec_Uf_Corregido * this.ratesUF.data).toFixed(0);
+    this.Plastico_Neto = (this.Plastico_Rec_Uf_Corregido * this.ratesUF.data).toFixed(0);
+    this.NR_Neto = (this.NR_Uf_Corregido * this.ratesUF.data).toFixed(0);
+    this.PapelCarton_Bruto = (this.PapelCarton_Rec_Uf_Corregido * this.ratesUF.data * 1.19).toFixed(0);
+    this.Metal_Bruto = (this.Metal_Rec_Uf_Corregido * this.ratesUF.data * 1.19).toFixed(0);
+    this.Plastico_Bruto = (this.Plastico_Rec_Uf_Corregido * this.ratesUF.data * 1.19).toFixed(0);
+    this.NR_Bruto = (this.NR_Uf_Corregido * this.ratesUF.data * 1.19).toFixed(0);
 
     this.TotalCorregido = ((c1 + parseFloat(this.Ajuste_PapelCarton_Reciclable_UF)) + (c2 + parseFloat(this.Ajuste_Metal_Reciclable_UF)) + (c3 + parseFloat(this.Ajuste_Plastico_Reciclable_UF)) + (c4 + parseFloat(this.Ajuste_No_Reciclables_UF)))
     this.TotalBruto = parseInt(this.PapelCarton_Neto) + parseInt(this.Metal_Neto) + parseInt(this.Plastico_Neto) + parseInt(this.NR_Neto);

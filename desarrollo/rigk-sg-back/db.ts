@@ -15,12 +15,10 @@ class DBConnection {
                 host: env.HOST,
                 database: process.env.DATABASE,
                 user: process.env.USERDB,
-                password: process.env.PASSWORD,
-                port: Number(process.env.PORT)
+                password: process.env.PASSWORD
             });
         } catch (error) {
             console.log("El error es: ", error);
-            throw error;
         }
     };
 }
