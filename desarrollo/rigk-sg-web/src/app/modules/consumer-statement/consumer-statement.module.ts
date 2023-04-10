@@ -8,13 +8,15 @@ import { FormComponent } from './pages/form/form.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { BulkUploadComponent } from './pages/bulk-upload/bulk-upload.component';
 
 @NgModule({
   declarations: [
     HomeComponent,
     ProfileComponent,
     StatementsComponent,
-    FormComponent
+    FormComponent,
+    BulkUploadComponent
   ],
   imports: [
     CommonModule,
