@@ -17,6 +17,9 @@ export class ProductorService {
   getValueStatementByYear(id_business: any, year: number, isDraft: number) {
     return this.http.get<any>(`${this.url}/${id_business}/year/${year}/isDraft/${isDraft}`);
   }
+  getTMP(year: number) {
+    return this.http.get<any>(`${this.url}/year2/${year}`);
+  }
   getAllStatementByYear(year: number) {
     return this.http.get<any>(`${this.url}/year/${year}`);
   }
