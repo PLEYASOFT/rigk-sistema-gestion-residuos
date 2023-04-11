@@ -245,13 +245,16 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     })
   }
 
-  delay = (ms: number | undefined) => new Promise((resolve) => setTimeout(resolve, ms));
+  allUF: any[] = [];
 
   generarExcel = async (nombreArchivo: string) => {
     try {
       const y = parseInt((document.getElementById('f_year') as HTMLSelectElement).value);
       // Esperar a que se complete la petición y obtener los datos
       const r = await this.productorService.getAllStatementByYear(y).toPromise();
+      const rr = await this.productorService.getTMP(y).toPromise();
+
+      const allStatements: any[] = rr.data.res_business;
       if (r.status) {
         Swal.fire({
           title: 'Cargando Datos',
@@ -273,38 +276,41 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
           return !this.listStatements.some(statement => statement.ID_BUSINESS === business.ID);
         });
 
-        const getDetailsAndValues = async (statement: { ID_HEADER: number; CODE_BUSINESS: any; CREATED_BY: number; }) => {
-          const [f, lt, user] = await Promise.all([
-            this.productorService.getDetailByIdHeader(statement.ID_HEADER).toPromise(),
-            this.productorService.getValueStatementByYear(statement.CODE_BUSINESS, y - 1, 0).toPromise(),
-            this.productorService.getProductor(statement.CREATED_BY).toPromise()
-          ]);
+        const getDetailsAndValues = async (statement: { ID_HEADER: number; CODE_BUSINESS: any; CREATED_BY: number; ID_BUSINESS: number }) => {
+          const f = allStatements.filter(r => r.ID_HEADER == statement.ID_HEADER);
+          const lt = allStatements.filter(r => r.ID_BUSINESS == statement.ID_BUSINESS && r.YEAR_STATEMENT == y - 1 && r.STATE == 1);
+          const _user = allStatements.find((r: any) => r.HEADER_ID == statement.ID_HEADER);
+          const user = {
+            FIRST_NAME: _user.FIRST_NAME,
+            LAST_NAME: _user.LAST_NAME
+          };
           return { f, lt, user };
         };
 
         for (const statement of this.listStatements) {
           const { f, lt, user } = await getDetailsAndValues(statement);
 
-          if (lt.status) {
-            lt.data.detail.forEach((detail: any) => {
+          if (lt.length > 0) {
+            lt.forEach((detail: any) => {
               this.setLastDeclaration(detail);
             });
           }
-          f.data.forEach((detail: any) => {
+          f.forEach((detail: any) => {
             this.setDeclaration(detail);
           });
 
-
           if (statement.STATE) {
             const fechaFormateada = new Date(statement.UPDATED_AT).toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' }).split('/').reverse().join('-');
-            this.ratesUF = await this.ratesService.getUfDate(fechaFormateada).toPromise();
-            this.calculoAjustes();
-
+            if (this.allUF.findIndex(r => r.date == fechaFormateada) == -1) {
+              this.ratesUF = await this.ratesService.getUfDate(fechaFormateada).toPromise();
+              this.allUF.push({ date: fechaFormateada, data: this.ratesUF.data });
+            }
+            this.calculoAjustes(fechaFormateada);
             const fecha = statement.UPDATED_AT;
             const fechaFormateada__excel = new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
             this.datos.push({
               'ID empresa': statement.CODE_BUSINESS, 'Nombre empresa': statement.NAME, 'Año declaración': y.toString(), 'Estado declaración': 'Enviada',
-              'Fecha de envío': fechaFormateada__excel, 'Usuario': user.data.statements[0].FIRST_NAME + ' ' + user.data.statements[0].LAST_NAME, 'R. Papel/cartón NP': this.setFormato(this.R_PapelCarton_NP),
+              'Fecha de envío': fechaFormateada__excel, 'Usuario': user.FIRST_NAME + ' ' + user.LAST_NAME, 'R. Papel/cartón NP': this.setFormato(this.R_PapelCarton_NP),
               'R. Papel/cartón P': this.setFormato(this.R_PapelCarton_P), 'R. Papel/cartón ST': this.setFormato(this.R_PapelCarton_ST), 'R. Papel/cartón TOTAL': this.setFormato(this.R_PapelCarton_Total), 'R. Metal NP': this.setFormato(this.R_Metal_NP), 'R. Metal P': this.setFormato(this.R_Metal_P), 'R. Metal ST': this.setFormato(this.R_Metal_ST), 'R. Metal TOTAL': this.setFormato(this.R_Metal_Total),
               'R. Plástico NP': this.setFormato(this.R_Plastico_NP), 'R. Plástico P': this.setFormato(this.R_Plastico_P), 'R. Plástico ST': this.setFormato(this.R_Plastico_ST), 'R. Plástico TOTAL': this.setFormato(this.R_Plastico_Total), 'R. Madera NP': this.setFormato(this.R_Madera_NP), 'R. Madera P': this.setFormato(this.R_Madera_P), 'R. Madera ST': this.setFormato(this.R_Madera_ST), 'R. Madera TOTAL': this.setFormato(this.R_Madera_Total),
               'R. Total Ton': this.setFormato(this.R_Total_Ton), 'R. Total UF': this.setFormato(this.R_Total_UF), 'NR. Papel/cartón NP': this.setFormato(this.NR_PapelCarton_NP), 'NR. Papel/cartón P': this.setFormato(this.NR_PapelCarton_P), 'NR. Papel/cartón ST': this.setFormato(this.NR_PapelCarton_ST), 'NR. Papel/cartón TOTAL': this.setFormato(this.NR_PapelCarton_Total),
@@ -327,7 +333,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
           else {
             this.datos.push({
               'ID empresa': statement.CODE_BUSINESS, 'Nombre empresa': statement.NAME, 'Año declaración': y.toString(), 'Estado declaración': 'Borrador',
-              'Fecha de envío': 'NA', 'Usuario': user.data.statements[0].FIRST_NAME + ' ' + user.data.statements[0].LAST_NAME, 'R. Papel/cartón NP': '',
+              'Fecha de envío': 'NA', 'Usuario': user.FIRST_NAME + ' ' + user.LAST_NAME, 'R. Papel/cartón NP': '',
               'R. Papel/cartón P': '', 'R. Papel/cartón ST': '', 'R. Papel/cartón TOTAL': '', 'R. Metal NP': '', 'R. Metal P': '', 'R. Metal ST': '', 'R. Metal TOTAL': '',
               'R. Plástico NP': '', 'R. Plástico P': '', 'R. Plástico ST': '', 'R. Plástico TOTAL': '', 'R. Madera NP': '', 'R. Madera P': '', 'R. Madera ST': '', 'R. Madera TOTAL': '',
               'R. Total Ton': '', 'R. Total UF': '', 'NR. Papel/cartón NP': '', 'NR. Papel/cartón P': '', 'NR. Papel/cartón ST': '', 'NR. Papel/cartón TOTAL': '',
@@ -348,7 +354,6 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
             });
           }
           this.resetDatos();
-          await this.delay(25); // Agregue un retardo de 20 ms entre las solicitudes
         }
 
         for (let i = 0; i < this.filteredListBusiness.length; i++) {
@@ -507,7 +512,6 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
 
   setLastDeclaration(datos: any) {
     const { RECYCLABILITY, TYPE_RESIDUE, HAZARD, PRECEDENCE, VALUE } = datos;
-
     if (RECYCLABILITY == 1) {
       TYPE_RESIDUE == 1
         ? HAZARD == 1
@@ -649,7 +653,10 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     this.Metal_Bruto = 0; this.Plastico_Bruto = 0; this.NR_Bruto = 0;
   }
 
-  calculoAjustes() {
+  calculoAjustes(year: string = "") {
+    if (year != "") {
+      this.ratesUF = this.allUF.find(r => r.date == year);
+    }
 
     if ((this.l_R_PapelCarton_P + this.l_R_PapelCarton_ST + this.l_R_PapelCarton_NP) != 0) {
       this.Ajuste_PapelCarton_Reciclable_Ton = this.R_PapelCarton_P + this.R_PapelCarton_ST + this.R_PapelCarton_NP - (this.l_R_PapelCarton_P + this.l_R_PapelCarton_ST + this.l_R_PapelCarton_NP)
