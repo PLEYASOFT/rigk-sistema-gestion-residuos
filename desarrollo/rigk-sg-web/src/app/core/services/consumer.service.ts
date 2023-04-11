@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
@@ -23,6 +23,12 @@ export class ConsumerService {
   }
   verifyForm(business: any, year: any) {
     return this.http.get<any>(`${this.url}/verify/${year}/${business}`);
+  }
+
+  downloadExcel(id_business: any) {
+    let headers = new HttpHeaders();
+    headers = headers.set('Accept', 'application/vnd.ms-excel');
+    return this.http.get<any>(`${this.url}/excel/${id_business}`,{ headers: headers, responseType: 'blob' as 'json' });
   }
 
 }
