@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import statementDao from '../dao/statementProductorDao';
 import ratesDao from '../dao/ratesDao';
 import dateFormat, { i18n } from 'dateformat';
+import businessDao from '../dao/businessDao';
 i18n.dayNames = [
     "Do",
     "Lu",
@@ -117,6 +118,29 @@ class StatementProductorLogic {
             res.status(200).json({
                 status: true,
                 data: statement
+            });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
+    public async getAllStatementByYear2(req: Request, res: Response) {
+        const { year } = req.params;
+        try {
+            const statements: any  = await statementDao.getAllStatementByYear2(year);
+            if (statements === false) {
+                return res.status(200).json({
+                    status: false,
+                    data: {},
+                    msg: "Año no encontrado"
+                });
+            }
+            res.status(200).json({
+                status: true,
+                data: statements
             });
         } catch (error) {
             console.log(error);
