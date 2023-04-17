@@ -35,7 +35,7 @@ i18n.monthNames = [
     "Enero",
     "Febrero",
     "Marzo",
-    "Apbil",
+    "Abril",
     "Mayo",
     "Junio",
     "Julio",
@@ -245,7 +245,7 @@ class StatementProductorLogic {
             const declaretion: any = await statementDao.getDeclaretionByYear(id, year, 0);
             const { detail, header } = declaretion;
             const user_name = `${header.USER_FIRSTNAME} ${header.USER_LASTNAME}`;
-            const date_registered = dateFormat(new Date(header.CREATED_AT), 'dd-mm-yyyy');
+            const date_registered = dateFormat(new Date(header.UPDATED_AT), 'dd-mm-yyyy');
             const last_detail: any = await statementDao.getDetailById(id, (parseInt(year) - 1));
             const uf: any = await ratesDao.getUF((new Date(header.UPDATED_AT)).toISOString().split("T")[0]);
             let lrp = 0;
