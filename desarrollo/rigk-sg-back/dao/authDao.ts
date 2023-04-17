@@ -2,20 +2,20 @@ import mysqlcon from '../db';
 class AuthDao {
     async getPassword(ID: string) {
         const conn = mysqlcon.getConnection()!;
-        const res_passwd: any = await conn.query("SELECT PASSWORD, SALT FROM USER WHERE ID = ?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const res_passwd: any = await conn.query("SELECT PASSWORD, SALT FROM user WHERE ID = ?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         return res_passwd[0];
     }
     async updatePassword(PASSWORD: string, USER: string) {
         const conn = mysqlcon.getConnection()!;
-        const res: any = await conn.query("UPDATE USER SET PASSWORD = ? WHERE ID = ?", [PASSWORD, USER]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const res: any = await conn.query("UPDATE user SET PASSWORD = ? WHERE ID = ?", [PASSWORD, USER]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         return res;
     }
     async login(USER: string) {
         try{
             const conn = mysqlcon.getConnection()!;
-            const res: any = await conn.query("SELECT USER.*,USER_ROL.ROL_ID AS ROL, ROL.NAME AS ROL_NAME, BUSINESS.NAME AS BUSINESS, BUSINESS.ID as ID_BUSINESS FROM USER INNER JOIN USER_ROL ON USER_ROL.USER_ID = USER.ID INNER JOIN USER_BUSINESS ON USER_BUSINESS.ID_USER = USER.ID INNER JOIN BUSINESS ON BUSINESS.ID = USER_BUSINESS.ID_BUSINESS INNER JOIN ROL ON ROL.ID=USER_ROL.ROL_ID WHERE USER.EMAIL = ? AND user.STATE=1", [USER]).then((res) => res[0]).catch(error => [{ undefined }]);
+            const res: any = await conn.query("SELECT user.*,user_rol.ROL_ID AS ROL,rol.NAME AS ROL_NAME, business.NAME AS BUSINESS, business.ID as ID_BUSINESS FROM user INNER JOIN user_rol ON user_rol.USER_ID = user.ID INNER JOIN user_business ON user_business.ID_USER = user.ID INNER JOIN business ON business.ID = user_business.ID_BUSINESS INNER JOIN rol ON rol.ID=user_rol.ROL_ID WHERE user.EMAIL = ? AND user.STATE=1", [USER]).then((res) => res[0]).catch(error => {[{ undefined }];console.log(error)});
             let user: any = {}
             let name_business = []
             for (let i = 0; i < res.length; i++) {
@@ -35,7 +35,7 @@ class AuthDao {
     }
     async verifyEmail(USER: string) {
         const conn = mysqlcon.getConnection()!;
-        const res: any = await conn.query("SELECT EMAIL,ID,PASSWORD FROM USER WHERE EMAIL = ?", [USER]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const res: any = await conn.query("SELECT EMAIL,ID,PASSWORD FROM user WHERE EMAIL = ?", [USER]).then((res) => res[0]).catch(error => [{ undefined }]);
         let login = false;
         conn.end();
         if (res != null && res != undefined && res.length > 0) {
@@ -48,13 +48,13 @@ class AuthDao {
     async generateCode(CODE: string, ID: string) {
         const conn = mysqlcon.getConnection()!;
         const now = new Date();
-        const res: any = await conn.query("UPDATE USER SET CODE = ?, DATE_CODE = ? WHERE ID=?", [CODE, now, ID]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const res: any = await conn.query("UPDATE user SET CODE = ?, DATE_CODE = ? WHERE ID=?", [CODE, now, ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         return res;
     }
     async verifyCode(CODE: string, USER: string) {
         const conn = mysqlcon.getConnection()!;
-        const res: any = await conn.query("SELECT CODE,DATE_CODE,ID FROM USER WHERE CODE = ? AND EMAIL =?", [CODE, USER]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const res: any = await conn.query("SELECT CODE,DATE_CODE,ID FROM user WHERE CODE = ? AND EMAIL =?", [CODE, USER]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         let login = false;
         if (res != null && res != undefined && res.length > 0) {
@@ -66,7 +66,7 @@ class AuthDao {
     }
     async recovery(PASSWORD: string, USER: string) {
         const conn = mysqlcon.getConnection()!;
-        const res: any = await conn.query("UPDATE USER SET PASSWORD = ? WHERE EMAIL = ?", [PASSWORD, USER]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const res: any = await conn.query("UPDATE user SET PASSWORD = ? WHERE EMAIL = ?", [PASSWORD, USER]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         return res
     }
