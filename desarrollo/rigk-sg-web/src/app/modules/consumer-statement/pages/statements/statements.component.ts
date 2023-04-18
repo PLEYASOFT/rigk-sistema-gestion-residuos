@@ -16,6 +16,7 @@ export class StatementsComponent implements OnInit {
   pos = 1;
 
   business_name: any[] = [];
+  establishment_name: any[] = [];
   years: number[] = [];
   cant: number = 0;
 
@@ -46,10 +47,15 @@ export class StatementsComponent implements OnInit {
           if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
             this.business_name.push(e.NAME_BUSINESS);
           }
+          if (this.establishment_name.indexOf(e.NAME_ESTABLISHMENT) == -1) {
+            this.establishment_name.push(e.NAME_ESTABLISHMENT);
+          }
           if (this.years.indexOf(e.YEAR_STATEMENT) == -1) {
             this.years.push(e.YEAR_STATEMENT)
           }
         });
+        console.log(r)
+        console.log(this.establishment_name)
         this.years.sort((a, b) => b - a);
         this.dbStatements = r.status;
         this.cant = Math.ceil(this.dbStatements.length / 10);

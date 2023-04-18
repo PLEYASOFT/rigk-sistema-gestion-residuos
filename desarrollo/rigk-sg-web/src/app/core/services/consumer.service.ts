@@ -21,6 +21,9 @@ export class ConsumerService {
   getForm(id: any) {
     return this.http.get<any>(`${this.url}/${id}`);
   }
+  getFormConsulta(id: any) {
+    return this.http.get<any>(`${this.url}/consult/${id}`);
+  }
   verifyForm(business: any, year: any) {
     return this.http.get<any>(`${this.url}/verify/${year}/${business}`);
   }

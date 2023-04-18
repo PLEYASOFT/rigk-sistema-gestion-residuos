@@ -1,0 +1,74 @@
+<div class="container mt-4">
+    <!-- inicio breadcrumbs -->
+    <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+            <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Consulta de
+                    Declaración</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Detalle de Declaración</li>
+        </ol>
+    </nav>
+    <!-- fin breadcrumbs -->
+
+    <!-- inicio Consulta de declaración -->
+    <section class="declaracion">
+        <h1>Detalle de Declaración</h1>
+        <div class="table-responsive">
+            <table class="table-atributos">
+                <tbody>
+                  <tr>
+                    <td class="attr-name">Nombre de Empresa</td>
+                    <td class="attr-value">{{ data_consulta.NombreEmpresa }}</td>
+                  </tr>
+                  <tr>
+                    <td class="attr-name">ID de Empresa</td>
+                    <td class="attr-value">{{ data_consulta.CodigoEmpresa }}</td>
+                  </tr>
+                  <tr>
+                    <td class="attr-name">Establecimiento</td>
+                    <td class="attr-value">{{ data_consulta.Establecimiento }}</td>
+                  </tr>
+                  <tr>
+                    <td class="attr-name">ID Establecimiento</td>
+                    <td class="attr-value">{{ data_consulta.IDEstablecimiento }}</td>
+                  </tr>
+                  <tr>
+                    <td class="attr-name">Región</td>
+                    <td class="attr-value">{{ data_consulta.Region }}</td>
+                  </tr>
+                </tbody>
+              </table>
+        </div>
+        <div class="separador"></div>
+        <div class="table-responsive">
+            <table class="table table-even table-section table-borderless table-radius">
+                <thead class="vertical-middle">
+                    <tr>
+                        <th>Tipo de tratamiento</th>
+                        <th>Material</th>
+                        <th>Subtipo</th>
+                        <th>LER</th>
+                        <th>Peso</th>
+                        <th>Fecha Retiro</th>
+                        <th>Gestor</th>
+                        <th>MV</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <td>????</td>
+                    <td>????</td>
+                    <td>????</td>
+                    <td>????</td>
+                    <td>????</td>
+                    <td>????</td>
+                    <td>????</td>
+                    <td>????</td>
+                </tbody>
+            </table>
+        </div>
+        <div class="text-end">
+            <button class="btn btn-primary" (click)="volver()">Volver</button>
+        </div>
+    </section>
+    <!-- fin Monitor Inicio -->
+</div>

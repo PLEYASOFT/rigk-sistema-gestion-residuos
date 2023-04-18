@@ -30,6 +30,27 @@ class IndustrialConsumerDao {
         conn.end();
         return { header: header[0], detail, attached };
     }
+
+    public async getFormConsulta(id_header: any) {
+        const conn = mysqlcon.getConnection()!;
+        const header: any = await conn.execute(`SELECT
+        b.NAME AS 'NombreEmpresa',
+        b.ID AS 'IDEmpresa',
+        b.CODE_BUSINESS AS 'CodigoEmpresa',
+        e.NAME_ESTABLISHMENT AS 'Establecimiento',
+        e.ID AS 'IDEstablecimiento',
+        e.REGION AS 'Region'
+    FROM
+        header_industrial_consumer_form h
+        JOIN establishment e ON h.ID_ESTABLISHMENT = e.ID
+        JOIN establishment_business eb ON e.ID = eb.ID_ESTABLISHMENT
+        JOIN business b ON eb.ID_BUSINESS = b.ID
+    WHERE
+        h.ID = ?;
+        `, [id_header]).then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        return { header: header };
+    }
     public async verify(year: any, business: any) {
         const conn = mysqlcon.getConnection()!;
         const res: any = await conn?.execute("SELECT ID FROM header_industrial_consumer_form WHERE ID_ESTABLISHMENT IN (SELECT ID FROM establishment_business WHERE ID_BUSINESS = (SELECT ID FROM business WHERE CODE_BUSINESS=?)) AND YEAR_STATEMENT=? LIMIT 1", [business, year]).then((res) => res[0]).catch(error => undefined);

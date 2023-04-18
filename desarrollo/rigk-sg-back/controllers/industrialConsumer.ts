@@ -32,6 +32,20 @@ class IndustrialConsumer {
             });
         }
     }
+
+    public async getFormConsulta(req: any, res: Response) {
+        const { id } = req.params;
+        try {
+            const data = await industrialConsumerDao.getFormConsulta(id);
+            res.json({ status: true, data });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
     public async verify(req: any, res: Response) {
         const { year, business } = req.params;
         try {
