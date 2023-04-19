@@ -17,6 +17,7 @@ export class StatementsComponent implements OnInit {
 
   business_name: any[] = [];
   establishment_name: any[] = [];
+  material_name: any[] = [];
   years: number[] = [];
   cant: number = 0;
 
@@ -52,6 +53,9 @@ export class StatementsComponent implements OnInit {
           }
           if (this.years.indexOf(e.YEAR_STATEMENT) == -1) {
             this.years.push(e.YEAR_STATEMENT)
+          }
+          if (this.material_name.indexOf(e.TYPE_RESIDUE) == -1) {
+            this.material_name.push(e.TYPE_RESIDUE)
           }
         });
         console.log(r)
