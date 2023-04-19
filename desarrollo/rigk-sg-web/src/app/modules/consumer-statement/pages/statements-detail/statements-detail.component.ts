@@ -3,7 +3,7 @@ import { EstablishmentService } from 'src/app/core/services/establishment.servic
 import { ProductorService } from 'src/app/core/services/productor.service';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-import { ConsumerService } from '../../../core/services/consumer.service';
+import { ConsumerService } from '../../../../core/services/consumer.service';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({

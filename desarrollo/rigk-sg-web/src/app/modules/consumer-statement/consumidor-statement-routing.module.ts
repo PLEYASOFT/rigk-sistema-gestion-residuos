@@ -7,7 +7,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { StatementsComponent } from './pages/statements/statements.component';
 import { BulkUploadComponent } from './pages/bulk-upload/bulk-upload.component';
-import { StatementsDetailComponent } from './statements-detail/statements-detail.component';
+import { StatementsDetailComponent } from './pages/statements-detail/statements-detail.component';
 
 const routes: Routes = [{
     path: '',
