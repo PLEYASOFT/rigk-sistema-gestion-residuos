@@ -98,7 +98,7 @@ class IndustrialConsumerDao {
             END AS TYPE_RESIDUE,
             detail_industrial_consumer_form.VALUE,
             detail_industrial_consumer_form.DATE_WITHDRAW AS FechaRetiro,
-            DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y') AS FechaRetiroTipeada,
+            CONCAT(UPPER(SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 1, 1)), SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 2)) AS FechaRetiroTipeada,
             detail_industrial_consumer_form.ID_GESTOR AS IdGestor,
             detail_industrial_consumer_form.LER,
             CASE detail_industrial_consumer_form.TREATMENT_TYPE
