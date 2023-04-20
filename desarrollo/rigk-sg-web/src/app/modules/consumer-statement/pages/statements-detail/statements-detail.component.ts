@@ -20,6 +20,7 @@ export class StatementsDetailComponent implements OnInit {
   pos = 1;
 
   data_consulta: any = [];
+  detail_consulta: any = [];
   years: number[] = [];
   cant: number = 0;
 
@@ -32,6 +33,7 @@ export class StatementsDetailComponent implements OnInit {
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
     this.loadData();
+    this.loadDetail();
   }
 
   loadData() {
@@ -44,12 +46,26 @@ export class StatementsDetailComponent implements OnInit {
       allowOutsideClick: false
     });
     Swal.showLoading();
-    const idHeader = this.route.snapshot.params['id'];
+    console.log(this.route.snapshot.params)
+    const idHeader = this.route.snapshot.params['id_header_'];
+    console.log(idHeader)
     this.ConsumerService.getFormConsulta(idHeader).subscribe(r => {
       if (r.status) {
-        console.log(r);
         this.data_consulta = r.data.header[0];
         console.log(this.data_consulta)
+        Swal.close();
+      }
+    })
+  }
+
+  loadDetail() {
+    const idHeader = this.route.snapshot.params['id_header_'];
+    const idDetail = this.route.snapshot.params['id_detail'];
+    this.ConsumerService.getDeclarationByID(idHeader, idDetail).subscribe(r => {
+      if (r.status) {
+        
+        console.log(r)
+        this.detail_consulta = r.status[0];
         Swal.close();
       }
     })

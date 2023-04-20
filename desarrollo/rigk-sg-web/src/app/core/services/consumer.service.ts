@@ -24,6 +24,9 @@ export class ConsumerService {
   getFormConsulta(id: any) {
     return this.http.get<any>(`${this.url}/consult/${id}`);
   }
+  getDeclarationByID(id_header: any, id_detail: any) {
+    return this.http.get<any>(`${this.url}/declaration/${id_header}/${id_detail}`);
+  }
   verifyForm(business: any, year: any) {
     return this.http.get<any>(`${this.url}/verify/${year}/${business}`);
   }

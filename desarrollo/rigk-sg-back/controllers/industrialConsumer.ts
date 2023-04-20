@@ -59,6 +59,20 @@ class IndustrialConsumer {
             });
         }
     }
+    async getDeclarationByID(req: any, res: Response) {
+        const id_header = req.params.id_header
+        const id_detail = req.params.id_detail
+        try {
+            const establishment = await industrialConsumerDao.getDeclarationByID(id_header,id_detail);
+            res.status(200).json({ status: establishment, data: {}, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
     public async downloadBulkUploadFile(req: Request, res: Response) {
         const { id } = req.params;
         try {

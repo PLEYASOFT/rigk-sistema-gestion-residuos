@@ -78,16 +78,16 @@
                     <tr *ngFor="let s of db">
                         <td>{{s.NAME_BUSINESS}}</td>
                         <td>{{s.NAME_ESTABLISHMENT}}</td>
-                        <td>????</td>
+                        <td>{{s.TipoTratamiento}}</td>
                         <td>{{s.PRECEDENCE}}</td>
                         <td>{{s.TYPE_RESIDUE}}</td>
                         <td>{{s.VALUE}}</td>
-                        <td>{{s.CREATED_AT | date: 'dd-MM-yyyy H:m:ss'}}</td>
+                        <td>{{s.FechaRetiro | date: 'dd-MM-yyyy'}}</td>
                         <td>
                             <span [ngClass]="s.semaforo ? 'circle green-circle' : 'circle red-circle'"></span>
                         </td>
                         <td>
-                            <a [href]="'#/consumidor/statements/'+s.ID_HEADER"><i class="fa fa-eye fa-lg fa-fw color-verde"
+                            <a [href]="'#/consumidor/statements/'+s.ID_HEADER+'/'+s.ID_DETAIL"><i class="fa fa-eye fa-lg fa-fw color-verde"
                                     aria-hidden="true"></i></a>
                         </td>
                     </tr>

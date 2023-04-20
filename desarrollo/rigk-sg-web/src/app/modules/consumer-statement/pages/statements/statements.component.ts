@@ -18,6 +18,7 @@ export class StatementsComponent implements OnInit {
   business_name: any[] = [];
   establishment_name: any[] = [];
   material_name: any[] = [];
+  treatment_name: any[] = [];
   years: number[] = [];
   cant: number = 0;
 
@@ -51,11 +52,14 @@ export class StatementsComponent implements OnInit {
           if (this.establishment_name.indexOf(e.NAME_ESTABLISHMENT) == -1) {
             this.establishment_name.push(e.NAME_ESTABLISHMENT);
           }
-          if (this.years.indexOf(e.YEAR_STATEMENT) == -1) {
-            this.years.push(e.YEAR_STATEMENT)
+          if (this.years.indexOf(e.FechaRetiroTipeada) == -1) {
+            this.years.push(e.FechaRetiroTipeada)
           }
           if (this.material_name.indexOf(e.TYPE_RESIDUE) == -1) {
             this.material_name.push(e.TYPE_RESIDUE)
+          }
+          if (this.treatment_name.indexOf(e.TipoTratamiento) == -1) {
+            this.treatment_name.push(e.TipoTratamiento)
           }
         });
         console.log(r)

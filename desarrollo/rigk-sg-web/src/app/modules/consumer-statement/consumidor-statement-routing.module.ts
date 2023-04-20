@@ -20,7 +20,7 @@ const routes: Routes = [{
       { path: 'form/:id', component: FormComponent, data:{show: true} },
       { path: 'profile', component: ProfileComponent },
       { path: 'statements', component: StatementsComponent },
-      { path: 'statements/:id', component: StatementsDetailComponent },
+      { path: 'statements/:id_header_/:id_detail', component: StatementsDetailComponent },
       { path: 'faq', component: FaqComponent },
       { path: '**', redirectTo: 'home', pathMatch: 'full' }
     ]
