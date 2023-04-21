@@ -8,7 +8,7 @@ class RatesDao {
     }
     public async getUF(date: string) {
         const conn = mysqlcon.getConnection()!;
-        const res: any = await conn.query("SELECT * FROM UF WHERE UF_DATE = ? ", [date]).then(res => res[0]).catch(erro => undefined);
+        const res: any = await conn.query("SELECT * FROM uf WHERE UF_DATE = ? ", [date]).then(res => res[0]).catch(erro => undefined);
         conn.end();
         return res[0].RATE;
     }
