@@ -35,7 +35,6 @@ class IndustrialConsumer {
     }
     public async getMV(req: any, res: Response) {
         const {id} = req.params;
-        console.log(id)
         try {
             const id_header = await industrialConsumerDao.getMV(id);
             res.json({ status: true, data: id_header });

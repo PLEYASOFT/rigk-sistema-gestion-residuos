@@ -68,8 +68,6 @@ export class StatementsComponent implements OnInit {
             this.treatment_name.push(e.TipoTratamiento)
           }
         });
-        console.log(r)
-        console.log(this.establishment_name)
         this.years.sort((a, b) => b - a);
         this.dbStatements = r.status;
         this.cant = Math.ceil(this.dbStatements.length / 10);
@@ -91,8 +89,6 @@ export class StatementsComponent implements OnInit {
     this.db = tmp.slice(0, 10).sort((a, b) => b.FechaRetiroTipeada - a.FechaRetiroTipeada);
     this.cant = Math.ceil(tmp.length / 10);
   }
-  
-
   updateFilters() {
     // Filtrar las opciones de business_name
     this.business_name = this.dbStatements
@@ -142,7 +138,6 @@ export class StatementsComponent implements OnInit {
       .filter((value, index, self) => self.indexOf(value) === index)
       .sort((a, b) => b - a);
   }
-  
   
   reset() {
     this.loadStatements();
