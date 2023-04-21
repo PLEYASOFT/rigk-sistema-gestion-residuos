@@ -18,8 +18,32 @@ export class ConsumerService {
     body.append("detail", JSON.stringify(data.detail.data));
     return this.http.post<any>(`${this.url}`, body);
   }
+  saveFile(idDetail: number, fileName: string, file: string, typeFile: number) {
+      const formData = new FormData();
+      formData.append('idDetail', idDetail.toString());
+      formData.append('fileName', fileName);
+      formData.append('fileBuffer', file); // Asegúrate de que 'file' contenga el objeto File, no una cadena
+      formData.append('typeFile', typeFile.toString());
+
+      const headers = new HttpHeaders().set('Content-Type', 'multipart/form-data');
+
+      return this.http.post<any>(`${this.url}/saveFile`, formData, {headers});
+}
+
   getForm(id: any) {
     return this.http.get<any>(`${this.url}/${id}`);
+  }
+  getMV(id: any) {
+    return this.http.get<any>(`${this.url}/detailMV/${id}`);
+  }
+  deleteById(id: any) {
+    return this.http.delete<any>(`${this.url}/detailMV/${id}`);
+  }
+  getFormConsulta(id: any) {
+    return this.http.get<any>(`${this.url}/consult/${id}`);
+  }
+  getDeclarationByID(id_header: any, id_detail: any) {
+    return this.http.get<any>(`${this.url}/declaration/${id_header}/${id_detail}`);
   }
   verifyForm(business: any, year: any) {
     return this.http.get<any>(`${this.url}/verify/${year}/${business}`);

@@ -1,0 +1,69 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td,
+th {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.table-atributos {
+    border-collapse: collapse;
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.attr-name {
+    background-color: #3c7c9c;
+    color: #fff;
+    width: 25%;
+}
+
+.table-atributos td:first-child {
+    width: 25%;
+    background-color: #3c7c9c;
+    color: #fff;
+    border-radius: 6px 0 0 6px;
+}
+
+.table-atributos td:last-child {
+    width: 75%;
+    background-color: #ececec;
+    color: #000;
+    border-radius: 0 6px 6px 0;
+}
+
+.attr-value {
+    background-color: #ececec;
+    width: 75%;
+    color: #000;
+}
+
+:host {
+    width: 90% !important;
+    padding: 1%;
+}
+
+.separador {
+    height: 1px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color: #ccc;
+}
+
+.text-end {
+    position: relative;
+    margin-top: 20px;
+}
+
+.text-center {
+    text-align: center;
+}
