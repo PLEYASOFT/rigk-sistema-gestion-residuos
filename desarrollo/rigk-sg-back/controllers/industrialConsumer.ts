@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import industrialConsumerDao from "../dao/industrialConsumerDao";
 import establishmentDao from '../dao/establishmentDao';
 import ExcelJS from 'exceljs';
+import fileUpload from 'express-fileupload';
 class IndustrialConsumer {
     public async saveForm(req: any, res: Response) {
         const header = JSON.parse(req.body.header);
@@ -10,6 +11,22 @@ class IndustrialConsumer {
         try {
             header.created_by = req['uid'];
             const id_header = await industrialConsumerDao.saveForm(header, detail, files);
+            res.json({ status: true, data: id_header });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+    public async saveFile(req: any, res: Response) {
+        const { idEstablishment, createdBy, yearStatement, idHeader, precedence, typeResidue, value,
+            dateWithdraw, idGestor, idDetail, fileName,typeFile } = req.body;
+        const fileBuffer = req.files.fileBuffer.data;
+        try {
+            const id_header = await industrialConsumerDao.saveFile(idEstablishment, createdBy, yearStatement, idHeader, precedence, typeResidue, value,
+                dateWithdraw, idGestor, idDetail, fileName, fileBuffer, typeFile);
             res.json({ status: true, data: id_header });
         } catch (error) {
             console.log(error);

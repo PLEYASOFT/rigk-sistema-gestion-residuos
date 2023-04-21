@@ -14,7 +14,7 @@ import { FormBuilder, Validators, AbstractControl, ValidatorFn } from '@angular/
 })
 
 export class StatementsDetailComponent implements OnInit {
-
+  
   userData: any | null;
   dbStatements: any[] = [];
   db: any[] = [];
@@ -28,6 +28,8 @@ export class StatementsDetailComponent implements OnInit {
   selectedFile: File | null = null;
   listMV: any[] = ['Guia de despacho', 'Factura gestor', 'Registro de peso', 'Fotografía Retiro', 'Otro'];
   attached: any[] = [];
+  fileName = '';
+  fileBuffer: any;
   constructor(public productorService: ProductorService,
     private ConsumerService: ConsumerService,
     private router: Router,
@@ -74,7 +76,6 @@ export class StatementsDetailComponent implements OnInit {
 
         console.log(r)
         this.detail_consulta = r.status[0];
-        Swal.close();
       }
     })
   }
@@ -91,30 +92,40 @@ export class StatementsDetailComponent implements OnInit {
     });
   }
 
-  addManager(id: any) {
-
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
   }
+
+  saveFile() {
+   
+    this.detail_consulta.FechaRetiro = this.formatDate(this.detail_consulta.FechaRetiro);
+    this.ConsumerService.saveFile(this.data_consulta.IDEstablecimiento, this.detail_consulta.CREATED_BY, this.detail_consulta.YEAR_STATEMENT, this.detail_consulta.ID_HEADER,
+       this.detail_consulta.PRECEDENCE, this.detail_consulta.TYPE_RESIDUE, this.detail_consulta.VALUE, this.detail_consulta.FechaRetiro, this.detail_consulta.IdGestor, this.detail_consulta.ID_DETAIL, this.fileName, this.fileBuffer, 1).subscribe(r => {
+        
+        if (r.status) {
+          Swal.fire({
+            icon: 'success',
+            text: 'Medio de verificación guardado satisfactoriamente'
+          })
+      }
+      else{
+        console.log('error')
+      }
+    })
+  }
+
 
   deleteManager(id: any) {
 
   }
 
-  allowedFileTypes(allowedExtensions: string[]): ValidatorFn {
-    return (control: AbstractControl): { [key: string]: any } | null => {
-      if (control.value) {
-        const file = control.value as File;
-        const fileName = file.name;
-        const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
-        const isValid = allowedExtensions.includes(fileExtension);
-        return isValid ? null : { invalidFileType: { value: control.value } };
-      }
-      return null;
-    };
-  }
-
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
+    if (input && input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.fileName = file.name;
+      this.fileBuffer = file;
       this.selectedFile = input.files[0];
   
       const allowedExtensions = ['pdf', 'jpeg', 'jpg'];
@@ -127,28 +138,11 @@ export class StatementsDetailComponent implements OnInit {
       } else {
         this.userForm.controls['ARCHIVO'].setErrors(null);
         this.userForm.controls['ARCHIVO'].markAsTouched();
-        this.userForm.patchValue({ ARCHIVO: this.selectedFile });
       }
-  
     } else {
       this.selectedFile = null;
-      this.userForm.patchValue({ ARCHIVO: null });
-    }
-  }  
-
-  validateFileType() {
-    if (this.selectedFile) {
-      const fileName = this.selectedFile.name;
-      const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
-      const isValid = ['pdf', 'jpeg', 'jpg'].includes(fileExtension);
-      if (isValid) {
-        this.userForm.controls['ARCHIVO'].setErrors(null);
-      } else {
-        this.userForm.controls['ARCHIVO'].setErrors({ invalidFileType: true });
-      }
-    } else {
-      this.userForm.controls['ARCHIVO'].setErrors({ required: true });
     }
   }
+  
   
 }
