@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import industrialConsumerDao from "../dao/industrialConsumerDao";
 import establishmentDao from '../dao/establishmentDao';
 import ExcelJS from 'exceljs';
-import fileUpload from 'express-fileupload';
 class IndustrialConsumer {
     public async saveForm(req: any, res: Response) {
         const header = JSON.parse(req.body.header);
@@ -21,12 +20,38 @@ class IndustrialConsumer {
         }
     }
     public async saveFile(req: any, res: Response) {
-        const { idEstablishment, createdBy, yearStatement, idHeader, precedence, typeResidue, value,
-            dateWithdraw, idGestor, idDetail, fileName,typeFile } = req.body;
+        const {idDetail, fileName,typeFile} = req.body;
         const fileBuffer = req.files.fileBuffer.data;
         try {
-            const id_header = await industrialConsumerDao.saveFile(idEstablishment, createdBy, yearStatement, idHeader, precedence, typeResidue, value,
-                dateWithdraw, idGestor, idDetail, fileName, fileBuffer, typeFile);
+            const id_header = await industrialConsumerDao.saveFile(idDetail, fileName, fileBuffer, typeFile);
+            res.json({ status: true, data: id_header });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+    public async getMV(req: any, res: Response) {
+        const {id} = req.params;
+        console.log(id)
+        try {
+            const id_header = await industrialConsumerDao.getMV(id);
+            res.json({ status: true, data: id_header });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+    public async deleteById(req: any, res: Response) {
+        const {id} = req.params;
+        console.log(id)
+        try {
+            const id_header = await industrialConsumerDao.deleteById(id);
             res.json({ status: true, data: id_header });
         } catch (error) {
             console.log(error);

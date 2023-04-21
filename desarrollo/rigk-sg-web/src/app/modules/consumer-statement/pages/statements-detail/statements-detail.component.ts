@@ -15,6 +15,7 @@ import { FormBuilder, Validators, AbstractControl, ValidatorFn } from '@angular/
 
 export class StatementsDetailComponent implements OnInit {
   
+  maxFiles = 3;
   userData: any | null;
   dbStatements: any[] = [];
   db: any[] = [];
@@ -22,6 +23,7 @@ export class StatementsDetailComponent implements OnInit {
   index: any = 0
   data_consulta: any = [];
   detail_consulta: any = [];
+  MV_consulta: any = [];
   years: number[] = [];
   cant: number = 0;
   userForm: any;
@@ -73,9 +75,19 @@ export class StatementsDetailComponent implements OnInit {
     const idDetail = this.route.snapshot.params['id_detail'];
     this.ConsumerService.getDeclarationByID(idHeader, idDetail).subscribe(r => {
       if (r.status) {
-
-        console.log(r)
         this.detail_consulta = r.status[0];
+        console.log(this.detail_consulta)
+        this.loadMV();
+      }
+    })
+  }
+
+  loadMV() {
+    console.log(this.detail_consulta.ID_DETAIL)
+    this.ConsumerService.getMV(this.detail_consulta.ID_DETAIL).subscribe(r => {
+      if (r.status) {
+        this.MV_consulta = r.data.header;
+        console.log(r)
       }
     })
   }
@@ -98,16 +110,14 @@ export class StatementsDetailComponent implements OnInit {
   }
 
   saveFile() {
-   
     this.detail_consulta.FechaRetiro = this.formatDate(this.detail_consulta.FechaRetiro);
-    this.ConsumerService.saveFile(this.data_consulta.IDEstablecimiento, this.detail_consulta.CREATED_BY, this.detail_consulta.YEAR_STATEMENT, this.detail_consulta.ID_HEADER,
-       this.detail_consulta.PRECEDENCE, this.detail_consulta.TYPE_RESIDUE, this.detail_consulta.VALUE, this.detail_consulta.FechaRetiro, this.detail_consulta.IdGestor, this.detail_consulta.ID_DETAIL, this.fileName, this.fileBuffer, 1).subscribe(r => {
-        
+    this.ConsumerService.saveFile( this.detail_consulta.ID_DETAIL, this.fileName, this.fileBuffer, 1).subscribe(r => {
         if (r.status) {
           Swal.fire({
             icon: 'success',
             text: 'Medio de verificación guardado satisfactoriamente'
           })
+          this.loadMV();
       }
       else{
         console.log('error')
@@ -116,8 +126,20 @@ export class StatementsDetailComponent implements OnInit {
   }
 
 
-  deleteManager(id: any) {
-
+  deleteMV(id: any) {
+    this.ConsumerService.deleteById(id).subscribe(r => {
+        console.log(r)
+        if (r.status) {
+          Swal.fire({
+            icon: 'info',
+            text: 'Medio de verificación eliminado satisfactoriamente'
+          })
+        this.loadMV();
+      }
+      else{
+        console.log('error')
+      }
+    })
   }
 
   onFileSelected(event: Event) {
@@ -143,6 +165,4 @@ export class StatementsDetailComponent implements OnInit {
       this.selectedFile = null;
     }
   }
-  
-  
 }

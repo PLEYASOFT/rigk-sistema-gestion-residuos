@@ -18,18 +18,8 @@ export class ConsumerService {
     body.append("detail", JSON.stringify(data.detail.data));
     return this.http.post<any>(`${this.url}`, body);
   }
-  saveFile(idEstablishment: number, createdBy: number, yearStatement: number, idHeader: number, precedence: number, typeResidue: number, value: number,
-    dateWithdraw: string, idGestor: number, idDetail: number, fileName: string, file: string, typeFile: number) {
+  saveFile(idDetail: number, fileName: string, file: string, typeFile: number) {
       const formData = new FormData();
-      formData.append('idEstablishment', idEstablishment.toString());
-      formData.append('createdBy', createdBy.toString());
-      formData.append('yearStatement', yearStatement.toString());
-      formData.append('idHeader', idHeader.toString());
-      formData.append('precedence', precedence.toString());
-      formData.append('typeResidue', typeResidue.toString());
-      formData.append('value', value.toString());
-      formData.append('dateWithdraw', dateWithdraw.toString());
-      formData.append('idGestor', idGestor.toString());
       formData.append('idDetail', idDetail.toString());
       formData.append('fileName', fileName);
       formData.append('fileBuffer', file); // Asegúrate de que 'file' contenga el objeto File, no una cadena
@@ -42,6 +32,12 @@ export class ConsumerService {
 
   getForm(id: any) {
     return this.http.get<any>(`${this.url}/${id}`);
+  }
+  getMV(id: any) {
+    return this.http.get<any>(`${this.url}/detailMV/${id}`);
+  }
+  deleteById(id: any) {
+    return this.http.delete<any>(`${this.url}/detailMV/${id}`);
   }
   getFormConsulta(id: any) {
     return this.http.get<any>(`${this.url}/consult/${id}`);

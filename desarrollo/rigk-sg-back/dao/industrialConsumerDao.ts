@@ -22,16 +22,11 @@ class IndustrialConsumerDao {
         conn.end();
         return id_header;
     }
-    public async saveFile(idEstablishment: number, createdBy: number, yearStatement: number, idHeader: number, precedence: number, typeResidue: number, value: number,
-        dateWithdraw: string, idGestor: number, idDetail: number, fileName: string, fileBuffer: File, typeFile: number) {
+    public async saveFile( idDetail: number, fileName: string, fileBuffer: File, typeFile: number) {
         const conn = mysqlcon.getConnection()!;
-        const resp_header: any = await conn.execute("INSERT INTO header_industrial_consumer_form(ID_ESTABLISHMENT,CREATED_BY,YEAR_STATEMENT) VALUES(?,?,?)", [idEstablishment, createdBy, yearStatement]).then((res) => res[0]).catch(error => [{ undefined }]);
-        const id_header = resp_header.insertId;
-        const resp: any = await conn?.execute("INSERT INTO detail_industrial_consumer_form(ID_HEADER,PRECEDENCE,TYPE_RESIDUE,VALUE, DATE_WITHDRAW,ID_GESTOR) VALUES (?,?,?,?,?,?)", [id_header, precedence, typeResidue, value, dateWithdraw, idGestor]).then((res) => res[0]).catch(error => [{ undefined }]);
-        const id_detail = resp.insertId;
-        const attached: any = await conn.execute("INSERT INTO attached_industrial_consumer_form(ID_DETAIL, FILE_NAME, FILE, TYPE_FILE) VALUES (?,?,?,?)", [id_detail, fileName, fileBuffer, typeFile]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
+        const attached: any = await conn.execute("INSERT INTO attached_industrial_consumer_form(ID_DETAIL, FILE_NAME, FILE, TYPE_FILE) VALUES (?,?,?,?)", [idDetail, fileName, fileBuffer, typeFile]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
         conn.end();
-        return { header: resp_header, resp, attached };
+        return { attached };
     }
     public async getForm(id_header: any) {
         const conn = mysqlcon.getConnection()!;
@@ -42,6 +37,34 @@ class IndustrialConsumerDao {
         return { header: header[0], detail, attached };
     }
 
+    public async getMV(id_detail: any) {
+        const conn = mysqlcon.getConnection()!;
+        const header: any = await conn.execute(`
+            SELECT
+                attached_industrial_consumer_form.ID,
+                attached_industrial_consumer_form.FILE_NAME,
+                attached_industrial_consumer_form.TYPE_FILE,
+                CASE attached_industrial_consumer_form.TYPE_FILE
+                    WHEN 1 THEN 'Guia de despacho'
+                    WHEN 2 THEN 'Factura gestor'
+                    WHEN 3 THEN 'Registro de peso'
+                    WHEN 4 THEN 'Fotografía Retiro'
+                    WHEN 5 THEN 'Otro'
+                    ELSE 'Desconocido'
+                END AS TYPE_FILE_TIPEADO
+            FROM
+                attached_industrial_consumer_form
+            WHERE
+                attached_industrial_consumer_form.ID_DETAIL = ?`, [id_detail]).then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        return {header};
+    }
+    public async deleteById(id: number) {
+        const conn = mysqlcon.getConnection()!;
+        const result: any = await conn.execute("DELETE FROM attached_industrial_consumer_form WHERE ID = ?", [id]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
+        conn.end();
+        return result;
+    }    
     public async getFormConsulta(id_header: any) {
         const conn = mysqlcon.getConnection()!;
         const header: any = await conn.execute(`SELECT
