@@ -22,7 +22,7 @@ class IndustrialConsumerDao {
         conn.end();
         return id_header;
     }
-    public async saveFile( idDetail: number, fileName: string, fileBuffer: File, typeFile: number) {
+    public async saveFile(idDetail: number, fileName: string, fileBuffer: File, typeFile: number) {
         const conn = mysqlcon.getConnection()!;
         const attached: any = await conn.execute("INSERT INTO attached_industrial_consumer_form(ID_DETAIL, FILE_NAME, FILE, TYPE_FILE) VALUES (?,?,?,?)", [idDetail, fileName, fileBuffer, typeFile]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
         conn.end();
@@ -57,14 +57,14 @@ class IndustrialConsumerDao {
             WHERE
                 attached_industrial_consumer_form.ID_DETAIL = ?`, [id_detail]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
-        return {header};
+        return { header };
     }
     public async deleteById(id: number) {
         const conn = mysqlcon.getConnection()!;
         const result: any = await conn.execute("DELETE FROM attached_industrial_consumer_form WHERE ID = ?", [id]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
         conn.end();
         return result;
-    }    
+    }
     public async getFormConsulta(id_header: any) {
         const conn = mysqlcon.getConnection()!;
         const header: any = await conn.execute(`SELECT

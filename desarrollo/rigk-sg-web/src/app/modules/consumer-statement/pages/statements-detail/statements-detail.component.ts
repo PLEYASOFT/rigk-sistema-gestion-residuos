@@ -58,13 +58,10 @@ export class StatementsDetailComponent implements OnInit {
       allowOutsideClick: false
     });
     Swal.showLoading();
-    console.log(this.route.snapshot.params)
     const idHeader = this.route.snapshot.params['id_header_'];
-    console.log(idHeader)
     this.ConsumerService.getFormConsulta(idHeader).subscribe(r => {
       if (r.status) {
         this.data_consulta = r.data.header[0];
-        console.log(this.data_consulta)
         Swal.close();
       }
     })
@@ -76,18 +73,15 @@ export class StatementsDetailComponent implements OnInit {
     this.ConsumerService.getDeclarationByID(idHeader, idDetail).subscribe(r => {
       if (r.status) {
         this.detail_consulta = r.status[0];
-        console.log(this.detail_consulta)
         this.loadMV();
       }
     })
   }
 
   loadMV() {
-    console.log(this.detail_consulta.ID_DETAIL)
     this.ConsumerService.getMV(this.detail_consulta.ID_DETAIL).subscribe(r => {
       if (r.status) {
         this.MV_consulta = r.data.header;
-        console.log(r)
       }
     })
   }
@@ -128,7 +122,6 @@ export class StatementsDetailComponent implements OnInit {
 
   deleteMV(id: any) {
     this.ConsumerService.deleteById(id).subscribe(r => {
-        console.log(r)
         if (r.status) {
           Swal.fire({
             icon: 'info',

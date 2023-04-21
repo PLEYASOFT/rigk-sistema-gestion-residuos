@@ -49,7 +49,6 @@ class IndustrialConsumer {
     }
     public async deleteById(req: any, res: Response) {
         const {id} = req.params;
-        console.log(id)
         try {
             const id_header = await industrialConsumerDao.deleteById(id);
             res.json({ status: true, data: id_header });
