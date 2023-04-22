@@ -157,6 +157,22 @@ class IndustrialConsumerDao {
         conn.end();
         return data;
     }
+
+    public async downloadFile(id: any){
+        const conn= mysqlcon.getConnection()!;
+        const fileData: any = await conn.query("SELECT ID, FILE_NAME, FILE, TYPE_FILE FROM attached_industrial_consumer_form WHERE ID=?", [id]).then((res) => res[0]).catch(error => [{ undefined }]);
+    
+        if (fileData == null || fileData.length == 0) {
+            return null;
+        }
+        
+        conn.end();
+        return {
+            fileName: fileData[0].FILE_NAME,
+            fileType: fileData[0].TYPE_FILE,
+            fileContent: fileData[0].FILE
+        };
+    }
 }
 const industrialConsumerDao = new IndustrialConsumerDao();
 export default industrialConsumerDao;
