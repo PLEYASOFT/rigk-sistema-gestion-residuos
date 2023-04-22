@@ -69,7 +69,6 @@ export class StatementsDetailComponent implements OnInit {
       if (r.status) {
         this.data_consulta = r.data.header[0];
         Swal.close();
-        console.log(r)
       }
     })
   }
@@ -81,7 +80,6 @@ export class StatementsDetailComponent implements OnInit {
       if (r.status) {
         this.detail_consulta = r.status[0];
         this.loadMV();
-        console.log(r)
       }
     })
   }
@@ -90,7 +88,6 @@ export class StatementsDetailComponent implements OnInit {
     this.ConsumerService.getMV(this.detail_consulta.ID_DETAIL).subscribe(r => {
       if (r.status) {
         this.MV_consulta = r.data.header;
-        console.log(r)
       }
     })
   }
@@ -127,7 +124,6 @@ export class StatementsDetailComponent implements OnInit {
       }
     })
   }
-
 
   deleteMV(id: any) {
     this.ConsumerService.deleteById(id).subscribe(r => {
