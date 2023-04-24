@@ -42,7 +42,6 @@ class IndustrialConsumer {
 
                 res.setHeader('Content-Type', fileData.fileType);
                 res.setHeader('Content-Disposition', `attachment; filename=${fileData.fileName}`);
-                console.log(fileContent)
                 res.send(fileContent);
             } else {
                 res.status(404).json({ status: false, message: 'Archivo no encontrado' });
