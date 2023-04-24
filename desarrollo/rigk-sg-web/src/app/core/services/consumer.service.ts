@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -35,6 +36,10 @@ export class ConsumerService {
   }
   getMV(id: any) {
     return this.http.get<any>(`${this.url}/detailMV/${id}`);
+  }
+  downloadMV(id: any): Observable<Blob> {
+    return this.http.get<any>(`${this.url}/download/${id}`, {
+      responseType: 'blob' as 'json',});
   }
   deleteById(id: any) {
     return this.http.delete<any>(`${this.url}/detailMV/${id}`);

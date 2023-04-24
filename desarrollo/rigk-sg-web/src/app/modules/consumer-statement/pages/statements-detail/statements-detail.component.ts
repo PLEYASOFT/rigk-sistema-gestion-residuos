@@ -28,7 +28,13 @@ export class StatementsDetailComponent implements OnInit {
   cant: number = 0;
   userForm: any;
   selectedFile: File | null = null;
-  listMV: any[] = ['Guia de despacho', 'Factura gestor', 'Registro de peso', 'Fotografía Retiro', 'Otro'];
+  listMV = [
+    { name: "Guia de despacho", value: 1 },
+    { name: "Factura gestor", value: 2 },
+    { name: "Registro de peso", value: 3 },
+    { name: "Fotografía retiro", value: 4 },
+    { name: "Otro", value: 5 },
+  ];
   attached: any[] = [];
   fileName = '';
   fileBuffer: any;
@@ -43,9 +49,9 @@ export class StatementsDetailComponent implements OnInit {
     this.loadData();
     this.loadDetail();
     this.userForm = this.fb.group({
-      MV: ["", [Validators.required]], // Campo requerido
-      ARCHIVO: ["", [Validators.required]],
-    });
+      MV: ["", Validators.required],
+      ARCHIVO: [null, [Validators.required, this.fileTypeValidator, this.fileSizeValidator]],
+    });    
   }
 
   loadData() {
@@ -105,7 +111,7 @@ export class StatementsDetailComponent implements OnInit {
 
   saveFile() {
     this.detail_consulta.FechaRetiro = this.formatDate(this.detail_consulta.FechaRetiro);
-    this.ConsumerService.saveFile( this.detail_consulta.ID_DETAIL, this.fileName, this.fileBuffer, 1).subscribe(r => {
+    this.ConsumerService.saveFile( this.detail_consulta.ID_DETAIL, this.fileName, this.fileBuffer, this.userForm.controls['MV'].value).subscribe(r => {
         if (r.status) {
           Swal.fire({
             icon: 'success',
@@ -118,7 +124,6 @@ export class StatementsDetailComponent implements OnInit {
       }
     })
   }
-
 
   deleteMV(id: any) {
     this.ConsumerService.deleteById(id).subscribe(r => {
@@ -150,6 +155,9 @@ export class StatementsDetailComponent implements OnInit {
       if (!isValid) {
         this.userForm.controls['ARCHIVO'].setErrors({ 'invalidFileType': true });
         this.userForm.controls['ARCHIVO'].markAsTouched();
+      } else if (file.size > 1 * 1024 * 1024) {
+        this.userForm.controls['ARCHIVO'].setErrors({ 'invalidFileSize': true });
+        this.userForm.controls['ARCHIVO'].markAsTouched();
       } else {
         this.userForm.controls['ARCHIVO'].setErrors(null);
         this.userForm.controls['ARCHIVO'].markAsTouched();
@@ -157,5 +165,56 @@ export class StatementsDetailComponent implements OnInit {
     } else {
       this.selectedFile = null;
     }
+  }  
+
+  downloadFile(fileId: number, fileName: string) {
+    this.ConsumerService.downloadMV(fileId).subscribe(
+      (data) => {
+        const blob = new Blob([data], { type: data.type });
+        const url = window.URL.createObjectURL(blob);
+  
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
+  
+        window.URL.revokeObjectURL(url);
+      },
+      (error) => {
+        console.error('Error al descargar el archivo:', error);
+      }
+    );
+  }
+
+  maxSizeValidator(maxSize: number) {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      const file = control.value;
+      if (file && file.size > maxSize) {
+        return { maxSizeExceeded: true };
+      }
+      return null;
+    };
+  }
+
+  fileTypeValidator(control: AbstractControl): { [key: string]: any } | null {
+    const file = control.value;
+    if (file) {
+      const allowedFileTypes = ['application/pdf', 'image/jpeg'];
+      if (!allowedFileTypes.includes(file.type)) {
+        return { invalidFileType: true };
+      }
+    }
+    return null;
+  }
+
+  fileSizeValidator(control: AbstractControl): { [key: string]: any } | null {
+    const file = control.value;
+    if (file) {
+      const maxSizeInBytes = 1 * 1024 * 1024; // 1 MB
+      if (file.size > maxSizeInBytes) {
+        return { invalidFileSize: true };
+      }
+    }
+    return null;
   }
 }
