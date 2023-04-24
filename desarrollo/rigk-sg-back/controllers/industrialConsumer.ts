@@ -19,10 +19,64 @@ class IndustrialConsumer {
             });
         }
     }
+    public async saveFile(req: any, res: Response) {
+        const {idDetail, fileName,typeFile} = req.body;
+        const fileBuffer = req.files.fileBuffer.data;
+        try {
+            const id_header = await industrialConsumerDao.saveFile(idDetail, fileName, fileBuffer, typeFile);
+            res.json({ status: true, data: id_header });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+    public async getMV(req: any, res: Response) {
+        const {id} = req.params;
+        try {
+            const id_header = await industrialConsumerDao.getMV(id);
+            res.json({ status: true, data: id_header });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+    public async deleteById(req: any, res: Response) {
+        const {id} = req.params;
+        try {
+            const id_header = await industrialConsumerDao.deleteById(id);
+            res.json({ status: true, data: id_header });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
     public async getForm(req: any, res: Response) {
         const { id } = req.params;
         try {
             const data = await industrialConsumerDao.getForm(id);
+            res.json({ status: true, data });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+
+    public async getFormConsulta(req: any, res: Response) {
+        const { id } = req.params;
+        try {
+            const data = await industrialConsumerDao.getFormConsulta(id);
             res.json({ status: true, data });
         } catch (error) {
             console.log(error);
@@ -39,6 +93,20 @@ class IndustrialConsumer {
             res.status(200).json({ status: data });
         } catch (error) {
             console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+    async getDeclarationByID(req: any, res: Response) {
+        const id_header = req.params.id_header
+        const id_detail = req.params.id_detail
+        try {
+            const establishment = await industrialConsumerDao.getDeclarationByID(id_header,id_detail);
+            res.status(200).json({ status: establishment, data: {}, msg: '' });
+        } catch (err) {
+            console.log(err);
             res.status(500).json({
                 status: false,
                 message: "Algo salió mal"

@@ -7,6 +7,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { StatementsComponent } from './pages/statements/statements.component';
 import { BulkUploadComponent } from './pages/bulk-upload/bulk-upload.component';
+import { StatementsDetailComponent } from './pages/statements-detail/statements-detail.component';
 
 const routes: Routes = [{
     path: '',
@@ -19,6 +20,7 @@ const routes: Routes = [{
       { path: 'form/:id', component: FormComponent, data:{show: true} },
       { path: 'profile', component: ProfileComponent },
       { path: 'statements', component: StatementsComponent },
+      { path: 'statements/:id_header_/:id_detail', component: StatementsDetailComponent },
       { path: 'faq', component: FaqComponent },
       { path: '**', redirectTo: 'home', pathMatch: 'full' }
     ]
