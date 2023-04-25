@@ -51,17 +51,13 @@ export class SidebarComponent implements OnInit {
     private productorService: ProductorService) { }
 
   ngOnInit(): void {
-
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
-
   }
-
   hideSidebar() {
     if (window.innerWidth <= 992) {
       document.getElementById('sidebar')?.classList.toggle("active");
     }
   }
-
   async showDialog() {
     Swal.fire({
       title: 'Ingrese Datos',
@@ -132,7 +128,7 @@ export class SidebarComponent implements OnInit {
                 this.ss.verifyForm(id_business, year).subscribe({
                   next: e => {
                     if (!e.status) {
-                      this.router.navigate(['/consumidor/form'], { queryParams: { year, id_business: r.data } });
+                      this.router.navigate(['/consumidor/form'], { queryParams: { year, id_business: r.data, code: id_business } });
                     } else {
                       Swal.fire({
                         icon: 'error',
@@ -158,5 +154,4 @@ export class SidebarComponent implements OnInit {
     }).then(result => {
     });
   }
-
 }
