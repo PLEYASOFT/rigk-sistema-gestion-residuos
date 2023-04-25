@@ -123,6 +123,10 @@ export class FormComponent implements OnInit {
       tb_ref_4?.deleteRow(0);
     }
     this.selectedEstablishment = null;
+    document.getElementById(`table_td_1`)!.innerHTML = "0";
+    document.getElementById(`table_td_2`)!.innerHTML = "0";
+    document.getElementById(`table_td_3`)!.innerHTML = "0";
+    document.getElementById(`table_td_4`)!.innerHTML = "0";
   }
   getManagersForMaterial(materialId: number): any[] {
     const managersForMaterial = this.managers.find(m => m.material === materialId)?.managers || [];
