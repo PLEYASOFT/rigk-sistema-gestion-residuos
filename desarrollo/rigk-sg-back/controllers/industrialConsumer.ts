@@ -20,7 +20,7 @@ class IndustrialConsumer {
         }
     }
     public async saveFile(req: any, res: Response) {
-        const {idDetail, fileName,typeFile} = req.body;
+        const { idDetail, fileName, typeFile } = req.body;
         const fileBuffer = req.files.fileBuffer.data;
         try {
             const id_header = await industrialConsumerDao.saveFile(idDetail, fileName, fileBuffer, typeFile);
@@ -33,8 +33,29 @@ class IndustrialConsumer {
             });
         }
     }
+    async downloadFile(req: any, res: Response) {
+        const id = req.params.id;
+        try {
+            const fileData = await industrialConsumerDao.downloadFile(id);
+            if (fileData) {
+                const fileContent = Buffer.from(fileData.fileContent, 'binary');
+
+                res.setHeader('Content-Type', fileData.fileType);
+                res.setHeader('Content-Disposition', `attachment; filename=${fileData.fileName}`);
+                res.send(fileContent);
+            } else {
+                res.status(404).json({ status: false, message: 'Archivo no encontrado' });
+            }
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: 'Algo salió mal',
+            });
+        }
+    }
     public async getMV(req: any, res: Response) {
-        const {id} = req.params;
+        const { id } = req.params;
         try {
             const id_header = await industrialConsumerDao.getMV(id);
             res.json({ status: true, data: id_header });
@@ -47,7 +68,7 @@ class IndustrialConsumer {
         }
     }
     public async deleteById(req: any, res: Response) {
-        const {id} = req.params;
+        const { id } = req.params;
         try {
             const id_header = await industrialConsumerDao.deleteById(id);
             res.json({ status: true, data: id_header });
@@ -103,7 +124,7 @@ class IndustrialConsumer {
         const id_header = req.params.id_header
         const id_detail = req.params.id_detail
         try {
-            const establishment = await industrialConsumerDao.getDeclarationByID(id_header,id_detail);
+            const establishment = await industrialConsumerDao.getDeclarationByID(id_header, id_detail);
             res.status(200).json({ status: establishment, data: {}, msg: '' });
         } catch (err) {
             console.log(err);
