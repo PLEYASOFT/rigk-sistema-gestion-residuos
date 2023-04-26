@@ -6,7 +6,7 @@ class IndustrialConsumerDao {
         const id_header = resp_header.insertId;
         for (let i = 0; i < detail.length; i++) {
             const { residue, sub, value, date, gestor, ler, treatment } = detail[i];
-            const resp: any = await conn?.execute("INSERT INTO detail_industrial_consumer_form(ID_HEADER,PRECEDENCE,TYPE_RESIDUE,VALUE, DATE_WITHDRAW,ID_GESTOR, LER,TREATMENT_TYPE) VALUES (?,?,?,?,?,?,?,?)", [id_header, residue, sub, value, date, gestor, (ler || null), treatment]).then((res) => res[0]).catch(error => [{ undefined }]);
+            const resp: any = await conn?.execute("INSERT INTO detail_industrial_consumer_form(ID_HEADER,PRECEDENCE,TYPE_RESIDUE,VALUE, DATE_WITHDRAW,ID_GESTOR, LER,TREATMENT_TYPE) VALUES (?,?,?,?,?,?,?,?)", [id_header, residue, sub, value.toString().replace(",","."), date, gestor, (ler || null), treatment]).then((res) => res[0]).catch(error => {console.log(error); return [{ undefined }];});
             const id_detail = resp.insertId;
 
             for (var key in attached) {
@@ -106,10 +106,10 @@ class IndustrialConsumerDao {
         header_industrial_consumer_form.ID AS ID_HEADER, business.NAME as NAME_BUSINESS, detail_industrial_consumer_form.ID AS ID_DETAIL,
         detail_industrial_consumer_form.PRECEDENCE AS PRECEDENCE,
         CASE detail_industrial_consumer_form.PRECEDENCE
-            WHEN 0 THEN 'Papel/Cartón'
-            WHEN 1 THEN 'Metal'
-            WHEN 2 THEN 'Plástico Total'
-            WHEN 3 THEN 'Madera'
+            WHEN 1 THEN 'Papel/Cartón'
+            WHEN 2 THEN 'Metal'
+            WHEN 3 THEN 'Plástico Total'
+            WHEN 4 THEN 'Madera'
             ELSE 'Desconocido'
         END AS PRECEDENCETIPEADO,
         detail_industrial_consumer_form.TYPE_RESIDUE AS TYPE_RESIDUE,

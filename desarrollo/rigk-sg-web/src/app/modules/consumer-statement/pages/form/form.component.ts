@@ -13,7 +13,7 @@ import { BusinessService } from 'src/app/core/services/business.service';
   styleUrls: ['./form.component.css']
 })
 export class FormComponent implements OnInit {
-  tables = ["Papel/Cartón", "Metal", "Plástico Total", "Madera"];
+  tables = ["Papel/Cartón", "Metal", "Plástico", "Madera"];
   e = 1;
   materials = [
     {
@@ -127,6 +127,7 @@ export class FormComponent implements OnInit {
     document.getElementById(`table_td_2`)!.innerHTML = "0";
     document.getElementById(`table_td_3`)!.innerHTML = "0";
     document.getElementById(`table_td_4`)!.innerHTML = "0";
+    this.newData = [];
   }
   getManagersForMaterial(materialId: number): any[] {
     const managersForMaterial = this.managers.find(m => m.material === materialId)?.managers || [];
@@ -192,10 +193,10 @@ export class FormComponent implements OnInit {
       if ((reg.value == 0 && (reg.date != "" || reg.gestor > 0 || reg.treatment != "0" || reg.sub != "0"))) {
         error = "Falta ingresar peso";
         break;
-      } else if (reg.value > 0 && (reg.date == "" || reg.gestor == 0 || reg.treatment == "0" || reg.sub == "0")) {
+      } else if (reg.value > 0 && (reg.date == "" || reg.gestor == "-1" || reg.treatment == "0" || reg.sub == "0")) {
         error = "Falta ingresar tipo tratamiento, subtipo, fecha de retiro o gestor";
         break;
-      } else if (reg.value == 0 && (reg.date == "" || reg.gestor == 0 || reg.treatment == "0" || reg.sub == "0")) {
+      } else if (reg.value == 0 && (reg.date == "" || reg.gestor == "-1" || reg.treatment == "0" || reg.sub == "0")) {
         this.newData.splice(i, 1);
         if (this.newData.length == 0) {
           error = "Formulario está vacío";
@@ -325,28 +326,24 @@ export class FormComponent implements OnInit {
     const btn_modal = document.getElementById(`btn_${i + 1}_${n_row}_modal`);
     const tmp: any[] = this.newData;
 
-    const inp_ler = (document.getElementById(`inp_ler_${i + 1}_${n_row}`) as HTMLInputElement)
-    inp_ler.onchange = function () {
-      const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
-      if (w == -1) {
-        const e = {
-          row: n_row,
-          residue: (i + 1),
-          sub: "0",
-          treatment: "",
-          ler: inp_ler.value,
-          value: 0,
-          date: "",
-          gestor: "0",
-          files: []
-        };
-        tmp.push(e);
-      } else {
-        tmp[i].ler = inp_ler.value;
-      }
-    }
     const inp_treatment = (document.getElementById(`inp_treatment_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_treatment.onchange = () => {
+      let tmp_filter = 0;
+      for (let j = 0; j < tmp.length; j++) {
+        const i = tmp[j];
+        if(j==n_row) continue;
+        if(i.sub==inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value ){
+          tmp_filter++;
+        }
+      }
+      if(tmp_filter >= 1) {
+        Swal.fire({
+          icon: 'info',
+          text: 'Ya se encuentra un registro con el mismo tratamiento, subtipo y gestor'
+        });
+        inp_treatment.value="0";
+        return;
+      }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
         const e = {
@@ -357,23 +354,30 @@ export class FormComponent implements OnInit {
           ler: "",
           value: 0,
           date: "",
-          gestor: "0",
+          gestor: "-1",
           files: []
         };
         tmp.push(e);
       } else {
-        tmp[i].treatment = inp_treatment.value;
+        tmp[w].treatment = inp_treatment.value;
       }
     }
     const inp_sub = (document.getElementById(`inp_sub_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_sub.onchange = () => {
-      const q = tmp.findIndex(r => r.residue == (i + 1) && r.sub == inp_sub.value);
-      if (q > -1) {
+      let tmp_filter = 0;
+      for (let j = 0; j < tmp.length; j++) {
+        const i = tmp[j];
+        if(j==n_row) continue;
+        if(i.sub==inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value ){
+          tmp_filter++;
+        }
+      }
+      if(tmp_filter >= 1) {
         Swal.fire({
-          icon: 'warning',
-          text: 'Subtipo ya fue registrado'
+          icon: 'info',
+          text: 'Ya se encuentra un registro con el mismo tratamiento, subtipo y gestor'
         });
-        inp_sub.value = "0";
+        inp_sub.value="0";
         return;
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
@@ -382,20 +386,50 @@ export class FormComponent implements OnInit {
           row: n_row,
           residue: (i + 1),
           sub: inp_sub.value,
-          treatment: "",
+          treatment: "0",
           ler: "",
           value: 0,
           date: "",
-          gestor: "0",
+          gestor: "-1",
           files: []
         };
         tmp.push(e);
       } else {
-        tmp[i].sub = inp_sub.value;
+        tmp[w].sub = inp_sub.value;
+      }
+    }
+
+    const inp_ler = (document.getElementById(`inp_ler_${i + 1}_${n_row}`) as HTMLInputElement)
+    inp_ler.onchange = function () {
+      const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
+      if (w == -1) {
+        const e = {
+          row: n_row,
+          residue: (i + 1),
+          sub: "0",
+          treatment: "0",
+          ler: inp_ler.value,
+          value: 0,
+          date: "",
+          gestor: "-1",
+          files: []
+        };
+        tmp.push(e);
+      } else {
+        tmp[w].ler = inp_ler.value;
       }
     }
     const inp_value = (document.getElementById(`inp_value_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_value.onchange = () => {
+      inp_value.value = inp_value.value.replace(".",",");
+      const pattern = /^[0-9]+(,[0-9]+)?$/;
+      if (!pattern.test(inp_value.value)) {
+        Swal.fire({
+          icon: 'info',
+          text: 'Solo se admiten números'
+        })
+        inp_value.value = "0";
+      }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
         const e = {
@@ -406,17 +440,18 @@ export class FormComponent implements OnInit {
           ler: "",
           value: inp_value.value,
           date: "",
-          gestor: "0",
+          gestor: "-1",
           files: []
         };
         tmp.push(e);
       } else {
-        tmp[i].value = inp_value.value;
+        tmp[w].value = inp_value.value;
       }
       let sum = 0;
       for (let y = 0; y < tmp.length; y++) {
         const u = tmp[y];
-        sum += parseFloat(u.value.replace(",", "."));
+        if (u.residue != i + 1) continue;
+        sum += parseFloat(u.value.toString().replace(",", "."));
       }
       document.getElementById(`table_td_${i + 1}`)!.innerHTML = sum.toString().replace(".", ",");
     }
@@ -432,16 +467,32 @@ export class FormComponent implements OnInit {
           ler: "",
           value: 0,
           date: inp_date.value,
-          gestor: "0",
+          gestor: "-1",
           files: []
         };
         tmp.push(e);
       } else {
-        tmp[i].date = inp_date.value;
+        tmp[w].date = inp_date.value;
       }
     }
     const inp_gestor = (document.getElementById(`inp_gestor_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_gestor.onchange = () => {
+      let tmp_filter = 0;
+      for (let j = 0; j < tmp.length; j++) {
+        const i = tmp[j];
+        if(j==n_row) continue;
+        if(i.sub==inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value ){
+          tmp_filter++;
+        }
+      }
+      if(tmp_filter >= 1) {
+        Swal.fire({
+          icon: 'info',
+          text: 'Ya se encuentra un registro con el mismo tratamiento, subtipo y gestor'
+        });
+        inp_gestor.value="-1";
+        return;
+      }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
         const e = {
@@ -457,7 +508,7 @@ export class FormComponent implements OnInit {
         };
         tmp.push(e);
       } else {
-        tmp[i].gestor = inp_gestor.value;
+        tmp[w].gestor = inp_gestor.value;
       }
     }
     btn!.onclick = () => {
@@ -480,7 +531,7 @@ export class FormComponent implements OnInit {
       }
     }
     btn_modal!.onclick = () => {
-      this.tableSelected = i + 1;
+      this.tableSelected = (i + 1);
       this.rowSelected = n_row;
       document.getElementById('id_table_none')!.innerHTML = `${i + 1}`;
       document.getElementById('id_row_none')!.innerHTML = `${n_row}`;
@@ -494,11 +545,12 @@ export class FormComponent implements OnInit {
           ler: "",
           value: 0,
           date: "",
-          gestor: "0",
+          gestor: "-1",
           files: []
         };
         tmp.push(e);
-        this.filess = [];
+        const ww = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
+        this.filess = tmp[ww].files
         return;
       }
       this.filess = tmp[w].files || [];
@@ -508,23 +560,31 @@ export class FormComponent implements OnInit {
   filess: any[] = [];
   addFile() {
     let type = (document.getElementById('inp_select_mv') as HTMLInputElement).value;
-    const q = this.newData.findIndex(r => r.residue == this.tableSelected && r.row == this.rowSelected);
-    if (q == -1) {
+    if (!type) {
+      Swal.fire({
+        icon: 'info',
+        text: 'Es necesario seleccionar Tipo MV'
+      });
       return;
     }
-    if(this.newData[q].files.length == 3) {
+    const q = this.newData.findIndex(r => r.residue == this.tableSelected && r.row == this.rowSelected);
+    if (q == -1) {
+      console.log("first")
+      return;
+    }
+    if (this.newData[q].files.length == 3) {
       Swal.fire({
-        icon:'info',
+        icon: 'info',
         text: 'Se permite máximo 3 medios de verificación'
       });
       (document.getElementById('inp_select_mv') as HTMLInputElement).value = "0";
       (document.getElementById('inp_file_0') as HTMLInputElement).value = "";
       return;
     }
-    
-    if((this.newData[q].files as any[]).findIndex(t=>t.type == type) > -1) {
+
+    if ((this.newData[q].files as any[]).findIndex(t => t.type == type) > -1) {
       Swal.fire({
-        icon:'warning',
+        icon: 'warning',
         text: 'Tipo de Medio de Verificación ya fue agregado'
       });
       (document.getElementById('inp_select_mv') as HTMLInputElement).value = "0";
@@ -553,20 +613,20 @@ export class FormComponent implements OnInit {
     if (tmp != 'image' && target.files[0].type != 'application/pdf') {
       Swal.fire({
         icon: 'info',
-        text: 'Tipo de archivo no permitido.'
+        text: 'Tipo de archivo no permitido. Sólo se permiten Imágenes o PDF'
       });
       (document.getElementById('inp_file_0') as HTMLInputElement).value = "";
       return;
     }
     this.tmpFile = event.target.files;
   }
-  deleteFile(file:any){
-    const i = this.newData.findIndex(r=>r.residue == this.tableSelected && r.row == this.rowSelected);
-    if(i>-1) {
-      if(this.newData[i].files) {
+  deleteFile(file: any) {
+    const i = this.newData.findIndex(r => r.residue == this.tableSelected && r.row == this.rowSelected);
+    if (i > -1) {
+      if (this.newData[i].files) {
         const j = (this.newData[i].files as any[]).findIndex(f => f.type == file.type && f.file.name == file.file.name);
-        if(j==-1) alert("aa");
-        (this.newData[i].files as any[]).splice(j,1);
+        if (j == -1) alert("aa");
+        (this.newData[i].files as any[]).splice(j, 1);
       }
     }
   }
