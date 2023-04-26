@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { BusinessService } from 'src/app/core/services/business.service';
 import { EstablishmentService } from 'src/app/core/services/establishment.service';
 import Swal from 'sweetalert2';
 import { ConsumerService } from '../../../../core/services/consumer.service';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-bulk-upload',
@@ -10,6 +11,7 @@ import { ConsumerService } from '../../../../core/services/consumer.service';
   styleUrls: ['./bulk-upload.component.css']
 })
 export class BulkUploadComponent implements OnInit {
+  @ViewChild('fileInput', { static: false }) fileInput!: ElementRef;
   dbBusiness: any[] = [];
 
   constructor(public consumer: ConsumerService,
@@ -56,5 +58,192 @@ export class BulkUploadComponent implements OnInit {
         Swal.close();
       }
     });
+  }
+
+  onFileChange(event: any) {
+    const allowedMimeTypes = [
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ];
+
+    const target: DataTransfer = <DataTransfer>(event.target);
+    if (target.files.length !== 1) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Solo puede cargar un archivo a la vez'
+      });
+      return;
+    }
+
+    const file = target.files[0];
+    if (!allowedMimeTypes.includes(file.type)) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Tipo de archivo incorrecto. Por favor, cargue un archivo Excel (.xls o .xlsx)'
+      });
+      return;
+    }
+
+    const reader: FileReader = new FileReader();
+    reader.onload = (e: any) => {
+      const bstr: string = e.target.result;
+    
+      const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
+    
+      if (!wb.SheetNames.includes('Carga Masiva')) {
+        Swal.fire({
+          icon: 'error',
+          text: 'No se encontró la hoja "Carga Masiva" en el archivo'
+        });
+        return;
+      }
+    
+      const ws: XLSX.WorkSheet = wb.Sheets['Carga Masiva'];
+    
+      const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+    
+      this.processData(data);
+    };
+    reader.readAsBinaryString(file);
+  }
+
+  processData(data: any[]) {
+    const rows = data.slice(1);
+    console.log(rows)
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const excelRowNumber = i + 2; // Agregar 2 para considerar el encabezado y el índice base 1 de Excel
+  
+      // Código de establecimiento
+      const establishmentCode = row[0];
+      console.log(establishmentCode)
+      if (!establishmentCode) {
+        Swal.fire({
+          icon: 'error',
+          text: `Código de establecimiento no proporcionado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+  
+      // Fecha
+      const date = this.excelSerialDateToJSDate(row[1]);
+      console.log(date)
+      if (!date || !this.isValidDate(date)) {
+        Swal.fire({
+          icon: 'error',
+          text: `Fecha no válida o no proporcionada en la fila ${excelRowNumber}. Formato requerido: DD/MM/AAAA`
+        });
+        return;
+      }
+  
+      // Número de guía de despacho
+      const dispatchGuideNumber = row[2];
+      if (!dispatchGuideNumber) {
+        Swal.fire({
+          icon: 'error',
+          text: `Número de guía de despacho no proporcionado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+  
+      // Tipo de tratamiento
+      const treatmentType = row[3];
+      if (!treatmentType) {
+        Swal.fire({
+          icon: 'error',
+          text: `Tipo de tratamiento no proporcionado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+  
+      // Tipo de residuo
+      const wasteType = row[4];
+      if (!wasteType) {
+        Swal.fire({
+          icon: 'error',
+          text: `Tipo de residuo no proporcionado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+  
+      // Tipo específico
+      const specificType = row[5];
+      if (!specificType) {
+        Swal.fire({
+          icon: 'error',
+          text: `Tipo específico no proporcionado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+
+      
+      // LER
+      const LER = row[6];
+      
+      // Gestor
+      const managerName = row[7];
+      if (!managerName) {
+        Swal.fire({
+          icon: 'error',
+          text: `Nombre del gestor no proporcionado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+  
+      // RUT Gestor
+      const managerRUT = row[8];
+  
+      // Código de establecimiento receptor
+      const receivingEstablishmentCode = row[9];
+  
+      // Código de tratamiento receptor
+      const receivingTreatmentCode = row[10];
+  
+      // Cantidad
+      const quantity = row[11];
+      console.log(quantity)
+      if (!quantity || !this.isValidQuantity(quantity)) {
+        Swal.fire({
+          icon: 'error',
+          text: `Cantidad no válida o no proporcionada en la fila ${excelRowNumber}. Asegúrese de usar una coma como separador de decimales`
+        });
+        return;
+      }
+    }
+  }
+  
+  isValidDate(date: string): boolean {
+    const datePattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+    const match = date.match(datePattern);
+    console.log(match)
+    if (!match) {
+      return false;
+    }
+  
+    const day = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10);
+    const year = parseInt(match[3], 10);
+    
+    const dateObject = new Date(year, month - 1, day);
+    return (
+      dateObject.getFullYear() === year &&
+      dateObject.getMonth() + 1 === month &&
+      dateObject.getDate() === day
+    );
+  }  
+  
+  isValidQuantity(quantity: string): boolean {
+    const quantityPattern = /^\d+(\,\d{1,2})?$/;
+    return quantityPattern.test(quantity);
+  }
+  
+  excelSerialDateToJSDate(serialDate: number): string {
+    const startDate = new Date(1899, 11, 30);
+    const jsDate = new Date(startDate.getTime() + serialDate * 24 * 60 * 60 * 1000);
+    const day = jsDate.getDate();
+    const month = jsDate.getMonth() + 1;
+    const year = jsDate.getFullYear();
+  
+    return `${day}/${month}/${year}`;
   }
 }

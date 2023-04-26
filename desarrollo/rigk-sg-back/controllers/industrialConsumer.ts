@@ -245,17 +245,17 @@ class IndustrialConsumer {
             const worksheet = workbook.addWorksheet('Carga Masiva');
             const row = worksheet.getRow(1);
             row.getCell(1).value = "CODIGO ESTABLECIMIENTO";
-            row.getCell(2).value = "FECHA";
-            row.getCell(3).value = "DOCUMENTO GD";
+            row.getCell(2).value = "FECHA DE RETIRO";
+            row.getCell(3).value = "NUM GUIA DESPACHO";
             row.getCell(4).value = "TIPO TRATAMIENTO";
             row.getCell(5).value = "TIPO RESIDUO";
             row.getCell(6).value = "TIPO ESPECIFICO";
-            row.getCell(7).value = "EMPRESA";
-            row.getCell(8).value = "ler";
-            row.getCell(9).value = "rut establecimiento receptor";
-            row.getCell(10).value = "código establecimiento receptor";
-            row.getCell(11).value = "código tratamiento receptor";
-            row.getCell(12).value = "cantidad";
+            row.getCell(7).value = "CÓDIGO LER";
+            row.getCell(8).value = "NOMBRE GESTOR";
+            row.getCell(9).value = "RUT ESTABLECIMIENTO RECEPTOR";
+            row.getCell(10).value = "CÓDIGO ESTABLECIMIENTO RECEPTOR";
+            row.getCell(11).value = "CÓDIGO TRATAMIENTO RECEPTOR";
+            row.getCell(12).value = "CANTIDAD (KG)";
             row.commit();
 
             const col = worksheet.columns;
