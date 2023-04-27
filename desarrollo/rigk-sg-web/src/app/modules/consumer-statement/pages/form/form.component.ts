@@ -79,6 +79,7 @@ export class FormComponent implements OnInit {
     });
   }
   ngOnInit(): void {
+    localStorage.removeItem('statementsState');
   }
   getManagersForMaterial(materialId: number): any[] {
     const managersForMaterial = this.managers.find(m => m.material === materialId)?.managers || [];
