@@ -252,7 +252,7 @@ class IndustrialConsumer {
             row.getCell(6).value = "TIPO ESPECIFICO";
             row.getCell(7).value = "CÓDIGO LER";
             row.getCell(8).value = "NOMBRE GESTOR";
-            row.getCell(9).value = "RUT ESTABLECIMIENTO RECEPTOR";
+            row.getCell(9).value = "RUT GESTOR";
             row.getCell(10).value = "CÓDIGO ESTABLECIMIENTO RECEPTOR";
             row.getCell(11).value = "CÓDIGO TRATAMIENTO RECEPTOR";
             row.getCell(12).value = "CANTIDAD (KG)";

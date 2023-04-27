@@ -28,6 +28,26 @@ class BusinessDao {
         conn.end();
         return business;
     }
+    public async getBusinessByVAT(vat: string) {
+        const conn = mysqlcon.getConnection()!;
+        const business: any = await conn.query("SELECT business.ID, business.NAME FROM business WHERE business.VAT = ?", [vat]).then(res => res[0]).catch(erro => undefined);
+        console.log(business)
+        if (business == null || business.length == 0) {
+            return false;
+        }
+        conn.end();
+        return business;
+    }
+    public async checkEstablishmentBusinessRelation(establishmentId: number, businessId: number) {
+        const conn = mysqlcon.getConnection()!;
+        const relation = await conn.query("SELECT * FROM establishment_business WHERE ID_ESTABLISHMENT = ? AND ID_BUSINESS = ?", [establishmentId, businessId]).then(res => res[0]).catch(error => undefined);
+        conn.end();
+    
+        if (!Array.isArray(relation) || relation.length === 0) {
+            return false;
+        }
+        return true;
+    }
     public async getAllBusiness() {
         const conn = mysqlcon.getConnection()!;
         const business: any = await conn.query("SELECT * FROM business").then(res => res[0]).catch(erro => undefined);

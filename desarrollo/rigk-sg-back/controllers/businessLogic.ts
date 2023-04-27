@@ -53,6 +53,32 @@ class BusinessLogic {
             });
         }
     }
+    async getBusinessByVAT(req: any, res: Response) {
+        const {vat} = req.params;
+        try {
+            const business = await businessDao.getBusinessByVAT(vat);
+            res.status(200).json({ status: business, data: {}, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+    async checkEstablishmentBusinessRelation(req: any, res: Response) {
+        const {establishmentId, businessId} = req.params;
+        try {
+            const business = await businessDao.checkEstablishmentBusinessRelation(establishmentId, businessId);
+            res.status(200).json({ status: business, data: {}, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
     async postBusiness(req: any, res: Response) {
         const { name, vat, loc_address, email, phone, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business, giro } = req.body;
         try {
