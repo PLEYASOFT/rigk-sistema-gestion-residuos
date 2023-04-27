@@ -228,6 +228,10 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
     }
+    Swal.fire({
+      icon: 'success',
+      text: 'Se ha subido el archivo Excel correctamente'
+    });
   }
 
   isValidDate(date: string): boolean {
