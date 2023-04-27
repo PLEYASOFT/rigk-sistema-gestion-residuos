@@ -73,7 +73,7 @@ export class StatementsComponent implements OnInit {
     return new Promise<void>((resolve) => {
       Swal.fire({
         title: 'Cargando Datos',
-        text: 'Se está recuperando datos',
+        text: 'Se están recuperando datos',
         timerProgressBar: true,
         showConfirmButton: false,
         allowEscapeKey: false,
