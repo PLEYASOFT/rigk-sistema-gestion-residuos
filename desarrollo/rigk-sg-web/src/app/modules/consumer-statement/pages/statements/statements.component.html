@@ -87,10 +87,10 @@
                             <span [ngClass]="s.semaforo ? 'circle green-circle' : 'circle red-circle'"></span>
                         </td>
                         <td>
-                            <a (click)="goToDetails(s.ID_HEADER, s.ID_DETAIL)">
+                            <a (click)="goToDetails(s.ID_HEADER, s.ID_DETAIL)" class="custom-cursor">
                                 <i class="fa fa-eye fa-lg fa-fw color-verde" aria-hidden="true"></i>
                             </a>
-                        </td>
+                        </td>                        
                     </tr>
                 </tbody>
             </table>

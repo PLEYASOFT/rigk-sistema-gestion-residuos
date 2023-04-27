@@ -136,7 +136,7 @@ class IndustrialConsumerDao {
         detail_industrial_consumer_form.DATE_WITHDRAW AS FechaRetiro,
         CONCAT(UPPER(SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 1, 1)), SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 2)) AS FechaRetiroTipeada,
         detail_industrial_consumer_form.ID_GESTOR AS IdGestor,
-        gestor.NAME AS NombreGestor,
+        IF(detail_industrial_consumer_form.ID_GESTOR = 0, 'Reciclaje interno', gestor.NAME) AS NombreGestor,
         IFNULL(detail_industrial_consumer_form.LER, '-') AS LER,
         detail_industrial_consumer_form.TREATMENT_TYPE AS TREATMENT_TYPE,
         CASE detail_industrial_consumer_form.TREATMENT_TYPE
@@ -145,14 +145,14 @@ class IndustrialConsumerDao {
             WHEN 3 THEN 'Disposición Final en RS'
         ELSE 'Desconocido'
         END AS TIPO_TRATAMIENTO_TIPEADO
-    FROM header_industrial_consumer_form
-    INNER JOIN establishment ON establishment.ID = header_industrial_consumer_form.ID_ESTABLISHMENT
-    INNER JOIN establishment_business ON establishment_business.ID_ESTABLISHMENT = establishment.ID
-    INNER JOIN business ON business.ID = establishment_business.ID_BUSINESS
-    INNER JOIN detail_industrial_consumer_form ON detail_industrial_consumer_form.ID_HEADER = header_industrial_consumer_form.ID
-    INNER JOIN business AS gestor ON detail_industrial_consumer_form.ID_GESTOR = gestor.ID
-    WHERE header_industrial_consumer_form.ID = ? AND detail_industrial_consumer_form.ID = ?
-`, [ID_HEADER, ID_DETAIL]).then(res => res[0]).catch(erro => { console.log(erro); return undefined });
+        FROM header_industrial_consumer_form
+        INNER JOIN establishment ON establishment.ID = header_industrial_consumer_form.ID_ESTABLISHMENT
+        INNER JOIN establishment_business ON establishment_business.ID_ESTABLISHMENT = establishment.ID
+        INNER JOIN business ON business.ID = establishment_business.ID_BUSINESS
+        INNER JOIN detail_industrial_consumer_form ON detail_industrial_consumer_form.ID_HEADER = header_industrial_consumer_form.ID
+        LEFT JOIN business AS gestor ON detail_industrial_consumer_form.ID_GESTOR = gestor.ID
+        WHERE header_industrial_consumer_form.ID = ? AND detail_industrial_consumer_form.ID = ?
+        `, [ID_HEADER, ID_DETAIL]).then(res => res[0]).catch(erro => { console.log(erro); return undefined });
 
         conn.end();
         return data;
