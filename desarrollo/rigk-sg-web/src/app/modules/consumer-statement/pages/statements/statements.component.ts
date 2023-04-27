@@ -118,18 +118,19 @@ export class StatementsComponent implements OnInit {
     if (auto && !this.autoFilter) return;
 
     this.filteredStatements = this.dbStatements.filter(r => {
-      return (
-        (this.selectedBusiness === '-1' || r.NAME_BUSINESS === this.selectedBusiness) &&
-        (this.selectedEstablishment === '-1' || r.NAME_ESTABLISHMENT_REGION === this.selectedEstablishment) &&
-        (this.selectedMaterial === '-1' || r.PRECEDENCE === this.selectedMaterial) &&
-        (this.selectedYear === '-1' || r.FechaRetiroTipeada === this.selectedYear)
-      );
+        return (
+            (this.selectedBusiness === '-1' || r.NAME_BUSINESS === this.selectedBusiness) &&
+            (this.selectedEstablishment === '-1' || r.NAME_ESTABLISHMENT_REGION === this.selectedEstablishment) &&
+            (this.selectedMaterial === '-1' || r.PRECEDENCE === this.selectedMaterial) &&
+            (this.selectedYear === '-1' || r.FechaRetiroTipeada === this.selectedYear)
+        );
     });
-    this.db = this.filteredStatements.slice(0, 10).sort((a, b) => b.FechaRetiroTipeada - a.FechaRetiroTipeada);
+    this.db = this.filteredStatements.slice(0, 10).sort((a, b) => new Date(a.FechaRetiro).getTime() - new Date(b.FechaRetiro).getTime());
     this.cant = Math.ceil(this.filteredStatements.length / 10);
     this.saveState();
     this.filtersApplied = false;
-  }
+}
+
 
   updateFilters() {
     // Filtrar las opciones de business_name
@@ -186,8 +187,8 @@ export class StatementsComponent implements OnInit {
   }
   pagTo(i: number) {
     this.pos = i + 1;
-    this.db = this.filteredStatements.slice((i * 10), (i + 1) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
-  }
+    this.db = this.filteredStatements.slice((i * 10), (i + 1) * 10).sort((a, b) => new Date(a.FechaRetiro).getTime() - new Date(b.FechaRetiro).getTime());
+}
 
   next() {
     if (this.pos >= this.cant) return;
