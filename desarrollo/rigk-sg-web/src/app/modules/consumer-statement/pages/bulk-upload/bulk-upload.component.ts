@@ -1,10 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { BusinessService } from 'src/app/core/services/business.service';
-import { EstablishmentService } from 'src/app/core/services/establishment.service';
 import Swal from 'sweetalert2';
 import { ConsumerService } from '../../../../core/services/consumer.service';
 import * as XLSX from 'xlsx';
-import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-bulk-upload',
@@ -350,13 +348,13 @@ export class BulkUploadComponent implements OnInit {
   convertPrecedence(precedence: any): number {
     switch (precedence) {
       case 'PapelCartón':
-        return 0;
-      case 'Metal':
         return 1;
-      case 'Plástico':
+      case 'Metal':
         return 2;
-      case 'Madera':
+      case 'Plástico':
         return 3;
+      case 'Madera':
+        return 4;
       default:
         return -1; // Retornar un valor no válido en caso de que no haya coincidencia
     }

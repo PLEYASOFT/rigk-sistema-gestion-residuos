@@ -128,10 +128,10 @@ class IndustrialConsumerDao {
         header_industrial_consumer_form.ID AS ID_HEADER, business.NAME as NAME_BUSINESS, detail_industrial_consumer_form.ID AS ID_DETAIL,
         detail_industrial_consumer_form.PRECEDENCE AS PRECEDENCE,
         CASE detail_industrial_consumer_form.PRECEDENCE
-            WHEN 0 THEN 'Papel/Cartón'
-            WHEN 1 THEN 'Metal'
-            WHEN 2 THEN 'Plástico Total'
-            WHEN 3 THEN 'Madera'
+            WHEN 1 THEN 'Papel/Cartón'
+            WHEN 2 THEN 'Metal'
+            WHEN 3 THEN 'Plástico Total'
+            WHEN 4 THEN 'Madera'
             ELSE 'Desconocido'
         END AS PRECEDENCETIPEADO,
         detail_industrial_consumer_form.TYPE_RESIDUE AS TYPE_RESIDUE,
