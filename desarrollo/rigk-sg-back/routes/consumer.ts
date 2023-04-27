@@ -12,5 +12,7 @@ router.get('/download/:id', [validarJWT], IndustrialConsumer.downloadFile);
 router.delete('/detailMV/:id', [validarJWT], IndustrialConsumer.deleteById);
 router.post('/', [validarJWT], IndustrialConsumer.saveForm);
 router.post('/saveFile', [validarJWT], IndustrialConsumer.saveFile);
+router.post('/headerForm', [validarJWT], IndustrialConsumer.saveHeaderData);
+router.post('/detailForm', validarJWT, IndustrialConsumer.saveDetailData);
 export default router;
 

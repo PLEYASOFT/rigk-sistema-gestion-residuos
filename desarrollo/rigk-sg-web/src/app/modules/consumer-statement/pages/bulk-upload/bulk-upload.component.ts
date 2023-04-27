@@ -4,6 +4,7 @@ import { EstablishmentService } from 'src/app/core/services/establishment.servic
 import Swal from 'sweetalert2';
 import { ConsumerService } from '../../../../core/services/consumer.service';
 import * as XLSX from 'xlsx';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-bulk-upload',
@@ -13,11 +14,13 @@ import * as XLSX from 'xlsx';
 export class BulkUploadComponent implements OnInit {
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef;
   dbBusiness: any[] = [];
+  userData: any;
 
   constructor(public consumer: ConsumerService,
     public businessService: BusinessService) { }
 
   ngOnInit(): void {
+    this.userData = JSON.parse(sessionStorage.getItem('user')!);
     this.loadStatements();
   }
 
@@ -100,10 +103,18 @@ export class BulkUploadComponent implements OnInit {
       this.processData(data);
     };
     reader.readAsBinaryString(file);
+
+    this.resetFileInput();
+  }
+
+  resetFileInput() {
+    this.fileInput.nativeElement.value = '';
   }
 
   async processData(data: any[]) {
     const rows = data.slice(1);
+    const rowsData = [];
+    let businessId: any;
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       const excelRowNumber = i + 2; // Se agrega 2 para considerar el encabezado y el índice base 1 de Excel
@@ -203,6 +214,7 @@ export class BulkUploadComponent implements OnInit {
       for (const business of businesses) {
         const checkRelationResponse = await this.businessService.checkEstablishmentBusinessRelation(establishmentId, business.ID).toPromise();
         if (checkRelationResponse.status) {
+          businessId = business.ID;
           isValidEstablishmentBusinessRelation = true;
           break;
         }
@@ -227,11 +239,77 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
+
+      const precedenceNumber = this.convertPrecedence(row[4]);
+      const typeResidueNumber = this.convertTypeResidue(row[5]);
+      const treatmentTypeNumber = this.convertTreatmentType(row[3]);
+
+      const rowData = {
+        establishmentId,
+        date,
+        precedence: precedenceNumber,
+        typeResidue: typeResidueNumber,
+        quantity,
+        LER,
+        treatmentType: treatmentTypeNumber,
+        businessId: businessId
+      };
+      rowsData.push(rowData);
     }
-    Swal.fire({
-      icon: 'success',
-      text: 'Se ha subido el archivo Excel correctamente'
-    });
+
+    // Obten el ID del usuario de la variable de sesión
+    const userId = this.userData.ID;
+
+    // Obten la fecha actual
+    const currentDate = new Date().toISOString().replace('T', ' ').replace('Z', '');
+
+    for (const rowData of rowsData) {
+      // Obten el año de la fecha proporcionada en el Excel
+      const year = rowData.date.split('/')[2];
+
+      const headerFormData = {
+        establishmentId: rowData.establishmentId,
+        createdBy: userId,
+        createdAt: currentDate,
+        updatedAt: currentDate,
+        yearStatement: year
+      };
+      this.consumer.saveHeaderFromExcel(headerFormData).subscribe((headerResponse: any) => {
+        if (headerResponse.status) {
+          const headerId = headerResponse.data.header.insertId;
+          // Ahora crea la información de detalle del formulario y guarda los datos en la tabla detail_industrial_consumer_form
+          const detailFormData = {
+            ID_HEADER: headerId,
+            PRECEDENCE: rowData.precedence,
+            TYPE_RESIDUE: rowData.typeResidue,
+            VALUE: parseFloat(rowData.quantity),
+            DATE_WITHDRAW: this.convertDate(rowData.date),
+            ID_GESTOR: rowData.businessId,
+            LER: rowData.LER,
+            TREATMENT_TYPE: rowData.treatmentType,
+          };
+          this.consumer.saveDetailFromExcel(detailFormData).subscribe((detailResponse: any) => {
+            if (!detailResponse.status) {
+              Swal.fire({
+                icon: 'error',
+                text: 'Hubo un problema al guardar los datos en la tabla detail_industrial_consumer_form'
+              });
+              return;
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            text: 'Hubo un problema al guardar los datos en la tabla header_industrial_consumer_form'
+          });
+          return;
+        }
+        Swal.fire({
+          icon: 'success',
+          text: 'Se ha subido el archivo Excel correctamente y los datos se han guardado en la base de datos'
+        });
+      });
+    }
   }
 
   isValidDate(date: string): boolean {
@@ -266,5 +344,77 @@ export class BulkUploadComponent implements OnInit {
     const year = jsDate.getFullYear();
 
     return `${day}/${month}/${year}`;
+  }
+
+  convertPrecedence(precedence: any): number {
+    switch (precedence) {
+      case 'PapelCartón':
+        return 0;
+      case 'Metal':
+        return 1;
+      case 'Plástico':
+        return 2;
+      case 'Madera':
+        return 3;
+      default:
+        return -1; // Retornar un valor no válido en caso de que no haya coincidencia
+    }
+  }
+
+  convertTypeResidue(typeResidue: any): number {
+    switch (typeResidue) {
+      case "Papel":
+        return 1;
+      case "Papel Compuesto (cemento)":
+        return 2;
+      case "Caja Cartón":
+        return 3;
+      case "Papel/Cartón Otro":
+        return 4;
+      case "Envase Aluminio":
+        return 5;
+      case "Malla o Reja (IBC)":
+        return 6;
+      case "Envase Hojalata":
+        return 7;
+      case "Metal Otro":
+        return 8;
+      case "Plástico Film Embalaje":
+        return 9;
+      case "Plástico Envases Rígidos (Incl. Tapas)":
+        return 10;
+      case "Plástico Sacos o Maxisacos":
+        return 11;
+      case "Plástico EPS (Poliestireno Expandido)":
+        return 12;
+      case "Plástico Zuncho":
+        return 13;
+      case "Plástico Otro":
+        return 14;
+      case "Caja de Madera":
+        return 15;
+      case "Pallet de Madera":
+        return 16;
+      default:
+        throw new Error(`Tipo de residuo no válido: ${typeResidue}`);
+    }
+  }
+
+  convertTreatmentType(treatmentType: any): number {
+    switch (treatmentType) {
+      case "Reciclaje Mecánico":
+        return 1;
+      case "Valorización Energética":
+        return 2;
+      case "Disposición Final en RS":
+        return 3;
+      default:
+        throw new Error(`Tipo de tratamiento no válido: ${treatmentType}`);
+    }
+  }
+
+  convertDate(dateString: any) {
+    const dateParts = dateString.split('/');
+    return `${dateParts[2]}-${dateParts[0].padStart(2, '0')}-${dateParts[1].padStart(2, '0')}`;
   }
 }
