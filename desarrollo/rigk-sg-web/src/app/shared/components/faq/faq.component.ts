@@ -10,6 +10,7 @@ export class FaqComponent implements OnInit {
   constructor(private elementRef: ElementRef) { }
 
   ngOnInit(): void {
+    localStorage.removeItem('statementsState');
   }
 
   public scrollTo(sectionId: string): void {

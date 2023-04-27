@@ -22,6 +22,7 @@ export class BulkUploadComponent implements OnInit {
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
     this.loadStatements();
+    localStorage.removeItem('statementsState');
   }
 
   downloadExcel() {

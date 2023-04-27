@@ -23,6 +23,7 @@ export class HomeComponent implements OnInit {
         });
       }
     })
+    localStorage.removeItem('statementsState');
   }
 
 }
