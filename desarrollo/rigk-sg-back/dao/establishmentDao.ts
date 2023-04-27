@@ -43,12 +43,13 @@ class EstablishmentDao {
                 header_industrial_consumer_form.CREATED_AT, header_industrial_consumer_form.YEAR_STATEMENT,
                 header_industrial_consumer_form.ID AS ID_HEADER, business.NAME as NAME_BUSINESS, detail_industrial_consumer_form.ID AS ID_DETAIL,
                 CASE
-                    WHEN EXISTS (SELECT 1
-                                FROM attached_industrial_consumer_form
-                                WHERE attached_industrial_consumer_form.ID_DETAIL = detail_industrial_consumer_form.ID)
-                    THEN 1
-                    ELSE 0
-                END AS semaforo,
+                WHEN detail_industrial_consumer_form.PRECEDENCE = 3 THEN 1
+                WHEN EXISTS (SELECT 1
+                            FROM attached_industrial_consumer_form
+                            WHERE attached_industrial_consumer_form.ID_DETAIL = detail_industrial_consumer_form.ID)
+                THEN 1
+                ELSE 0
+            END AS semaforo,
                 CASE detail_industrial_consumer_form.PRECEDENCE
                     WHEN 0 THEN 'Papel/Cartón'
                     WHEN 1 THEN 'Metal'
@@ -107,7 +108,7 @@ class EstablishmentDao {
         conn.end();
         return establishment;
     }
-    
+
 }
 const establishmentDao = new EstablishmentDao();
 export default establishmentDao;

@@ -98,6 +98,7 @@ export class FormComponent implements OnInit {
     });
   }
   ngOnInit(): void {
+    localStorage.removeItem('statementsState');
   }
   reset() {
     this.id_establishment = -1;
