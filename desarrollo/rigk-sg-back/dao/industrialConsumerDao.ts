@@ -130,7 +130,7 @@ class IndustrialConsumerDao {
         CASE detail_industrial_consumer_form.PRECEDENCE
             WHEN 1 THEN 'Papel/Cartón'
             WHEN 2 THEN 'Metal'
-            WHEN 3 THEN 'Plástico Total'
+            WHEN 3 THEN 'Plástico'
             WHEN 4 THEN 'Madera'
             ELSE 'Desconocido'
         END AS PRECEDENCETIPEADO,
