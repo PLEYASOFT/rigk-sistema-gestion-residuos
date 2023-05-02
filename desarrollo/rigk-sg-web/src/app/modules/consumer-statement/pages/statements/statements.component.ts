@@ -82,7 +82,7 @@ export class StatementsComponent implements OnInit {
       Swal.showLoading();
       this.establishmentService.getDeclarationEstablishment().subscribe(r => {
         if (r.status) {
-          r.status = r.status.sort(((a: any, b: any) => b.YEAR_STATEMENT - a.YEAR_STATEMENT));
+          r.status = r.status.sort(((a: any, b: any) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()));
   
           (r.status as any[]).forEach(e => {
   
@@ -105,7 +105,7 @@ export class StatementsComponent implements OnInit {
           this.years.sort((a, b) => b - a);
           this.dbStatements = r.status;
           this.cant = Math.ceil(this.dbStatements.length / 10);
-          this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+          this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();;
           Swal.close();
         }
         resolve();
@@ -125,7 +125,7 @@ export class StatementsComponent implements OnInit {
             (this.selectedYear === '-1' || r.FechaRetiroTipeada === this.selectedYear)
         );
     });
-    this.db = this.filteredStatements.slice(0, 10).sort((a, b) => new Date(a.FechaRetiro).getTime() - new Date(b.FechaRetiro).getTime());
+    this.db = this.filteredStatements.slice(0, 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();;
     this.cant = Math.ceil(this.filteredStatements.length / 10);
     this.saveState();
     this.filtersApplied = false;
@@ -187,19 +187,19 @@ export class StatementsComponent implements OnInit {
   }
   pagTo(i: number) {
     this.pos = i + 1;
-    this.db = this.filteredStatements.slice((i * 10), (i + 1) * 10).sort((a, b) => new Date(a.FechaRetiro).getTime() - new Date(b.FechaRetiro).getTime());
+    this.db = this.filteredStatements.slice((i * 10), (i + 1) * 10).sort((a, b) => new Date(a.FechaRetiro).getTime() - new Date(b.FechaRetiro).getTime()).reverse();
 }
 
   next() {
     if (this.pos >= this.cant) return;
     this.pos++;
-    this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+    this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(a.FechaRetiro).getTime() - new Date(b.FechaRetiro).getTime()).reverse();
   }
 
   previus() {
     if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
     this.pos = this.pos - 1;
-    this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+    this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(a.FechaRetiro).getTime() - new Date(b.FechaRetiro).getTime()).reverse();
   }
 
   setArrayFromNumber() {

@@ -33,6 +33,49 @@ class IndustrialConsumer {
             });
         }
     }
+    public async saveHeaderData(req: any, res: Response) {
+        const { establishmentId, createdBy, createdAt, updatedAt, yearStatement } = req.body;
+        
+        try {
+          const idHeader = await industrialConsumerDao.saveHeaderData(
+            establishmentId,
+            createdBy,
+            createdAt,
+            yearStatement
+          );
+          res.json({ status: true, data: idHeader });
+        } catch (error) {
+          console.log(error);
+          res.status(500).json({
+            status: false,
+            message: "Algo salió mal",
+          });
+        }
+    }
+
+    public async saveDetailData(req: any, res: Response) {
+        const { ID_HEADER, PRECEDENCE, TYPE_RESIDUE, VALUE, DATE_WITHDRAW, ID_GESTOR, LER, TREATMENT_TYPE } = req.body;
+      
+        try {
+          const idDetail = await industrialConsumerDao.saveDetailData(
+            ID_HEADER,
+            PRECEDENCE,
+            TYPE_RESIDUE,
+            VALUE,
+            DATE_WITHDRAW,
+            ID_GESTOR,
+            LER,
+            TREATMENT_TYPE
+          );
+          res.json({ status: true, data: idDetail });
+        } catch (error) {
+          console.log(error);
+          res.status(500).json({
+            status: false,
+            message: "Algo salió mal",
+          });
+        }
+      }
     async downloadFile(req: any, res: Response) {
         const id = req.params.id;
         try {
@@ -182,10 +225,10 @@ class IndustrialConsumer {
                     { name: 'PapelCarton', filterButton: false },
                 ],
                 rows: [
-                    ['Cartón: cajas'],
-                    ['Cartón: esquineros, conos'],
-                    ['Papel: bolsas, papel kraft, manuales'],
-                    ['Papel compuesto: bolsas de cemento, linear']
+                    ['Papel'],
+                    ['Papel Compuesto (cemento)'],
+                    ['Caja Cartón'],
+                    ['Papel/Cartón Otro']
                 ],
             });
             worksheetInfo.addTable({
@@ -196,8 +239,10 @@ class IndustrialConsumer {
                     { name: 'Metal', filterButton: false },
                 ],
                 rows: [
-                    ['Aluminio: latas, rejas IBC'],
-                    ['Fierro: hojalata, tambores, zunchos, tinetas, tanques'],
+                    ['Envase Aluminio'],
+                    ['Malla o Reja (IBC)'],
+                    ['Envase Hojalata'],
+                    ['Metal Otro']
                 ],
             });
             worksheetInfo.addTable({
@@ -208,13 +253,12 @@ class IndustrialConsumer {
                     { name: 'Plástico', filterButton: false },
                 ],
                 rows: [
-                    ['Rígido: bidones, tambores, botellas, IBC, tinetas'],
-                    ['Rígido: pallets, bins'],
-                    ['Flexibles rafia: sacos, maxisacos'],
-                    ['Flexibles láminas: films de embalaje, bolsas, burbujas, contraible, flexitank'],
-                    ['Flexibles: zunchos'],
-                    ['Poliestireno: cajas, protecciones, bandejas'],
-                    ['Plásticos compuestos: multicapas']
+                    ['Plástico Film Embalaje'],
+                    ['Plástico Envases Rígidos (Incl. Tapas)'],
+                    ['Plástico Sacos o Maxisacos'],
+                    ['Plástico EPS (Poliestireno Expandido)'],
+                    ['Plástico Zuncho'],
+                    ['Plástico Otro']
                 ],
             });
             worksheetInfo.addTable({
@@ -225,8 +269,8 @@ class IndustrialConsumer {
                     { name: 'Madera', filterButton: false },
                 ],
                 rows: [
-                    ['Pallet'],
-                    ['Cajas, esquineros, carretes'],
+                    ['Caja de Madera'],
+                    ['Pallet de Madera'],
                 ],
             });
 
@@ -245,17 +289,17 @@ class IndustrialConsumer {
             const worksheet = workbook.addWorksheet('Carga Masiva');
             const row = worksheet.getRow(1);
             row.getCell(1).value = "CODIGO ESTABLECIMIENTO";
-            row.getCell(2).value = "FECHA";
-            row.getCell(3).value = "DOCUMENTO GD";
+            row.getCell(2).value = "FECHA DE RETIRO";
+            row.getCell(3).value = "NUM GUIA DESPACHO";
             row.getCell(4).value = "TIPO TRATAMIENTO";
             row.getCell(5).value = "TIPO RESIDUO";
             row.getCell(6).value = "TIPO ESPECIFICO";
-            row.getCell(7).value = "EMPRESA";
-            row.getCell(8).value = "ler";
-            row.getCell(9).value = "rut establecimiento receptor";
-            row.getCell(10).value = "código establecimiento receptor";
-            row.getCell(11).value = "código tratamiento receptor";
-            row.getCell(12).value = "cantidad";
+            row.getCell(7).value = "CÓDIGO LER";
+            row.getCell(8).value = "NOMBRE GESTOR";
+            row.getCell(9).value = "RUT GESTOR";
+            row.getCell(10).value = "CÓDIGO ESTABLECIMIENTO RECEPTOR";
+            row.getCell(11).value = "CÓDIGO TRATAMIENTO RECEPTOR";
+            row.getCell(12).value = "CANTIDAD (KG)";
             row.commit();
 
             const col = worksheet.columns;

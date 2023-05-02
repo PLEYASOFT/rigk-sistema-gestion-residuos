@@ -65,4 +65,11 @@ export class ConsumerService {
     return this.http.get<any>(`${this.url}/excel/${id_business}`, { headers: headers, responseType: 'blob' as 'json' });
   }
 
+  saveHeaderFromExcel(formData: any) {
+    return this.http.post(`${this.url}/headerForm`, formData);
+  }
+
+  saveDetailFromExcel(formData: any) {
+    return this.http.post(`${this.url}/detailForm`, formData);
+  }
 }

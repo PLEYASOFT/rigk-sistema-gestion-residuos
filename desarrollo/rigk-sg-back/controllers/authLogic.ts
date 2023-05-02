@@ -46,7 +46,6 @@ class AuthLogic {
                         delete output.STATE;
                         delete output.DATE_CODE;
                         delete output.CODE
-                        delete output.ID;
                         res.header('x-token', token!.toString());
                         res.header("Access-Control-Expose-Headers", "*");
                         res.status(200).json({ status: true, msg: '', data: { user: output } });
