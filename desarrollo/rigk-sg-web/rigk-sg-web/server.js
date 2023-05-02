@@ -12,10 +12,9 @@ app.get('*', function(req, res) {
 
 /*
 app.get('*', function(req, res) {
-	res.sendFile(path.join(__dirname, 'dist/rigk-sg-web/.well-known/pki-validation/FB86F8DBFC3727328DBBE963FDCCBE93.txt'));
+	res.sendFile(path.join(__dirname, 'dist/rigk-sg-web/.well-known/pki-validation/68764FFE98C9346A9950E5F014C728F8.txt'));
 });
 */
-
 
 app.listen(port, () => {
 	console.log('Servidor iniciado');

@@ -28,6 +28,7 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
     this.horaIngreso = new Date(sessionStorage.getItem('horaIngreso')!);
+    localStorage.removeItem('statementsState');
   }
 
   btnrecovery() {

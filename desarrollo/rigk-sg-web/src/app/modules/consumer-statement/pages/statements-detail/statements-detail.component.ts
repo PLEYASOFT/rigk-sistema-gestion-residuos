@@ -57,7 +57,7 @@ export class StatementsDetailComponent implements OnInit {
   loadData() {
     Swal.fire({
       title: 'Cargando Datos',
-      text: 'Se está recuperando datos',
+      text: 'Se están recuperando datos',
       timerProgressBar: true,
       showConfirmButton: false,
       allowEscapeKey: false,
