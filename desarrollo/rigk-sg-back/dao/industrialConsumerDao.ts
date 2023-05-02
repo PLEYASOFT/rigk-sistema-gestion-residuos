@@ -28,6 +28,12 @@ class IndustrialConsumerDao {
         conn.end();
         return { attached };
     }
+    public async verifyRow(treatment:any, sub:any,gestor:any,date:any) {
+        const conn = mysqlcon.getConnection()!;
+        const data: any = await conn.execute("SELECT * FROM detail_industrial_consumer_form WHERE TREATMENT_TYPE=? AND TYPE_RESIDUE=? AND ID_GESTOR=? AND DATE_WITHDRAW=?", [treatment, sub,gestor,date]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
+        conn.end();
+        return data;
+    }
     public async getForm(id_header: any) {
         const conn = mysqlcon.getConnection()!;
         const header: any = await conn.execute("SELECT header_industrial_consumer_form.*,establishment.NAME_ESTABLISHMENT  FROM header_industrial_consumer_form INNER JOIN establishment on establishment.ID = header_industrial_consumer_form.ID_ESTABLISHMENT WHERE header_industrial_consumer_form.ID=? ", [id_header]).then((res) => res[0]).catch(error => [{ undefined }]);

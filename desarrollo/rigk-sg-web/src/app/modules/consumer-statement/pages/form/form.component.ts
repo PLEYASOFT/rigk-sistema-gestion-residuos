@@ -53,6 +53,25 @@ export class FormComponent implements OnInit {
       ]
     },
   ];
+
+  materials_2 = [
+    { id: 1, name: "Papel" },
+    { id: 2, name: "Papel Compuesto (cemento)" },
+    { id: 3, name: "Caja Cartón" },
+    { id: 4, name: "Otro" },
+    { id: 5, name: "Envase Aluminio" },
+    { id: 6, name: "Malla o Reja (IBC)" },
+    { id: 7, name: "Envase Hojalata" },
+    { id: 8, name: "Otro" },
+    { id: 9, name: "Plástico Film Embalaje" },
+    { id: 10, name: "Plástico Envases Rígidos (Incl. Tapas)" },
+    { id: 11, name: "Plástico Sacos o Maxisacos" },
+    { id: 12, name: "Plástico EPS (Poliestireno Expandido)" },
+    { id: 13, name: "Plástico Zuncho" },
+    { id: 14, name: "Otro" },
+    { id: 15, name: "Caja de Madera" },
+    { id: 16, name: "Pallet de Madera" }
+  ];
   disableAll = false;
   treatment_type = [
     "Reciclaje Mecánico",
@@ -135,7 +154,7 @@ export class FormComponent implements OnInit {
       (manager: { ID_BUSINESS: any, BUSINESS_NAME: any; }) => { return { name: manager.BUSINESS_NAME, id: manager.ID_BUSINESS } || { name: "Reciclaje Interno", id: 0 } });
   }
   onEstablishmentChange(event: any) {
-    this.establishmentService.getEstablishmentByID(this.selectedEstablishment).subscribe(r => {
+    this.establishmentService.getEstablishmentByID(this.selectedEstablishment[0]).subscribe(r => {
       if (r.status) {
         this.region = r.status[0].REGION;
         this.id_establishment = r.status[0].ID;
@@ -148,12 +167,12 @@ export class FormComponent implements OnInit {
   }
   fetchManagersForAllMaterials(region: any) {
     // Crear un array de observables
-    const observables = this.materials
-      .filter(material => material._id !== undefined) // Filtrar los materiales con id definido
+    const observables = this.materials_2
+      .filter(material => material.id !== undefined) // Filtrar los materiales con id definido
       .map(material => {
-        return this.managerService.getManagersByMaterial(material._id, region).pipe(
+        return this.managerService.getManagersByMaterial(material.id, region).pipe(
           map(managers => ({
-            material: material._id,
+            material: material.id,
             managers: managers.status
           }))
         );
@@ -253,6 +272,20 @@ export class FormComponent implements OnInit {
   newData: any[] = [];
   rowSelected = 0;
   tableSelected = 0;
+  verifyRow(data: any, input: HTMLInputElement) {
+    this.consumerService.checkRow(data).subscribe({
+      next: r => {
+        if (!r.status) {
+          Swal.fire({
+            icon: 'info',
+            text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
+          });
+          input.value = "-1";
+          return;
+        }
+      }
+    });
+  }
   addRow(i: number) {
     const tb_ref = document.getElementById(`table_${i + 1}`)?.getElementsByTagName('tbody')[0];
     const n_row = tb_ref!.rows.length;
@@ -260,20 +293,13 @@ export class FormComponent implements OnInit {
     let tt = "";
     for (let q = 0; q < mat.child.length; q++) {
       const r = mat.child[q];
-      tt += `<option value="${r.id}">${r.name}</option>`
+      tt += `<option value="${r.id}">${r.name}</option>`;
     }
-    let tt2 = "";
-    const tmp_tt2 = this.getManagersForMaterial(i + 1);
-    for (let q = 0; q < tmp_tt2.length; q++) {
-      const r = tmp_tt2[q];
-      tt2 += `<option value="${r.id}">${r.name}</option>`
-    }
-
     const html: string = `
     <tr id="tr">
                         <td style="padding-left: 20px;">
                             <select class="form-select" id="inp_treatment_${i + 1}_${n_row}">
-                                <option value="0">Seleccione Tratamiento</option>
+                                <option value="-1">Seleccione Tratamiento</option>
                                 <option value="1">Reciclaje Mecánico</option>
                                 <option value="2">Valorización Energética</option>
                                 <option value="3">Disposición Final en RS</option>
@@ -282,7 +308,7 @@ export class FormComponent implements OnInit {
                         </td>
                         <td>
                             <select class="form-select" id="inp_sub_${i + 1}_${n_row}">
-                                <option value="0">Seleccione Subtipo</option>
+                                <option value="-1">Seleccione Subtipo</option>
                                 ${tt}
                             </select>
                         </td>
@@ -305,7 +331,6 @@ export class FormComponent implements OnInit {
                                 >
                                 <option value="-1" selected>Seleccione</option>
                                 <option value="0">Reciclaje Interno</option>
-                                ${tt2}
                                 <!-- <option *ngFor="let manager of getManagersForMaterial(type.id)" [value]="manager">{{
                                     manager }}</option> -->
                             </select>
@@ -326,30 +351,36 @@ export class FormComponent implements OnInit {
     const btn_modal = document.getElementById(`btn_${i + 1}_${n_row}_modal`);
     const tmp: any[] = this.newData;
 
+    const analize = (treatment: any, sub: any, gestor: any, date: any, row: any) => {
+      this.verifyRow({ treatment, sub, gestor, date }, row);
+    }
+
     const inp_treatment = (document.getElementById(`inp_treatment_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_treatment.onchange = () => {
       let tmp_filter = 0;
       for (let j = 0; j < tmp.length; j++) {
         const i = tmp[j];
-        if(j==n_row) continue;
-        if(i.sub==inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value ){
+        if (j == n_row) continue;
+        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value) {
           tmp_filter++;
         }
       }
-      if(tmp_filter >= 1) {
+      if (tmp_filter >= 1) {
         Swal.fire({
           icon: 'info',
-          text: 'Ya se encuentra un registro con el mismo tratamiento, subtipo y gestor'
+          text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
         });
-        inp_treatment.value="0";
+        inp_treatment.value = "0";
         return;
+      } else {
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_treatment);
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
         const e = {
           row: n_row,
           residue: (i + 1),
-          sub: "0",
+          sub: "-1",
           treatment: inp_treatment.value,
           ler: "",
           value: 0,
@@ -362,23 +393,48 @@ export class FormComponent implements OnInit {
         tmp[w].treatment = inp_treatment.value;
       }
     }
+    function removeOptions(selectElement: any) {
+      var i, L = selectElement.options.length - 1;
+      for (i = L; i >= 0; i--) {
+        selectElement.remove(i);
+      }
+    }
     const inp_sub = (document.getElementById(`inp_sub_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_sub.onchange = () => {
+      removeOptions(inp_gestor);
+      let opt: any = document.createElement('option');
+      opt.value = "-1";
+      opt.innerHTML = "Seleccione";
+      inp_gestor.appendChild(opt);
+      let opt2: any = document.createElement('option');
+      opt2.value = "0";
+      opt2.innerHTML = "Reciclaje Interno";
+      inp_gestor.appendChild(opt2);
+      const tmp_tt2 = this.getManagersForMaterial(parseInt(inp_sub.value));
+      for (let i = 0; i < tmp_tt2.length; i++) {
+        const gestor = tmp_tt2[i];
+        let opt: any = document.createElement('option');
+        opt.value = gestor.id;
+        opt.innerHTML = gestor.name;
+        inp_gestor.appendChild(opt);
+      }
       let tmp_filter = 0;
       for (let j = 0; j < tmp.length; j++) {
         const i = tmp[j];
-        if(j==n_row) continue;
-        if(i.sub==inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value ){
+        if (j == n_row) continue;
+        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value) {
           tmp_filter++;
         }
       }
-      if(tmp_filter >= 1) {
+      if (tmp_filter >= 1) {
         Swal.fire({
           icon: 'info',
-          text: 'Ya se encuentra un registro con el mismo tratamiento, subtipo y gestor'
+          text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
         });
-        inp_sub.value="0";
+        inp_sub.value = "0";
         return;
+      } else {
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_sub);
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -386,7 +442,7 @@ export class FormComponent implements OnInit {
           row: n_row,
           residue: (i + 1),
           sub: inp_sub.value,
-          treatment: "0",
+          treatment: "-1",
           ler: "",
           value: 0,
           date: "",
@@ -398,7 +454,6 @@ export class FormComponent implements OnInit {
         tmp[w].sub = inp_sub.value;
       }
     }
-
     const inp_ler = (document.getElementById(`inp_ler_${i + 1}_${n_row}`) as HTMLInputElement)
     inp_ler.onchange = function () {
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
@@ -406,8 +461,8 @@ export class FormComponent implements OnInit {
         const e = {
           row: n_row,
           residue: (i + 1),
-          sub: "0",
-          treatment: "0",
+          sub: "-1",
+          treatment: "-1",
           ler: inp_ler.value,
           value: 0,
           date: "",
@@ -421,7 +476,7 @@ export class FormComponent implements OnInit {
     }
     const inp_value = (document.getElementById(`inp_value_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_value.onchange = () => {
-      inp_value.value = inp_value.value.replace(".",",");
+      inp_value.value = inp_value.value.replace(".", ",");
       const pattern = /^[0-9]+(,[0-9]+)?$/;
       if (!pattern.test(inp_value.value)) {
         Swal.fire({
@@ -435,8 +490,8 @@ export class FormComponent implements OnInit {
         const e = {
           row: n_row,
           residue: (i + 1),
-          sub: "0",
-          treatment: "0",
+          sub: "-1",
+          treatment: "-1",
           ler: "",
           value: inp_value.value,
           date: "",
@@ -457,13 +512,31 @@ export class FormComponent implements OnInit {
     }
     const inp_date = (document.getElementById(`inp_date_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_date.onchange = () => {
+      let tmp_filter = 0;
+      for (let j = 0; j < tmp.length; j++) {
+        const i = tmp[j];
+        if (j == n_row) continue;
+        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value) {
+          tmp_filter++;
+        }
+      }
+      if (tmp_filter >= 1) {
+        Swal.fire({
+          icon: 'info',
+          text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
+        });
+        inp_date.value = "";
+        return;
+      } else {
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_date);
+      }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
         const e = {
           row: n_row,
           residue: (i + 1),
-          sub: "0",
-          treatment: "0",
+          sub: "-1",
+          treatment: "-1",
           ler: "",
           value: 0,
           date: inp_date.value,
@@ -480,26 +553,28 @@ export class FormComponent implements OnInit {
       let tmp_filter = 0;
       for (let j = 0; j < tmp.length; j++) {
         const i = tmp[j];
-        if(j==n_row) continue;
-        if(i.sub==inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value ){
+        if (j == n_row) continue;
+        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value) {
           tmp_filter++;
         }
       }
-      if(tmp_filter >= 1) {
+      if (tmp_filter >= 1) {
         Swal.fire({
           icon: 'info',
-          text: 'Ya se encuentra un registro con el mismo tratamiento, subtipo y gestor'
+          text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
         });
-        inp_gestor.value="-1";
+        inp_gestor.value = "-1";
         return;
+      } else {
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_gestor);
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
         const e = {
           row: n_row,
           residue: (i + 1),
-          sub: "0",
-          treatment: "0",
+          sub: "-1",
+          treatment: "-1",
           ler: "",
           value: 0,
           date: "",
@@ -540,8 +615,8 @@ export class FormComponent implements OnInit {
         const e = {
           row: n_row,
           residue: (i + 1),
-          sub: "0",
-          treatment: "0",
+          sub: "-1",
+          treatment: "-1",
           ler: "",
           value: 0,
           date: "",
@@ -569,7 +644,6 @@ export class FormComponent implements OnInit {
     }
     const q = this.newData.findIndex(r => r.residue == this.tableSelected && r.row == this.rowSelected);
     if (q == -1) {
-      console.log("first")
       return;
     }
     if (this.newData[q].files.length == 3) {

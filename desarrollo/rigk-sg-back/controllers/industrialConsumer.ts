@@ -19,6 +19,26 @@ class IndustrialConsumer {
             });
         }
     }
+    public async verifyRow(req: any, res: Response) {
+        const {treatment, sub,gestor,date} = req.body;
+        try {
+            const data: any = await industrialConsumerDao.verifyRow(treatment, sub,gestor,date);
+            if(data.length > 0) {
+                return res.json({
+                    status: false
+                })
+            }
+            return res.json({
+                status: true
+            })
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
     public async saveFile(req: any, res: Response) {
         const { idDetail, fileName, typeFile } = req.body;
         const fileBuffer = req.files.fileBuffer.data;

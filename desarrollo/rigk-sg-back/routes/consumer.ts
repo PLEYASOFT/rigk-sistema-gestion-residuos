@@ -9,8 +9,9 @@ router.get('/consult/:id', [validarJWT], IndustrialConsumer.getFormConsulta);
 router.get('/excel/:id', [validarJWT], IndustrialConsumer.downloadBulkUploadFile);
 router.get('/detailMV/:id', [validarJWT], IndustrialConsumer.getMV);
 router.get('/download/:id', [validarJWT], IndustrialConsumer.downloadFile);
-router.delete('/detailMV/:id', [validarJWT], IndustrialConsumer.deleteById);
+router.post('/verifyRow/', [validarJWT], IndustrialConsumer.verifyRow);
 router.post('/', [validarJWT], IndustrialConsumer.saveForm);
 router.post('/saveFile', [validarJWT], IndustrialConsumer.saveFile);
+router.delete('/detailMV/:id', [validarJWT], IndustrialConsumer.deleteById);
 export default router;
 
