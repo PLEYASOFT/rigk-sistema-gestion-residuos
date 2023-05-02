@@ -28,7 +28,7 @@ export class ConsumerService {
       const formData = new FormData();
       formData.append('idDetail', idDetail.toString());
       formData.append('fileName', fileName);
-      formData.append('fileBuffer', file); // Asegúrate de que 'file' contenga el objeto File, no una cadena
+      formData.append('fileBuffer', file); 
       formData.append('typeFile', typeFile.toString());
 
       const headers = new HttpHeaders().set('Content-Type', 'multipart/form-data');
@@ -65,5 +65,12 @@ export class ConsumerService {
   }
   checkRow(row:any) {
     return this.http.post<any>(`${this.url}/verifyRow/`,row);
+
+  saveHeaderFromExcel(formData: any) {
+    return this.http.post(`${this.url}/headerForm`, formData);
+  }
+
+  saveDetailFromExcel(formData: any) {
+    return this.http.post(`${this.url}/detailForm`, formData);
   }
 }

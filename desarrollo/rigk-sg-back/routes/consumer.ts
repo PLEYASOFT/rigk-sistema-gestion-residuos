@@ -13,5 +13,7 @@ router.post('/verifyRow/', [validarJWT], IndustrialConsumer.verifyRow);
 router.post('/', [validarJWT], IndustrialConsumer.saveForm);
 router.post('/saveFile', [validarJWT], IndustrialConsumer.saveFile);
 router.delete('/detailMV/:id', [validarJWT], IndustrialConsumer.deleteById);
+router.post('/headerForm', [validarJWT], IndustrialConsumer.saveHeaderData);
+router.post('/detailForm', validarJWT, IndustrialConsumer.saveDetailData);
 export default router;
 

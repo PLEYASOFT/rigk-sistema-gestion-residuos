@@ -19,3 +19,7 @@
 .red-circle {
     background-color: red;
 }
+
+.custom-cursor {
+    cursor: pointer;
+}

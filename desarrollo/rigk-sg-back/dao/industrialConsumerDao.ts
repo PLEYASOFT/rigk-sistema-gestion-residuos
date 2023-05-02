@@ -33,6 +33,27 @@ class IndustrialConsumerDao {
         const data: any = await conn.execute("SELECT * FROM detail_industrial_consumer_form WHERE TREATMENT_TYPE=? AND TYPE_RESIDUE=? AND ID_GESTOR=? AND DATE_WITHDRAW=?", [treatment, sub,gestor,date]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
         conn.end();
         return data;
+    public async saveHeaderData(establishmentId: any, createdBy: any, createdAt: Date, yearStatement: any) {
+        const conn = mysqlcon.getConnection()!;
+        const header: any = await conn.execute("INSERT INTO header_industrial_consumer_form(ID_ESTABLISHMENT, CREATED_BY, CREATED_AT, UPDATED_AT, YEAR_STATEMENT) VALUES (?,?,?,?,?)", [establishmentId, createdBy, createdAt, createdAt, yearStatement])
+            .then((res) => res[0])
+            .catch((error) => {
+                console.log(error);
+                return [{ undefined }];
+            });
+        conn.end();
+        return { header };
+    }
+    public async saveDetailData(ID_HEADER: any, PRECEDENCE: any, TYPE_RESIDUE: any, VALUE: any, DATE_WITHDRAW: any, ID_GESTOR: any, LER: any, TREATMENT_TYPE: any) {
+        const conn = mysqlcon.getConnection()!;
+        const detail: any = await conn.execute("INSERT INTO detail_industrial_consumer_form(ID_HEADER, PRECEDENCE, TYPE_RESIDUE, VALUE, DATE_WITHDRAW, ID_GESTOR, LER, TREATMENT_TYPE) VALUES (?,?,?,?,?,?,?,?)", [ID_HEADER, PRECEDENCE, TYPE_RESIDUE, VALUE, DATE_WITHDRAW, ID_GESTOR, LER, TREATMENT_TYPE])
+            .then((res) => res[0])
+            .catch((error) => {
+                console.log(error);
+                return [{ undefined }];
+            });
+        conn.end();
+        return { detail };
     }
     public async getForm(id_header: any) {
         const conn = mysqlcon.getConnection()!;
@@ -114,7 +135,7 @@ class IndustrialConsumerDao {
         CASE detail_industrial_consumer_form.PRECEDENCE
             WHEN 1 THEN 'Papel/Cartón'
             WHEN 2 THEN 'Metal'
-            WHEN 3 THEN 'Plástico Total'
+            WHEN 3 THEN 'Plástico'
             WHEN 4 THEN 'Madera'
             ELSE 'Desconocido'
         END AS PRECEDENCETIPEADO,
@@ -142,7 +163,7 @@ class IndustrialConsumerDao {
         detail_industrial_consumer_form.DATE_WITHDRAW AS FechaRetiro,
         CONCAT(UPPER(SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 1, 1)), SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 2)) AS FechaRetiroTipeada,
         detail_industrial_consumer_form.ID_GESTOR AS IdGestor,
-        gestor.NAME AS NombreGestor,
+        IF(detail_industrial_consumer_form.ID_GESTOR = 0, 'Reciclaje interno', gestor.NAME) AS NombreGestor,
         IFNULL(detail_industrial_consumer_form.LER, '-') AS LER,
         detail_industrial_consumer_form.TREATMENT_TYPE AS TREATMENT_TYPE,
         CASE detail_industrial_consumer_form.TREATMENT_TYPE
@@ -151,27 +172,27 @@ class IndustrialConsumerDao {
             WHEN 3 THEN 'Disposición Final en RS'
         ELSE 'Desconocido'
         END AS TIPO_TRATAMIENTO_TIPEADO
-    FROM header_industrial_consumer_form
-    INNER JOIN establishment ON establishment.ID = header_industrial_consumer_form.ID_ESTABLISHMENT
-    INNER JOIN establishment_business ON establishment_business.ID_ESTABLISHMENT = establishment.ID
-    INNER JOIN business ON business.ID = establishment_business.ID_BUSINESS
-    INNER JOIN detail_industrial_consumer_form ON detail_industrial_consumer_form.ID_HEADER = header_industrial_consumer_form.ID
-    INNER JOIN business AS gestor ON detail_industrial_consumer_form.ID_GESTOR = gestor.ID
-    WHERE header_industrial_consumer_form.ID = ? AND detail_industrial_consumer_form.ID = ?
-`, [ID_HEADER, ID_DETAIL]).then(res => res[0]).catch(erro => { console.log(erro); return undefined });
+        FROM header_industrial_consumer_form
+        INNER JOIN establishment ON establishment.ID = header_industrial_consumer_form.ID_ESTABLISHMENT
+        INNER JOIN establishment_business ON establishment_business.ID_ESTABLISHMENT = establishment.ID
+        INNER JOIN business ON business.ID = establishment_business.ID_BUSINESS
+        INNER JOIN detail_industrial_consumer_form ON detail_industrial_consumer_form.ID_HEADER = header_industrial_consumer_form.ID
+        LEFT JOIN business AS gestor ON detail_industrial_consumer_form.ID_GESTOR = gestor.ID
+        WHERE header_industrial_consumer_form.ID = ? AND detail_industrial_consumer_form.ID = ?
+        `, [ID_HEADER, ID_DETAIL]).then(res => res[0]).catch(erro => { console.log(erro); return undefined });
 
         conn.end();
         return data;
     }
 
-    public async downloadFile(id: any){
-        const conn= mysqlcon.getConnection()!;
+    public async downloadFile(id: any) {
+        const conn = mysqlcon.getConnection()!;
         const fileData: any = await conn.query("SELECT ID, FILE_NAME, FILE, TYPE_FILE FROM attached_industrial_consumer_form WHERE ID=?", [id]).then((res) => res[0]).catch(error => [{ undefined }]);
-    
+
         if (fileData == null || fileData.length == 0) {
             return null;
         }
-        
+
         conn.end();
         return {
             fileName: fileData[0].FILE_NAME,
