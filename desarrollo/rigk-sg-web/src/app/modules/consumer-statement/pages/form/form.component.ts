@@ -13,7 +13,7 @@ import { BusinessService } from 'src/app/core/services/business.service';
   styleUrls: ['./form.component.css']
 })
 export class FormComponent implements OnInit {
-  tables = ["Papel/Cartón", "Metal", "Plástico Total", "Madera"];
+  tables = ["Papel/Cartón", "Metal", "Plástico", "Madera"];
   e = 1;
   materials = [
     {
@@ -52,6 +52,25 @@ export class FormComponent implements OnInit {
         { id: 16, name: "Pallet de Madera" }
       ]
     },
+  ];
+
+  materials_2 = [
+    { id: 1, name: "Papel" },
+    { id: 2, name: "Papel Compuesto (cemento)" },
+    { id: 3, name: "Caja Cartón" },
+    { id: 4, name: "Otro" },
+    { id: 5, name: "Envase Aluminio" },
+    { id: 6, name: "Malla o Reja (IBC)" },
+    { id: 7, name: "Envase Hojalata" },
+    { id: 8, name: "Otro" },
+    { id: 9, name: "Plástico Film Embalaje" },
+    { id: 10, name: "Plástico Envases Rígidos (Incl. Tapas)" },
+    { id: 11, name: "Plástico Sacos o Maxisacos" },
+    { id: 12, name: "Plástico EPS (Poliestireno Expandido)" },
+    { id: 13, name: "Plástico Zuncho" },
+    { id: 14, name: "Otro" },
+    { id: 15, name: "Caja de Madera" },
+    { id: 16, name: "Pallet de Madera" }
   ];
   disableAll = false;
   treatment_type = [
@@ -128,6 +147,7 @@ export class FormComponent implements OnInit {
     document.getElementById(`table_td_2`)!.innerHTML = "0";
     document.getElementById(`table_td_3`)!.innerHTML = "0";
     document.getElementById(`table_td_4`)!.innerHTML = "0";
+    this.newData = [];
   }
   getManagersForMaterial(materialId: number): any[] {
     const managersForMaterial = this.managers.find(m => m.material === materialId)?.managers || [];
@@ -135,7 +155,7 @@ export class FormComponent implements OnInit {
       (manager: { ID_BUSINESS: any, BUSINESS_NAME: any; }) => { return { name: manager.BUSINESS_NAME, id: manager.ID_BUSINESS } || { name: "Reciclaje Interno", id: 0 } });
   }
   onEstablishmentChange(event: any) {
-    this.establishmentService.getEstablishmentByID(this.selectedEstablishment).subscribe(r => {
+    this.establishmentService.getEstablishmentByID(this.selectedEstablishment[0]).subscribe(r => {
       if (r.status) {
         this.region = r.status[0].REGION;
         this.id_establishment = r.status[0].ID;
@@ -148,12 +168,12 @@ export class FormComponent implements OnInit {
   }
   fetchManagersForAllMaterials(region: any) {
     // Crear un array de observables
-    const observables = this.materials
-      .filter(material => material._id !== undefined) // Filtrar los materiales con id definido
+    const observables = this.materials_2
+      .filter(material => material.id !== undefined) // Filtrar los materiales con id definido
       .map(material => {
-        return this.managerService.getManagersByMaterial(material._id, region).pipe(
+        return this.managerService.getManagersByMaterial(material.id, region).pipe(
           map(managers => ({
-            material: material._id,
+            material: material.id,
             managers: managers.status
           }))
         );
@@ -193,10 +213,10 @@ export class FormComponent implements OnInit {
       if ((reg.value == 0 && (reg.date != "" || reg.gestor > 0 || reg.treatment != "0" || reg.sub != "0"))) {
         error = "Falta ingresar peso";
         break;
-      } else if (reg.value > 0 && (reg.date == "" || reg.gestor == 0 || reg.treatment == "0" || reg.sub == "0")) {
+      } else if (reg.value > 0 && (reg.date == "" || reg.gestor == "-1" || reg.treatment == "0" || reg.sub == "0")) {
         error = "Falta ingresar tipo tratamiento, subtipo, fecha de retiro o gestor";
         break;
-      } else if (reg.value == 0 && (reg.date == "" || reg.gestor == 0 || reg.treatment == "0" || reg.sub == "0")) {
+      } else if (reg.value == 0 && (reg.date == "" || reg.gestor == "-1" || reg.treatment == "0" || reg.sub == "0")) {
         this.newData.splice(i, 1);
         if (this.newData.length == 0) {
           error = "Formulario está vacío";
@@ -253,6 +273,20 @@ export class FormComponent implements OnInit {
   newData: any[] = [];
   rowSelected = 0;
   tableSelected = 0;
+  verifyRow(data: any, input: HTMLInputElement) {
+    this.consumerService.checkRow(data).subscribe({
+      next: r => {
+        if (!r.status) {
+          Swal.fire({
+            icon: 'info',
+            text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
+          });
+          input.value = "-1";
+          return;
+        }
+      }
+    });
+  }
   addRow(i: number) {
     const tb_ref = document.getElementById(`table_${i + 1}`)?.getElementsByTagName('tbody')[0];
     const n_row = tb_ref!.rows.length;
@@ -260,20 +294,13 @@ export class FormComponent implements OnInit {
     let tt = "";
     for (let q = 0; q < mat.child.length; q++) {
       const r = mat.child[q];
-      tt += `<option value="${r.id}">${r.name}</option>`
+      tt += `<option value="${r.id}">${r.name}</option>`;
     }
-    let tt2 = "";
-    const tmp_tt2 = this.getManagersForMaterial(i + 1);
-    for (let q = 0; q < tmp_tt2.length; q++) {
-      const r = tmp_tt2[q];
-      tt2 += `<option value="${r.id}">${r.name}</option>`
-    }
-
     const html: string = `
     <tr id="tr">
                         <td style="padding-left: 20px;">
                             <select class="form-select" id="inp_treatment_${i + 1}_${n_row}">
-                                <option value="0">Seleccione Tratamiento</option>
+                                <option value="-1">Seleccione Tratamiento</option>
                                 <option value="1">Reciclaje Mecánico</option>
                                 <option value="2">Valorización Energética</option>
                                 <option value="3">Disposición Final en RS</option>
@@ -282,7 +309,7 @@ export class FormComponent implements OnInit {
                         </td>
                         <td>
                             <select class="form-select" id="inp_sub_${i + 1}_${n_row}">
-                                <option value="0">Seleccione Subtipo</option>
+                                <option value="-1">Seleccione Subtipo</option>
                                 ${tt}
                             </select>
                         </td>
@@ -305,7 +332,6 @@ export class FormComponent implements OnInit {
                                 >
                                 <option value="-1" selected>Seleccione</option>
                                 <option value="0">Reciclaje Interno</option>
-                                ${tt2}
                                 <!-- <option *ngFor="let manager of getManagersForMaterial(type.id)" [value]="manager">{{
                                     manager }}</option> -->
                             </select>
@@ -326,56 +352,90 @@ export class FormComponent implements OnInit {
     const btn_modal = document.getElementById(`btn_${i + 1}_${n_row}_modal`);
     const tmp: any[] = this.newData;
 
-    const inp_ler = (document.getElementById(`inp_ler_${i + 1}_${n_row}`) as HTMLInputElement)
-    inp_ler.onchange = function () {
-      const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
-      if (w == -1) {
-        const e = {
-          row: n_row,
-          residue: (i + 1),
-          sub: "0",
-          treatment: "",
-          ler: inp_ler.value,
-          value: 0,
-          date: "",
-          gestor: "0",
-          files: []
-        };
-        tmp.push(e);
-      } else {
-        tmp[i].ler = inp_ler.value;
-      }
+    const analize = (treatment: any, sub: any, gestor: any, date: any, row: any) => {
+      this.verifyRow({ treatment, sub, gestor, date }, row);
     }
+
     const inp_treatment = (document.getElementById(`inp_treatment_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_treatment.onchange = () => {
+      let tmp_filter = 0;
+      for (let j = 0; j < tmp.length; j++) {
+        const i = tmp[j];
+        if (j == n_row) continue;
+        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value) {
+          tmp_filter++;
+        }
+      }
+      if (tmp_filter >= 1) {
+        Swal.fire({
+          icon: 'info',
+          text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
+        });
+        inp_treatment.value = "0";
+        return;
+      } else {
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_treatment);
+      }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
         const e = {
           row: n_row,
           residue: (i + 1),
-          sub: "0",
+          sub: "-1",
           treatment: inp_treatment.value,
           ler: "",
           value: 0,
           date: "",
-          gestor: "0",
+          gestor: "-1",
           files: []
         };
         tmp.push(e);
       } else {
-        tmp[i].treatment = inp_treatment.value;
+        tmp[w].treatment = inp_treatment.value;
+      }
+    }
+    function removeOptions(selectElement: any) {
+      var i, L = selectElement.options.length - 1;
+      for (i = L; i >= 0; i--) {
+        selectElement.remove(i);
       }
     }
     const inp_sub = (document.getElementById(`inp_sub_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_sub.onchange = () => {
-      const q = tmp.findIndex(r => r.residue == (i + 1) && r.sub == inp_sub.value);
-      if (q > -1) {
+      removeOptions(inp_gestor);
+      let opt: any = document.createElement('option');
+      opt.value = "-1";
+      opt.innerHTML = "Seleccione";
+      inp_gestor.appendChild(opt);
+      let opt2: any = document.createElement('option');
+      opt2.value = "0";
+      opt2.innerHTML = "Reciclaje Interno";
+      inp_gestor.appendChild(opt2);
+      const tmp_tt2 = this.getManagersForMaterial(parseInt(inp_sub.value));
+      for (let i = 0; i < tmp_tt2.length; i++) {
+        const gestor = tmp_tt2[i];
+        let opt: any = document.createElement('option');
+        opt.value = gestor.id;
+        opt.innerHTML = gestor.name;
+        inp_gestor.appendChild(opt);
+      }
+      let tmp_filter = 0;
+      for (let j = 0; j < tmp.length; j++) {
+        const i = tmp[j];
+        if (j == n_row) continue;
+        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value) {
+          tmp_filter++;
+        }
+      }
+      if (tmp_filter >= 1) {
         Swal.fire({
-          icon: 'warning',
-          text: 'Subtipo ya fue registrado'
+          icon: 'info',
+          text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
         });
         inp_sub.value = "0";
         return;
+      } else {
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_sub);
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -383,73 +443,139 @@ export class FormComponent implements OnInit {
           row: n_row,
           residue: (i + 1),
           sub: inp_sub.value,
-          treatment: "",
+          treatment: "-1",
           ler: "",
           value: 0,
           date: "",
-          gestor: "0",
+          gestor: "-1",
           files: []
         };
         tmp.push(e);
       } else {
-        tmp[i].sub = inp_sub.value;
+        tmp[w].sub = inp_sub.value;
       }
     }
-    const inp_value = (document.getElementById(`inp_value_${i + 1}_${n_row}`) as HTMLInputElement);
-    inp_value.onchange = () => {
+    const inp_ler = (document.getElementById(`inp_ler_${i + 1}_${n_row}`) as HTMLInputElement)
+    inp_ler.onchange = function () {
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
         const e = {
           row: n_row,
           residue: (i + 1),
-          sub: "0",
-          treatment: "0",
-          ler: "",
-          value: inp_value.value,
+          sub: "-1",
+          treatment: "-1",
+          ler: inp_ler.value,
+          value: 0,
           date: "",
-          gestor: "0",
+          gestor: "-1",
           files: []
         };
         tmp.push(e);
       } else {
-        tmp[i].value = inp_value.value;
+        tmp[w].ler = inp_ler.value;
+      }
+    }
+    const inp_value = (document.getElementById(`inp_value_${i + 1}_${n_row}`) as HTMLInputElement);
+    inp_value.onchange = () => {
+      inp_value.value = inp_value.value.replace(".", ",");
+      const pattern = /^[0-9]+(,[0-9]+)?$/;
+      if (!pattern.test(inp_value.value)) {
+        Swal.fire({
+          icon: 'info',
+          text: 'Solo se admiten números'
+        })
+        inp_value.value = "0";
+      }
+      const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
+      if (w == -1) {
+        const e = {
+          row: n_row,
+          residue: (i + 1),
+          sub: "-1",
+          treatment: "-1",
+          ler: "",
+          value: inp_value.value,
+          date: "",
+          gestor: "-1",
+          files: []
+        };
+        tmp.push(e);
+      } else {
+        tmp[w].value = inp_value.value;
       }
       let sum = 0;
       for (let y = 0; y < tmp.length; y++) {
         const u = tmp[y];
-        sum += parseFloat(u.value.replace(",", "."));
+        if (u.residue != i + 1) continue;
+        sum += parseFloat(u.value.toString().replace(",", "."));
       }
       document.getElementById(`table_td_${i + 1}`)!.innerHTML = sum.toString().replace(".", ",");
     }
     const inp_date = (document.getElementById(`inp_date_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_date.onchange = () => {
+      let tmp_filter = 0;
+      for (let j = 0; j < tmp.length; j++) {
+        const i = tmp[j];
+        if (j == n_row) continue;
+        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value) {
+          tmp_filter++;
+        }
+      }
+      if (tmp_filter >= 1) {
+        Swal.fire({
+          icon: 'info',
+          text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
+        });
+        inp_date.value = "";
+        return;
+      } else {
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_date);
+      }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
         const e = {
           row: n_row,
           residue: (i + 1),
-          sub: "0",
-          treatment: "0",
+          sub: "-1",
+          treatment: "-1",
           ler: "",
           value: 0,
           date: inp_date.value,
-          gestor: "0",
+          gestor: "-1",
           files: []
         };
         tmp.push(e);
       } else {
-        tmp[i].date = inp_date.value;
+        tmp[w].date = inp_date.value;
       }
     }
     const inp_gestor = (document.getElementById(`inp_gestor_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_gestor.onchange = () => {
+      let tmp_filter = 0;
+      for (let j = 0; j < tmp.length; j++) {
+        const i = tmp[j];
+        if (j == n_row) continue;
+        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value) {
+          tmp_filter++;
+        }
+      }
+      if (tmp_filter >= 1) {
+        Swal.fire({
+          icon: 'info',
+          text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
+        });
+        inp_gestor.value = "-1";
+        return;
+      } else {
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_gestor);
+      }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
         const e = {
           row: n_row,
           residue: (i + 1),
-          sub: "0",
-          treatment: "0",
+          sub: "-1",
+          treatment: "-1",
           ler: "",
           value: 0,
           date: "",
@@ -458,7 +584,7 @@ export class FormComponent implements OnInit {
         };
         tmp.push(e);
       } else {
-        tmp[i].gestor = inp_gestor.value;
+        tmp[w].gestor = inp_gestor.value;
       }
     }
     btn!.onclick = () => {
@@ -481,7 +607,7 @@ export class FormComponent implements OnInit {
       }
     }
     btn_modal!.onclick = () => {
-      this.tableSelected = i + 1;
+      this.tableSelected = (i + 1);
       this.rowSelected = n_row;
       document.getElementById('id_table_none')!.innerHTML = `${i + 1}`;
       document.getElementById('id_row_none')!.innerHTML = `${n_row}`;
@@ -490,16 +616,17 @@ export class FormComponent implements OnInit {
         const e = {
           row: n_row,
           residue: (i + 1),
-          sub: "0",
-          treatment: "0",
+          sub: "-1",
+          treatment: "-1",
           ler: "",
           value: 0,
           date: "",
-          gestor: "0",
+          gestor: "-1",
           files: []
         };
         tmp.push(e);
-        this.filess = [];
+        const ww = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
+        this.filess = tmp[ww].files
         return;
       }
       this.filess = tmp[w].files || [];
@@ -509,23 +636,30 @@ export class FormComponent implements OnInit {
   filess: any[] = [];
   addFile() {
     let type = (document.getElementById('inp_select_mv') as HTMLInputElement).value;
+    if (!type) {
+      Swal.fire({
+        icon: 'info',
+        text: 'Es necesario seleccionar Tipo MV'
+      });
+      return;
+    }
     const q = this.newData.findIndex(r => r.residue == this.tableSelected && r.row == this.rowSelected);
     if (q == -1) {
       return;
     }
-    if(this.newData[q].files.length == 3) {
+    if (this.newData[q].files.length == 3) {
       Swal.fire({
-        icon:'info',
+        icon: 'info',
         text: 'Se permite máximo 3 medios de verificación'
       });
       (document.getElementById('inp_select_mv') as HTMLInputElement).value = "0";
       (document.getElementById('inp_file_0') as HTMLInputElement).value = "";
       return;
     }
-    
-    if((this.newData[q].files as any[]).findIndex(t=>t.type == type) > -1) {
+
+    if ((this.newData[q].files as any[]).findIndex(t => t.type == type) > -1) {
       Swal.fire({
-        icon:'warning',
+        icon: 'warning',
         text: 'Tipo de Medio de Verificación ya fue agregado'
       });
       (document.getElementById('inp_select_mv') as HTMLInputElement).value = "0";
@@ -554,20 +688,20 @@ export class FormComponent implements OnInit {
     if (tmp != 'image' && target.files[0].type != 'application/pdf') {
       Swal.fire({
         icon: 'info',
-        text: 'Tipo de archivo no permitido.'
+        text: 'Tipo de archivo no permitido. Sólo se permiten Imágenes o PDF'
       });
       (document.getElementById('inp_file_0') as HTMLInputElement).value = "";
       return;
     }
     this.tmpFile = event.target.files;
   }
-  deleteFile(file:any){
-    const i = this.newData.findIndex(r=>r.residue == this.tableSelected && r.row == this.rowSelected);
-    if(i>-1) {
-      if(this.newData[i].files) {
+  deleteFile(file: any) {
+    const i = this.newData.findIndex(r => r.residue == this.tableSelected && r.row == this.rowSelected);
+    if (i > -1) {
+      if (this.newData[i].files) {
         const j = (this.newData[i].files as any[]).findIndex(f => f.type == file.type && f.file.name == file.file.name);
-        if(j==-1) alert("aa");
-        (this.newData[i].files as any[]).splice(j,1);
+        if (j == -1) alert("aa");
+        (this.newData[i].files as any[]).splice(j, 1);
       }
     }
   }
