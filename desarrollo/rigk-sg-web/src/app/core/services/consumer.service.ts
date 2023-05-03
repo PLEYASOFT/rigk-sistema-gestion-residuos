@@ -58,12 +58,13 @@ export class ConsumerService {
   verifyForm(business: any, year: any) {
     return this.http.get<any>(`${this.url}/verify/${year}/${business}`);
   }
-
   downloadExcel(id_business: any) {
     let headers = new HttpHeaders();
     headers = headers.set('Accept', 'application/vnd.ms-excel');
     return this.http.get<any>(`${this.url}/excel/${id_business}`, { headers: headers, responseType: 'blob' as 'json' });
   }
+  checkRow(row:any) {
+    return this.http.post<any>(`${this.url}/verifyRow/`,row);
 
   saveHeaderFromExcel(formData: any) {
     return this.http.post(`${this.url}/headerForm`, formData);
