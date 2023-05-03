@@ -81,6 +81,7 @@ export class StatementsComponent implements OnInit {
       });
       Swal.showLoading();
       this.establishmentService.getDeclarationEstablishment().subscribe(r => {
+        console.log(r)
         if (r.status) {
           r.status = r.status.sort(((a: any, b: any) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()));
   
