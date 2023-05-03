@@ -6,7 +6,7 @@ class IndustrialConsumerDao {
         const id_header = resp_header.insertId;
         for (let i = 0; i < detail.length; i++) {
             const { residue, sub, value, date, gestor, ler, treatment } = detail[i];
-            const resp: any = await conn?.execute("INSERT INTO detail_industrial_consumer_form(ID_HEADER,PRECEDENCE,TYPE_RESIDUE,VALUE, DATE_WITHDRAW,ID_GESTOR, LER,TREATMENT_TYPE) VALUES (?,?,?,?,?,?,?,?)", [id_header, residue, sub, value, date, gestor, (ler || null), treatment]).then((res) => res[0]).catch(error => [{ undefined }]);
+            const resp: any = await conn?.execute("INSERT INTO detail_industrial_consumer_form(ID_HEADER,PRECEDENCE,TYPE_RESIDUE,VALUE, DATE_WITHDRAW,ID_GESTOR, LER,TREATMENT_TYPE) VALUES (?,?,?,?,?,?,?,?)", [id_header, residue, sub, value.toString().replace(",","."), date, gestor, (ler || null), treatment]).then((res) => res[0]).catch(error => {console.log(error); return [{ undefined }];});
             const id_detail = resp.insertId;
 
             for (var key in attached) {
@@ -28,6 +28,11 @@ class IndustrialConsumerDao {
         conn.end();
         return { attached };
     }
+    public async verifyRow(treatment:any, sub:any,gestor:any,date:any) {
+        const conn = mysqlcon.getConnection()!;
+        const data: any = await conn.execute("SELECT * FROM detail_industrial_consumer_form WHERE TREATMENT_TYPE=? AND TYPE_RESIDUE=? AND ID_GESTOR=? AND DATE_WITHDRAW=?", [treatment, sub,gestor,date]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
+        conn.end();
+        return data;
     public async saveHeaderData(establishmentId: any, createdBy: any, createdAt: Date, yearStatement: any) {
         const conn = mysqlcon.getConnection()!;
         const header: any = await conn.execute("INSERT INTO header_industrial_consumer_form(ID_ESTABLISHMENT, CREATED_BY, CREATED_AT, UPDATED_AT, YEAR_STATEMENT) VALUES (?,?,?,?,?)", [establishmentId, createdBy, createdAt, createdAt, yearStatement])

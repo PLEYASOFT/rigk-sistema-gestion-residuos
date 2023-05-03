@@ -45,6 +45,13 @@ export class SidebarComponent implements OnInit {
     { title: "Declaraciones Productores", path: "#/mantenedor/declarations", icon: "fa fa-database" },
   ];
 
+  menuGestor = [
+    { title: "Inicio", path: "#/gestor/home", icon: "fa-home" },
+    { title: "Mi Perfil", path: "#/gestor/profile", icon: "fa-user" },
+    { title: "Preguntas frecuentes", path: "#/gestor/faq", icon: "fa-search" },
+    { title: "Consulta de declaración", path: "#/gestor/statements", icon: "fa-file-text" },
+  ];
+
   constructor(private router: Router,
     public businessService: BusinessService,
     public ss: ConsumerService,
@@ -61,7 +68,7 @@ export class SidebarComponent implements OnInit {
   async showDialog() {
     Swal.fire({
       title: 'Ingrese Datos',
-      html: '<input id="inp_id_business" type="text" placeholder="ID Empresa" class="form-control"><br><input id="inp_year" type="number" placeholder="AÑO Declaración" class="form-control"><p>Corresponde declarar año '+(+this.year-1)+'</p>',
+      html: '<input id="inp_id_business" type="text" placeholder="ID Empresa" class="form-control"><br><input id="inp_year" type="number" placeholder="AÑO Declaración" class="form-control"><p>Corresponde declarar año ' + (+this.year - 1) + '</p>',
       showCancelButton: true,
       confirmButtonText: 'Aceptar ',
       cancelButtonText: 'Cancelar',
@@ -109,35 +116,23 @@ export class SidebarComponent implements OnInit {
   async showDialog2() {
     Swal.fire({
       title: 'Ingrese Datos',
-      html: '<input id="inp_id_business" type="text" placeholder="ID Empresa" class="form-control"><br><input id="inp_year" type="number" placeholder="AÑO Declaración" class="form-control"><p>Corresponde declarar año '+(+this.year-1)+'</p>',
+      html: '<input id="inp_id_business" type="text" placeholder="ID Empresa" class="form-control"><br><input id="inp_year_modal" type="number" placeholder="AÑO Declaración" class="form-control"><p>Corresponde declarar año ' + (+this.year - 1) + '</p>',
       showCancelButton: true,
       confirmButtonText: 'Aceptar ',
       cancelButtonText: 'Cancelar',
       preConfirm: async () => {
         const id_business = ((document.getElementById('inp_id_business') as HTMLInputElement).value);
-        const year = parseInt((document.getElementById('inp_year') as HTMLInputElement).value);
+        const year = parseInt((document.getElementById('inp_year_modal') as HTMLInputElement).value);
         const actual = new Date().getFullYear();
-        if (!(year < actual && id_business != '')) {
-          Swal.showValidationMessage(`Solo se aceptan antes del año ${actual}`);
+        if (!(year <= actual && id_business != '')) {
+          Swal.showValidationMessage(`Solo se aceptan antes del año ${actual + 1}`);
           return;
         }
-        if ((year >= 1000 && year <= 9999) && year < actual && id_business != '') {
+        if ((year >= 1000 && year <= 9999) && year <= actual && id_business != '') {
           await this.businessService.verifyBusiness(id_business).subscribe({
             next: r => {
               if (r.status) {
-                this.ss.verifyForm(id_business, year).subscribe({
-                  next: e => {
-                    if (!e.status) {
-                      this.router.navigate(['/consumidor/form'], { queryParams: { year, id_business: r.data, code: id_business } });
-                    } else {
-                      Swal.fire({
-                        icon: 'error',
-                        title: '¡Oops!',
-                        text: 'Año ya fue declarado'
-                      });
-                    }
-                  }
-                })
+                this.router.navigate(['/consumidor/form'], { queryParams: { year, id_business: r.data, code: id_business } });
               } else {
                 Swal.fire({
                   icon: 'error',
