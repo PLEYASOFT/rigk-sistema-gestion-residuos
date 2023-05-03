@@ -5,6 +5,8 @@ import { ManagerStatementRoutingModule } from './manager-statement-routing.modul
 import { HomeComponent } from './pages/home/home.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { StatementsComponent } from './pages/statements/statements.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -15,7 +17,9 @@ import { StatementsComponent } from './pages/statements/statements.component';
   ],
   imports: [
     CommonModule,
-    ManagerStatementRoutingModule
+    ManagerStatementRoutingModule,
+    ReactiveFormsModule,
+    FormsModule,
   ]
 })
 export class ManagerStatementModule { }

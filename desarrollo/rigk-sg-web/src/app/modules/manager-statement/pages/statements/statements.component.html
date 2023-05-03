@@ -1,1 +1,230 @@
-<p>statements works!</p>
+<div class="container mt-4">
+    <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Consulta de Declaración</li>
+        </ol>
+    </nav>
+    <!-- inicio Consulta de declaración -->
+    <section class="declaracion">
+        <h1>Consulta de Declaración</h1>
+        <div class="box box-form mb-4">
+            <div class="row align-items-end">
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <label class="form-label">Empresa CI:</label>
+                    <div class="input-group">
+                        <select id="f_name" class="form-select" [(ngModel)]="selectedBusiness"
+                            (change)="updateFilters()">
+                            <option value="-1" selected>Todos</option>
+                            <option *ngFor="let na of business_name" value="{{na}}">{{na}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <label class="form-label">Tipo de tratamiento:</label>
+                    <div class="input-group">
+                        <select id="f_establishment" class="form-select" [(ngModel)]="selectedEstablishment"
+                            (change)="updateFilters()">
+                            <option value="-1" selected>Todos</option>
+                            <option *ngFor="let es of establishment_name" value="{{es}}">{{es}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <label class="form-label">Material:</label>
+                    <div class="input-group">
+                        <select id="f_material" class="form-select" [(ngModel)]="selectedMaterial"
+                            (change)="updateFilters()">
+                            <option value="-1" selected>Todos</option>
+                            <option *ngFor="let ma of material_name" value="{{ma}}">{{ma}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <label class="form-label">Factura:</label>
+                    <div class="input-group">
+                        <select id="f_year" class="form-select" [(ngModel)]="selectedYear" (change)="updateFilters()">
+                            <option value="-1" selected>Todos</option>
+                            <option *ngFor="let y of years" value="{{y}}">{{y}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <label class="form-label">Fecha de retiro:</label>
+                    <div class="input-group">
+                        <select id="f_year" class="form-select" [(ngModel)]="selectedYear" (change)="updateFilters()">
+                            <option value="-1" selected>Todos</option>
+                            <option *ngFor="let y of years" value="{{y}}">{{y}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-1 mb-3 mb-xl-0">
+                    <label class="form-label">Estado:</label>
+                    <div class="input-group">
+                        <select id="f_year" class="form-select" [(ngModel)]="selectedYear" (change)="updateFilters()">
+                            <option value="-1" selected>Todos</option>
+                            <option *ngFor="let y of years" value="{{y}}">{{y}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-1 mb-3 mb-xl-0">
+                    <label class="form-label">&nbsp;</label>
+                    <!-- Añade un espacio vacío para alinear el botón correctamente -->
+                    <div class="input-group">
+                        <button class="btn btn-primary w-100"
+                            (click)="autoFilter = false; filter(); pagTo(0)">Mostrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-even table-section table-borderless table-radius">
+                <thead class="vertical-middle">
+                    <tr>
+                        <th>Empresa CI</th>
+                        <th>Establecimiento CI</th>
+                        <th>Tipo de tratamiento</th>
+                        <th>Material</th>
+                        <th>Subtipo</th>
+                        <th>Fecha Retiro</th>
+                        <th>Estado</th>
+                        <th>Peso Desc.</th>
+                        <th>Peso Valorizado</th>
+                        <th>Aprobar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let s of db">
+                        <td>{{s.NAME_BUSINESS}}</td>
+                        <td>{{s.NAME_ESTABLISHMENT_REGION}}</td>
+                        <td>{{s.TipoTratamiento}}</td>
+                        <td>{{s.PRECEDENCE}}</td>
+                        <td>{{s.TYPE_RESIDUE}}</td>
+                        <td>{{s.FechaRetiro | date: 'dd-MM-yyyy'}}</td>
+                        <td>{{s.FechaRetiro | date: 'dd-MM-yyyy'}}</td>
+                        <td>
+                            <span [ngClass]="s.semaforo ? 'circle green-circle' : 'circle red-circle'"></span>
+                        </td>
+                        <td>{{s.VALUE}}</td>
+                        <td>
+                            <a class="custom-cursor" data-bs-toggle="modal" data-bs-target="#infoModal">
+                                <i class="fa fa-check fa-lg fa-fw color-verde" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Pagination -->
+        <nav aria-label="Navegación resultados">
+            <ul class="pagination">
+                <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
+                <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
+                <li *ngFor="let in of setArrayFromNumber(); let i = index"><button class="border btn btn-sm"
+                        [ngClass]="{ 'btn-info':pos==(i+1), 'btn-primary': pos != (i+1)}"
+                        (click)="pagTo(i)">{{i+1}}</button></li>
+                <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
+                <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
+            </ul>
+        </nav>
+    </section>
+    <!-- fin Monitor Inicio -->
+</div>
+
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    (hidden.bs.modal)="reset()">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Medios de verificación</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row mb-3">
+                        <label class="col-sm-4 col-form-label">Núm. Factura Reciclador</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" placeholder="1234">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-4 col-form-label">RUT Reciclador</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" placeholder="1-9">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-4 col-form-label">Reciclador</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" placeholder="Reciclador demo" disabled>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="treatmentType" class="col-sm-4 col-form-label">Tipo Tratamiento</label>
+                        <div class="col-sm-8">
+                            <select id="treatmentType" class="form-select">
+                                <option selected>Seleccionar tipo de tratamiento</option>
+                                <option>Reciclaje mecánico</option>
+                                <option>Valorización Energética</option>
+                                <option>Disposición Final en RS</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="material" class="col-sm-4 col-form-label">Material</label>
+                        <div class="col-sm-8">
+                            <select id="material" class="form-select">
+                                <option selected>Seleccionar tipo de material</option>
+                                <option>Papel/Cartón</option>
+                                <option>Metal</option>
+                                <option>Plástico</option>
+                                <option>Madera</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-4 col-form-label">Fecha Ingreso PR</label>
+                        <div class="col-sm-8">
+                            <input type="date" class="form-control" placeholder="10/4/2023">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-4 col-form-label">Peso Total</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" placeholder="400">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-4 col-form-label">Peso Valorizado</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" placeholder="200.5">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-4 col-form-label">Peso Remanente</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" placeholder="199.5">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-4 col-form-label">Num. Declaraciones asociadas</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" placeholder="1">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-4 col-form-label">Adjuntar</label>
+                        <div class="col-sm-8">
+                            <input type="file" class="form-control">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
+                <button type="button" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
