@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
+import { validate } from 'rut.js';
+import { BusinessService } from 'src/app/core/services/business.service';
 import { EstablishmentService } from 'src/app/core/services/establishment.service';
 import { ProductorService } from 'src/app/core/services/productor.service';
 import Swal from 'sweetalert2';
@@ -9,7 +12,26 @@ import Swal from 'sweetalert2';
   styleUrls: ['./statements.component.css']
 })
 export class StatementsComponent implements OnInit {
+  userForm = new FormGroup({
+    invoiceNumber: new FormControl('', Validators.required),
+    rut: new FormControl('', [Validators.required, Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$'), this.verifyRut]),
+    reciclador: new FormControl('', Validators.required),
+    treatmentType: new FormControl('', Validators.required),
+    material: new FormControl('', Validators.required),
+    entryDate: new FormControl('', Validators.required),
+    totalWeight: new FormControl('', [Validators.required, Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)]),
+    valuedWeight: new FormControl('', [Validators.required, Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)]),
+    remainingWeight: new FormControl('', [Validators.required, Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)]),
+    attachment: new FormControl(null, [Validators.required, this.fileTypeValidator, this.fileSizeValidator]),
+  });
+  
+  fileName: any;
+  fileBuffer: any;
+  selectedFile: any;
 
+  isFormComplete() {
+    return this.userForm.valid;
+  }
   userData: any | null;
   dbStatements: any[] = [];
   db: any[] = [];
@@ -33,7 +55,8 @@ export class StatementsComponent implements OnInit {
 
   constructor(
     public productorService: ProductorService,
-    private establishmentService: EstablishmentService
+    private establishmentService: EstablishmentService,
+    public businessService: BusinessService
   ) { }
 
   ngOnInit(): void {
@@ -43,6 +66,7 @@ export class StatementsComponent implements OnInit {
       this.filter();
       this.pagTo(this.pos - 1);
     });
+    this.userForm.controls['reciclador'].disable();
   }
 
   loadStatements(): Promise<void> {
@@ -199,5 +223,83 @@ export class StatementsComponent implements OnInit {
 
   getStateText(state: number): string {
     return state === 0 ? 'Por aprobar' : 'Aprobado';
+  }
+
+  fileTypeValidator(control: AbstractControl): { [key: string]: any } | null {
+    const file = control.value;
+    if (file) {
+      const allowedFileTypes = ['application/pdf', 'image/jpeg'];
+      if (!allowedFileTypes.includes(file.type)) {
+        return { invalidFileType: true };
+      }
+    }
+    return null;
+  }
+
+  fileSizeValidator(control: AbstractControl): { [key: string]: any } | null {
+    const file = control.value;
+    if (file) {
+      const maxSizeInBytes = 1 * 1024 * 1024; // 1 MB
+      if (file.size > maxSizeInBytes) {
+        return { invalidFileSize: true };
+      }
+    }
+    return null;
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input && input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.fileName = file.name;
+      this.fileBuffer = file;
+      this.selectedFile = input.files[0];
+  
+      const allowedExtensions = ['pdf', 'jpeg', 'jpg'];
+      const fileExtension = this.selectedFile.name.split('.').pop()?.toLowerCase() || '';
+      const isValid = allowedExtensions.includes(fileExtension);
+  
+      if (!isValid) {
+        this.userForm.controls['attachment'].setErrors({ 'invalidFileType': true });
+        this.userForm.controls['attachment'].markAsTouched();
+      } else if (file.size > 1 * 1024 * 1024) {
+        this.userForm.controls['attachment'].setErrors({ 'invalidFileSize': true });
+        this.userForm.controls['attachment'].markAsTouched();
+      } else {
+        this.userForm.controls['attachment'].setErrors(null);
+        this.userForm.controls['attachment'].markAsTouched();
+      }
+    } else {
+      this.selectedFile = null;
+    }
+  }
+
+  async onRUTChange() {
+    const rut = this.userForm.controls['rut'].value;
+    if (rut) {
+      try {
+        const businessResponse = await this.businessService.getBusinessByVAT(rut).toPromise();
+        if (businessResponse.status) {
+          console.log('entra')
+          this.userForm.controls['reciclador'].setValue(businessResponse.status[0].NAME);
+        } else {
+          this.userForm.controls['reciclador'].setValue('');
+        }
+      } catch (error) {
+        console.error('Error al obtener el nombre del reciclador:', error);
+        this.userForm.controls['reciclador'].setValue('');
+      }
+    } else {
+      this.userForm.controls['reciclador'].setValue('');
+    }
+  }  
+  
+  verifyRut(control: AbstractControl): { [key: string]: boolean } | null {
+    const rut = control.value;
+    if (validate(rut)) {
+      return null;  // el RUT es válido, no hay errores
+    } else {
+      return { rut: true };  // el RUT es inválido, retorna un error
+    }
   }
 }
