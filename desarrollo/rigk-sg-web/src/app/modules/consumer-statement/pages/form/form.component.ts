@@ -224,7 +224,7 @@ export class FormComponent implements OnInit {
         break;
       }
     }
-    if (error) {
+    if (error != null) {
       Swal.fire({
         icon: 'info',
         text: error
@@ -483,7 +483,7 @@ export class FormComponent implements OnInit {
         Swal.fire({
           icon: 'info',
           text: 'Solo se admiten números'
-        })
+        });
         inp_value.value = "0";
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
@@ -509,7 +509,7 @@ export class FormComponent implements OnInit {
         if (u.residue != i + 1) continue;
         sum += parseFloat(u.value.toString().replace(",", "."));
       }
-      document.getElementById(`table_td_${i + 1}`)!.innerHTML = sum.toString().replace(".", ",");
+      document.getElementById(`table_td_${i + 1}`)!.innerHTML = sum.toFixed(2).toString().replace(".", ",");
     }
     const inp_date = (document.getElementById(`inp_date_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_date.onchange = () => {
@@ -593,9 +593,10 @@ export class FormComponent implements OnInit {
       let sum = 0;
       for (let y = 0; y < tmp.length; y++) {
         const u = tmp[y];
+        if(u.residue != (i+1)) continue;
         sum += parseFloat(u.value.replace(",", "."));
       }
-      document.getElementById(`table_td_${i + 1}`)!.innerHTML = sum.toString().replace(".", ",");
+      document.getElementById(`table_td_${i + 1}`)!.innerHTML = sum.toFixed(2).toString().replace(".", ",");
 
       const all: any = tb_ref?.rows;
       for (let i = 0; i < all.length; i++) {
@@ -611,6 +612,8 @@ export class FormComponent implements OnInit {
       this.rowSelected = n_row;
       document.getElementById('id_table_none')!.innerHTML = `${i + 1}`;
       document.getElementById('id_row_none')!.innerHTML = `${n_row}`;
+      (document.getElementById('inp_select_mv') as HTMLSelectElement).value = "0";
+      (document.getElementById('inp_file_0') as HTMLInputElement).value = "";
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
         const e = {
@@ -636,10 +639,17 @@ export class FormComponent implements OnInit {
   filess: any[] = [];
   addFile() {
     let type = (document.getElementById('inp_select_mv') as HTMLInputElement).value;
-    if (!type) {
+    if (!type || type=="0") {
       Swal.fire({
         icon: 'info',
         text: 'Es necesario seleccionar Tipo MV'
+      });
+      return;
+    }
+    if(this.tmpFile.length==0) {
+      Swal.fire({
+        icon: 'info',
+        text: 'Es necesario seleccionar archivo'
       });
       return;
     }
@@ -688,7 +698,7 @@ export class FormComponent implements OnInit {
     if (tmp != 'image' && target.files[0].type != 'application/pdf') {
       Swal.fire({
         icon: 'info',
-        text: 'Tipo de archivo no permitido. Sólo se permiten Imágenes o PDF'
+        text: 'Tipo de archivo no permitido. Sólo se permiten extensiones jpg, jpeg o pdf'
       });
       (document.getElementById('inp_file_0') as HTMLInputElement).value = "";
       return;
