@@ -1,24 +1,16 @@
-:host
-{
+:host {
     width: 90% !important;
     padding: 1%;
 }
 
-.circle {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 5px;
-  }
-  
-.green-circle {
-    background-color: green;
+.color-verde {
+    color: green;
 }
-  
-.red-circle {
-    background-color: red;
+
+.color-verde-opaco {
+    color: rgba(0, 128, 0, 0.3);
 }
+
 
 .custom-cursor {
     cursor: pointer;

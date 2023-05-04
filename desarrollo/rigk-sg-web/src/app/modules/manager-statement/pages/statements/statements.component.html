@@ -23,10 +23,10 @@
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Tipo de tratamiento:</label>
                     <div class="input-group">
-                        <select id="f_establishment" class="form-select" [(ngModel)]="selectedEstablishment"
+                        <select id="f_establishment" class="form-select" [(ngModel)]="selectedTreatment"
                             (change)="updateFilters()">
                             <option value="-1" selected>Todos</option>
-                            <option *ngFor="let es of establishment_name" value="{{es}}">{{es}}</option>
+                            <option *ngFor="let es of treatment_name" value="{{es}}">{{es}}</option>
                         </select>
                     </div>
                 </div>
@@ -41,15 +41,6 @@
                     </div>
                 </div>
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
-                    <label class="form-label">Factura:</label>
-                    <div class="input-group">
-                        <select id="f_year" class="form-select" [(ngModel)]="selectedYear" (change)="updateFilters()">
-                            <option value="-1" selected>Todos</option>
-                            <option *ngFor="let y of years" value="{{y}}">{{y}}</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Fecha de retiro:</label>
                     <div class="input-group">
                         <select id="f_year" class="form-select" [(ngModel)]="selectedYear" (change)="updateFilters()">
@@ -58,16 +49,16 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-12 col-xl-1 mb-3 mb-xl-0">
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Estado:</label>
                     <div class="input-group">
-                        <select id="f_year" class="form-select" [(ngModel)]="selectedYear" (change)="updateFilters()">
+                        <select id="f_state" class="form-select" [(ngModel)]="selectedState" (change)="updateFilters()">
                             <option value="-1" selected>Todos</option>
-                            <option *ngFor="let y of years" value="{{y}}">{{y}}</option>
+                            <option *ngFor="let s of state" [value]="s">{{getStateText(s)}}</option>
                         </select>
                     </div>
                 </div>
-                <div class="col-12 col-xl-1 mb-3 mb-xl-0">
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">&nbsp;</label>
                     <!-- Añade un espacio vacío para alinear el botón correctamente -->
                     <div class="input-group">
@@ -89,7 +80,7 @@
                         <th>Subtipo</th>
                         <th>Fecha Retiro</th>
                         <th>Estado</th>
-                        <th>Peso Desc.</th>
+                        <th>Peso Declarado</th>
                         <th>Peso Valorizado</th>
                         <th>Aprobar</th>
                     </tr>
@@ -102,14 +93,17 @@
                         <td>{{s.PRECEDENCE}}</td>
                         <td>{{s.TYPE_RESIDUE}}</td>
                         <td>{{s.FechaRetiro | date: 'dd-MM-yyyy'}}</td>
-                        <td>{{s.FechaRetiro | date: 'dd-MM-yyyy'}}</td>
                         <td>
-                            <span [ngClass]="s.semaforo ? 'circle green-circle' : 'circle red-circle'"></span>
+                            <span *ngIf="s.STATE_GESTOR == 0">Por aprobar</span>
+                            <span *ngIf="s.STATE_GESTOR != 0">Aprobado</span>
                         </td>
                         <td>{{s.VALUE}}</td>
+                        <td>???</td>
                         <td>
                             <a class="custom-cursor" data-bs-toggle="modal" data-bs-target="#infoModal">
-                                <i class="fa fa-check fa-lg fa-fw color-verde" aria-hidden="true"></i>
+                                <i class="fa fa-check fa-lg fa-fw"
+                                    [ngClass]="s.STATE_GESTOR == 0 ? 'color-verde-opaco' : 'color-verde'"
+                                    aria-hidden="true"></i>
                             </a>
                         </td>
                     </tr>
@@ -137,7 +131,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Medios de verificación</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Asignar factura reciclador</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
