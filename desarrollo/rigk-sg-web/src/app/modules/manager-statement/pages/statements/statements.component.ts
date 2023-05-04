@@ -16,8 +16,6 @@ export class StatementsComponent implements OnInit {
     invoiceNumber: new FormControl('', Validators.required),
     rut: new FormControl('', [Validators.required, Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$'), this.verifyRut]),
     reciclador: new FormControl('', Validators.required),
-    treatmentType: new FormControl('', Validators.required),
-    material: new FormControl('', Validators.required),
     entryDate: new FormControl('', Validators.required),
     totalWeight: new FormControl('', [Validators.required, Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)]),
     valuedWeight: new FormControl('', [Validators.required, Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)]),
@@ -52,6 +50,7 @@ export class StatementsComponent implements OnInit {
   selectedTreatment: string = '-1';
   selectedState: any = '-1';
   autoFilter: boolean = true;
+  isRemainingWeightNegative: boolean = false;
 
   constructor(
     public productorService: ProductorService,
@@ -302,4 +301,31 @@ export class StatementsComponent implements OnInit {
       return { rut: true };  // el RUT es inválido, retorna un error
     }
   }
+
+  isTotalWeightEditable(): boolean {
+    const numDeclarations = 0; // Cambiar esto para obtener el valor real de Num. Declaraciones asociadas
+    const invoiceNumber = this.userForm.controls['invoiceNumber'].value;
+    const rut = this.userForm.controls['rut'].value;
+  
+    return numDeclarations === 0 && !!invoiceNumber && !!rut;
+  }
+  
+  getNumericValue(control?: AbstractControl<string | null, string | null> | null): number {
+    return control && control.value ? +control.value : 0;
+  }
+  
+  calculateRemainingWeight(): number {
+    const totalWeightControl = this.userForm.get('totalWeight');
+    const valuedWeightControl = this.userForm.get('valuedWeight');
+  
+    const totalWeight = this.getNumericValue(totalWeightControl);
+    const valuedWeight = this.getNumericValue(valuedWeightControl);
+  
+    const remainingWeight = totalWeight - valuedWeight;
+  
+    this.isRemainingWeightNegative = remainingWeight < 0;
+    
+    return remainingWeight;
+  }  
+  
 }
