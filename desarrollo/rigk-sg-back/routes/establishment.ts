@@ -7,7 +7,7 @@ router.get('/declaration', [validarJWT], establishmentLogic.getDeclarationEstabl
 router.get('/:id', [validarJWT], establishmentLogic.getEstablishment);
 router.get('/get/:id', [validarJWT], establishmentLogic.getEstablishmentByID);
 router.post('/add', [validarJWT], establishmentLogic.addEstablishment);
-router.post('/get/invoice/', [], establishmentLogic.getInovice);
-router.post('/invoiceX/', [], establishmentLogic.saveInvoice);
+router.post('/get/invoice/', [validarJWT], establishmentLogic.getInovice);
+router.post('/invoice/', [validarJWT], establishmentLogic.saveInvoice);
 router.delete('/delete/:id', [validarJWT], establishmentLogic.deleteEstablishment);
 export default router;
