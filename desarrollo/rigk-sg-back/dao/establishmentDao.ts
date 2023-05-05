@@ -119,10 +119,10 @@ class EstablishmentDao {
         const ID_INVOICE = data[0].ID;
         const data2: any = await conn.execute("SELECT SUM(VALUE) AS value_declarated, COUNT(VALUE) as num_asoc FROM invoices_detail WHERE ID_INVOICE=? AND TREATMENT_TYPE=? AND MATERIAL_TYPE=?", [ID_INVOICE,treatment_type, material_type]).then((res) => res[0]).catch(error => [{ undefined }]);
         const business: any = await conn.execute("SELECT NAME FROM business WHERE VAT = ? LIMIT 1", [rut]).then((res) => res[0]).catch(error => {console.log(error);return [{undefined}]});
-        if (data == null || data.length == 0) {
-            return false;
-        }
         conn.end();
+        if (business == null || business.length == 0) {
+            return [];
+        }
         return [{
             invoice_value: data[0].invoice_value,
             num_asoc: data2[0].num_asoc || 0,

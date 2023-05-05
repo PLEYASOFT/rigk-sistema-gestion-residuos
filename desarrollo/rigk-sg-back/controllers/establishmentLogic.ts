@@ -105,7 +105,7 @@ class EstablishmentLogic {
             if(data[0].NAME){
                 res.status(200).json({ status: true, data, msg: '' });
             } else {
-                res.status(400).json({ status: false, data, msg: 'Reciclador no encontrada' });
+                res.status(400).json({ status: false, data, msg: 'Reciclador no encontrado' });
             }
         } catch (error) {
             console.log(error);
