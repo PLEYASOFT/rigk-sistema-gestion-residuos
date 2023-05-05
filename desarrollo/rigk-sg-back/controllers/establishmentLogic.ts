@@ -79,13 +79,16 @@ class EstablishmentLogic {
     }
     public async saveInvoice(req: any, res: Response) {
         const {vat,invoice_number,id_detail,date_pr,value,valued_total,treatment,id_material} = req.body;
+        if (!req.files || Object.keys(req.files).length == 0 || !req.files['file']) {
+            return res.status(400).json({ status: false, data: {}, msg: 'Falta archivo' });
+        }
         const files = req.files;
         try {
             const data: any = await establishmentDao.saveInvoice(vat,invoice_number,id_detail,date_pr,value, files['file'],valued_total,req.uid,treatment,id_material);
             if(data || data[0] != undefined) {
-                res.status(200).json({ status: true, data: {}, msg: 'Registro guardado satisfactoriamente' });
+                return res.status(200).json({ status: true, data: {}, msg: 'Registro guardado satisfactoriamente' });
             } else {
-                res.status(500).json({ status: true, data: {}, msg: 'Algo salió mal' });
+                return res.status(500).json({ status: false, data: {}, msg: 'Algo salió mal' });
             }
         } catch (error) {
             console.log(error);
