@@ -6,7 +6,7 @@ class IndustrialConsumerDao {
         const id_header = resp_header.insertId;
         for (let i = 0; i < detail.length; i++) {
             const { residue, sub, value, date, gestor, ler, treatment } = detail[i];
-            const resp: any = await conn?.execute("INSERT INTO detail_industrial_consumer_form(ID_HEADER,PRECEDENCE,TYPE_RESIDUE,VALUE, DATE_WITHDRAW,ID_GESTOR, LER,TREATMENT_TYPE) VALUES (?,?,?,?,?,?,?,?)", [id_header, residue, sub, value, date, gestor, (ler || null), treatment]).then((res) => res[0]).catch(error => [{ undefined }]);
+            const resp: any = await conn?.execute("INSERT INTO detail_industrial_consumer_form(ID_HEADER,PRECEDENCE,TYPE_RESIDUE,VALUE, DATE_WITHDRAW,ID_GESTOR, LER,TREATMENT_TYPE) VALUES (?,?,?,?,?,?,?,?)", [id_header, residue, sub, value.toString().replace(",","."), date, gestor, (ler || null), treatment]).then((res) => res[0]).catch(error => {console.log(error); return [{ undefined }];});
             const id_detail = resp.insertId;
 
             for (var key in attached) {
@@ -27,6 +27,34 @@ class IndustrialConsumerDao {
         const attached: any = await conn.execute("INSERT INTO attached_industrial_consumer_form(ID_DETAIL, FILE_NAME, FILE, TYPE_FILE) VALUES (?,?,?,?)", [idDetail, fileName, fileBuffer, typeFile]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
         conn.end();
         return { attached };
+    }
+    public async verifyRow(treatment:any, sub:any,gestor:any,date:any) {
+        const conn = mysqlcon.getConnection()!;
+        const data: any = await conn.execute("SELECT * FROM detail_industrial_consumer_form WHERE TREATMENT_TYPE=? AND TYPE_RESIDUE=? AND ID_GESTOR=? AND DATE_WITHDRAW=?", [treatment, sub,gestor,date]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
+        conn.end();
+        return data;
+    }
+    public async saveHeaderData(establishmentId: any, createdBy: any, createdAt: Date, yearStatement: any) {
+        const conn = mysqlcon.getConnection()!;
+        const header: any = await conn.execute("INSERT INTO header_industrial_consumer_form(ID_ESTABLISHMENT, CREATED_BY, CREATED_AT, UPDATED_AT, YEAR_STATEMENT) VALUES (?,?,?,?,?)", [establishmentId, createdBy, createdAt, createdAt, yearStatement])
+            .then((res) => res[0])
+            .catch((error) => {
+                console.log(error);
+                return [{ undefined }];
+            });
+        conn.end();
+        return { header };
+    }
+    public async saveDetailData(ID_HEADER: any, PRECEDENCE: any, TYPE_RESIDUE: any, VALUE: any, DATE_WITHDRAW: any, ID_GESTOR: any, LER: any, TREATMENT_TYPE: any) {
+        const conn = mysqlcon.getConnection()!;
+        const detail: any = await conn.execute("INSERT INTO detail_industrial_consumer_form(ID_HEADER, PRECEDENCE, TYPE_RESIDUE, VALUE, DATE_WITHDRAW, ID_GESTOR, LER, TREATMENT_TYPE) VALUES (?,?,?,?,?,?,?,?)", [ID_HEADER, PRECEDENCE, TYPE_RESIDUE, VALUE, DATE_WITHDRAW, ID_GESTOR, LER, TREATMENT_TYPE])
+            .then((res) => res[0])
+            .catch((error) => {
+                console.log(error);
+                return [{ undefined }];
+            });
+        conn.end();
+        return { detail };
     }
     public async getForm(id_header: any) {
         const conn = mysqlcon.getConnection()!;
@@ -106,10 +134,10 @@ class IndustrialConsumerDao {
         header_industrial_consumer_form.ID AS ID_HEADER, business.NAME as NAME_BUSINESS, detail_industrial_consumer_form.ID AS ID_DETAIL,
         detail_industrial_consumer_form.PRECEDENCE AS PRECEDENCE,
         CASE detail_industrial_consumer_form.PRECEDENCE
-            WHEN 0 THEN 'Papel/Cartón'
-            WHEN 1 THEN 'Metal'
-            WHEN 2 THEN 'Plástico Total'
-            WHEN 3 THEN 'Madera'
+            WHEN 1 THEN 'Papel/Cartón'
+            WHEN 2 THEN 'Metal'
+            WHEN 3 THEN 'Plástico'
+            WHEN 4 THEN 'Madera'
             ELSE 'Desconocido'
         END AS PRECEDENCETIPEADO,
         detail_industrial_consumer_form.TYPE_RESIDUE AS TYPE_RESIDUE,
@@ -158,14 +186,14 @@ class IndustrialConsumerDao {
         return data;
     }
 
-    public async downloadFile(id: any){
-        const conn= mysqlcon.getConnection()!;
+    public async downloadFile(id: any) {
+        const conn = mysqlcon.getConnection()!;
         const fileData: any = await conn.query("SELECT ID, FILE_NAME, FILE, TYPE_FILE FROM attached_industrial_consumer_form WHERE ID=?", [id]).then((res) => res[0]).catch(error => [{ undefined }]);
-    
+
         if (fileData == null || fileData.length == 0) {
             return null;
         }
-        
+
         conn.end();
         return {
             fileName: fileData[0].FILE_NAME,
