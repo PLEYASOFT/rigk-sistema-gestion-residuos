@@ -100,7 +100,7 @@
                         <td>{{s.VALUE}}</td>
                         <td>{{s.VALUED}}</td>
                         <td>
-                            <a class="custom-cursor" data-bs-toggle="modal" data-bs-target="#infoModal" (click)="this.onMaterialTreatmentChange(x)">
+                            <a class="custom-cursor" data-bs-toggle="modal" data-bs-target="#infoModal" (click)="this.onMaterialTreatmentChange(x); this.index = x">
                                 <i class="fa fa-check fa-lg fa-fw"
                                     [ngClass]="s.STATE_GESTOR == 0 ? 'color-verde-opaco' : 'color-verde'"
                                     aria-hidden="true"></i>
@@ -139,7 +139,7 @@
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Núm. Factura Reciclador</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" placeholder="1234" formControlName="invoiceNumber">
+                            <input type="text" class="form-control" placeholder="1234" formControlName="invoiceNumber" (input)="onRUTChange(this.index)">
                             <div *ngIf="userForm.controls['invoiceNumber'].errors && userForm.controls['invoiceNumber'].touched"
                                 class="text-danger">
                                 <p *ngIf="userForm.controls['invoiceNumber'].errors['required']">Debe ingresar un número
@@ -151,7 +151,7 @@
                         <label class="col-sm-4 col-form-label">RUT Reciclador</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" placeholder="1-9" formControlName="rut"
-                                (input)="onRUTChange()">
+                                (input)="onRUTChange(this.index)">
                             <div *ngIf="userForm.controls['rut'].errors && userForm.controls['rut'].touched"
                                 class="text-danger pl-0">
                                 <p *ngIf="userForm.controls['rut'].errors['required']">El rut de la empresa es
@@ -175,6 +175,11 @@
                         <div class="col-sm-8">
                             <input type="text" class="form-control" placeholder="Tipo tratamiento"
                                 formControlName="treatmentType" readonly >
+                                <div *ngIf="userForm.controls['treatmentType'].errors && userForm.controls['treatmentType'].touched"
+                                class="text-danger pl-0">
+                                <p *ngIf="userForm.controls['treatmentType'].errors['required']">El rut de la empresa es
+                                    requerido.</p>
+                            </div>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -182,6 +187,11 @@
                         <div class="col-sm-8">
                             <input type="text" class="form-control" placeholder="Tipo material"
                                 formControlName="material" readonly>
+                                <div *ngIf="userForm.controls['material'].errors && userForm.controls['material'].touched"
+                                class="text-danger pl-0">
+                                <p *ngIf="userForm.controls['material'].errors['required']">El rut de la empresa es
+                                    requerido.</p>
+                            </div>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -198,8 +208,7 @@
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Peso Total</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" formControlName="totalWeight"
-                                [readonly]="!isTotalWeightEditable()">
+                            <input type="text" class="form-control" formControlName="totalWeight">
                             <div *ngIf="userForm.controls['totalWeight'].errors && userForm.controls['totalWeight'].touched"
                                 class="text-danger">
                                 <p *ngIf="userForm.controls['totalWeight'].errors['required']">Debe ingresar un peso
@@ -243,7 +252,7 @@
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Num. Declaraciones asociadas</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" disabled>
+                            <input type="text" class="form-control" formControlName="asoc" readonly>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -266,9 +275,13 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)=" this.console();this.userForm.reset()">Volver</button>
                 <button type="button" class="btn btn-primary" [disabled]="userForm.invalid || isRemainingWeightNegative">Guardar</button>
             </div>
+            <div>
+                <p>userForm.invalid: {{ userForm.invalid }}</p>
+                <p>isRemainingWeightNegative: {{ isRemainingWeightNegative }}</p>
+              </div>
         </div>
     </div>
 </div>

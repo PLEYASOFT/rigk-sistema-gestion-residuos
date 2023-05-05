@@ -50,6 +50,7 @@ class EstablishmentDao {
                 THEN 1
                 ELSE 0
             END AS semaforo,
+            detail_industrial_consumer_form.PRECEDENCE AS PRECEDENCE_NUMBER,
                 CASE detail_industrial_consumer_form.PRECEDENCE
                     WHEN 1 THEN 'Papel/Cartón'
                     WHEN 2 THEN 'Metal'
@@ -83,6 +84,7 @@ class EstablishmentDao {
                 CONCAT(UPPER(SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 1, 1)), SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 2)) AS FechaRetiroTipeada,
                 detail_industrial_consumer_form.ID_GESTOR AS IdGestor,
                 detail_industrial_consumer_form.LER,
+                detail_industrial_consumer_form.TREATMENT_TYPE AS TREATMENT_TYPE_NUMBER,
                 CASE detail_industrial_consumer_form.TREATMENT_TYPE
                     WHEN 1 THEN 'Reciclaje Mecánico'
                     WHEN 2 THEN 'Valorización Energética'
@@ -94,7 +96,7 @@ class EstablishmentDao {
         INNER JOIN establishment_business ON establishment_business.ID_ESTABLISHMENT = establishment.ID
         INNER JOIN business ON business.ID = establishment_business.ID_BUSINESS
         INNER JOIN detail_industrial_consumer_form ON detail_industrial_consumer_form.ID_HEADER = header_industrial_consumer_form.ID
-        LEFT JOIN invoices_detail ON invoices.ID_DETAIL = detail_industrial_consumer_form.ID
+        LEFT JOIN invoices_detail ON invoices_detail.ID_DETAIL = detail_industrial_consumer_form.ID
         WHERE establishment_business.ID_ESTABLISHMENT IN (SELECT ID_ESTABLISHMENT FROM establishment_business WHERE ID_BUSINESS IN (SELECT ID_BUSINESS FROM user_business WHERE ID_USER = ?))
  `, [ID]).then(res => res[0]).catch(erro => { console.log(erro); return undefined });
 

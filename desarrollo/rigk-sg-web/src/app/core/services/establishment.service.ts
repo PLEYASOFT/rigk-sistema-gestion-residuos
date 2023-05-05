@@ -14,6 +14,10 @@ export class EstablishmentService {
     return this.http.get<any>(`${this.url}/all/`);
   }
 
+  getInovice(invoice_number:any,vat:any,treatment_type:any,material_type:any){
+    return this.http.post<any>(`${this.url}/get/invoice/`,{invoice_number,vat,treatment_type,material_type});
+  }
+
   addEstablishment(name:any, region:any, id_business:any){
     return this.http.post<any>(`${this.url}/add/`, {name, region,id_business});
   }
