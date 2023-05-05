@@ -111,6 +111,31 @@ class EstablishmentDao {
         conn.end();
         return establishment;
     }
+    public async getInvoice(number:any, rut:any,treatment_type:number,material_type:number) {
+        const conn = mysqlcon.getConnection()!;
+        const data: any = await conn.execute("SELECT ID, VALUED_TOTAL AS invoice_value FROM invoices WHERE INVOICE_NUMBER=? AND VAT=?", [number,rut]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const ID_INVOICE = data[0].ID;
+        const data2: any = await conn.execute("SELECT SUM(VALUE) AS value_declarated, COUNT(VALUE) as num_asoc FROM invoices_detail WHERE ID_INVOICE=? AND TREATMENT_TYPE=? AND MATERIAL_TYPE=?", [ID_INVOICE,treatment_type, material_type]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const business: any = await conn.execute("SELECT NAME FROM business WHERE VAT = ? LIMIT 1", [rut]).then((res) => res[0]).catch(error => {console.log(error);return [{undefined}]});
+        if (data == null || data.length == 0) {
+            return false;
+        }
+        conn.end();
+        return [{
+            invoice_value: data[0].invoice_value,
+            num_asoc: data2[0].num_asoc,
+            value_declarated: data2[0].value_declarated,
+            NAME: business[0].NAME || null
+        }];
+    }
+    public async saveInvoice(vat:any,invoice_number:any,id_detail:any,date_pr:any,valued:any,file:any) {
+        const file_name = file.name;
+        const _file = file.data;
+        const conn = mysqlcon.getConnection()!;
+        const data: any = await conn.execute("INSERT INTO invoices(VAT,INVOICE_NUMBER,ID_DETAIL_INDUSTRIAL_CONSUMER, DATE_PR,VALUED,FILE,FILE_NAME) VALUES(?,?,?,?,?,?,?)", [vat,invoice_number,id_detail,date_pr,valued, _file,file_name]).then((res) => res[0]).catch(error => {console.log(error);return[ undefined ]});
+        conn.end();
+        return data;
+    }
 
 }
 const establishmentDao = new EstablishmentDao();

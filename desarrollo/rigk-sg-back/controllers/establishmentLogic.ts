@@ -77,6 +77,41 @@ class EstablishmentLogic {
             });
         }
     }
+    public async saveInvoice(req: any, res: Response) {
+        const {vat,invoice_number,id_detail,date_pr,valued} = req.body;
+        const files = req.files;
+        try {
+            const data: any = await establishmentDao.saveInvoice(vat,invoice_number,id_detail,date_pr,valued, files['file']);
+            if(data || data[0] != undefined) {
+                res.status(200).json({ status: true, data: {}, msg: 'Registro guardado satisfactoriamente' });
+            } else {
+                res.status(500).json({ status: true, data: {}, msg: 'Algo salió mal' });
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+    public async getInovice(req: any, res: Response) {
+        const {invoice_number,vat,treatment_type,material_type} = req.body;
+        try {
+            const data:any = await establishmentDao.getInvoice(invoice_number,vat,treatment_type,material_type);
+            if(data[0].NAME){
+                res.status(200).json({ status: true, data, msg: '' });
+            } else {
+                res.status(400).json({ status: false, data, msg: 'Reciclador no encontrada' });
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
 }
 const establishmentLogic = new EstablishmentLogic();
 export default establishmentLogic;
