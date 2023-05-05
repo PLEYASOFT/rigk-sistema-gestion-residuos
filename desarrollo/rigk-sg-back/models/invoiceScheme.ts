@@ -1,6 +1,6 @@
 import Joi from 'joi';
 export const getScheme = Joi.object({
-    invoice_number: Joi.number().required(),
+    invoice_number: Joi.number(),
     vat:Joi.string().required(),
     treatment_type:Joi.number().required(),
     material_type: Joi.number().required()
