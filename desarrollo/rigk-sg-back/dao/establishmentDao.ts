@@ -129,9 +129,7 @@ class EstablishmentDao {
             }];
         }
         const ID_INVOICE = data[0].ID;
-        console.log(ID_INVOICE);
         const data2: any = await conn.execute("SELECT SUM(VALUE) AS value_declarated, COUNT(VALUE) as num_asoc FROM invoices_detail WHERE ID_INVOICE=?", [ID_INVOICE]).then((res) => res[0]).catch(error => console.log(error) );
-        console.log(data2[0])
         conn.end();
         return [{
             invoice_value: data[0].invoice_value,
@@ -152,6 +150,7 @@ class EstablishmentDao {
         }
         ID = invoice[0].ID;
         await conn.execute("INSERT INTO invoices_detail(ID_INVOICE,ID_DETAIL,VALUE,FILE,FILE_NAME,DATE_PR) VALUES(?,?,?,?,?,?)", [ID, id_detail,  value, _file, file_name, date_pr]).then((res) => res[0]).catch(error => { console.log(error) });
+        await conn.execute("UPDATE header_industrial_consumer_form SET STATE_GESTOR=1 WHERE ID = (SELECT ID_HEADER FROM detail_industrial_consumer_form WHERE ID_=?)", [id_detail]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         return [{ ID }];
     }
