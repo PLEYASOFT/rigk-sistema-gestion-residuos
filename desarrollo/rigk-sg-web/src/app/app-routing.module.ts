@@ -24,6 +24,11 @@ const routes: Routes = [
     loadChildren: () => import('./modules/consumer-statement/consumer-statement.module').then(m=>m.ConsumerStatementModule)
   },
   {
+    path: 'gestor',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./modules/manager-statement/manager-statement.module').then(m=>m.ManagerStatementModule)
+  },
+  {
     path: '**',
     redirectTo: 'auth',
     pathMatch: 'full'
