@@ -129,7 +129,7 @@ class EstablishmentDao {
             }];
         }
         const ID_INVOICE = data[0].ID;
-        const data2: any = await conn.execute("SELECT SUM(VALUE) AS value_declarated, COUNT(VALUE) as num_asoc FROM invoices_detail WHERE ID_INVOICE=?", [ID_INVOICE]).then((res) => res[0]).catch(error => console.log(error) );
+        const data2: any = await conn.execute("SELECT SUM(VALUE) AS value_declarated, COUNT(VALUE) as num_asoc FROM invoices_detail WHERE ID_INVOICE=?", [ID_INVOICE]).then((res) => res[0]).catch(error => console.log(error));
         conn.end();
         return [{
             invoice_value: data[0].invoice_value,
@@ -145,7 +145,7 @@ class EstablishmentDao {
         const invoice: any = await conn.execute("SELECT ID FROM invoices WHERE INVOICE_NUMBER=? AND VAT=?", [invoice_number, vat]).then((res) => res[0]).catch(error => [{ undefined }]);
         let ID;
         if (invoice.length == 0) {
-            const _ID: any = await conn.execute("INSERT INTO invoices(INVOICE_NUMBER,VAT,VALUED_TOTAL,ID_USER,TREATMENT_TYPE,MATERIAL_TYPE) VALUES(?,?,?,?,?,?)", [invoice_number, vat, valued_total, id_user,treatment, material]).then((res) => res[0]).catch(error => [{ undefined }]);
+            const _ID: any = await conn.execute("INSERT INTO invoices(INVOICE_NUMBER,VAT,VALUED_TOTAL,ID_USER,TREATMENT_TYPE,MATERIAL_TYPE) VALUES(?,?,?,?,?,?)", [invoice_number, vat, valued_total, id_user, treatment, material]).then((res) => res[0]).catch(error => [{ undefined }]);
             ID = _ID.insertId;
         } else {
             ID = invoice[0].ID;
