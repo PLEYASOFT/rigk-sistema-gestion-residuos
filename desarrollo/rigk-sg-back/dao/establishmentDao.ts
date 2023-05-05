@@ -79,7 +79,7 @@ class EstablishmentDao {
                 END AS TYPE_RESIDUE,
                 detail_industrial_consumer_form.VALUE,
                 header_industrial_consumer_form.STATE_GESTOR,
-                invoices_detail.VALUE,
+                invoices_detail.VALUE AS VALUE_DECLARATE,
                 detail_industrial_consumer_form.DATE_WITHDRAW AS FechaRetiro,
                 CONCAT(UPPER(SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 1, 1)), SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 2)) AS FechaRetiroTipeada,
                 detail_industrial_consumer_form.ID_GESTOR AS IdGestor,
@@ -134,7 +134,6 @@ class EstablishmentDao {
         const file_name = file.name;
         const _file = file.data;
         const conn = mysqlcon.getConnection()!;
-        id_user=9;
         const invoice: any = await conn.execute("SELECT ID FROM invoices WHERE INVOICE_NUMBER=? AND VAT=?", [invoice_number,vat]).then((res) => res[0]).catch(error => [{ undefined }]);
         let ID = invoice[0].ID;
         console.log(invoice);
