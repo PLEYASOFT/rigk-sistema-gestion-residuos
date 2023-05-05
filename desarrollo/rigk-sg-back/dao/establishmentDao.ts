@@ -78,7 +78,7 @@ class EstablishmentDao {
                     ELSE 'Desconocido'
                 END AS TYPE_RESIDUE,
                 detail_industrial_consumer_form.VALUE,
-                header_industrial_consumer_form.STATE_GESTOR,
+                detail_industrial_consumer_form.STATE_GESTOR,
                 invoices_detail.VALUE AS VALUE_DECLARATE,
                 detail_industrial_consumer_form.DATE_WITHDRAW AS FechaRetiro,
                 CONCAT(UPPER(SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 1, 1)), SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 2)) AS FechaRetiroTipeada,
@@ -147,10 +147,11 @@ class EstablishmentDao {
         if (invoice.length == 0) {
             const _ID: any = await conn.execute("INSERT INTO invoices(INVOICE_NUMBER,VAT,VALUED_TOTAL,ID_USER,TREATMENT_TYPE,MATERIAL_TYPE) VALUES(?,?,?,?,?,?)", [invoice_number, vat, valued_total, id_user,treatment, material]).then((res) => res[0]).catch(error => [{ undefined }]);
             ID = _ID.insertId;
+        } else {
+            ID = invoice[0].ID;
         }
-        ID = invoice[0].ID;
         await conn.execute("INSERT INTO invoices_detail(ID_INVOICE,ID_DETAIL,VALUE,FILE,FILE_NAME,DATE_PR) VALUES(?,?,?,?,?,?)", [ID, id_detail,  value, _file, file_name, date_pr]).then((res) => res[0]).catch(error => { console.log(error) });
-        await conn.execute("UPDATE header_industrial_consumer_form SET STATE_GESTOR=1 WHERE ID = (SELECT ID_HEADER FROM detail_industrial_consumer_form WHERE ID_=?)", [id_detail]).then((res) => res[0]).catch(error => [{ undefined }]);
+        await conn.execute("UPDATE detail_industrial_consumer_form SET STATE_GESTOR=1 WHERE ID = ?", [id_detail]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         return [{ ID }];
     }
