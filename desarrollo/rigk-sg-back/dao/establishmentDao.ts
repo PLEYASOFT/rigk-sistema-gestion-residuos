@@ -128,13 +128,22 @@ class EstablishmentDao {
             NAME: business[0].NAME || null
         }];
     }
-    public async saveInvoice(vat:any,invoice_number:any,id_detail:any,date_pr:any,valued:any,file:any) {
+    public async saveInvoice(vat:any,invoice_number:any,id_detail:any,date_pr:any,value:any,file:any, valued_total:any,id_user:any, treatment:any,material:any) {
         const file_name = file.name;
         const _file = file.data;
         const conn = mysqlcon.getConnection()!;
-        const data: any = await conn.execute("INSERT INTO invoices(VAT,INVOICE_NUMBER,ID_DETAIL_INDUSTRIAL_CONSUMER, DATE_PR,VALUED,FILE,FILE_NAME) VALUES(?,?,?,?,?,?,?)", [vat,invoice_number,id_detail,date_pr,valued, _file,file_name]).then((res) => res[0]).catch(error => {console.log(error);return[ undefined ]});
+        id_user=9;
+        const invoice: any = await conn.execute("SELECT ID FROM invoices WHERE INVOICE_NUMBER=? AND VAT=?", [invoice_number,vat]).then((res) => res[0]).catch(error => [{ undefined }]);
+        let ID = invoice[0].ID;
+        console.log(invoice);
+        if(invoice.length == 0) {
+            const _ID:any = await conn.execute("INSERT INTO invoices(INVOICE_NUMBER,VAT,VALUED_TOTAL,ID_USER) VALUES(?,?,?,?)", [invoice_number,vat, valued_total,id_user]).then((res) => res[0]).catch(error => [{ undefined }]);
+            ID = _ID.insertId;
+        }
+        console.log(ID)
+        await conn.execute("INSERT INTO invoices_detail(ID_INVOICE,ID_DETAIL,TREATMENT_TYPE,MATERIAL_TYPE,VALUE,FILE,FILE_NAME,DATE_PR) VALUES(?,?,?,?,?,?,?,?)", [ID,id_detail, treatment,material,value,_file,file_name,date_pr]).then((res) => res[0]).catch(error => {console.log(error)});
         conn.end();
-        return data;
+        return [{ID}];
     }
 
 }
