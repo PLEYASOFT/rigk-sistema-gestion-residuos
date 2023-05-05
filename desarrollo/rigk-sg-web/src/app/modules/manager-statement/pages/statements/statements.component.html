@@ -276,12 +276,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="this.userForm.reset()">Volver</button>
-                <button type="button" class="btn btn-primary" [disabled]="userForm.invalid || isRemainingWeightNegative" (click)="saveInvoice(this.index)">Guardar</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" [disabled]="userForm.invalid || isRemainingWeightNegative" (click)="saveInvoice(this.index)">Guardar</button>
             </div>
-            <div>
-                <p>userForm.invalid: {{ userForm.invalid }}</p>
-                <p>isRemainingWeightNegative: {{ isRemainingWeightNegative }}</p>
-              </div>
         </div>
     </div>
 </div>

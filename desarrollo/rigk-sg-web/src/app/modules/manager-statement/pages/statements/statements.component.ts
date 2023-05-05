@@ -115,7 +115,6 @@ export class StatementsComponent implements OnInit {
           this.cant = Math.ceil(this.dbStatements.length / 10);
           this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();
           Swal.close();
-          console.log(this.db)
         }
         resolve();
       })
@@ -293,10 +292,19 @@ export class StatementsComponent implements OnInit {
       const treatmentType = this.db[index].TREATMENT_TYPE_NUMBER
       const material = this.db[index].PRECEDENCE_NUMBER
       const id_detail = this.db[index].ID_DETAIL
-      console.log(rut, invoiceNumber, entryDate, valuedWeight, totalWeight, treatmentType, material, id_detail)
       try {
         const response = await this.establishmentService.saveInvoice(rut, invoiceNumber, id_detail, entryDate, valuedWeight, totalWeight, treatmentType, material, this.selectedFile).toPromise();
-        console.log('Response:', response);
+        if(response.status){
+          this.reset();
+          setTimeout(async () => {
+            await Swal.fire({
+              title: "La factura fue guardada exitosamente",
+              text: "",
+              icon: "success",
+              showConfirmButton: true, // Muestra el botón de confirmación.
+            });
+          }, 500); 
+        }
       } catch (error) {
         console.error('Error:', error);
       }
@@ -304,6 +312,7 @@ export class StatementsComponent implements OnInit {
       console.error('No file selected');
     }
   }
+  
   async onRUTChange(index: number) {
     const rut = this.userForm.controls['rut'].value;
     const invoiceNumber = this.userForm.controls['invoiceNumber'].value;
@@ -312,9 +321,7 @@ export class StatementsComponent implements OnInit {
     if (rut) {
       try {
         const businessResponse = await this.establishmentService.getInovice(invoiceNumber, rut, treatmentType, material).toPromise();
-        console.log(businessResponse)
         if (businessResponse.status) {
-          console.log('entra: ', rut, invoiceNumber, treatmentType, material)
           this.userForm.controls['reciclador'].setValue(businessResponse.data[0].NAME);
           this.userForm.controls['totalWeight'].setValue(businessResponse.data[0].invoice_value);
           this.userForm.controls['declarateWeight'].setValue(businessResponse.data[0].value_declarated);
