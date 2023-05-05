@@ -16,8 +16,11 @@ export class StatementsComponent implements OnInit {
     invoiceNumber: new FormControl('', Validators.required),
     rut: new FormControl('', [Validators.required, Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$'), this.verifyRut]),
     reciclador: new FormControl('', Validators.required),
+    treatmentType: new FormControl('', Validators.required),
+    material: new FormControl('', Validators.required),
     entryDate: new FormControl('', Validators.required),
     totalWeight: new FormControl('', [Validators.required, Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)]),
+    declarateWeight: new FormControl('', [Validators.required, Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)]),
     valuedWeight: new FormControl('', [Validators.required, Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)]),
     remainingWeight: new FormControl('', [Validators.required, Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)]),
     attachment: new FormControl(null, [Validators.required, this.fileTypeValidator, this.fileSizeValidator]),
@@ -65,7 +68,6 @@ export class StatementsComponent implements OnInit {
       this.filter();
       this.pagTo(this.pos - 1);
     });
-    this.userForm.controls['reciclador'].disable();
   }
 
   loadStatements(): Promise<void> {
@@ -291,7 +293,12 @@ export class StatementsComponent implements OnInit {
     } else {
       this.userForm.controls['reciclador'].setValue('');
     }
-  }  
+  }
+  
+  async onMaterialTreatmentChange(index: any) {
+      this.userForm.controls['treatmentType'].setValue(this.db[index].TipoTratamiento);
+      this.userForm.controls['material'].setValue(this.db[index].PRECEDENCE);  
+  } 
   
   verifyRut(control: AbstractControl): { [key: string]: boolean } | null {
     const rut = control.value;
@@ -328,4 +335,7 @@ export class StatementsComponent implements OnInit {
     return remainingWeight;
   }  
   
+  /*isValuedWeightDisabled(): boolean {
+    return !this.userForm.controls['rut'].value || !this.userForm.controls['invoiceNumber'].value;
+  }*/
 }
