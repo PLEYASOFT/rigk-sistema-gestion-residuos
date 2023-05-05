@@ -98,9 +98,9 @@
                             <span *ngIf="s.STATE_GESTOR != 0">Aprobado</span>
                         </td>
                         <td>{{s.VALUE}}</td>
-                        <td>{{s.VALUED}}</td>
+                        <td>{{s.VALUE_DECLARATE}}</td>
                         <td>
-                            <a class="custom-cursor" data-bs-toggle="modal" data-bs-target="#infoModal" (click)="this.onMaterialTreatmentChange(x); this.index = x">
+                            <a class="custom-cursor" data-bs-toggle="modal" [attr.data-bs-target]="s.STATE_GESTOR == 0 ? '#infoModal' : null" (click)="handleClick(x, s.STATE_GESTOR)">
                                 <i class="fa fa-check fa-lg fa-fw"
                                     [ngClass]="s.STATE_GESTOR == 0 ? 'color-verde-opaco' : 'color-verde'"
                                     aria-hidden="true"></i>
@@ -214,12 +214,12 @@
                                 <p *ngIf="userForm.controls['totalWeight'].errors['required']">Debe ingresar un peso
                                     total.</p>
                                 <p *ngIf="userForm.controls['totalWeight'].errors['pattern']">Debe ingresar un número
-                                    válido.</p>
+                                    válido (Con puntos).</p>
                             </div>
                         </div>
                     </div>
                     <div class="row mb-3">
-                        <label class="col-sm-4 col-form-label">Peso declarado</label>
+                        <label class="col-sm-4 col-form-label">Peso Acomulado</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control"
                                 formControlName="declarateWeight" readonly>
@@ -234,7 +234,7 @@
                                 <p *ngIf="userForm.controls['valuedWeight'].errors['required']">Debe ingresar un peso
                                     valorizado.</p>
                                 <p *ngIf="userForm.controls['valuedWeight'].errors['pattern']">Debe ingresar un número
-                                    válido.</p>
+                                    válido (Con puntos).</p>
                             </div>
                         </div>
                     </div>
@@ -275,8 +275,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)=" this.console();this.userForm.reset()">Volver</button>
-                <button type="button" class="btn btn-primary" [disabled]="userForm.invalid || isRemainingWeightNegative">Guardar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="this.userForm.reset()">Volver</button>
+                <button type="button" class="btn btn-primary" [disabled]="userForm.invalid || isRemainingWeightNegative" (click)="saveInvoice(this.index)">Guardar</button>
             </div>
             <div>
                 <p>userForm.invalid: {{ userForm.invalid }}</p>

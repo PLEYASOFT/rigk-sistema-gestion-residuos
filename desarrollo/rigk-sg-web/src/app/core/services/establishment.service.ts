@@ -18,6 +18,21 @@ export class EstablishmentService {
     return this.http.post<any>(`${this.url}/get/invoice/`,{invoice_number,vat,treatment_type,material_type});
   }
 
+  saveInvoice(vat: any, invoice_number: any, id_detail: any, date_pr: any, value: any, valued_total: any, treatment: any, id_material: any, file: File) {
+    const formData: FormData = new FormData();
+    formData.append('vat', vat);
+    formData.append('invoice_number', invoice_number);
+    formData.append('id_detail', id_detail);
+    formData.append('date_pr', date_pr);
+    formData.append('value', value);
+    formData.append('valued_total', valued_total);
+    formData.append('treatment', treatment);
+    formData.append('id_material', id_material);
+    formData.append('file', file, file.name);
+
+    return this.http.post<any>(`${this.url}/invoice/`, formData);
+  }
+
   addEstablishment(name:any, region:any, id_business:any){
     return this.http.post<any>(`${this.url}/add/`, {name, region,id_business});
   }
