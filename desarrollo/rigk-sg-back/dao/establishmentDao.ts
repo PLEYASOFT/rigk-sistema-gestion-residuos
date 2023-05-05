@@ -78,7 +78,7 @@ class EstablishmentDao {
                 END AS TYPE_RESIDUE,
                 detail_industrial_consumer_form.VALUE,
                 header_industrial_consumer_form.STATE_GESTOR,
-                invoices.VALUED,
+                invoices_detail.VALUE,
                 detail_industrial_consumer_form.DATE_WITHDRAW AS FechaRetiro,
                 CONCAT(UPPER(SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 1, 1)), SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 2)) AS FechaRetiroTipeada,
                 detail_industrial_consumer_form.ID_GESTOR AS IdGestor,
@@ -94,7 +94,7 @@ class EstablishmentDao {
         INNER JOIN establishment_business ON establishment_business.ID_ESTABLISHMENT = establishment.ID
         INNER JOIN business ON business.ID = establishment_business.ID_BUSINESS
         INNER JOIN detail_industrial_consumer_form ON detail_industrial_consumer_form.ID_HEADER = header_industrial_consumer_form.ID
-        LEFT JOIN invoices ON invoices.ID_DETAIL_INDUSTRIAL_CONSUMER = detail_industrial_consumer_form.ID
+        LEFT JOIN invoices_detail ON invoices.ID_DETAIL = detail_industrial_consumer_form.ID
         WHERE establishment_business.ID_ESTABLISHMENT IN (SELECT ID_ESTABLISHMENT FROM establishment_business WHERE ID_BUSINESS IN (SELECT ID_BUSINESS FROM user_business WHERE ID_USER = ?))
  `, [ID]).then(res => res[0]).catch(erro => { console.log(erro); return undefined });
 
@@ -123,8 +123,8 @@ class EstablishmentDao {
         conn.end();
         return [{
             invoice_value: data[0].invoice_value,
-            num_asoc: data2[0].num_asoc,
-            value_declarated: data2[0].value_declarated,
+            num_asoc: data2[0].num_asoc || 0,
+            value_declarated: data2[0].value_declarated || 0,
             NAME: business[0].NAME || null
         }];
     }
