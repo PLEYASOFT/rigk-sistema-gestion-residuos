@@ -1,0 +1,17 @@
+:host {
+    width: 90% !important;
+    padding: 1%;
+}
+
+.color-verde {
+    color: green;
+}
+
+.color-verde-opaco {
+    color: rgba(0, 128, 0, 0.3);
+}
+
+
+.custom-cursor {
+    cursor: pointer;
+}

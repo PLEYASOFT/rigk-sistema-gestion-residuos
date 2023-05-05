@@ -65,7 +65,7 @@ export class ConsumerService {
   }
   checkRow(row:any) {
     return this.http.post<any>(`${this.url}/verifyRow/`,row);
-  } 
+  }
   saveHeaderFromExcel(formData: any) {
     return this.http.post(`${this.url}/headerForm`, formData);
   }

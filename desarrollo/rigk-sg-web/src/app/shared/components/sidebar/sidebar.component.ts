@@ -45,6 +45,13 @@ export class SidebarComponent implements OnInit {
     { title: "Declaraciones Productores", path: "#/mantenedor/declarations", icon: "fa fa-database" },
   ];
 
+  menuGestor = [
+    { title: "Inicio", path: "#/gestor/home", icon: "fa-home" },
+    { title: "Mi Perfil", path: "#/gestor/profile", icon: "fa-user" },
+    { title: "Preguntas frecuentes", path: "#/gestor/faq", icon: "fa-search" },
+    { title: "Consulta de declaración", path: "#/gestor/statements", icon: "fa-file-text" },
+  ];
+
   constructor(private router: Router,
     public businessService: BusinessService,
     public ss: ConsumerService,

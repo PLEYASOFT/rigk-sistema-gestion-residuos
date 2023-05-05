@@ -57,6 +57,9 @@ export class LoginComponent implements OnInit {
           else if(this.rol.ROL_NAME == 'Consumidor'){
             this.router.navigate(['/consumidor']);
           }
+          else if(this.rol.ROL_NAME == 'Gestor'){
+            this.router.navigate(['/gestor']);
+          }
         }
       },
       error: err => {
