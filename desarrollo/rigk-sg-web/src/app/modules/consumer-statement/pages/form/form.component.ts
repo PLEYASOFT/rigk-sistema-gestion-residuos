@@ -228,7 +228,7 @@ export class FormComponent implements OnInit {
           break;
         }
         if(reg.sub == "0") {
-          error = "falta seleccionar subtipo en la tabla "+this.tables[reg.residue-1];
+          error = "Falta seleccionar subtipo en la tabla "+this.tables[reg.residue-1];
           break;
         }
       }
