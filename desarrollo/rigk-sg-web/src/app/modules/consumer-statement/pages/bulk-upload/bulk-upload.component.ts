@@ -153,7 +153,6 @@ export class BulkUploadComponent implements OnInit {
       for (let j = 1; j < rows.length; j++) {
         const w = rows[j];
         if (w[0] === row[0] && w[3] === row[3] && w[4] === row[4] && w[5] === row[5] && w[1] === row[1]) {
-          console.log(w[0],w[3],w[4],w[5]);
           tmp_filter++;
         }
       }
@@ -287,7 +286,6 @@ export class BulkUploadComponent implements OnInit {
       const receivingTreatmentCode = row[10];
       // Cantidad
       const quantity = row[11];
-      console.log(quantity)
       if (!quantity || !this.isValidQuantity(quantity.toString().replace(".",","))) {
         Swal.fire({
           icon: 'error',
