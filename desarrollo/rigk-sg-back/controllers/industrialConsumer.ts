@@ -156,7 +156,6 @@ class IndustrialConsumer {
             });
         }
     }
-
     public async getFormConsulta(req: any, res: Response) {
         const { id } = req.params;
         try {
@@ -203,7 +202,12 @@ class IndustrialConsumer {
             const path = require('path');
             const outputPath = path.join(__dirname, `../../files/templates/_carga_masiva_${id}.xlsx`);
             const establishments = await establishmentDao.getEstablishment(id);
-
+            if(establishments == false ){
+                return res.status(500).json({
+                    status: false,
+                    message: "Empresa sin establecimientos"
+                });
+            }
             /**
              * DATA VALIDATION
              */
