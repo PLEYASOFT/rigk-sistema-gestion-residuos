@@ -210,18 +210,27 @@ export class FormComponent implements OnInit {
     }
     for (let i = 0; i < this.newData.length; i++) {
       const reg = this.newData[i];
-      if ((reg.value == 0 && (reg.date != "" || reg.gestor > 0 || reg.treatment != "0" || reg.sub != "0"))) {
-        error = "Falta ingresar peso";
-        break;
-      } else if (reg.value > 0 && (reg.date == "" || reg.gestor == "-1" || reg.treatment == "0" || reg.sub == "0")) {
-        error = "Falta ingresar tipo tratamiento, subtipo, fecha de retiro o gestor";
-        break;
-      } else if (reg.value == 0 && (reg.date == "" || reg.gestor == "-1" || reg.treatment == "0" || reg.sub == "0")) {
-        this.newData.splice(i, 1);
-        if (this.newData.length == 0) {
-          error = "Formulario está vacío";
+      if( reg.value == 0 || reg.date == "" || reg.gestor == "-1" || reg.treatment == "0" || reg.sub == "0" ) {
+        if(reg.value == 0) {
+          error = "Falta ingresar peso en la tabla "+this.tables[reg.residue-1];
+          break;
         }
-        break;
+        if(reg.date == "") {
+          error = "Falta ingresar fecha de retiro en la tabla "+this.tables[reg.residue-1];
+          break;
+        }
+        if(reg.gestor == "-1") {
+          error = "Falta seleccionar gestor en la tabla "+this.tables[reg.residue-1];
+          break;
+        }
+        if(reg.treatment == "0") {
+          error = "Falta seleccionar tipo de tratamiento en la tabla "+this.tables[reg.residue-1];
+          break;
+        }
+        if(reg.sub == "0") {
+          error = "falta seleccionar subtipo en la tabla "+this.tables[reg.residue-1];
+          break;
+        }
       }
     }
     if (error != null) {
@@ -240,28 +249,44 @@ export class FormComponent implements OnInit {
     Swal.showLoading();
 
     const header = { year: this.year_statement, establishment: this.selectedEstablishment[0] };
-    this.consumerService.save({ header, detail: this.newData }).subscribe({
-      next: r => {
-        Swal.close();
-        if (r.status) {
+    let flag = false;
+    for (let i = 0; i < this.newData.length; i++) {
+      const e = this.newData[i];
+      this.consumerService.save({ header, detail: e }).subscribe({
+        next: r => {
+          if (r.status) {
+            // Swal.fire({
+            //   icon: 'success',
+            //   text: 'Declaración guardada satisfactoriamente'
+            // }).then(btn => {
+            //   if (btn.isConfirmed) {
+            //     this.router.navigate(['/consumidor']);
+            //   }
+            // });
+          }
+        },
+        error: r => {
+          Swal.close();
           Swal.fire({
-            icon: 'success',
-            text: 'Declaración guardada satisfactoriamente'
-          }).then(btn => {
-            if (btn.isConfirmed) {
-              this.router.navigate(['/consumidor']);
-            }
+            icon: 'error',
+            text: 'Ocurrió un error mientras se enviaba el formulario.'
           });
+          flag = true;
         }
-      },
-      error: r => {
-        Swal.close();
-        Swal.fire({
-          icon: 'error',
-          text: 'Ocurrió un error mientras se enviaba el formulario.'
-        });
-      }
-    });
+      });
+    }
+    console.log(flag)
+    if(!flag) {
+      Swal.close();
+      Swal.fire({
+              icon: 'success',
+              text: 'Declaración guardada satisfactoriamente'
+            }).then(btn => {
+              if (btn.isConfirmed) {
+                this.router.navigate(['/consumidor']);
+              }
+            });
+    }
   }
   goBack() {
     this.router.navigate([this.goTo]);
@@ -361,7 +386,7 @@ export class FormComponent implements OnInit {
       let tmp_filter = 0;
       for (let j = 0; j < tmp.length; j++) {
         const i = tmp[j];
-        if (j == n_row) continue;
+        if (i.row == n_row) continue;
         if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value) {
           tmp_filter++;
         }
@@ -422,7 +447,7 @@ export class FormComponent implements OnInit {
       let tmp_filter = 0;
       for (let j = 0; j < tmp.length; j++) {
         const i = tmp[j];
-        if (j == n_row) continue;
+        if (i.row == n_row) continue;
         if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value) {
           tmp_filter++;
         }
@@ -516,7 +541,7 @@ export class FormComponent implements OnInit {
       let tmp_filter = 0;
       for (let j = 0; j < tmp.length; j++) {
         const i = tmp[j];
-        if (j == n_row) continue;
+        if (i.row == n_row) continue;
         if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value) {
           tmp_filter++;
         }
@@ -554,7 +579,7 @@ export class FormComponent implements OnInit {
       let tmp_filter = 0;
       for (let j = 0; j < tmp.length; j++) {
         const i = tmp[j];
-        if (j == n_row) continue;
+        if (i.row == n_row) continue;
         if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value) {
           tmp_filter++;
         }
@@ -655,6 +680,10 @@ export class FormComponent implements OnInit {
     }
     const q = this.newData.findIndex(r => r.residue == this.tableSelected && r.row == this.rowSelected);
     if (q == -1) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Ocurrió un error!.'
+      });
       return;
     }
     if (this.newData[q].files.length == 3) {
@@ -679,12 +708,14 @@ export class FormComponent implements OnInit {
     this.newData[q].files.push({ type, file: this.tmpFile[0] });
     (document.getElementById('inp_select_mv') as HTMLInputElement).value = "0";
     (document.getElementById('inp_file_0') as HTMLInputElement).value = "";
+    this.tmpFile = [];
   }
   selectFile(event: any) {
     const target = event.target;
 
     if (target.files.length == 0) {
       (document.getElementById('inp_file_0') as HTMLInputElement).value = "";
+      this.tmpFile = [];
     }
     if (target.files[0].size / 1000 > 1000) {
       Swal.fire({

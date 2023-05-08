@@ -11,13 +11,10 @@ export class ConsumerService {
   constructor(private http: HttpClient) { }
   save(data: any) {
     const body = new FormData();
-    for (let i = 0; i < data.detail.length; i++) {
-      const f = data.detail[i];
-      if (f.files) {
-        for (let j = 0; j < f.files.length; j++) {
-          const file = f.files[j];
-          body.append(`f_${f.sub}_${f.treatment}_${file.type}`, file.file);
-        }
+    if (data.detail.files) {
+      for (let j = 0; j < data.detail.files.length; j++) {
+        const file = data.detail.files[j];
+        body.append(`f_${data.detail.sub}_${data.detail.treatment}_${file.type}`, file.file);
       }
     }
     body.append("header", JSON.stringify(data.header));

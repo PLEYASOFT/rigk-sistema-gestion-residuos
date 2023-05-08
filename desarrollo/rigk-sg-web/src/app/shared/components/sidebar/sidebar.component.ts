@@ -116,7 +116,7 @@ export class SidebarComponent implements OnInit {
   async showDialog2() {
     Swal.fire({
       title: 'Ingrese Datos',
-      html: '<input id="inp_id_business" type="text" placeholder="ID Empresa" class="form-control"><br><input id="inp_year_modal" type="number" placeholder="AÑO Declaración" class="form-control"><p>Corresponde declarar año ' + (+this.year - 1) + '</p>',
+      html: '<input id="inp_id_business" type="text" placeholder="ID Empresa" class="form-control"><br><input id="inp_year_modal" type="number" placeholder="AÑO Declaración" class="form-control">',
       showCancelButton: true,
       confirmButtonText: 'Aceptar ',
       cancelButtonText: 'Cancelar',
