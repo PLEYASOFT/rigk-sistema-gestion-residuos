@@ -32,15 +32,25 @@ export class BulkUploadComponent implements OnInit {
       });
       return;
     }
-    this.consumer.downloadExcel(id).subscribe(r => {
-      const file = new Blob([r], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
-      let link = document.createElement('a');
-      link.href = window.URL.createObjectURL(file);
-      link.download = `carga masiva`;
-      document.body.appendChild(link);
-      link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
-      link.remove();
-      window.URL.revokeObjectURL(link.href);
+    this.consumer.downloadExcel(id).subscribe({
+      next: r => {
+        if(r) {
+          const file = new Blob([r], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+          let link = document.createElement('a');
+          link.href = window.URL.createObjectURL(file);
+          link.download = `carga masiva`;
+          document.body.appendChild(link);
+          link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+          link.remove();
+          window.URL.revokeObjectURL(link.href);
+        } 
+      },
+      error: r=> {
+        Swal.fire({
+          icon: 'error',
+          text: 'Revise establecimientos de la empresa. En caso de ser necesario, contacte al administrador del sistema.'
+        })
+      }
     });
   }
   loadStatements() {
@@ -111,13 +121,66 @@ export class BulkUploadComponent implements OnInit {
   }
 
   async processData(data: any[]) {
+    if(data.length == 0) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Archivo inválido. No tiene todas las columnas necesarias'
+      });
+      return;
+    }
     const rows = data.slice(1);
     const rowsData = [];
     let businessId: any;
+    if(data[0].length != 12) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Archivo inválido. No tiene todas las columnas necesarias'
+      });
+      return;
+    }
+    if(data.length == 1) {
+      Swal.fire({
+        icon: 'info',
+        text: 'Archivo está vacío (faltan campos por rellenar).'
+      });
+      return;
+    }
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       const excelRowNumber = i + 2; // Se agrega 2 para considerar el encabezado y el índice base 1 de Excel
 
+      if(row.length == 0 && i == 0) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Archivo vacío'
+        });
+        return;
+      }
+      if(row.length != 12) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Archivo inválido (faltan campos por rellenar).'
+        });
+        return;
+      }
+    
+      let tmp_filter = 0;
+      for (let j = 1; j < rows.length; j++) {
+        const w = rows[j];
+        if (w[0] === row[0] && w[3] === row[3] && w[4] === row[4] && w[5] === row[5] && w[1] === row[1]) {
+          tmp_filter++;
+        }
+      }
+      if (tmp_filter >= 1) {
+        Swal.fire({
+          icon: 'info',
+          text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
+        });
+        return;
+      } else {
+        // analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_sub);
+      }
+      
       // Código de establecimiento
       const establishmentCode = row[0];
       const establishmentId = establishmentCode.split(" - ")[0];
@@ -193,6 +256,14 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
+      const tmp = (managerRUT.toString().split("-"));
+      if(tmp.length != 2 || tmp[1] == '') {
+        Swal.fire({
+          icon: 'error',
+          text: `RUT no válido en la fila ${excelRowNumber}`
+        });
+        return;
+      }
       const businessResponse = await this.businessService.getBusinessByVAT(managerRUT).toPromise();
       if (!businessResponse.status) {
         Swal.fire({
@@ -211,7 +282,7 @@ export class BulkUploadComponent implements OnInit {
       }
       let isValidEstablishmentBusinessRelation = false;
       for (const business of businesses) {
-        const checkRelationResponse = await this.businessService.checkEstablishmentBusinessRelation(establishmentId, business.ID).toPromise();
+        const checkRelationResponse = await this.businessService.checkEstablishmentBusinessRelation(establishmentId, business.ID, specificType).toPromise();
         if (checkRelationResponse.status) {
           businessId = business.ID;
           isValidEstablishmentBusinessRelation = true;
@@ -231,13 +302,14 @@ export class BulkUploadComponent implements OnInit {
       const receivingTreatmentCode = row[10];
       // Cantidad
       const quantity = row[11];
-      if (!quantity || !this.isValidQuantity(quantity)) {
+      if (!quantity || !this.isValidQuantity(quantity.toString().replace(".",","))) {
         Swal.fire({
           icon: 'error',
           text: `Cantidad no válida o no proporcionada en la fila ${excelRowNumber}. Asegúrese de usar una coma como separador de decimales`
         });
         return;
       }
+      
 
       const precedenceNumber = this.convertPrecedence(row[4]);
       const typeResidueNumber = this.convertTypeResidue(row[5]);
@@ -255,7 +327,7 @@ export class BulkUploadComponent implements OnInit {
       };
       rowsData.push(rowData);
     }
-
+    
     // Obten el ID del usuario de la variable de sesión
     const userId = this.userData.ID;
 
@@ -281,7 +353,7 @@ export class BulkUploadComponent implements OnInit {
             ID_HEADER: headerId,
             PRECEDENCE: rowData.precedence,
             TYPE_RESIDUE: rowData.typeResidue,
-            VALUE: parseFloat(rowData.quantity),
+            VALUE: parseFloat(rowData.quantity.toString().replace(",",".")),
             DATE_WITHDRAW: this.convertDate(rowData.date),
             ID_GESTOR: rowData.businessId,
             LER: rowData.LER,
