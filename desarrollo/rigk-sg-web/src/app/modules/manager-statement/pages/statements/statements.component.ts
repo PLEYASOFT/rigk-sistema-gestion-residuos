@@ -303,7 +303,7 @@ export class StatementsComponent implements OnInit {
               icon: "success",
               showConfirmButton: true, // Muestra el botón de confirmación.
             });
-          }, 500); 
+          }, 1500); 
         }
       } catch (error) {
         console.error('Error:', error);

@@ -15,3 +15,7 @@
 .custom-cursor {
     cursor: pointer;
 }
+
+.no-pointer {
+    cursor: default;
+}
