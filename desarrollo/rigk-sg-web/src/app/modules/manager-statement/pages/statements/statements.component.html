@@ -100,12 +100,13 @@
                         <td>{{s.VALUE}}</td>
                         <td>{{s.VALUE_DECLARATE}}</td>
                         <td>
-                            <a class="custom-cursor" data-bs-toggle="modal" [attr.data-bs-target]="s.STATE_GESTOR == 0 ? '#infoModal' : null" (click)="handleClick(x, s.STATE_GESTOR)">
-                                <i class="fa fa-check fa-lg fa-fw"
-                                    [ngClass]="s.STATE_GESTOR == 0 ? 'color-verde-opaco' : 'color-verde'"
-                                    aria-hidden="true"></i>
+                            <a class="custom-cursor" data-bs-toggle="modal" [attr.data-bs-target]="s.STATE_GESTOR == 0 ? '#infoModal' : null" (click)="handleClick(x, s.STATE_GESTOR)"
+                               [ngClass]="{'no-pointer': s.STATE_GESTOR !== 0}">
+                              <i class="fa fa-check fa-lg fa-fw"
+                                 [ngClass]="s.STATE_GESTOR == 0 ? 'color-verde-opaco' : 'color-verde'"
+                                 aria-hidden="true"></i>
                             </a>
-                        </td>
+                          </td>                          
                     </tr>
                 </tbody>
             </table>

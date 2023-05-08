@@ -1,8 +1,7 @@
 <div class="container mt-4">
     <section class="mi-perfil">
         <h1>Mi Perfil</h1>
-
-        <div class="box box-mi-perfil mb-5 d-flex align-items-start">
+        <div class="box box-mi-perfil mb-5 d-flex align-items-start">           
             <ul class="list list-data list-data-title-green column-md-2 gap-0 list-unstyled">
                 <li>
                     <span class="list-data__title">Nombre Usuario</span>
@@ -13,7 +12,7 @@
                     <span class="list-data__text">{{userData.ROL_NAME}}</span>
                 </li>
                 <li>
-                    <span class="list-data__title">Teléfono Móvil</span>
+                    <span class="list-data__title">Teléfono</span>
                     <span class="list-data__text">{{userData.PHONE}}</span>
                 </li>
                 
@@ -23,9 +22,8 @@
                 </li>
                 <li>
                     <span class="list-data__title">Institución</span>
-                    <span class="list-data__text">{{userData.BUSINESS}}</span>
-                </li>
-
+                    <span class="list-data__text">{{userData.BUSINESS.join(' || ')}}</span>
+                </li>                
                 <li>
                     <span class="list-data__title">Cargo</span>
                     <span class="list-data__text">{{userData.POSITION}}</span>
@@ -40,11 +38,7 @@
                 </li>
             </ul>
         </div>
-
-
-
         <h2 class="color-verde">Acciones</h2>
-
         <ul class="list list-links list-unstyled">
             <div class="accordion accordion-flush" id="accordionPanelsStayOpenExample">
                 <div class="accordion-item">
@@ -95,10 +89,6 @@
                     </div>
                 </div>
             </div>
-            <!-- <li><a href="#"><span>Cambio de contraseña</span> <i class="fa fa-chevron-right" aria-hidden="true" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne"></i></a></li> -->
-            <!-- <li><a href="#"><span>Lorem ipsum dolor sit amet</span> <i class="fa fa-chevron-right" aria-hidden="true"></i></a></li>
-            <li><a href="#"><span>Cum sociis natoque</span> <i class="fa fa-chevron-right" aria-hidden="true"></i></a></li> -->
-        </ul>
-
+           </ul>
     </section>
 </div>
