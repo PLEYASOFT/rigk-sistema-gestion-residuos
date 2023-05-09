@@ -20,8 +20,8 @@ export class BusinessService {
   getBusinessByVAT(vat: string){
     return this.http.get<any>(`${this.url}/business/vat/${vat}`);
   }
-  checkEstablishmentBusinessRelation(establishmentId: number, businessId: number){
-    return this.http.get<any>(`${this.url}/business/check/${establishmentId}/${businessId}`);
+  checkEstablishmentBusinessRelation(establishmentId: number, businessId: number, specificType: number){
+    return this.http.get<any>(`${this.url}/business/check/${establishmentId}/${businessId}/${specificType}`);
   }
   get getBusinessByUser() {
     return this.http.get<any>(`${this.url}/user`);

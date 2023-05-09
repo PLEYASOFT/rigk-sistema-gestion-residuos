@@ -121,6 +121,13 @@ export class BulkUploadComponent implements OnInit {
   }
 
   async processData(data: any[]) {
+    if(data.length == 0) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Archivo inválido. No tiene todas las columnas necesarias'
+      });
+      return;
+    }
     const rows = data.slice(1);
     const rowsData = [];
     let businessId: any;
@@ -134,17 +141,25 @@ export class BulkUploadComponent implements OnInit {
     if(data.length == 1) {
       Swal.fire({
         icon: 'info',
-        text: 'Archivo está vacío'
+        text: 'Archivo está vacío (faltan campos por rellenar).'
       });
       return;
     }
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       const excelRowNumber = i + 2; // Se agrega 2 para considerar el encabezado y el índice base 1 de Excel
+
+      if(row.length == 0 && i == 0) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Archivo vacío'
+        });
+        return;
+      }
       if(row.length != 12) {
         Swal.fire({
           icon: 'error',
-          text: 'Archivo inválido'
+          text: 'Archivo inválido (faltan campos por rellenar).'
         });
         return;
       }
@@ -241,7 +256,8 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-      if((managerRUT.toString().split("-")).length != 2) {
+      const tmp = (managerRUT.toString().split("-"));
+      if(tmp.length != 2 || tmp[1] == '') {
         Swal.fire({
           icon: 'error',
           text: `RUT no válido en la fila ${excelRowNumber}`
@@ -266,7 +282,7 @@ export class BulkUploadComponent implements OnInit {
       }
       let isValidEstablishmentBusinessRelation = false;
       for (const business of businesses) {
-        const checkRelationResponse = await this.businessService.checkEstablishmentBusinessRelation(establishmentId, business.ID).toPromise();
+        const checkRelationResponse = await this.businessService.checkEstablishmentBusinessRelation(establishmentId, business.ID, specificType).toPromise();
         if (checkRelationResponse.status) {
           businessId = business.ID;
           isValidEstablishmentBusinessRelation = true;
@@ -293,6 +309,7 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
+      
 
       const precedenceNumber = this.convertPrecedence(row[4]);
       const typeResidueNumber = this.convertTypeResidue(row[5]);
@@ -310,9 +327,7 @@ export class BulkUploadComponent implements OnInit {
       };
       rowsData.push(rowData);
     }
-
-    return
-
+    
     // Obten el ID del usuario de la variable de sesión
     const userId = this.userData.ID;
 

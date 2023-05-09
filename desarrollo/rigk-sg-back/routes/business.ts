@@ -4,7 +4,7 @@ import { verifyParameters } from '../middleware/checkUserBusiness';
 import { validarJWT } from "../middleware/validar-jwt";
 const router = Router();
 
-router.get('/business/check/:establishmentId/:businessId', [validarJWT, verifyParameters], businessLogic.checkEstablishmentBusinessRelation);
+router.get('/business/check/:establishmentId/:businessId/:specificType', [validarJWT, verifyParameters], businessLogic.checkEstablishmentBusinessRelation);
 router.get('/business/vat/:vat', [validarJWT, verifyParameters], businessLogic.getBusinessByVAT);
 router.get('/verify/:id', [validarJWT, verifyParameters], businessLogic.verifyId);
 router.get('/business/:id', [validarJWT, verifyParameters], businessLogic.getBusiness);
