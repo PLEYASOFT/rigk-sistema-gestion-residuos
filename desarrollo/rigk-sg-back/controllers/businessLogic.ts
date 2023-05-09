@@ -67,9 +67,9 @@ class BusinessLogic {
         }
     }
     async checkEstablishmentBusinessRelation(req: any, res: Response) {
-        const {establishmentId, businessId} = req.params;
+        const {establishmentId, businessId,specificType} = req.params;
         try {
-            const business = await businessDao.checkEstablishmentBusinessRelation(establishmentId, businessId);
+            const business = await businessDao.checkEstablishmentBusinessRelation(establishmentId, businessId,specificType);
             res.status(200).json({ status: business, data: {}, msg: '' });
         } catch (err) {
             console.log(err);

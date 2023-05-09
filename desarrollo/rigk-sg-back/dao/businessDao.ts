@@ -38,11 +38,10 @@ class BusinessDao {
         conn.end();
         return business;
     }
-    public async checkEstablishmentBusinessRelation(establishmentId: number, businessId: number) {
+    public async checkEstablishmentBusinessRelation(establishmentId: number, businessId: number,specificType:number) {
         const conn = mysqlcon.getConnection()!;
         const _region:any = await conn.query("SELECT REGION FROM establishment WHERE ID = ?", [establishmentId]).then(res => res[0]).catch(error => undefined);
-        const _region2: any = await conn.query("SELECT ID FROM establishment WHERE REGION = ?", [_region[0].REGION]).then(res => res[0]).catch(error => undefined);
-        const relation = await conn.query("SELECT * FROM establishment_business WHERE ID_ESTABLISHMENT IN (?) AND ID_BUSINESS = ?", [_region2, businessId]).then(res => res[0]).catch(error => undefined);
+        const relation:any = await conn.query("SELECT manager.* FROM manager INNER JOIN manager_business ON manager_business.ID_MANAGER = manager.ID WHERE manager.COD_MATERIAL = ? AND manager.REGION = ? AND manager_business.ID_BUSINESS=?", [specificType,_region[0].REGION, businessId]);
         conn.end();
     
         if (!Array.isArray(relation) || relation.length === 0) {
