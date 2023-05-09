@@ -10,17 +10,18 @@ export class EstablishmentService {
 
   constructor(private http: HttpClient) { }
 
-  getAllEstablishment(){
+  getAllEstablishment() {
     return this.http.get<any>(`${this.url}/all/`);
   }
 
-  getInovice(invoice_number:any,vat:any,treatment_type:any,material_type:any){
-    return this.http.post<any>(`${this.url}/get/invoice/`,{invoice_number,vat,treatment_type,material_type});
+  getInovice(invoice_number: any, vat: any, treatment_type: any, material_type: any, id_business: any) {
+    return this.http.post<any>(`${this.url}/get/invoice/`, { invoice_number, vat, treatment_type, material_type, id_business });
   }
 
-  saveInvoice(vat: any, invoice_number: any, id_detail: any, date_pr: any, value: any, valued_total: any, treatment: any, id_material: any, file: File) {
+  saveInvoice(vat: any, id_business: any, invoice_number: any, id_detail: any, date_pr: any, value: any, valued_total: any, treatment: any, id_material: any, file: File) {
     const formData: FormData = new FormData();
     formData.append('vat', vat);
+    formData.append('id_business', id_business);
     formData.append('invoice_number', invoice_number);
     formData.append('id_detail', id_detail);
     formData.append('date_pr', date_pr);
@@ -33,8 +34,8 @@ export class EstablishmentService {
     return this.http.post<any>(`${this.url}/invoice/`, formData);
   }
 
-  addEstablishment(name:any, region:any, id_business:any){
-    return this.http.post<any>(`${this.url}/add/`, {name, region,id_business});
+  addEstablishment(name: any, region: any, id_business: any) {
+    return this.http.post<any>(`${this.url}/add/`, { name, region, id_business });
   }
 
   deleteEstablishment(id: any) {
@@ -49,7 +50,7 @@ export class EstablishmentService {
     return this.http.get<any>(`${this.url}/get/${id}`);
   }
 
-  getDeclarationEstablishment(){
+  getDeclarationEstablishment() {
     return this.http.get<any>(`${this.url}/declaration/`);
   }
 

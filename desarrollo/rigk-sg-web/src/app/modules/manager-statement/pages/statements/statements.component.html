@@ -100,13 +100,15 @@
                         <td>{{s.VALUE}}</td>
                         <td>{{s.VALUE_DECLARATE}}</td>
                         <td>
-                            <a class="custom-cursor" data-bs-toggle="modal" [attr.data-bs-target]="s.STATE_GESTOR == 0 ? '#infoModal' : null" (click)="handleClick(x, s.STATE_GESTOR)"
-                               [ngClass]="{'no-pointer': s.STATE_GESTOR !== 0}">
-                              <i class="fa fa-check fa-lg fa-fw"
-                                 [ngClass]="s.STATE_GESTOR == 0 ? 'color-verde-opaco' : 'color-verde'"
-                                 aria-hidden="true"></i>
+                            <a class="custom-cursor" data-bs-toggle="modal"
+                                [attr.data-bs-target]="s.STATE_GESTOR == 0 ? '#infoModal' : null"
+                                (click)="handleClick(x, s.STATE_GESTOR)"
+                                [ngClass]="{'no-pointer': s.STATE_GESTOR !== 0}">
+                                <i class="fa fa-check fa-lg fa-fw"
+                                    [ngClass]="s.STATE_GESTOR == 0 ? 'color-verde-opaco' : 'color-verde'"
+                                    aria-hidden="true"></i>
                             </a>
-                          </td>                          
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -140,7 +142,8 @@
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Núm. Factura Reciclador</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" placeholder="1234" formControlName="invoiceNumber" (input)="onRUTChange(this.index)">
+                            <input type="text" class="form-control" placeholder="1234" formControlName="invoiceNumber"
+                                (input)="onRUTChange(this.index)">
                             <div *ngIf="userForm.controls['invoiceNumber'].errors && userForm.controls['invoiceNumber'].touched"
                                 class="text-danger">
                                 <p *ngIf="userForm.controls['invoiceNumber'].errors['required']">Debe ingresar un número
@@ -152,7 +155,7 @@
                         <label class="col-sm-4 col-form-label">RUT Reciclador</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" placeholder="1-9" formControlName="rut"
-                                (input)="onRUTChange(this.index)">
+                                (input)="onChangeVAT($event.target)">
                             <div *ngIf="userForm.controls['rut'].errors && userForm.controls['rut'].touched"
                                 class="text-danger pl-0">
                                 <p *ngIf="userForm.controls['rut'].errors['required']">El rut de la empresa es
@@ -167,16 +170,18 @@
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Reciclador</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" placeholder="Reciclador demo"
-                                formControlName="reciclador" readonly>
+                            <select class="form-select" formControlName="reciclador" (change)="onRUTChange(this.index)">
+                                <option value="0">Seleccione Reciclador</option>
+                                <option *ngFor="let b of dbBusiness" value="{{b['ID']}}">{{b['NAME']}}</option>
+                            </select>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Tipo Tratamiento</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" placeholder="Tipo tratamiento"
-                                formControlName="treatmentType" readonly >
-                                <div *ngIf="userForm.controls['treatmentType'].errors && userForm.controls['treatmentType'].touched"
+                                formControlName="treatmentType" readonly>
+                            <div *ngIf="userForm.controls['treatmentType'].errors && userForm.controls['treatmentType'].touched"
                                 class="text-danger pl-0">
                                 <p *ngIf="userForm.controls['treatmentType'].errors['required']">El rut de la empresa es
                                     requerido.</p>
@@ -188,7 +193,7 @@
                         <div class="col-sm-8">
                             <input type="text" class="form-control" placeholder="Tipo material"
                                 formControlName="material" readonly>
-                                <div *ngIf="userForm.controls['material'].errors && userForm.controls['material'].touched"
+                            <div *ngIf="userForm.controls['material'].errors && userForm.controls['material'].touched"
                                 class="text-danger pl-0">
                                 <p *ngIf="userForm.controls['material'].errors['required']">El rut de la empresa es
                                     requerido.</p>
@@ -220,10 +225,9 @@
                         </div>
                     </div>
                     <div class="row mb-3">
-                        <label class="col-sm-4 col-form-label">Peso Acomulado</label>
+                        <label class="col-sm-4 col-form-label">Peso Declarado</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control"
-                                formControlName="declarateWeight" readonly>
+                            <input type="text" class="form-control" formControlName="declarated" readonly>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -249,7 +253,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Num. Declaraciones asociadas</label>
                         <div class="col-sm-8">
@@ -276,8 +280,11 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="this.userForm.reset()">Volver</button>
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" [disabled]="userForm.invalid || isRemainingWeightNegative" (click)="saveInvoice(this.index)">Guardar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                    (click)="this.userForm.reset()">Volver</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                    [disabled]="userForm.invalid || isRemainingWeightNegative"
+                    (click)="saveInvoice(this.index)">Guardar</button>
             </div>
         </div>
     </div>
