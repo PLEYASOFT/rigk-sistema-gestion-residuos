@@ -34,7 +34,7 @@ export class BulkUploadComponent implements OnInit {
     }
     this.consumer.downloadExcel(id).subscribe({
       next: r => {
-        if(r) {
+        if (r) {
           const file = new Blob([r], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
           let link = document.createElement('a');
           link.href = window.URL.createObjectURL(file);
@@ -43,9 +43,9 @@ export class BulkUploadComponent implements OnInit {
           link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
           link.remove();
           window.URL.revokeObjectURL(link.href);
-        } 
+        }
       },
-      error: r=> {
+      error: r => {
         Swal.fire({
           icon: 'error',
           text: 'Revise establecimientos de la empresa. En caso de ser necesario, contacte al administrador del sistema.'
@@ -121,7 +121,7 @@ export class BulkUploadComponent implements OnInit {
   }
 
   async processData(data: any[]) {
-    if(data.length == 0) {
+    if (data.length == 0) {
       Swal.fire({
         icon: 'error',
         text: 'Archivo inválido. No tiene todas las columnas necesarias'
@@ -131,14 +131,14 @@ export class BulkUploadComponent implements OnInit {
     const rows = data.slice(1);
     const rowsData = [];
     let businessId: any;
-    if(data[0].length != 12) {
+    if (data[0].length != 12) {
       Swal.fire({
         icon: 'error',
         text: 'Archivo inválido. No tiene todas las columnas necesarias'
       });
       return;
     }
-    if(data.length == 1) {
+    if (data.length == 1) {
       Swal.fire({
         icon: 'info',
         text: 'Archivo está vacío (faltan campos por rellenar).'
@@ -149,21 +149,21 @@ export class BulkUploadComponent implements OnInit {
       const row = rows[i];
       const excelRowNumber = i + 2; // Se agrega 2 para considerar el encabezado y el índice base 1 de Excel
 
-      if(row.length == 0 && i == 0) {
+      if (row.length == 0 && i == 0) {
         Swal.fire({
           icon: 'error',
           text: 'Archivo vacío'
         });
         return;
       }
-      if(row.length != 12) {
+      if (row.length != 12) {
         Swal.fire({
           icon: 'error',
           text: 'Archivo inválido (faltan campos por rellenar).'
         });
         return;
       }
-    
+
       let tmp_filter = 0;
       for (let j = 1; j < rows.length; j++) {
         const w = rows[j];
@@ -180,7 +180,7 @@ export class BulkUploadComponent implements OnInit {
       } else {
         // analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_sub);
       }
-      
+
       // Código de establecimiento
       const establishmentCode = row[0];
       const establishmentId = establishmentCode.split(" - ")[0];
@@ -257,7 +257,7 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
       const tmp = (managerRUT.toString().split("-"));
-      if(tmp.length != 2 || tmp[1] == '') {
+      if (tmp.length != 2 || tmp[1] == '') {
         Swal.fire({
           icon: 'error',
           text: `RUT no válido en la fila ${excelRowNumber}`
@@ -302,15 +302,13 @@ export class BulkUploadComponent implements OnInit {
       const receivingTreatmentCode = row[10];
       // Cantidad
       const quantity = row[11];
-      if (!quantity || !this.isValidQuantity(quantity.toString().replace(".",","))) {
+      if (!quantity || !this.isValidQuantity(quantity.toString().replace(".", ","))) {
         Swal.fire({
           icon: 'error',
           text: `Cantidad no válida o no proporcionada en la fila ${excelRowNumber}. Asegúrese de usar una coma como separador de decimales`
         });
         return;
       }
-      
-
       const precedenceNumber = this.convertPrecedence(row[4]);
       const typeResidueNumber = this.convertTypeResidue(row[5]);
       const treatmentTypeNumber = this.convertTreatmentType(row[3]);
@@ -327,7 +325,7 @@ export class BulkUploadComponent implements OnInit {
       };
       rowsData.push(rowData);
     }
-    
+
     // Obten el ID del usuario de la variable de sesión
     const userId = this.userData.ID;
 
@@ -348,12 +346,13 @@ export class BulkUploadComponent implements OnInit {
       this.consumer.saveHeaderFromExcel(headerFormData).subscribe((headerResponse: any) => {
         if (headerResponse.status) {
           const headerId = headerResponse.data.header.insertId;
+
           // Ahora crea la información de detalle del formulario y guarda los datos en la tabla detail_industrial_consumer_form
           const detailFormData = {
             ID_HEADER: headerId,
             PRECEDENCE: rowData.precedence,
             TYPE_RESIDUE: rowData.typeResidue,
-            VALUE: parseFloat(rowData.quantity.toString().replace(",",".")),
+            VALUE: parseFloat(rowData.quantity.toString().replace(",", ".")),
             DATE_WITHDRAW: this.convertDate(rowData.date),
             ID_GESTOR: rowData.businessId,
             LER: rowData.LER,

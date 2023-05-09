@@ -41,6 +41,8 @@ export class StatementsComponent implements OnInit {
 
   index: number = 0;
   userForm: any;
+
+  dbBusiness = [];
   constructor(
     public productorService: ProductorService,
     private establishmentService: EstablishmentService,
@@ -59,7 +61,7 @@ export class StatementsComponent implements OnInit {
     this.userForm = this.fb.group({
       invoiceNumber: ['', [Validators.required]],
       rut: ['', [Validators.required, Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$'), this.verifyRut]],
-      reciclador: ['', [Validators.required]],
+      reciclador: ['0', [Validators.required]],
       treatmentType: ['', [Validators.required]],
       material: ['', [Validators.required]],
       entryDate: ['', [Validators.required]],
@@ -68,6 +70,7 @@ export class StatementsComponent implements OnInit {
       valuedWeight: ['', [Validators.required, Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)]],
       remainingWeight: [''],
       asoc: [''],
+      declarated: [''],
       attachment: [null, [Validators.required, this.fileTypeValidator, this.fileSizeValidator]]
     });
     this.userForm.controls['valuedWeight'].disable();
@@ -287,14 +290,14 @@ export class StatementsComponent implements OnInit {
 
   async saveInvoice(index: number): Promise<void> {
     if (this.selectedFile) {
-      const { rut, invoiceNumber, entryDate, valuedWeight } = this.userForm.value;
+      const { rut, invoiceNumber, entryDate, valuedWeight, reciclador } = this.userForm.value;
       const totalWeight = this.userForm.controls['totalWeight'].value;
       const treatmentType = this.db[index].TREATMENT_TYPE_NUMBER
       const material = this.db[index].PRECEDENCE_NUMBER
       const id_detail = this.db[index].ID_DETAIL
       try {
-        const response = await this.establishmentService.saveInvoice(rut, invoiceNumber, id_detail, entryDate, valuedWeight, totalWeight, treatmentType, material, this.selectedFile).toPromise();
-        if(response.status){
+        const response = await this.establishmentService.saveInvoice(rut, reciclador, invoiceNumber, id_detail, entryDate, valuedWeight, totalWeight, treatmentType, material, this.selectedFile).toPromise();
+        if (response.status) {
           this.reset();
           setTimeout(async () => {
             await Swal.fire({
@@ -303,7 +306,7 @@ export class StatementsComponent implements OnInit {
               icon: "success",
               showConfirmButton: true, // Muestra el botón de confirmación.
             });
-          }, 500); 
+          }, 1500);
         }
       } catch (error) {
         console.error('Error:', error);
@@ -312,23 +315,29 @@ export class StatementsComponent implements OnInit {
       console.error('No file selected');
     }
   }
-  
+
+  onChangeVAT(target: any) {
+    this.businessService.getBusinessByVAT(target.value).subscribe(r => {
+      this.dbBusiness = r.status;
+    })
+  }
+
   async onRUTChange(index: number) {
     const rut = this.userForm.controls['rut'].value;
     const invoiceNumber = this.userForm.controls['invoiceNumber'].value;
-    const treatmentType = this.db[index].TREATMENT_TYPE_NUMBER
-    const material = this.db[index].PRECEDENCE_NUMBER
+    const treatmentType = this.db[index].TREATMENT_TYPE_NUMBER;
+    const material = this.db[index].PRECEDENCE_NUMBER;
+    const id_business = this.userForm.value.reciclador;
     if (rut) {
       try {
-        const businessResponse = await this.establishmentService.getInovice(invoiceNumber, rut, treatmentType, material).toPromise();
+        const businessResponse = await this.establishmentService.getInovice(invoiceNumber, rut, treatmentType, material, id_business).toPromise();
         if (businessResponse.status) {
-          this.userForm.controls['reciclador'].setValue(businessResponse.data[0].NAME);
           this.userForm.controls['totalWeight'].setValue(businessResponse.data[0].invoice_value);
           this.userForm.controls['declarateWeight'].setValue(businessResponse.data[0].value_declarated);
-          this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc);
+          this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + 1);
           const asoc = this.userForm.controls['asoc'].value;
 
-          if (parseInt(asoc) > 0) {
+          if (parseInt(asoc) > 1) {
             if (invoiceNumber) {
               this.userForm.controls['valuedWeight'].enable();
             } else {
@@ -345,7 +354,6 @@ export class StatementsComponent implements OnInit {
           }
 
         } else {
-          this.userForm.controls['reciclador'].setValue('');
           this.userForm.controls['totalWeight'].setValue('');
           this.userForm.controls['declarateWeight'].setValue('');
           this.userForm.controls['asoc'].setValue('');
@@ -354,8 +362,7 @@ export class StatementsComponent implements OnInit {
           this.userForm.controls['totalWeight'].disable();
         }
       } catch (error) {
-        console.error('Error al obtener el nombre del reciclador:', error);
-        this.userForm.controls['reciclador'].setValue('');
+
         this.userForm.controls['totalWeight'].setValue('');
         this.userForm.controls['declarateWeight'].setValue('');
         this.userForm.controls['asoc'].setValue('');
@@ -364,7 +371,7 @@ export class StatementsComponent implements OnInit {
         this.userForm.controls['totalWeight'].disable();
       }
     } else {
-      this.userForm.controls['reciclador'].setValue('');
+      // this.userForm.controls['reciclador'].setValue('0');
       this.userForm.controls['totalWeight'].setValue('');
       this.userForm.controls['declarateWeight'].setValue('');
       this.userForm.controls['asoc'].setValue('');
@@ -380,6 +387,7 @@ export class StatementsComponent implements OnInit {
   async onMaterialTreatmentChange(index: any) {
     this.userForm.controls['treatmentType'].setValue(this.db[index].TipoTratamiento);
     this.userForm.controls['material'].setValue(this.db[index].PRECEDENCE);
+    this.userForm.controls['declarated'].setValue(this.db[index].VALUE);
   }
 
   verifyRut(control: AbstractControl): { [key: string]: boolean } | null {
