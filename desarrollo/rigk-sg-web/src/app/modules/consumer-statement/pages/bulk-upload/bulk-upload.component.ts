@@ -3,7 +3,6 @@ import { BusinessService } from 'src/app/core/services/business.service';
 import Swal from 'sweetalert2';
 import { ConsumerService } from '../../../../core/services/consumer.service';
 import * as XLSX from 'xlsx';
-
 @Component({
   selector: 'app-bulk-upload',
   templateUrl: './bulk-upload.component.html',
@@ -14,6 +13,12 @@ export class BulkUploadComponent implements OnInit {
   dbBusiness: any[] = [];
   userData: any;
 
+  wasteTypes: any = {
+    'PapelCartón': ['Papel', 'Papel Compuesto (cemento)', 'Caja Cartón', 'Papel/Cartón Otro'],
+    'Metal': ['Envase Aluminio', 'Malla o Reja (IBC)', 'Envase Hojalata', 'Metal Otro'],
+    'Plástico': ['Plástico Film Embalaje', 'Plástico Envases Rígidos (Incl. Tapas)', 'Plástico Sacos o Maxisacos', 'Plástico EPS (Poliestireno Expandido)', 'Plástico Zuncho', 'Plástico Otro'],
+    'Madera': ['Caja de Madera', 'Pallet de Madera']
+  };
   constructor(public consumer: ConsumerService,
     public businessService: BusinessService) { }
 
@@ -128,7 +133,7 @@ export class BulkUploadComponent implements OnInit {
       });
       return;
     }
-    const rows = data.slice(1);
+    const rows = data.slice(1).filter(row => row.length > 0 && row.some((item: any) => item));
     const rowsData = [];
     let businessId: any;
     if (data[0].length != 12) {
@@ -138,7 +143,7 @@ export class BulkUploadComponent implements OnInit {
       });
       return;
     }
-    if (data.length == 1) {
+    if (rows.length == 0) {
       Swal.fire({
         icon: 'info',
         text: 'Archivo está vacío (faltan campos por rellenar).'
@@ -156,29 +161,16 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-      if (row.length != 12) {
-        Swal.fire({
-          icon: 'error',
-          text: 'Archivo inválido (faltan campos por rellenar).'
-        });
-        return;
-      }
 
-      let tmp_filter = 0;
-      for (let j = 1; j < rows.length; j++) {
+      for (let j = i + 1; j < rows.length; j++) {
         const w = rows[j];
         if (w[0] === row[0] && w[3] === row[3] && w[4] === row[4] && w[5] === row[5] && w[1] === row[1]) {
-          tmp_filter++;
+          Swal.fire({
+            icon: 'info',
+            text: 'Mismo establecimiento, tratamiento, material, subtipo y gestor para esta fecha'
+          });
+          return;
         }
-      }
-      if (tmp_filter >= 1) {
-        Swal.fire({
-          icon: 'info',
-          text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
-        });
-        return;
-      } else {
-        // analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_sub);
       }
 
       // Código de establecimiento
@@ -192,14 +184,17 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
       // Fecha
-      const date = this.excelSerialDateToJSDate(row[1]);
-      if (!date || !this.isValidDate(date)) {
+
+      const date = row[1];
+      const validationResult = this.isValidDate(date);
+      if (!validationResult.valid) {
         Swal.fire({
           icon: 'error',
-          text: `Fecha no válida o no proporcionada en la fila ${excelRowNumber}. Formato requerido: DD/MM/AAAA`
+          text: `Error en la fila ${excelRowNumber}. ${validationResult.message}`
         });
         return;
       }
+
       // Número de guía de despacho
       const dispatchGuideNumber = row[2];
       if (!dispatchGuideNumber) {
@@ -236,6 +231,25 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
+
+      // Buscar el tipo específico en los valores de wasteTypes
+      const materialType = Object.keys(this.wasteTypes).find((key:any) => this.wasteTypes[key].includes(specificType));
+
+      if (!materialType) {
+        Swal.fire({
+          icon: 'error',
+          text: `El tipo específico '${specificType}' no coincide con ningún material en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+
+      if (materialType !== wasteType) {
+        Swal.fire({
+          icon: 'error',
+          text: `El tipo de residuo '${wasteType}' no corresponde con el material '${specificType}' en la fila ${excelRowNumber}`
+        });
+        return;
+      }
       // LER
       const LER = row[6];
       // Gestor
@@ -260,7 +274,7 @@ export class BulkUploadComponent implements OnInit {
       if (tmp.length != 2 || tmp[1] == '') {
         Swal.fire({
           icon: 'error',
-          text: `RUT no válido en la fila ${excelRowNumber}`
+          text: `RUT no válido en la fila ${excelRowNumber}, el formato correcto es sin puntos y con guion`
         });
         return;
       }
@@ -309,10 +323,32 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-      const precedenceNumber = this.convertPrecedence(row[4]);
-      const typeResidueNumber = this.convertTypeResidue(row[5]);
-      const treatmentTypeNumber = this.convertTreatmentType(row[3]);
 
+
+      const precedenceNumber = this.convertPrecedence(row[4]);
+      if (precedenceNumber == -1) {
+        Swal.fire({
+          icon: 'error',
+          text: `Tipo de Material no válido en fila: ${excelRowNumber}`
+        });
+        return;
+      }
+      const typeResidueNumber = this.convertTypeResidue(row[5]);
+      if (typeResidueNumber == -1) {
+        Swal.fire({
+          icon: 'error',
+          text: `Tipo de residuo no válido en fila: ${excelRowNumber}`
+        });
+        return;
+      }
+      const treatmentTypeNumber = this.convertTreatmentType(row[3]);
+      if (treatmentTypeNumber == -1) {
+        Swal.fire({
+          icon: 'error',
+          text: `Tipo de tratamiento no válido en fila: ${excelRowNumber}`
+        });
+        return;
+      }
       const rowData = {
         establishmentId,
         date,
@@ -346,7 +382,6 @@ export class BulkUploadComponent implements OnInit {
       this.consumer.saveHeaderFromExcel(headerFormData).subscribe((headerResponse: any) => {
         if (headerResponse.status) {
           const headerId = headerResponse.data.header.insertId;
-
           // Ahora crea la información de detalle del formulario y guarda los datos en la tabla detail_industrial_consumer_form
           const detailFormData = {
             ID_HEADER: headerId,
@@ -382,38 +417,33 @@ export class BulkUploadComponent implements OnInit {
     }
   }
 
-  isValidDate(date: string): boolean {
-    const datePattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
-    const match = date.match(datePattern);
-    if (!match) {
-      return false;
+  isValidDate(dateString: string): { valid: boolean; message: string } {
+    const dateParts = dateString.split("/");
+
+    if (dateParts.length !== 3 || isNaN(+dateParts[0]) || isNaN(+dateParts[1]) || isNaN(+dateParts[2])) {
+      return { valid: false, message: "El formato de la fecha es incorrecto. Formato requerido: DD/MM/AAAA" };
     }
 
-    const day = parseInt(match[1], 10);
-    const month = parseInt(match[2], 10);
-    const year = parseInt(match[3], 10);
+    const dateObject = new Date(+dateParts[2], +dateParts[1] - 1, +dateParts[0]);
+    const now = new Date();
 
-    const dateObject = new Date(year, month - 1, day);
-    return (
-      dateObject.getFullYear() === year &&
-      dateObject.getMonth() + 1 === month &&
-      dateObject.getDate() === day
-    );
+    // Elimina la hora de la fecha actual, para que sólo se compare la fecha.
+    now.setHours(0, 0, 0, 0);
+
+    if (dateObject > now) {
+      return { valid: false, message: "La fecha no debe ser futura." };
+    }
+
+    if (dateObject.getDate() !== +dateParts[0] || dateObject.getMonth() !== +dateParts[1] - 1 || dateObject.getFullYear() !== +dateParts[2]) {
+      return { valid: false, message: "La fecha proporcionada no es válida." };
+    }
+
+    return { valid: true, message: "" };
   }
 
   isValidQuantity(quantity: string): boolean {
     const quantityPattern = /^\d+(\,\d{1,2})?$/;
     return quantityPattern.test(quantity);
-  }
-
-  excelSerialDateToJSDate(serialDate: number): string {
-    const startDate = new Date(1899, 11, 30);
-    const jsDate = new Date(startDate.getTime() + serialDate * 24 * 60 * 60 * 1000);
-    const day = jsDate.getDate();
-    const month = jsDate.getMonth() + 1;
-    const year = jsDate.getFullYear();
-
-    return `${day}/${month}/${year}`;
   }
 
   convertPrecedence(precedence: any): number {
@@ -466,7 +496,7 @@ export class BulkUploadComponent implements OnInit {
       case "Pallet de Madera":
         return 16;
       default:
-        throw new Error(`Tipo de residuo no válido: ${typeResidue}`);
+        return -1;
     }
   }
 
@@ -479,7 +509,7 @@ export class BulkUploadComponent implements OnInit {
       case "Disposición Final en RS":
         return 3;
       default:
-        throw new Error(`Tipo de tratamiento no válido: ${treatmentType}`);
+        return -1;
     }
   }
 
