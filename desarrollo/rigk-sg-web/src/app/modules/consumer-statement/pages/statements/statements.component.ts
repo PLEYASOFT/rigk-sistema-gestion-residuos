@@ -11,7 +11,7 @@ import Swal from 'sweetalert2';
   styleUrls: ['./statements.component.css']
 })
 export class StatementsComponent implements OnInit {
-  
+
   userData: any | null;
   dbStatements: any[] = [];
   db: any[] = [];
@@ -37,21 +37,21 @@ export class StatementsComponent implements OnInit {
     private establishmentService: EstablishmentService,
     private router: Router,
     private location: Location
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
-  
+
     // Cargar el estado de los filtros si está disponible
     this.loadState();
-  
+
     // Verificar si la página anterior no es una página de detalle
     const previousUrl = this.location.getState() as { navigationId?: number; url?: string };
     const notDetailPage = previousUrl && previousUrl.url && !previousUrl.url.match(/\/consumidor\/statements\/\d+/);
     if (previousUrl.navigationId && notDetailPage) {
       this.resetFilters();
     }
-  
+
     this.loadStatements().then(() => {
       this.updateFilters();
       if (!this.filtersApplied) {
@@ -62,13 +62,20 @@ export class StatementsComponent implements OnInit {
     });
   }
 
+  formatValue(value: number): string {
+    if (value % 1 === 0) {
+      return value.toString();
+    } else {
+      return value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+  }
   resetFilters() {
     this.selectedBusiness = '-1';
     this.selectedEstablishment = '-1';
     this.selectedMaterial = '-1';
     this.selectedYear = '-1';
   }
-  
+
   loadStatements(): Promise<void> {
     return new Promise<void>((resolve) => {
       Swal.fire({
@@ -83,9 +90,9 @@ export class StatementsComponent implements OnInit {
       this.establishmentService.getDeclarationEstablishment().subscribe(r => {
         if (r.status) {
           r.status = r.status.sort(((a: any, b: any) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()));
-  
+
           (r.status as any[]).forEach(e => {
-  
+
             if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
               this.business_name.push(e.NAME_BUSINESS);
             }
@@ -112,24 +119,24 @@ export class StatementsComponent implements OnInit {
       })
     });
   }
-  
+
 
   filter(auto: boolean = false) {
     if (auto && !this.autoFilter) return;
 
     this.filteredStatements = this.dbStatements.filter(r => {
-        return (
-            (this.selectedBusiness === '-1' || r.NAME_BUSINESS === this.selectedBusiness) &&
-            (this.selectedEstablishment === '-1' || r.NAME_ESTABLISHMENT_REGION === this.selectedEstablishment) &&
-            (this.selectedMaterial === '-1' || r.PRECEDENCE === this.selectedMaterial) &&
-            (this.selectedYear === '-1' || r.FechaRetiroTipeada === this.selectedYear)
-        );
+      return (
+        (this.selectedBusiness === '-1' || r.NAME_BUSINESS === this.selectedBusiness) &&
+        (this.selectedEstablishment === '-1' || r.NAME_ESTABLISHMENT_REGION === this.selectedEstablishment) &&
+        (this.selectedMaterial === '-1' || r.PRECEDENCE === this.selectedMaterial) &&
+        (this.selectedYear === '-1' || r.FechaRetiroTipeada === this.selectedYear)
+      );
     });
     this.db = this.filteredStatements.slice(0, 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();;
     this.cant = Math.ceil(this.filteredStatements.length / 10);
     this.saveState();
     this.filtersApplied = false;
-}
+  }
 
 
   updateFilters() {
@@ -188,7 +195,7 @@ export class StatementsComponent implements OnInit {
   pagTo(i: number) {
     this.pos = i + 1;
     this.db = this.filteredStatements.slice((i * 10), (i + 1) * 10).sort((a, b) => new Date(a.FechaRetiro).getTime() - new Date(b.FechaRetiro).getTime()).reverse();
-}
+  }
 
   next() {
     if (this.pos >= this.cant) return;

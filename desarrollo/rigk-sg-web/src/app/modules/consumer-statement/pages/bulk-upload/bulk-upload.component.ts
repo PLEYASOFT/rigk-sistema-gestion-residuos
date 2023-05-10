@@ -175,17 +175,18 @@ export class BulkUploadComponent implements OnInit {
 
       // Código de establecimiento
       const establishmentCode = row[0];
-      const establishmentId = establishmentCode.split(" - ")[0];
-      if (!establishmentCode) {
+      if (!establishmentCode || establishmentCode.trim() === '') {
         Swal.fire({
           icon: 'error',
           text: `Código de establecimiento no proporcionado en la fila ${excelRowNumber}`
         });
         return;
       }
+      const establishmentId = establishmentCode.split(" - ")[0];
       // Fecha
 
       const date = row[1];
+
       const validationResult = this.isValidDate(date);
       if (!validationResult.valid) {
         Swal.fire({
@@ -233,7 +234,7 @@ export class BulkUploadComponent implements OnInit {
       }
 
       // Buscar el tipo específico en los valores de wasteTypes
-      const materialType = Object.keys(this.wasteTypes).find((key:any) => this.wasteTypes[key].includes(specificType));
+      const materialType = Object.keys(this.wasteTypes).find((key: any) => this.wasteTypes[key].includes(specificType));
 
       if (!materialType) {
         Swal.fire({
@@ -349,6 +350,16 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
+
+      const dateFormateada = this.convertDate(date);
+      const r: any = await this.consumer.checkRow({ treatment:treatmentTypeNumber, sub:typeResidueNumber, gestor:businessId, date:dateFormateada }).toPromise();
+      if (!r.status) {
+        Swal.fire({
+          icon: 'info',
+          text: `La declaración de la fila ${excelRowNumber} ya ha sido declarada, Mismo tratamiento, material, subtipo y gestor para esta fecha`
+        });
+        return;
+      }
       const rowData = {
         establishmentId,
         date,
@@ -418,6 +429,10 @@ export class BulkUploadComponent implements OnInit {
   }
 
   isValidDate(dateString: string): { valid: boolean; message: string } {
+    if (typeof dateString === 'undefined' || dateString.trim() === '') {
+      return { valid: false, message: "La fecha no puede estar vacía." };
+    }
+
     const dateParts = dateString.split("/");
 
     if (dateParts.length !== 3 || isNaN(+dateParts[0]) || isNaN(+dateParts[1]) || isNaN(+dateParts[2])) {
@@ -515,6 +530,6 @@ export class BulkUploadComponent implements OnInit {
 
   convertDate(dateString: any) {
     const dateParts = dateString.split('/');
-    return `${dateParts[2]}-${dateParts[0].padStart(2, '0')}-${dateParts[1].padStart(2, '0')}`;
+    return `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}`;
   }
 }
