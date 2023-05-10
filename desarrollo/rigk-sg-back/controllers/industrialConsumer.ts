@@ -350,15 +350,17 @@ class IndustrialConsumer {
                     formulae: [`Info!$A$2:$A$${establishments.length + 1}`]
                 };
                 worksheet.getCell(`B${i + 1}`).dataValidation = {
-                    type: 'date',
+                    type: 'textLength',
                     allowBlank: false,
-                    operator: 'lessThanOrEqual',
+                    operator: 'between',
                     showErrorMessage: true,
                     errorStyle: 'error',
-                    errorTitle: 'Fecha Inválida',
-                    error: 'No debe superar la fecha de hoy',
-                    formulae: [new Date()]
+                    errorTitle: 'Formato de Fecha Inválido',
+                    error: 'Por favor, ingrese una fecha válida en formato DD/MM/AAAA.',
+                    formulae: [10, 10]
                 };
+                
+                worksheet.getCell(`B${i + 1}`).numFmt = '@';;
                 worksheet.getCell(`D${i + 1}`).dataValidation = {
                     type: 'list',
                     allowBlank: false,
