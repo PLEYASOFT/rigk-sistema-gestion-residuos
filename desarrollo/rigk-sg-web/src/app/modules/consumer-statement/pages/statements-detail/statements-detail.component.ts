@@ -109,6 +109,13 @@ export class StatementsDetailComponent implements OnInit {
     return date.toISOString().split('T')[0];
   }
 
+  formatValue(value: number): string {
+    if (value % 1 === 0) {
+      return value.toString();
+    } else {
+      return value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+  }
   saveFile() {
     this.detail_consulta.FechaRetiro = this.formatDate(this.detail_consulta.FechaRetiro);
     this.ConsumerService.saveFile( this.detail_consulta.ID_DETAIL, this.fileName, this.fileBuffer, this.userForm.controls['MV'].value).subscribe(r => {
