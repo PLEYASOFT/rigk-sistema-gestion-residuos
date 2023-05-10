@@ -31,19 +31,18 @@ class BusinessDao {
     public async getBusinessByVAT(vat: string) {
         const conn = mysqlcon.getConnection()!;
         const business: any = await conn.query("SELECT business.ID, business.NAME FROM business WHERE business.VAT = ?", [vat]).then(res => res[0]).catch(erro => undefined);
-        console.log(business)
         if (business == null || business.length == 0) {
             return false;
         }
         conn.end();
         return business;
     }
-    public async checkEstablishmentBusinessRelation(establishmentId: number, businessId: number,specificType:number) {
+    public async checkEstablishmentBusinessRelation(establishmentId: number, businessId: number, specificType: number) {
         const conn = mysqlcon.getConnection()!;
-        const _region:any = await conn.query("SELECT REGION FROM establishment WHERE ID = ?", [establishmentId]).then(res => res[0]).catch(error => undefined);
-        const relation:any = await conn.query("SELECT manager.* FROM manager INNER JOIN manager_business ON manager_business.ID_MANAGER = manager.ID WHERE manager.COD_MATERIAL = ? AND manager.REGION = ? AND manager_business.ID_BUSINESS=?", [specificType,_region[0].REGION, businessId]);
+        const _region: any = await conn.query("SELECT REGION FROM establishment WHERE ID = ?", [establishmentId]).then(res => res[0]).catch(error => undefined);
+        const relation: any = await conn.query("SELECT manager.* FROM manager INNER JOIN manager_business ON manager_business.ID_MANAGER = manager.ID WHERE manager.COD_MATERIAL = ? AND manager.REGION = ? AND manager_business.ID_BUSINESS=?", [specificType, _region[0].REGION, businessId]);
         conn.end();
-    
+
         if (!Array.isArray(relation) || relation.length === 0) {
             return false;
         }

@@ -78,13 +78,13 @@ class EstablishmentLogic {
         }
     }
     public async saveInvoice(req: any, res: Response) {
-        const { vat, invoice_number, id_detail, date_pr, value, valued_total, treatment, id_material } = req.body;
+        const { vat, invoice_number, id_detail, date_pr, value, valued_total, treatment, id_material, id_business } = req.body;
         if (!req.files || Object.keys(req.files).length == 0 || !req.files['file']) {
             return res.status(400).json({ status: false, data: {}, msg: 'Falta archivo' });
         }
         const files = req.files;
         try {
-            const data: any = await establishmentDao.saveInvoice(vat, invoice_number, id_detail, date_pr, value, files['file'], valued_total, req.uid, treatment, id_material);
+            const data: any = await establishmentDao.saveInvoice(vat, id_business, invoice_number, id_detail, date_pr, value, files['file'], valued_total, req.uid, treatment, id_material);
             if (data || data[0] != undefined) {
                 return res.status(200).json({ status: true, data: {}, msg: 'Registro guardado satisfactoriamente' });
             } else {
@@ -99,9 +99,9 @@ class EstablishmentLogic {
         }
     }
     public async getInovice(req: any, res: Response) {
-        const { invoice_number, vat, treatment_type, material_type } = req.body;
+        const { invoice_number, vat, treatment_type, material_type, id_business } = req.body;
         try {
-            const data: any = await establishmentDao.getInvoice(invoice_number, vat, treatment_type, material_type);
+            const data: any = await establishmentDao.getInvoice(invoice_number, vat, treatment_type, material_type, id_business);
             if (data[0]?.NAME) {
                 res.status(200).json({ status: true, data, msg: '' });
             } else {

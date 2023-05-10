@@ -13,26 +13,26 @@ class AuthDao {
         return res;
     }
     async login(USER: string) {
-        try{
-            const conn = mysqlcon.getConnection()!;
-            const res: any = await conn.query("SELECT user.*,user_rol.ROL_ID AS ROL,rol.NAME AS ROL_NAME, business.NAME AS BUSINESS, business.ID as ID_BUSINESS FROM user INNER JOIN user_rol ON user_rol.USER_ID = user.ID INNER JOIN user_business ON user_business.ID_USER = user.ID INNER JOIN business ON business.ID = user_business.ID_BUSINESS INNER JOIN rol ON rol.ID=user_rol.ROL_ID WHERE user.EMAIL = ? AND user.STATE=1", [USER]).then((res) => res[0]).catch(error => {[{ undefined }];console.log(error)});
-            let user: any = {}
-            let name_business = []
-            for (let i = 0; i < res.length; i++) {
-                name_business.push(res[i].BUSINESS);
-            }
-            user = { ...res[0] }
-            user.BUSINESS = name_business;
-            let login = false;
-            if (res != null && res != undefined && res.length > 0) {
-                login = true;
-            }
-            conn.end();
-            return res[0] || undefined;
-        } catch (error) {
-            console.log(error);
+        const conn = mysqlcon.getConnection()!;
+        const res: any = await conn.query("SELECT USER.*,USER_ROL.ROL_ID AS ROL, ROL.NAME AS ROL_NAME, BUSINESS.NAME AS BUSINESS, BUSINESS.ID as ID_BUSINESS FROM USER INNER JOIN USER_ROL ON USER_ROL.USER_ID = USER.ID INNER JOIN USER_BUSINESS ON USER_BUSINESS.ID_USER = USER.ID INNER JOIN BUSINESS ON BUSINESS.ID = USER_BUSINESS.ID_BUSINESS INNER JOIN ROL ON ROL.ID=USER_ROL.ROL_ID WHERE USER.EMAIL = ? AND user.STATE=1", [USER]).then((res) => res[0]).catch(error => [{ undefined }]);
+        let user: any = {}
+        let name_business = [];
+        let id_business = [];
+        for (let i = 0; i < res.length; i++) {
+            name_business.push(res[i].BUSINESS);
+            id_business.push(res[i].ID_BUSINESS);
         }
+        user = { ...res[0] };
+        user.BUSINESS = name_business;
+        user.ID_BUSINESS = id_business;
+        let login = false;
+        if (res != null && res != undefined && res.length > 0) {
+            login = true;
+        }
+        conn.end();
+        return user || undefined;
     }
+    
     async verifyEmail(USER: string) {
         const conn = mysqlcon.getConnection()!;
         const res: any = await conn.query("SELECT EMAIL,ID,PASSWORD FROM user WHERE EMAIL = ?", [USER]).then((res) => res[0]).catch(error => [{ undefined }]);
