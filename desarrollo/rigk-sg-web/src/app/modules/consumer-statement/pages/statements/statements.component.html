@@ -81,7 +81,9 @@
                         <td>{{s.TipoTratamiento}}</td>
                         <td>{{s.PRECEDENCE}}</td>
                         <td>{{s.TYPE_RESIDUE}}</td>
-                        <td>{{s.VALUE}}</td>
+                        <td>
+                            {{s.VALUE % 1 === 0 ? s.VALUE : s.VALUE.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 2 })}}
+                        </td>
                         <td>{{s.FechaRetiro | date: 'dd-MM-yyyy'}}</td>
                         <td>
                             <span [ngClass]="s.semaforo ? 'circle green-circle' : 'circle red-circle'"></span>
@@ -92,7 +94,7 @@
                             </a>
                         </td>                        
                     </tr>
-                </tbody>
+                </tbody>                
             </table>
         </div>
         <!-- Pagination -->
