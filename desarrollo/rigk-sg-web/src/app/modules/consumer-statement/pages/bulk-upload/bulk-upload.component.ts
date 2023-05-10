@@ -126,7 +126,6 @@ export class BulkUploadComponent implements OnInit {
   }
 
   async processData(data: any[]) {
-
     if (data.length == 0) {
       Swal.fire({
         icon: 'error',
@@ -144,7 +143,7 @@ export class BulkUploadComponent implements OnInit {
       });
       return;
     }
-    if (data.length == 1) {
+    if (rows.length == 0) {
       Swal.fire({
         icon: 'info',
         text: 'Archivo está vacío (faltan campos por rellenar).'
@@ -152,7 +151,6 @@ export class BulkUploadComponent implements OnInit {
       return;
     }
     for (let i = 0; i < rows.length; i++) {
-      console.log(rows[i])
       const row = rows[i];
       const excelRowNumber = i + 2; // Se agrega 2 para considerar el encabezado y el índice base 1 de Excel
 
@@ -166,8 +164,6 @@ export class BulkUploadComponent implements OnInit {
 
       for (let j = i + 1; j < rows.length; j++) {
         const w = rows[j];
-
-        console.log(w[0], row[0], w[3], row[3], w[4], row[4], w[5], row[5], w[1], row[1])
         if (w[0] === row[0] && w[3] === row[3] && w[4] === row[4] && w[5] === row[5] && w[1] === row[1]) {
           Swal.fire({
             icon: 'info',

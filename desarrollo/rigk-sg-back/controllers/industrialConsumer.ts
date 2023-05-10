@@ -346,7 +346,7 @@ class IndustrialConsumer {
                     type: 'list',
                     allowBlank: false,
                     showErrorMessage: true,
-                    error: 'aaaa',
+                    error: 'Por favor ingresar un Código de Establecimiento válido',
                     formulae: [`Info!$A$2:$A$${establishments.length + 1}`]
                 };
                 worksheet.getCell(`B${i + 1}`).dataValidation = {
