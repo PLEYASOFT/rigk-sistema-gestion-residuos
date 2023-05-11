@@ -195,7 +195,7 @@ export class FormComponent implements OnInit {
       }
     });
   }
-  saveForm() {
+  async saveForm() {
     if (this.newData.length == 0) {
       Swal.fire({
         icon: 'info',
@@ -210,7 +210,7 @@ export class FormComponent implements OnInit {
     }
     for (let i = 0; i < this.newData.length; i++) {
       const reg = this.newData[i];
-      if( reg.value == 0 || reg.date == "" || reg.gestor == "-1" || reg.treatment == "0" || reg.sub == "0" ) {
+      if( reg.value == 0 || reg.date == "" || reg.gestor == "-1" || reg.treatment == "0" || reg.sub == "-1" ) {
         if(reg.value == 0) {
           error = "Falta ingresar peso en la tabla "+this.tables[reg.residue-1];
           break;
@@ -227,7 +227,7 @@ export class FormComponent implements OnInit {
           error = "Falta seleccionar tipo de tratamiento en la tabla "+this.tables[reg.residue-1];
           break;
         }
-        if(reg.sub == "0") {
+        if(reg.sub == "-1") {
           error = "Falta seleccionar subtipo en la tabla "+this.tables[reg.residue-1];
           break;
         }
@@ -252,30 +252,25 @@ export class FormComponent implements OnInit {
     let flag = false;
     for (let i = 0; i < this.newData.length; i++) {
       const e = this.newData[i];
-      this.consumerService.save({ header, detail: e }).subscribe({
-        next: r => {
-          if (r.status) {
-            // Swal.fire({
-            //   icon: 'success',
-            //   text: 'Declaración guardada satisfactoriamente'
-            // }).then(btn => {
-            //   if (btn.isConfirmed) {
-            //     this.router.navigate(['/consumidor']);
-            //   }
-            // });
-          }
-        },
-        error: r => {
+      try {
+        const r:any = await this.consumerService.save({ header, detail: e }).toPromise();
+        if (!r.status) {
           Swal.close();
+          Swal.fire({
+            icon: 'error',
+            text: 'Ocurrió un error mientras se guardaba el formulario.'
+          });
+          flag = true;
+        }
+      } catch (error) {
+        Swal.close();
           Swal.fire({
             icon: 'error',
             text: 'Ocurrió un error mientras se enviaba el formulario.'
           });
           flag = true;
-        }
-      });
+      }
     }
-    console.log(flag)
     if(!flag) {
       Swal.close();
       Swal.fire({
@@ -725,8 +720,9 @@ export class FormComponent implements OnInit {
       (document.getElementById('inp_file_0') as HTMLInputElement).value = "";
       return;
     }
-    const tmp = target.files[0].type.split('/')[0];
-    if (tmp != 'image' && target.files[0].type != 'application/pdf') {
+    const tmp = target.files[0].type.split('/');
+    console.log(tmp.length)
+    if(tmp.length == 2 && (tmp[1] != 'jpeg' && tmp[1] != 'jpg' && tmp[1] != 'pdf') ) {
       Swal.fire({
         icon: 'info',
         text: 'Tipo de archivo no permitido. Sólo se permiten extensiones jpg, jpeg o pdf'
