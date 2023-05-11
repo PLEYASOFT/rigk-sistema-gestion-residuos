@@ -52,8 +52,9 @@
                 <div class="col-12 col-xl-4 mb-3 mb-xl-0">
                     <div class="row">
                         <div class="col-6">
-                            <button class="btn btn-primary col-12" (click)="autoFilter = false; filter(); pagTo(0)">Mostrar</button>
-                          </div>                          
+                            <button class="btn btn-primary col-12"
+                                (click)="autoFilter = false; filter(); pagTo(0)">Mostrar</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -82,7 +83,7 @@
                         <td>{{s.PRECEDENCE}}</td>
                         <td>{{s.TYPE_RESIDUE}}</td>
                         <td>
-                            {{s.VALUE % 1 === 0 ? s.VALUE : s.VALUE.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 2 })}}
+                            {{formatValue(s.VALUE)}}
                         </td>
                         <td>{{s.FechaRetiro | date: 'dd-MM-yyyy'}}</td>
                         <td>
@@ -92,9 +93,9 @@
                             <a (click)="goToDetails(s.ID_HEADER, s.ID_DETAIL)" class="custom-cursor">
                                 <i class="fa fa-eye fa-lg fa-fw color-verde" aria-hidden="true"></i>
                             </a>
-                        </td>                        
+                        </td>
                     </tr>
-                </tbody>                
+                </tbody>
             </table>
         </div>
         <!-- Pagination -->
