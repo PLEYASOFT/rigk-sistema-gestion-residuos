@@ -11,9 +11,10 @@ export const saveScheme = Joi.object({
     vat: Joi.string().required(),
     id_detail: Joi.number().required(),
     date_pr: Joi.date().required(),
-    value: Joi.number(),
-    valued_total: Joi.number(),
+    value: Joi.string(),
+    valued_total: Joi.string(),
     treatment: Joi.number().required(),
     id_material: Joi.number().required(),
+    
     id_business: Joi.number().required()
 });
