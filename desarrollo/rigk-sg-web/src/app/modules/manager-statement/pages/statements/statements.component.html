@@ -97,7 +97,7 @@
                             <span *ngIf="s.STATE_GESTOR == 0">Por aprobar</span>
                             <span *ngIf="s.STATE_GESTOR != 0">Aprobado</span>
                         </td>
-                        <td>{{s.VALUE}}</td>
+                        <td>{{replaceDot(s.VALUE)}}</td>
                         <td>{{s.VALUE_DECLARATE}}</td>
                         <td>
                             <a class="custom-cursor" data-bs-toggle="modal"
@@ -155,7 +155,7 @@
                         <label class="col-sm-4 col-form-label">RUT Reciclador</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" placeholder="1-9" formControlName="rut"
-                                (input)="onChangeVAT($event.target)">
+                                (change)="onChangeVAT($event.target)">
                             <div *ngIf="userForm.controls['rut'].errors && userForm.controls['rut'].touched"
                                 class="text-danger pl-0">
                                 <p *ngIf="userForm.controls['rut'].errors['required']">El rut de la empresa es
@@ -170,10 +170,14 @@
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Reciclador</label>
                         <div class="col-sm-8">
-                            <select class="form-select" formControlName="reciclador" (change)="onRUTChange(this.index)">
+                            <select [disabled]="userForm.controls['invoiceNumber'].value == ''" class="form-select" formControlName="reciclador" (change)="onRUTChange(this.index)">
                                 <option value="0">Seleccione Reciclador</option>
                                 <option *ngFor="let b of dbBusiness" value="{{b['ID']}}">{{b['NAME']}}</option>
                             </select>
+                            <div class="text-danger pl-0">
+                                <p *ngIf="businessNoFound && userForm.controls['rut'].touched ">Rut no se encuentra registrado en el sistema.
+                                </p>
+                            </div>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -220,7 +224,7 @@
                                 <p *ngIf="userForm.controls['totalWeight'].errors['required']">Debe ingresar un peso
                                     total.</p>
                                 <p *ngIf="userForm.controls['totalWeight'].errors['pattern']">Debe ingresar un número
-                                    válido (Con puntos).</p>
+                                    válido (con coma).</p>
                             </div>
                         </div>
                     </div>
@@ -281,7 +285,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                    (click)="this.userForm.reset()">Volver</button>
+                    (click)="this.userForm.reset({reciclador:'0'})">Volver</button>
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     [disabled]="userForm.invalid || isRemainingWeightNegative"
                     (click)="saveInvoice(this.index)">Guardar</button>
