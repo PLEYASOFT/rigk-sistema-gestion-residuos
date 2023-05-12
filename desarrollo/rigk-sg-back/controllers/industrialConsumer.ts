@@ -377,6 +377,7 @@ class IndustrialConsumer {
                     allowBlank: false,
                     formulae: [`=INDIRECT(E${i + 1})`],
                 };
+                worksheet.getCell(`L${i + 1}`).numFmt = '@';
             }
             await workbook.xlsx.writeFile(outputPath);
             return res.download(outputPath);

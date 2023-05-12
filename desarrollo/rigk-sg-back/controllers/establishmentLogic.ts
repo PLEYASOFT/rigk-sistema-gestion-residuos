@@ -102,10 +102,13 @@ class EstablishmentLogic {
         const { invoice_number, vat, treatment_type, material_type, id_business } = req.body;
         try {
             const data: any = await establishmentDao.getInvoice(invoice_number, vat, treatment_type, material_type, id_business);
+            if (data[0] == null) {
+                return res.status(200).json({ status: false, data, msg: 'Factura ingresada para otro material y/o tratamiento' });
+            }
             if (data[0]?.NAME) {
-                res.status(200).json({ status: true, data, msg: '' });
+                return res.status(200).json({ status: true, data, msg: '' });
             } else {
-                res.status(400).json({ status: false, data, msg: 'Reciclador no encontrado' });
+                return res.status(400).json({ status: false, data, msg: 'Reciclador no encontrado' });
             }
         } catch (error) {
             console.log(error);
