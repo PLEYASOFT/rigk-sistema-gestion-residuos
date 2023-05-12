@@ -40,7 +40,21 @@ export class StatementsComponent implements OnInit {
   isRemainingWeightNegative: boolean = false;
 
   index: number = 0;
-  userForm: any;
+  userForm = this.fb.group({
+    invoiceNumber: ['', [Validators.required]],
+    rut: ['', [Validators.required, Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$'), this.verifyRut]],
+    reciclador: ['0', [Validators.required]],
+    treatmentType: ['', [Validators.required]],
+    material: ['', [Validators.required]],
+    entryDate: ['', [Validators.required]],
+    totalWeight: ['', [Validators.required, Validators.pattern(/^[1-9]+(,[0-9]+)?$/)]],
+    declarateWeight: [''],
+    valuedWeight: ['', [Validators.required, Validators.pattern(/^[1-9]+(,[0-9]+)?$/)]],
+    remainingWeight: [''],
+    asoc: [''],
+    declarated: [''],
+    attachment: [null, [Validators.required, this.fileTypeValidator, this.fileSizeValidator]]
+  });
 
   dbBusiness = [];
   constructor(
@@ -58,21 +72,6 @@ export class StatementsComponent implements OnInit {
       this.pagTo(this.pos - 1);
     });
 
-    this.userForm = this.fb.group({
-      invoiceNumber: ['', [Validators.required]],
-      rut: ['', [Validators.required, Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$'), this.verifyRut]],
-      reciclador: ['0', [Validators.required]],
-      treatmentType: ['', [Validators.required]],
-      material: ['', [Validators.required]],
-      entryDate: ['', [Validators.required]],
-      totalWeight: ['', [Validators.required, Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)]],
-      declarateWeight: [''],
-      valuedWeight: ['', [Validators.required, Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)]],
-      remainingWeight: [''],
-      asoc: [''],
-      declarated: [''],
-      attachment: [null, [Validators.required, this.fileTypeValidator, this.fileSizeValidator]]
-    });
     this.userForm.controls['valuedWeight'].disable();
     this.userForm.controls['totalWeight'].disable();
   }
@@ -315,10 +314,14 @@ export class StatementsComponent implements OnInit {
       console.error('No file selected');
     }
   }
-
+  businessNoFound = false;
   onChangeVAT(target: any) {
+    this.dbBusiness = [];
     this.businessService.getBusinessByVAT(target.value).subscribe(r => {
-      this.dbBusiness = r.status;
+      this.dbBusiness = r.status || [];
+      if (this.dbBusiness.length == 0) {
+        this.businessNoFound = true;
+      }
     })
   }
 
@@ -335,7 +338,7 @@ export class StatementsComponent implements OnInit {
           this.userForm.controls['totalWeight'].setValue(businessResponse.data[0].invoice_value);
           this.userForm.controls['declarateWeight'].setValue(businessResponse.data[0].value_declarated);
           this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + 1);
-          const asoc = this.userForm.controls['asoc'].value;
+          const asoc = this.userForm.controls['asoc'].value || "0";
 
           if (parseInt(asoc) > 1) {
             if (invoiceNumber) {
@@ -354,6 +357,10 @@ export class StatementsComponent implements OnInit {
           }
 
         } else {
+          Swal.fire({
+            icon: 'error',
+            text: businessResponse.msg
+          });
           this.userForm.controls['totalWeight'].setValue('');
           this.userForm.controls['declarateWeight'].setValue('');
           this.userForm.controls['asoc'].setValue('');
@@ -387,7 +394,7 @@ export class StatementsComponent implements OnInit {
   async onMaterialTreatmentChange(index: any) {
     this.userForm.controls['treatmentType'].setValue(this.db[index].TipoTratamiento);
     this.userForm.controls['material'].setValue(this.db[index].PRECEDENCE);
-    this.userForm.controls['declarated'].setValue(this.db[index].VALUE);
+    this.userForm.controls['declarated'].setValue(this.db[index].VALUE?.toString().replace(".", ","));
   }
 
   verifyRut(control: AbstractControl): { [key: string]: boolean } | null {
@@ -408,10 +415,10 @@ export class StatementsComponent implements OnInit {
   }
 
   getNumericValue(control?: AbstractControl<string | null, string | null> | null): number {
-    return control && control.value ? +control.value : 0;
+    return control && control.value ? +control.value.replace(",", ".") : 0;
   }
 
-  calculateRemainingWeight(): number {
+  calculateRemainingWeight(): any {
     const totalWeightControl = this.userForm.get('totalWeight');
     const valuedWeightControl = this.userForm.get('valuedWeight');
     const valueDeclarateControl = this.userForm.get('declarateWeight');
@@ -424,6 +431,13 @@ export class StatementsComponent implements OnInit {
 
     this.isRemainingWeightNegative = remainingWeight < 0;
 
-    return remainingWeight;
+    return remainingWeight.toFixed(2).replace(".", ",");
+  }
+  replaceDot(s: string) {
+    if ((s.toString().split(".")).length == 2) {
+      return s && parseFloat(s).toFixed(2).replace('.', ',');
+    } else {
+      return s && s.toString().replace('.', ',');
+    }
   }
 }

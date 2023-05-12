@@ -119,8 +119,9 @@ class EstablishmentDao {
         if (business == null || business.length == 0) {
             return []
         }
-        const data: any = await conn.execute("SELECT ID, VALUED_TOTAL AS invoice_value FROM invoices WHERE INVOICE_NUMBER=? AND VAT=? AND ID_BUSINESS=? AND TREATMENT_TYPE=? AND MATERIAL_TYPE=?", [number, rut, id_business, treatment_type, material_type]).then((res) => res[0]).catch(error => [{ undefined }]);
-        if (data == null || data.length == 0) {
+        const data0:any = await conn.execute("SELECT ID, VALUED_TOTAL AS invoice_value,TREATMENT_TYPE,MATERIAL_TYPE FROM invoices WHERE INVOICE_NUMBER=? AND VAT=? AND ID_BUSINESS=?", [number, rut, id_business]).then((res) => res[0]).catch(error => [{ undefined }]);
+        // first invoice
+        if (data0 == null || data0.length == 0) {
             return [{
                 invoice_value: null,
                 num_asoc: 0,
@@ -128,11 +129,16 @@ class EstablishmentDao {
                 NAME: business
             }];
         }
-        const ID_INVOICE = data[0].ID;
+        //verify constraint
+        if(data0[0]['MATERIAL_TYPE'] != material_type && data0[0]['TREATMENT_TYPE'] != treatment_type) {
+            return [];
+        }
+        //get invoice
+        const ID_INVOICE = data0[0].ID;
         const data2: any = await conn.execute("SELECT SUM(VALUE) AS value_declarated, COUNT(VALUE) as num_asoc FROM invoices_detail WHERE ID_INVOICE=?", [ID_INVOICE]).then((res) => res[0]).catch(error => console.log(error));
         conn.end();
         return [{
-            invoice_value: data[0].invoice_value,
+            invoice_value: data0[0].invoice_value,
             num_asoc: data2[0].num_asoc || 0,
             value_declarated: data2[0].value_declarated || 0,
             NAME: business
