@@ -210,7 +210,7 @@ export class FormComponent implements OnInit {
     }
     for (let i = 0; i < this.newData.length; i++) {
       const reg = this.newData[i];
-      if( reg.value == 0 || reg.date == "" || reg.gestor == "-1" || reg.treatment == "0" || reg.sub == "-1" ) {
+      if( reg.value == 0 || reg.date == "" || reg.gestor == "-1" || reg.treatment == "-1" || reg.sub == "-1" ) {
         if(reg.value == 0) {
           error = "Falta ingresar peso en la tabla "+this.tables[reg.residue-1];
           break;
@@ -223,7 +223,7 @@ export class FormComponent implements OnInit {
           error = "Falta seleccionar gestor en la tabla "+this.tables[reg.residue-1];
           break;
         }
-        if(reg.treatment == "0") {
+        if(reg.treatment == "-1") {
           error = "Falta seleccionar tipo de tratamiento en la tabla "+this.tables[reg.residue-1];
           break;
         }
@@ -614,7 +614,7 @@ export class FormComponent implements OnInit {
       for (let y = 0; y < tmp.length; y++) {
         const u = tmp[y];
         if(u.residue != (i+1)) continue;
-        sum += parseFloat(u.value.replace(",", "."));
+        sum += parseFloat(u.value.toString().replace(",", "."));
       }
       document.getElementById(`table_td_${i + 1}`)!.innerHTML = sum.toFixed(2).toString().replace(".", ",");
 
