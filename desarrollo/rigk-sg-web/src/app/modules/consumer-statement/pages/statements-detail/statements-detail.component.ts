@@ -14,7 +14,7 @@ import { FormBuilder, Validators, AbstractControl, ValidatorFn } from '@angular/
 })
 
 export class StatementsDetailComponent implements OnInit {
-  
+
   maxFiles = 3;
   userData: any | null;
   dbStatements: any[] = [];
@@ -51,7 +51,7 @@ export class StatementsDetailComponent implements OnInit {
     this.userForm = this.fb.group({
       MV: ["", Validators.required],
       ARCHIVO: [null, [Validators.required, this.fileTypeValidator, this.fileSizeValidator]],
-    });    
+    });
   }
 
   loadData() {
@@ -110,23 +110,27 @@ export class StatementsDetailComponent implements OnInit {
   }
 
   formatValue(value: number): string {
+    if (value === undefined || value === null) {
+      return "";
+    }
     if (value % 1 === 0) {
       return value.toString();
     } else {
       return value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
   }
+
   saveFile() {
     this.detail_consulta.FechaRetiro = this.formatDate(this.detail_consulta.FechaRetiro);
-    this.ConsumerService.saveFile( this.detail_consulta.ID_DETAIL, this.fileName, this.fileBuffer, this.userForm.controls['MV'].value).subscribe(r => {
-        if (r.status) {
-          Swal.fire({
-            icon: 'success',
-            text: 'Medio de verificación guardado satisfactoriamente'
-          })
-          this.loadMV();
+    this.ConsumerService.saveFile(this.detail_consulta.ID_DETAIL, this.fileName, this.fileBuffer, this.userForm.controls['MV'].value).subscribe(r => {
+      if (r.status) {
+        Swal.fire({
+          icon: 'success',
+          text: 'Medio de verificación guardado satisfactoriamente'
+        })
+        this.loadMV();
       }
-      else{
+      else {
         console.log('error')
       }
     })
@@ -134,14 +138,14 @@ export class StatementsDetailComponent implements OnInit {
 
   deleteMV(id: any) {
     this.ConsumerService.deleteById(id).subscribe(r => {
-        if (r.status) {
-          Swal.fire({
-            icon: 'info',
-            text: 'Medio de verificación eliminado satisfactoriamente'
-          })
+      if (r.status) {
+        Swal.fire({
+          icon: 'info',
+          text: 'Medio de verificación eliminado satisfactoriamente'
+        })
         this.loadMV();
       }
-      else{
+      else {
         console.log('error')
       }
     })
@@ -154,11 +158,11 @@ export class StatementsDetailComponent implements OnInit {
       this.fileName = file.name;
       this.fileBuffer = file;
       this.selectedFile = input.files[0];
-  
+
       const allowedExtensions = ['pdf', 'jpeg', 'jpg'];
       const fileExtension = this.selectedFile.name.split('.').pop()?.toLowerCase() || '';
       const isValid = allowedExtensions.includes(fileExtension);
-  
+
       if (!isValid) {
         this.userForm.controls['ARCHIVO'].setErrors({ 'invalidFileType': true });
         this.userForm.controls['ARCHIVO'].markAsTouched();
@@ -172,19 +176,19 @@ export class StatementsDetailComponent implements OnInit {
     } else {
       this.selectedFile = null;
     }
-  }  
+  }
 
   downloadFile(fileId: number, fileName: string) {
     this.ConsumerService.downloadMV(fileId).subscribe(
       (data) => {
         const blob = new Blob([data], { type: data.type });
         const url = window.URL.createObjectURL(blob);
-  
+
         const link = document.createElement('a');
         link.href = url;
         link.download = fileName;
         link.click();
-  
+
         window.URL.revokeObjectURL(url);
       },
       (error) => {
