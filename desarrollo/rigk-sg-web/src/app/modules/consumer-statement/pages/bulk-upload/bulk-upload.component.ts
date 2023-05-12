@@ -316,16 +316,15 @@ export class BulkUploadComponent implements OnInit {
       // Código de tratamiento receptor
       const receivingTreatmentCode = row[10];
       // Cantidad
-      const quantity = row[11];
-      if (!quantity || !this.isValidQuantity(quantity.toString().replace(".", ","))) {
+      const sanitizedQuantity = row[11].replace(',', '.');
+      const quantity = parseFloat(sanitizedQuantity);
+      if (isNaN(quantity)) {
         Swal.fire({
           icon: 'error',
           text: `Cantidad no válida o no proporcionada en la fila ${excelRowNumber}. Asegúrese de usar una coma como separador de decimales`
         });
         return;
       }
-
-
       const precedenceNumber = this.convertPrecedence(row[4]);
       if (precedenceNumber == -1) {
         Swal.fire({
@@ -352,7 +351,7 @@ export class BulkUploadComponent implements OnInit {
       }
 
       const dateFormateada = this.convertDate(date);
-      const r: any = await this.consumer.checkRow({ treatment:treatmentTypeNumber, sub:typeResidueNumber, gestor:businessId, date:dateFormateada }).toPromise();
+      const r: any = await this.consumer.checkRow({ treatment: treatmentTypeNumber, sub: typeResidueNumber, gestor: businessId, date: dateFormateada }).toPromise();
       if (!r.status) {
         Swal.fire({
           icon: 'info',
@@ -398,7 +397,7 @@ export class BulkUploadComponent implements OnInit {
             ID_HEADER: headerId,
             PRECEDENCE: rowData.precedence,
             TYPE_RESIDUE: rowData.typeResidue,
-            VALUE: parseFloat(rowData.quantity.toString().replace(",", ".")),
+            VALUE: parseFloat(rowData.quantity.toFixed(2).replace(",", ".")),
             DATE_WITHDRAW: this.convertDate(rowData.date),
             ID_GESTOR: rowData.businessId,
             LER: rowData.LER,
@@ -454,11 +453,6 @@ export class BulkUploadComponent implements OnInit {
     }
 
     return { valid: true, message: "" };
-  }
-
-  isValidQuantity(quantity: string): boolean {
-    const quantityPattern = /^\d+(\,\d{1,2})?$/;
-    return quantityPattern.test(quantity);
   }
 
   convertPrecedence(precedence: any): number {
