@@ -154,7 +154,7 @@
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">RUT Reciclador</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" placeholder="1-9" formControlName="rut"
+                            <input type="text" class="form-control" [readonly]="userForm.controls['invoiceNumber'].invalid" placeholder="1-9" formControlName="rut"
                                 (change)="onChangeVAT($event.target)">
                             <div *ngIf="userForm.controls['rut'].errors && userForm.controls['rut'].touched"
                                 class="text-danger pl-0">
@@ -175,7 +175,7 @@
                                 <option *ngFor="let b of dbBusiness" value="{{b['ID']}}">{{b['NAME']}}</option>
                             </select>
                             <div class="text-danger pl-0">
-                                <p *ngIf="businessNoFound && userForm.controls['rut'].touched ">Rut no se encuentra registrado en el sistema.
+                                <p *ngIf="businessNoFound && userForm.controls['rut'].touched">Rut no se encuentra registrado en el sistema.
                                 </p>
                             </div>
                         </div>
