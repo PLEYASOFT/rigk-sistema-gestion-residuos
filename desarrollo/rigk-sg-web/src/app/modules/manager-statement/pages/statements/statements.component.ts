@@ -205,7 +205,7 @@ export class StatementsComponent implements OnInit {
       this.filter();
       this.pagTo(this.pos - 1);
     });
-    this.userForm.reset()
+    this.userForm.reset({reciclador:'0'})
   }
   pagTo(i: number) {
     this.pos = i + 1;
@@ -233,6 +233,7 @@ export class StatementsComponent implements OnInit {
   }
 
   handleClick(index: number, stateGestor: number): void {
+    this.dbBusiness = [];
     if (stateGestor === 0) {
       this.onMaterialTreatmentChange(index);
       this.index = index;

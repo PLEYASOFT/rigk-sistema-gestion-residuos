@@ -170,7 +170,7 @@
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Reciclador</label>
                         <div class="col-sm-8">
-                            <select [disabled]="userForm.controls['invoiceNumber'].value != ''" class="form-select" formControlName="reciclador" (change)="onRUTChange(this.index)">
+                            <select [disabled]="userForm.controls['invoiceNumber'].value == ''" class="form-select" formControlName="reciclador" (change)="onRUTChange(this.index)">
                                 <option value="0">Seleccione Reciclador</option>
                                 <option *ngFor="let b of dbBusiness" value="{{b['ID']}}">{{b['NAME']}}</option>
                             </select>
@@ -285,7 +285,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                    (click)="this.userForm.reset()">Volver</button>
+                    (click)="this.userForm.reset({reciclador:'0'})">Volver</button>
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     [disabled]="userForm.invalid || isRemainingWeightNegative"
                     (click)="saveInvoice(this.index)">Guardar</button>
