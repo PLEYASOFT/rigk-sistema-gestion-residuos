@@ -98,7 +98,7 @@
                             <span *ngIf="s.STATE_GESTOR != 0">Aprobado</span>
                         </td>
                         <td>{{replaceDot(s.VALUE)}}</td>
-                        <td>{{s.VALUE_DECLARATE}}</td>
+                        <td>{{formatValue(s.VALUE_DECLARATE)}}</td>
                         <td>
                             <a class="custom-cursor" data-bs-toggle="modal"
                                 [attr.data-bs-target]="s.STATE_GESTOR == 0 ? '#infoModal' : null"
@@ -208,23 +208,23 @@
                         <label class="col-sm-4 col-form-label">Fecha Ingreso PR</label>
                         <div class="col-sm-8">
                             <input type="date" class="form-control" placeholder="10/4/2023" formControlName="entryDate">
-                            <div *ngIf="userForm.controls['entryDate'].errors && userForm.controls['entryDate'].touched"
-                                class="text-danger">
-                                <p *ngIf="userForm.controls['entryDate'].errors['required']">Debe ingresar una fecha.
-                                </p>
+                            <div *ngIf="userForm.controls['entryDate'].errors && userForm.controls['entryDate'].touched" class="text-danger">
+                                <p *ngIf="userForm.controls['entryDate'].errors['required']">Debe ingresar una fecha.</p>
+                                <p *ngIf="userForm.controls['entryDate'].errors['futureDate']">La fecha no puede ser futura.</p>
                             </div>
                         </div>
-                    </div>
+                    </div>                    
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Peso Total</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" formControlName="totalWeight" (change)="verify2($event.target,'totalWeight')">
+                            <input type="text" class="form-control" formControlName="totalWeight">
                             <div *ngIf="userForm.controls['totalWeight'].errors && userForm.controls['totalWeight'].touched"
                                 class="text-danger">
                                 <p *ngIf="userForm.controls['totalWeight'].errors['required']">Debe ingresar un peso
                                     total.</p>
                                 <p *ngIf="userForm.controls['totalWeight'].errors['pattern']">Debe ingresar un número
                                     válido (con coma).</p>
+                                <p *ngIf="userForm.controls['totalWeight'].errors['minStringValue']">El valor debe ser mayor que cero.</p>
                             </div>
                         </div>
                     </div>
@@ -237,17 +237,15 @@
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Peso Valorizado</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" formControlName="valuedWeight" (change)="verify2($event.target, 'valuedWeight')">
-                            <div *ngIf="userForm.controls['valuedWeight'].errors && userForm.controls['valuedWeight'].touched"
-                                class="text-danger">
-                                <p *ngIf="userForm.controls['valuedWeight'].errors['required']">Debe ingresar un peso
-                                    valorizado.</p>
-                                <p *ngIf="userForm.controls['valuedWeight'].errors['pattern']">Debe ingresar un número
-                                    válido (Con coma).</p>
-
+                            <input type="text" class="form-control" formControlName="valuedWeight">
+                            <div *ngIf="userForm.controls['valuedWeight'].errors && userForm.controls['valuedWeight'].touched" class="text-danger">
+                                <p *ngIf="userForm.controls['valuedWeight'].errors['required']">Debe ingresar un peso valorizado.</p>
+                                <p *ngIf="userForm.controls['valuedWeight'].errors['pattern']">Debe ingresar un número válido (Con coma).</p>
+                                <p *ngIf="userForm.controls['valuedWeight'].errors['minStringValue']">El valor debe ser mayor que cero.</p>
                             </div>
                         </div>
                     </div>
+                    
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Peso Remanente</label>
                         <div class="col-sm-8">
@@ -288,7 +286,7 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
                     (click)="this.userForm.reset()">Volver</button>
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                    [disabled]="userForm.invalid || isRemainingWeightNegative || userForm.value.valuedWeight == '0' || userForm.value.totalWeight == '0'"
+                    [disabled]="userForm.invalid || isRemainingWeightNegative"
                     (click)="saveInvoice(this.index)">Guardar</button>
             </div>
         </div>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { validate } from 'rut.js';
 import { BusinessService } from 'src/app/core/services/business.service';
 import { EstablishmentService } from 'src/app/core/services/establishment.service';
@@ -46,10 +46,10 @@ export class StatementsComponent implements OnInit {
     reciclador: ['0', [Validators.required]],
     treatmentType: ['', [Validators.required]],
     material: ['', [Validators.required]],
-    entryDate: ['', [Validators.required]],
-    totalWeight: ['', [Validators.required, Validators.pattern(/^[0-9]+(,[0-9]+)?$/)]],
+    entryDate: ['', [Validators.required, this.pastDateValidator()]],
+    totalWeight: ['', [Validators.required, this.minStringValue(0), Validators.pattern(/^[0-9]+(,[0-9]+)?$/)]],
     declarateWeight: [''],
-    valuedWeight: ['', [Validators.required, Validators.pattern(/^[0-9]+(,[0-9]+)?$/)]],
+    valuedWeight: ['', [Validators.required, this.minStringValue(0),Validators.pattern(/^[0-9]+(,[0-9]+)?$/)]],
     remainingWeight: [''],
     asoc: [''],
     declarated: [''],
@@ -90,7 +90,15 @@ export class StatementsComponent implements OnInit {
       Swal.showLoading();
       this.establishmentService.getDeclarationEstablishment().subscribe(r => {
         if (r.status) {
-          r.status = r.status.sort(((a: any, b: any) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()));
+          r.status = r.status.sort((a: any, b: any) => {
+            const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+            
+            if (dateComparison === 0) {
+              return b.ID_DETAIL - a.ID_DETAIL;
+            } else {
+              return dateComparison;
+            }
+          });
 
           (r.status as any[]).forEach(e => {
 
@@ -116,7 +124,15 @@ export class StatementsComponent implements OnInit {
           this.years.sort((a, b) => b - a);
           this.dbStatements = r.status;
           this.cant = Math.ceil(this.dbStatements.length / 10);
-          this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();
+          this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a: any, b: any) => {
+            const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+            
+            if (dateComparison === 0) {
+              return b.ID_DETAIL - a.ID_DETAIL;
+            } else {
+              return dateComparison;
+            }
+          }).reverse();
           Swal.close();
         }
         resolve();
@@ -136,7 +152,15 @@ export class StatementsComponent implements OnInit {
         (this.selectedState === '-1' || parseInt(r.STATE_GESTOR) === parseInt(this.selectedState))
       );
     });
-    this.db = this.filteredStatements.slice(0, 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();;
+    this.db = this.filteredStatements.slice(0, 10).sort((a: any, b: any) => {
+      const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+      
+      if (dateComparison === 0) {
+        return b.ID_DETAIL - a.ID_DETAIL;
+      } else {
+        return dateComparison;
+      }
+    }).reverse();
     this.cant = Math.ceil(this.filteredStatements.length / 10);
   }
 
@@ -210,19 +234,43 @@ export class StatementsComponent implements OnInit {
   }
   pagTo(i: number) {
     this.pos = i + 1;
-    this.db = this.filteredStatements.slice((i * 10), (i + 1) * 10).sort((a, b) => new Date(a.FechaRetiro).getTime() - new Date(b.FechaRetiro).getTime()).reverse();
+    this.db = this.filteredStatements.slice((i * 10), (i + 1) * 10).sort((a: any, b: any) => {
+            const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+            
+            if (dateComparison === 0) {
+              return b.ID_DETAIL - a.ID_DETAIL;
+            } else {
+              return dateComparison;
+            }
+          }).reverse();
   }
 
   next() {
     if (this.pos >= this.cant) return;
     this.pos++;
-    this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(a.FechaRetiro).getTime() - new Date(b.FechaRetiro).getTime()).reverse();
+    this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a: any, b: any) => {
+            const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+            
+            if (dateComparison === 0) {
+              return b.ID_DETAIL - a.ID_DETAIL;
+            } else {
+              return dateComparison;
+            }
+          }).reverse();
   }
 
   previus() {
     if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
     this.pos = this.pos - 1;
-    this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(a.FechaRetiro).getTime() - new Date(b.FechaRetiro).getTime()).reverse();
+    this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a: any, b: any) => {
+            const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+            
+            if (dateComparison === 0) {
+              return b.ID_DETAIL - a.ID_DETAIL;
+            } else {
+              return dateComparison;
+            }
+          }).reverse();
   }
 
   setArrayFromNumber() {
@@ -296,9 +344,8 @@ export class StatementsComponent implements OnInit {
       const material = this.db[index].PRECEDENCE_NUMBER
       const id_detail = this.db[index].ID_DETAIL
       try {
-        const response = await this.establishmentService.saveInvoice(rut, reciclador, invoiceNumber, id_detail, entryDate, valuedWeight?.toString().replace(",","."), totalWeight?.toString().replace(",","."), treatmentType, material, this.selectedFile).toPromise();
+        const response = await this.establishmentService.saveInvoice(rut, reciclador, invoiceNumber, id_detail, entryDate, valuedWeight!.replace(",", "."), totalWeight!.replace(",", "."), treatmentType, material, this.selectedFile).toPromise();
         if (response.status) {
-          this.reset();
           setTimeout(async () => {
             await Swal.fire({
               title: "La factura fue guardada exitosamente",
@@ -329,7 +376,15 @@ export class StatementsComponent implements OnInit {
       }
     });
   }
-
+  formatNumber(value: any) {
+    if (value === null || value === undefined) {
+      return '';
+    } else if (Number.isInteger(value)) {
+      return value;
+    } else {
+      return value.toLocaleString('es');
+    }
+  }  
   async onRUTChange(index: number) {
     const rut = this.userForm.controls['rut'].value;
     const invoiceNumber = this.userForm.controls['invoiceNumber'].value;
@@ -340,11 +395,15 @@ export class StatementsComponent implements OnInit {
       try {
         const businessResponse = await this.establishmentService.getInovice(invoiceNumber, rut, treatmentType, material, id_business).toPromise();
         if (businessResponse.status) {
-          this.userForm.controls['totalWeight'].setValue(businessResponse.data[0]?.invoice_value?.replace(".",".") || '');
-          this.userForm.controls['declarateWeight'].setValue(businessResponse.data[0].value_declarated);
+          
+          this.userForm.controls['totalWeight'].setValue(
+            this.formatNumber(businessResponse.data[0]?.invoice_value)
+          );
+          this.userForm.controls['declarateWeight'].setValue(
+            this.formatNumber(businessResponse.data[0].value_declarated)
+          );
           this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + 1);
           const asoc = this.userForm.controls['asoc'].value || "0";
-
           if (parseInt(asoc) > 1) {
             if (invoiceNumber) {
               this.userForm.controls['valuedWeight'].enable();
@@ -445,22 +504,34 @@ export class StatementsComponent implements OnInit {
       return s && s.toString().replace('.', ',');
     }
   }
-  error=false;
-  verify2(target:any, val:string) {
-    console.log(parseFloat(target.value!.toString().replace(",",".")).toFixed(2) )
-    if(parseFloat(target.value!.toString().replace(",",".")).toFixed(2) == '0.00') {
-      target.value == '';
-      Swal.fire({
-        icon:'error',
-        text: 'Debe ingresar un número válido (con coma).'
-      });
-      if(val == 'valuedWeight') {
-        this.userForm.controls['valuedWeight'].setValue('');
-      } else {
-        this.userForm.controls['totalWeight'].setValue('');
+
+  minStringValue(min: number): ValidatorFn {
+    return (control: AbstractControl): {[key: string]: any} | null => {
+      if (!control.value) {
+        return null;
       }
-    } else  {
-      this.error == false;
+      const numberValue = parseFloat(control.value.replace(',', '.'));
+      return isNaN(numberValue) || numberValue <= min ? { 'minStringValue': { value: control.value } } : null;
+    };
+  }
+
+  formatValue(value: number): string {
+    if (value === undefined || value === null) {
+      return "";
     }
+    if (value % 1 === 0) {
+      return value.toString();
+    } else {
+      return value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+  }
+
+  pastDateValidator(): ValidatorFn {
+    return (control: AbstractControl): {[key: string]: any} | null => {
+      const selectedDate = new Date(control.value);
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      return selectedDate > now ? { 'futureDate': { value: control.value } } : null;
+    };
   }
 }
