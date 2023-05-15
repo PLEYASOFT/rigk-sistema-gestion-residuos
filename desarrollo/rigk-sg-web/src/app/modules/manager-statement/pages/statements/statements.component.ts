@@ -47,9 +47,9 @@ export class StatementsComponent implements OnInit {
     treatmentType: ['', [Validators.required]],
     material: ['', [Validators.required]],
     entryDate: ['', [Validators.required]],
-    totalWeight: ['', [Validators.required, Validators.min(1), Validators.pattern(/^[0-9]+(,[0-9]+)?$/)]],
+    totalWeight: ['', [Validators.required, Validators.pattern(/^[0-9]+(,[0-9]+)?$/)]],
     declarateWeight: [''],
-    valuedWeight: ['', [Validators.required, Validators.min(1), Validators.pattern(/^[0-9]+(,[0-9]+)?$/)]],
+    valuedWeight: ['', [Validators.required, Validators.pattern(/^[0-9]+(,[0-9]+)?$/)]],
     remainingWeight: [''],
     asoc: [''],
     declarated: [''],
@@ -340,7 +340,7 @@ export class StatementsComponent implements OnInit {
       try {
         const businessResponse = await this.establishmentService.getInovice(invoiceNumber, rut, treatmentType, material, id_business).toPromise();
         if (businessResponse.status) {
-          this.userForm.controls['totalWeight'].setValue(businessResponse.data[0].invoice_value);
+          this.userForm.controls['totalWeight'].setValue(businessResponse.data[0]?.invoice_value?.replace(".",".") || '');
           this.userForm.controls['declarateWeight'].setValue(businessResponse.data[0].value_declarated);
           this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + 1);
           const asoc = this.userForm.controls['asoc'].value || "0";
@@ -443,6 +443,24 @@ export class StatementsComponent implements OnInit {
       return s && parseFloat(s).toFixed(2).replace('.', ',');
     } else {
       return s && s.toString().replace('.', ',');
+    }
+  }
+  error=false;
+  verify2(target:any, val:string) {
+    console.log(parseFloat(target.value!.toString().replace(",",".")).toFixed(2) )
+    if(parseFloat(target.value!.toString().replace(",",".")).toFixed(2) == '0.00') {
+      target.value == '';
+      Swal.fire({
+        icon:'error',
+        text: 'Debe ingresar un número válido (con coma).'
+      });
+      if(val == 'valuedWeight') {
+        this.userForm.controls['valuedWeight'].setValue('');
+      } else {
+        this.userForm.controls['totalWeight'].setValue('');
+      }
+    } else  {
+      this.error == false;
     }
   }
 }

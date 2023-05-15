@@ -218,7 +218,7 @@
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Peso Total</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" formControlName="totalWeight">
+                            <input type="text" class="form-control" formControlName="totalWeight" (change)="verify2($event.target,'totalWeight')">
                             <div *ngIf="userForm.controls['totalWeight'].errors && userForm.controls['totalWeight'].touched"
                                 class="text-danger">
                                 <p *ngIf="userForm.controls['totalWeight'].errors['required']">Debe ingresar un peso
@@ -237,13 +237,14 @@
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Peso Valorizado</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" formControlName="valuedWeight">
+                            <input type="text" class="form-control" formControlName="valuedWeight" (change)="verify2($event.target, 'valuedWeight')">
                             <div *ngIf="userForm.controls['valuedWeight'].errors && userForm.controls['valuedWeight'].touched"
                                 class="text-danger">
                                 <p *ngIf="userForm.controls['valuedWeight'].errors['required']">Debe ingresar un peso
                                     valorizado.</p>
                                 <p *ngIf="userForm.controls['valuedWeight'].errors['pattern']">Debe ingresar un número
                                     válido (Con coma).</p>
+
                             </div>
                         </div>
                     </div>
@@ -287,7 +288,7 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
                     (click)="this.userForm.reset()">Volver</button>
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                    [disabled]="userForm.invalid || isRemainingWeightNegative"
+                    [disabled]="userForm.invalid || isRemainingWeightNegative || userForm.value.valuedWeight == '0' || userForm.value.totalWeight == '0'"
                     (click)="saveInvoice(this.index)">Guardar</button>
             </div>
         </div>
