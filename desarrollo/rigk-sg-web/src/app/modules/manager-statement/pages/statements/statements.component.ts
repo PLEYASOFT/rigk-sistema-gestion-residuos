@@ -74,6 +74,7 @@ export class StatementsComponent implements OnInit {
 
     this.userForm.controls['valuedWeight'].disable();
     this.userForm.controls['totalWeight'].disable();
+    this.userForm.controls['reciclador'].disable();
   }
 
   loadStatements(): Promise<void> {
@@ -296,7 +297,7 @@ export class StatementsComponent implements OnInit {
       const material = this.db[index].PRECEDENCE_NUMBER
       const id_detail = this.db[index].ID_DETAIL
       try {
-        const response = await this.establishmentService.saveInvoice(rut, reciclador, invoiceNumber, id_detail, entryDate, valuedWeight, totalWeight, treatmentType, material, this.selectedFile).toPromise();
+        const response = await this.establishmentService.saveInvoice(rut, reciclador, invoiceNumber, id_detail, entryDate, valuedWeight?.toString().replace(",","."), totalWeight?.toString().replace(",","."), treatmentType, material, this.selectedFile).toPromise();
         if (response.status) {
           this.reset();
           setTimeout(async () => {
@@ -320,10 +321,14 @@ export class StatementsComponent implements OnInit {
     this.dbBusiness = [];
     this.businessService.getBusinessByVAT(target.value).subscribe(r => {
       this.dbBusiness = r.status || [];
+      this.userForm.controls['reciclador'].enable();
+      this.businessNoFound = false;
       if (this.dbBusiness.length == 0) {
         this.businessNoFound = true;
+        this.userForm.controls['reciclador'].disable();
+        this.userForm.controls['reciclador'].setValue('0');
       }
-    })
+    });
   }
 
   async onRUTChange(index: number) {
@@ -416,7 +421,7 @@ export class StatementsComponent implements OnInit {
   }
 
   getNumericValue(control?: AbstractControl<string | null, string | null> | null): number {
-    return control && control.value ? +control.value.replace(",", ".") : 0;
+    return control && control.value ? +control.value.toString().replace(",", ".") : 0;
   }
 
   calculateRemainingWeight(): any {
