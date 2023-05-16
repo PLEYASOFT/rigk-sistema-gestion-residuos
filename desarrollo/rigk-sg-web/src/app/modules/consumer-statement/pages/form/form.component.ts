@@ -422,6 +422,7 @@ export class FormComponent implements OnInit {
     }
     const inp_sub = (document.getElementById(`inp_sub_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_sub.onchange = () => {
+      
       removeOptions(inp_gestor);
       let opt: any = document.createElement('option');
       opt.value = "-1";
@@ -447,6 +448,7 @@ export class FormComponent implements OnInit {
           tmp_filter++;
         }
       }
+      inp_gestor.value = "-1";
       if (tmp_filter >= 1) {
         Swal.fire({
           icon: 'info',
@@ -473,6 +475,7 @@ export class FormComponent implements OnInit {
         tmp.push(e);
       } else {
         tmp[w].sub = inp_sub.value;
+        tmp[w].gestor = "-1";
       }
     }
     const inp_ler = (document.getElementById(`inp_ler_${i + 1}_${n_row}`) as HTMLInputElement)
@@ -721,7 +724,6 @@ export class FormComponent implements OnInit {
       return;
     }
     const tmp = target.files[0].type.split('/');
-    console.log(tmp.length)
     if(tmp.length == 2 && (tmp[1] != 'jpeg' && tmp[1] != 'jpg' && tmp[1] != 'pdf') ) {
       Swal.fire({
         icon: 'info',
