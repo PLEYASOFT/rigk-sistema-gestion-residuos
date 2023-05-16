@@ -130,7 +130,7 @@ class EstablishmentDao {
             }];
         }
         //verify constraint
-        if(data0[0]['MATERIAL_TYPE'] != material_type && data0[0]['TREATMENT_TYPE'] != treatment_type) {
+        if(data0[0]['MATERIAL_TYPE'] != material_type || data0[0]['TREATMENT_TYPE'] != treatment_type) {
             return [];
         }
         //get invoice
