@@ -132,7 +132,7 @@ export class StatementsComponent implements OnInit {
             } else {
               return dateComparison;
             }
-          }).reverse();
+          });
           Swal.close();
         }
         resolve();
@@ -160,7 +160,7 @@ export class StatementsComponent implements OnInit {
       } else {
         return dateComparison;
       }
-    }).reverse();
+    });
     this.cant = Math.ceil(this.filteredStatements.length / 10);
   }
 
@@ -242,7 +242,7 @@ export class StatementsComponent implements OnInit {
             } else {
               return dateComparison;
             }
-          }).reverse();
+          });
   }
 
   next() {
@@ -256,7 +256,7 @@ export class StatementsComponent implements OnInit {
             } else {
               return dateComparison;
             }
-          }).reverse();
+          });
   }
 
   previus() {
@@ -270,7 +270,7 @@ export class StatementsComponent implements OnInit {
             } else {
               return dateComparison;
             }
-          }).reverse();
+          });
   }
 
   setArrayFromNumber() {
