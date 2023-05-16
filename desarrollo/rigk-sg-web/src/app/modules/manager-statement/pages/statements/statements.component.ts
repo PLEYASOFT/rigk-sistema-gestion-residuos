@@ -381,7 +381,7 @@ export class StatementsComponent implements OnInit {
     if (value === null || value === undefined) {
       return '';
     } else if (Number.isInteger(value)) {
-      return value;
+      return value.toString();
     } else {
       return value.toLocaleString('es');
     }
