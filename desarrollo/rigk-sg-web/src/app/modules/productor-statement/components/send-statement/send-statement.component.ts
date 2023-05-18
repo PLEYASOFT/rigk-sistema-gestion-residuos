@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import { BusinessService } from 'src/app/core/services/business.service';
 import { ProductorService } from 'src/app/core/services/productor.service';
 import { RatesTsService } from '../../../../core/services/rates.ts.service';
+import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-send-statement',
@@ -13,7 +14,12 @@ import { RatesTsService } from '../../../../core/services/rates.ts.service';
 export class SendStatementComponent implements OnInit {
 
   year_statement: number = 0;
-
+  isValidated = false;
+  fileName = '';
+  fileBuffer: any;
+  selectedFile: File | null = null;
+  userForm: any;
+  
   id_business: string = "";
   name_business: string = "";
   rut: string = "";
@@ -31,14 +37,15 @@ export class SendStatementComponent implements OnInit {
   amount_current_year: number = 0;
   amount_previous_year: number = 0;
   uf: number = 0.0;
-  totalCLP:string = "";
-  porcentajeDiff:string = "";
+  totalCLP: string = "";
+  porcentajeDiff: string = "";
 
   constructor(public businessService: BusinessService,
     public productorService: ProductorService,
     public rateService: RatesTsService,
     private router: Router,
-    private actived: ActivatedRoute) {
+    private actived: ActivatedRoute,
+    private fb: FormBuilder) {
     this.actived.queryParams.subscribe(r => {
       this.id_business = r['id_business'];
       this.year_statement = r['year'];
@@ -51,9 +58,12 @@ export class SendStatementComponent implements OnInit {
     this.getAmountDiff();
     this.totalCLP = sessionStorage.getItem('totalCLP')!
     this.porcentajeDiff = sessionStorage.getItem('porcentajeDiff')!
+    this.userForm = this.fb.group({
+      ARCHIVO: [null, [Validators.required, this.fileTypeValidator, this.fileSizeValidator]],
+    });
   }
   getUf() {
-    this.rateService.getUF.subscribe(r=>{
+    this.rateService.getUF.subscribe(r => {
       this.uf = r.data;
     })
   }
@@ -92,17 +102,17 @@ export class SendStatementComponent implements OnInit {
 
     this.productorService.getValueStatementByYear(this.id_business, this.year_statement - 1, 0).subscribe({
       next: resp => {
-        
+
         if (resp.status) {
           if (resp.data.detail.length > 0) {
             for (let i = 0; i < resp.data.detail.length; i++) {
               const reg = resp.data.detail[i];
               if (reg.AMOUNT != 0) {
-                this.amount_previous_year = this.amount_previous_year + (parseFloat(reg.AMOUNT)*this.uf);
+                this.amount_previous_year = this.amount_previous_year + (parseFloat(reg.AMOUNT) * this.uf);
               }
             }
-            this.amount_previous_year = this.amount_previous_year*parseFloat(this.porcentajeDiff) * 0.01*1.19;
-            this.amountString = "$" + this.amount_previous_year.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            this.amount_previous_year = this.amount_previous_year * parseFloat(this.porcentajeDiff) * 0.01 * 1.19;
+            this.amountString = "$" + this.amount_previous_year.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
           }
         }
       },
@@ -123,10 +133,10 @@ export class SendStatementComponent implements OnInit {
             for (let i = 0; i < resp.data.detail.length; i++) {
               const reg = resp.data.detail[i];
               if (reg.AMOUNT != 0) {
-                this.amount_current_year = this.amount_current_year + (parseFloat(reg.AMOUNT)*this.uf);
+                this.amount_current_year = this.amount_current_year + (parseFloat(reg.AMOUNT) * this.uf);
               }
             }
-            this.amount_current_year = this.amount_current_year*parseFloat(this.porcentajeDiff) * 0.01*1.19
+            this.amount_current_year = this.amount_current_year * parseFloat(this.porcentajeDiff) * 0.01 * 1.19
           }
         }
       },
@@ -139,5 +149,60 @@ export class SendStatementComponent implements OnInit {
         });
       }
     });
+  }
+
+  validate() {
+    if (window.confirm('¿Estás seguro que quieres validar?')) {
+      this.isValidated = true;
+    }
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input && input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.fileName = file.name;
+      this.fileBuffer = file;
+      this.selectedFile = input.files[0];
+
+      const allowedExtensions = ['pdf'];
+      const fileExtension = this.selectedFile.name.split('.').pop()?.toLowerCase() || '';
+      const isValid = allowedExtensions.includes(fileExtension);
+
+      if (!isValid) {
+        this.userForm.controls['ARCHIVO'].setErrors({ 'invalidFileType': true });
+        this.userForm.controls['ARCHIVO'].markAsTouched();
+      } else if (file.size > 1 * 1024 * 1024) {
+        this.userForm.controls['ARCHIVO'].setErrors({ 'invalidFileSize': true });
+        this.userForm.controls['ARCHIVO'].markAsTouched();
+      } else {
+        this.userForm.controls['ARCHIVO'].setErrors(null);
+        this.userForm.controls['ARCHIVO'].markAsTouched();
+      }
+    } else {
+      this.selectedFile = null;
+    }
+  }
+
+  fileTypeValidator(control: AbstractControl): { [key: string]: any } | null {
+    const file = control.value;
+    if (file) {
+      const allowedFileTypes = ['application/pdf', 'image/jpeg'];
+      if (!allowedFileTypes.includes(file.type)) {
+        return { invalidFileType: true };
+      }
+    }
+    return null;
+  }
+
+  fileSizeValidator(control: AbstractControl): { [key: string]: any } | null {
+    const file = control.value;
+    if (file) {
+      const maxSizeInBytes = 1 * 1024 * 1024; // 1 MB
+      if (file.size > maxSizeInBytes) {
+        return { invalidFileSize: true };
+      }
+    }
+    return null;
   }
 }
