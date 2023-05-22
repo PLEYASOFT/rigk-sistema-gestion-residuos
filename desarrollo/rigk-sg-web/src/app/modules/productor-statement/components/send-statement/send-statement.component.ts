@@ -19,7 +19,8 @@ export class SendStatementComponent implements OnInit {
   fileBuffer: any;
   selectedFile: File | null = null;
   userForm: any;
-  
+  isButtonVisible = true;
+
   id_business: string = "";
   name_business: string = "";
   rut: string = "";
@@ -151,9 +152,20 @@ export class SendStatementComponent implements OnInit {
     });
   }
 
-  validate() {
-    if (window.confirm('¿Estás seguro que quieres validar?')) {
+  async validate() {
+    const result = await Swal.fire({
+      title: 'Confirmación',
+      text: 'El valor de la declaración se congela y tiene 7 días para subir la Orden de Compra.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Aceptar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true
+    })
+  
+    if (result.isConfirmed) {
       this.isValidated = true;
+      this.isButtonVisible = false;
     }
   }
 
