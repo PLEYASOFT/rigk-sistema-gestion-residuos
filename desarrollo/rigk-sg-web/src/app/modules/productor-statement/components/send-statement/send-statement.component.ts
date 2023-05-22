@@ -155,7 +155,7 @@ export class SendStatementComponent implements OnInit {
   async validate() {
     const result = await Swal.fire({
       title: 'Confirmación',
-      text: 'El valor de la declaración se congela y tiene 7 días para subir la Orden de Compra.',
+      text: 'Está a punto de validar la declaración, a partir de este momento no va a poder cambiar los valores ingresados y el valor de la declaración quedará fijado a la UF del día de hoy.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Aceptar',

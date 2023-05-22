@@ -156,8 +156,85 @@
                             class="table table-even table-section table-borderless table-align-middle table-border d-lg-table table-statement ">
                             <thead class="box-header-h1">
                                 <tr class="box-header-h1">
-                                    <th class="box-header-h1" colspan="2" style="text-align: center;">Total Facturado
-                                        (CLP) 2024</th>
+                                    <th class="box-header-h1" colspan="2" style="text-align: center;">Total Eye (ton)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span class="list-data__text flex-grow-1 ps-0"
+                                            style="display: flex;  justify-content: space-around;">
+                                            <strong>Papel/cartón Reciclable</strong>
+                                            <br><br>
+                                            <span style="visibility:hidden;">a</span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="list-data__text flex-grow-1 ps-0"
+                                            style="display: flex;  justify-content: left;">
+                                            <strong>3,56 ton</strong>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="list-data__text flex-grow-1 ps-0"
+                                            style="display: flex;  justify-content: space-around;">
+                                            <strong>Metal Reciclable</strong>
+                                            <br><br>
+                                            <span style="visibility:hidden;">a</span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="list-data__text flex-grow-1 ps-0"
+                                            style="display: flex;  justify-content: left;">
+                                            <strong>10 ton</strong>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="list-data__text flex-grow-1 ps-0"
+                                            style="display: flex;  justify-content: space-around;">
+                                            <strong>Plástico Reciclable</strong>
+                                            <br><br>
+                                            <span style="visibility:hidden;">a</span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="list-data__text flex-grow-1 ps-0"
+                                            style="display: flex;  justify-content: left;">
+                                            <strong>23,5 ton</strong>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="list-data__text flex-grow-1 ps-0"
+                                            style="display: flex;  justify-content: space-around;">
+                                            <strong>No Reciclables</strong>
+                                            <br><br>
+                                            <span style="visibility:hidden;">a</span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="list-data__text flex-grow-1 ps-0"
+                                            style="display: flex;  justify-content: left;">
+                                            <strong>178,88 ton</strong>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="display: flex; justify-content: center;">
+
+                        <table
+                            class="table table-even table-section table-borderless table-align-middle table-border d-lg-table table-statement ">
+                            <thead class="box-header-h1">
+                                <tr class="box-header-h1">
+                                    <th class="box-header-h1" colspan="2"style="border-radius: 1px;margin-top: 7px;text-align: center;">Total Facturado
+                                        (CLP)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -218,12 +295,6 @@
                             </tbody>
                         </table>
                     </div>
-                    <tr *ngIf="!isButtonVisible">
-                        <td colspan="2" style="text-align: right;">
-                            <button class="btn btn-primary" style="visibility:hidden;">Validar</button>
-                        </td>
-                    </tr>
-                    
                     <h2 *ngIf="isValidated" class="box-header-h1" style="border-radius: 1px;margin-top: 7px;text-align: center;">Cargar orden de compra
                     </h2>
                     <div *ngIf="isValidated">
