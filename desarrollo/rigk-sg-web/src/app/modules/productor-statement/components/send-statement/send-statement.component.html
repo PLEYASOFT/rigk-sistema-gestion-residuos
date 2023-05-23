@@ -152,8 +152,7 @@
                 <div class="box box-semiradius box-semiradius-secondary box-header mb-4 w-100">
                     <div style="display: flex; justify-content: center;">
 
-                        <table
-                            class="table table-even table-section table-borderless table-align-middle table-border d-lg-table table-statement ">
+                        <table class="table table-even table-section table-borderless table-align-middle table-border d-lg-table table-statement ">
                             <thead class="box-header-h1">
                                 <tr class="box-header-h1">
                                     <th class="box-header-h1" colspan="2" style="text-align: center;">Total Eye (ton)</th>
@@ -161,69 +160,45 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>
-                                        <span class="list-data__text flex-grow-1 ps-0"
-                                            style="display: flex;  justify-content: space-around;">
-                                            <strong>Papel/cartón Reciclable</strong>
-                                            <br><br>
-                                            <span style="visibility:hidden;">a</span>
-                                        </span>
+                                    <td class="columna1">
+                                        <strong>Papel/cartón Reciclable</strong>
                                     </td>
-                                    <td>
-                                        <span class="list-data__text flex-grow-1 ps-0"
-                                            style="display: flex;  justify-content: left;">
-                                            <strong>3,56 ton</strong>
-                                        </span>
+                                    <td class="columna2">
+                                        <strong>{{resume?.papel}} ton</strong>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>
-                                        <span class="list-data__text flex-grow-1 ps-0"
-                                            style="display: flex;  justify-content: space-around;">
-                                            <strong>Metal Reciclable</strong>
-                                            <br><br>
-                                            <span style="visibility:hidden;">a</span>
-                                        </span>
+                                    <td class="columna1">
+                                        <strong>Metal Reciclable</strong>
                                     </td>
-                                    <td>
-                                        <span class="list-data__text flex-grow-1 ps-0"
-                                            style="display: flex;  justify-content: left;">
-                                            <strong>10 ton</strong>
-                                        </span>
+                                    <td class="columna2">
+                                        <strong>{{resume?.metal}} ton</strong>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>
-                                        <span class="list-data__text flex-grow-1 ps-0"
-                                            style="display: flex;  justify-content: space-around;">
-                                            <strong>Plástico Reciclable</strong>
-                                            <br><br>
-                                            <span style="visibility:hidden;">a</span>
-                                        </span>
+                                    <td class="columna1">
+                                        <strong>Plástico Reciclable</strong>
                                     </td>
-                                    <td>
-                                        <span class="list-data__text flex-grow-1 ps-0"
-                                            style="display: flex;  justify-content: left;">
-                                            <strong>23,5 ton</strong>
-                                        </span>
+                                    <td class="columna2">
+                                        <strong>{{resume?.plastico}} ton</strong>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>
-                                        <span class="list-data__text flex-grow-1 ps-0"
-                                            style="display: flex;  justify-content: space-around;">
-                                            <strong>No Reciclables</strong>
-                                            <br><br>
-                                            <span style="visibility:hidden;">a</span>
-                                        </span>
+                                    <td class="columna1">
+                                        <strong>No Reciclables</strong>
                                     </td>
-                                    <td>
-                                        <span class="list-data__text flex-grow-1 ps-0"
-                                            style="display: flex;  justify-content: left;">
-                                            <strong>178,88 ton</strong>
-                                        </span>
+                                    <td class="columna2">
+                                        <strong>{{resume?.no_reciclable}} ton</strong>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td class="columna1">
+                                      <strong>Total EyE</strong>
+                                    </td>
+                                    <td class="columna2">
+                                      <strong>{{getTotalEyE()}} ton</strong>
+                                    </td>
+                                  </tr>                                  
                             </tbody>
                         </table>
                     </div>
@@ -239,53 +214,29 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>
-                                        <span class="list-data__text flex-grow-1 ps-0"
-                                            style="display: flex;  justify-content: space-around;">
-                                            <strong>Monto Neto</strong>
-                                            <br><br>
-                                            <span style="visibility:hidden;">a</span>
-                                        </span>
+                                    <td class="columna1">
+                                      <strong>Monto Neto</strong>
                                     </td>
-                                    <td>
-                                        <span class="list-data__text flex-grow-1 ps-0"
-                                            style="display: flex;  justify-content: left;">
-                                            <strong>0</strong>
-                                        </span>
+                                    <td class="columna2">
+                                      <strong>$ {{getNeto()}}</strong>
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="list-data__text flex-grow-1 ps-0"
-                                            style="display: flex;  justify-content: space-around;">
-                                            <strong>Monto I.V.A</strong>
-                                            <br><br>
-                                            <span style="visibility:hidden;">a</span>
-                                        </span>
+                                  </tr>
+                                  <tr>
+                                    <td class="columna1">
+                                      <strong>Monto I.V.A</strong>
                                     </td>
-                                    <td>
-                                        <span class="list-data__text flex-grow-1 ps-0"
-                                            style="display: flex;  justify-content: left;">
-                                            <strong>0</strong>
-                                        </span>
+                                    <td class="columna2">
+                                      <strong>$ {{getIVA()}}</strong>
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="list-data__text flex-grow-1 ps-0"
-                                            style="display: flex;  justify-content: space-around;">
-                                            <strong>Monto Total</strong>
-                                            <br><br>
-                                            <span style="visibility:hidden;">a</span>
-                                        </span>
+                                  </tr>
+                                  <tr>
+                                    <td class="columna1">
+                                      <strong>Monto Total</strong>
                                     </td>
-                                    <td>
-                                        <span class="list-data__text flex-grow-1 ps-0"
-                                            style="display: flex;  justify-content: left;">
-                                            <strong>234,5</strong>
-                                        </span>
+                                    <td class="columna2">
+                                      <strong>$ {{getTotalFacturado()}}</strong>
                                     </td>
-                                </tr>
+                                  </tr>                                  
                                 <tr *ngIf="isButtonVisible">
                                     <td colspan="2" style="text-align: right;">
                                         <button class="btn btn-primary" style="width: 150px;"
