@@ -3,6 +3,7 @@ import statementDao from '../dao/statementProductorDao';
 import ratesDao from '../dao/ratesDao';
 import dateFormat, { i18n } from 'dateformat';
 import businessDao from '../dao/businessDao';
+import { sendOC } from '../helpers/sendOC';
 i18n.dayNames = [
     "Do",
     "Lu",
@@ -463,6 +464,8 @@ class StatementProductorLogic {
                 await statementDao.changeStateHeader(0, id);
                 return res.status(400).json({ status: false, msg: "Algo salió mal", data: [] });
             }
+            
+            await sendOC(id, files.file);
             return res.status(200).json({ status: true, msg: "OK", data: [] });
         } catch (error) {
             console.log(error);
