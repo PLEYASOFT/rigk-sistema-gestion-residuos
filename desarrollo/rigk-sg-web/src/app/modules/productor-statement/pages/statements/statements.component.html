@@ -1,97 +1,104 @@
 <div class="container mt-4">
-<!-- inicio breadcrumbs -->
-<nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Consulta de Declaración</li>
-    </ol>
-</nav>
-<!-- fin breadcrumbs -->
+    <!-- inicio breadcrumbs -->
+    <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Consulta de Declaración</li>
+        </ol>
+    </nav>
+    <!-- fin breadcrumbs -->
 
-<!-- inicio Registro de declaración -->
-<section class="declaracion">
-    <h1>Consulta Declaraciones</h1>
-    <div class="d-sm-flex justify-content-between mb-3 mb-md-0">
-    </div>
+    <!-- inicio Registro de declaración -->
+    <section class="declaracion">
+        <h1>Consulta Declaraciones</h1>
+        <div class="d-sm-flex justify-content-between mb-3 mb-md-0">
+        </div>
 
-    <div class="box box-form mb-4">
-        <div class="row align-items-end">
-            <div class="col-12 col-xl-4 mb-3 mb-xl-0">
-                <label class="form-label">Empresa:</label>
-                <div class="input-group">
-                    <select id="f_name" class="form-select">
-                        <option value="-1" selected>Todos</option>
-                        <option *ngFor="let na of business_name" value="{{na}}">{{na}}</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-12 col-xl-1 text-xl-center mb-3 mb-xl-0">
-                <div class="mb-xl-2">y/o</div>
-            </div>
-            <div class="col-12 col-xl-3 mb-5 mb-xl-0">
-                <label class="form-label">Año:</label>
-                <div class="input-group">
-                    <select id="f_year" class="form-select">
-                        <option value="-1" selected>Todos</option>
-                        <option *ngFor="let n of years" value="{{n}}">{{n}}</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-12 col-xl-4 mb-3 mb-xl-0">
-                <div class="row">
-                    <div class="col-6">
-                        <button class="btn btn-primary col-12" (click)="filter()">Mostrar</button>
+        <div class="box box-form mb-4">
+            <div class="row align-items-end">
+                <div class="col-12 col-xl-4 mb-3 mb-xl-0">
+                    <label class="form-label">Empresa:</label>
+                    <div class="input-group">
+                        <select id="f_name" class="form-select">
+                            <option value="-1" selected>Todos</option>
+                            <option *ngFor="let na of business_name" value="{{na}}">{{na}}</option>
+                        </select>
                     </div>
-                    <!-- <div class="col-6">
+                </div>
+                <div class="col-12 col-xl-1 text-xl-center mb-3 mb-xl-0">
+                    <div class="mb-xl-2">y/o</div>
+                </div>
+                <div class="col-12 col-xl-3 mb-5 mb-xl-0">
+                    <label class="form-label">Año:</label>
+                    <div class="input-group">
+                        <select id="f_year" class="form-select">
+                            <option value="-1" selected>Todos</option>
+                            <option *ngFor="let n of years" value="{{n}}">{{n}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 mb-3 mb-xl-0">
+                    <div class="row">
+                        <div class="col-6">
+                            <button class="btn btn-primary col-12" (click)="filter()">Mostrar</button>
+                        </div>
+                        <!-- <div class="col-6">
                         <a class="btn btn-primary col-12" (click)="reset()">Restablecer</a>
                     </div> -->
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="table-responsive">
-        <table class="table table-even table-section table-borderless table-radius">
-            <thead class="vertical-middle">
-                <tr>
-                    <th>ID Empresa</th>
-                    <th>Nombre Empresa</th>
-                    <th>Año Declaración</th>
-                    <th>Estado</th>
-                    <th>Monto Total (UF)</th>
-                    <th>Fecha Envío</th>
-                    <th class="text-uppercase text-center text-nowrap">Acción</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let s of db">
-                    <td>{{s.CODE_BUSINESS}}</td>
-                    <td>{{s.NAME_BUSINESS}}</td>
-                    <td>{{s.YEAR_STATEMENT}}</td>
-                    <td>{{s.STATE == 1 ? 'Enviada': 'Borrador'}}</td>
-                    <td>{{s.AMOUNT.toFixed(2).replace(".",",")}}</td>
-                    <td>{{s.UPDATED_AT | date: 'dd-MM-yyyy H:mm:ss'}}</td>
-                    <td class="text-center text-nowrap">
-                        <!-- <a href="#"><i class="fa fa-file-text-o fa-fw fa-lg color-blue" aria-hidden="true"></i></a> -->
-                        <button class="btn" (click)="downloadPDF(s.CODE_BUSINESS, s.YEAR_STATEMENT)" *ngIf="s.STATE == 1 "><i class="fa fa-file-pdf-o fa-fw fa-lg color-blue" aria-hidden="true"></i></button>
-                        <a *ngIf="s.STATE == 0 || s.STATE == 2" [href]="'#/productor/form?year='+s.YEAR_STATEMENT+'&id_business='+s.CODE_BUSINESS"><i class="fa fa-file-text-o fa-fw fa-lg color-red" aria-hidden="true"></i></a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+        <div class="table-responsive">
+            <table class="table table-even table-section table-borderless table-radius">
+                <thead class="vertical-middle">
+                    <tr>
+                        <th>ID Empresa</th>
+                        <th>Nombre Empresa</th>
+                        <th>Año Declaración</th>
+                        <th>Estado</th>
+                        <th>Monto Total (UF)</th>
+                        <th>Fecha Envío</th>
+                        <th class="text-uppercase text-center text-nowrap">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let s of db">
+                        <td>{{s.CODE_BUSINESS}}</td>
+                        <td>{{s.NAME_BUSINESS}}</td>
+                        <td>{{s.YEAR_STATEMENT}}</td>
+                        <td>{{s.STATE == 1 ? 'Enviada': 'Borrador'}}</td>
+                        <td>{{s.AMOUNT.toFixed(2).replace(".",",")}}</td>
+                        <td>{{s.UPDATED_AT | date: 'dd-MM-yyyy H:mm:ss'}}</td>
+                        <td class="text-center text-nowrap">
+                            <!-- <a href="#"><i class="fa fa-file-text-o fa-fw fa-lg color-blue" aria-hidden="true"></i></a> -->
+                            <button class="btn" (click)="downloadPDF(s.CODE_BUSINESS, s.YEAR_STATEMENT)"
+                                *ngIf="s.STATE == 1 "><i class="fa fa-file-pdf-o fa-fw fa-lg color-blue"
+                                    aria-hidden="true"></i></button>
+                            <button class="btn" *ngIf="s.STATE == 0 || s.STATE == 2"
+                                (click)="navigateToForm(s.CODE_BUSINESS, s.YEAR_STATEMENT, s.ID, s.STATE)">
+                                <i class="fa fa-file-text-o fa-fw fa-lg" style="color: red;" aria-hidden="true"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-    <!-- Pagination -->
-    <nav aria-label="Navegación resultados">
-        <ul class="pagination">
-            <li><button class="btn btn-primary"  (click)="pagTo(0)">Primero</button></li>
-            <li><button class="btn btn-primary" (click)="previus()" >Anterior</button></li>
-            <li *ngFor="let in of setArrayFromNumber(); let i = index"><button class="border btn btn-sm" [ngClass]="{ 'btn-info':pos==(i+1), 'btn-primary': pos != (i+1)}" (click)="pagTo(i)">{{i+1}}</button></li>
-            <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
-            <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
-        </ul>
-    </nav>
+        <!-- Pagination -->
+        <nav aria-label="Navegación resultados">
+            <ul class="pagination">
+                <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
+                <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
+                <li *ngFor="let in of setArrayFromNumber(); let i = index"><button class="border btn btn-sm"
+                        [ngClass]="{ 'btn-info':pos==(i+1), 'btn-primary': pos != (i+1)}"
+                        (click)="pagTo(i)">{{i+1}}</button></li>
+                <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
+                <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
+            </ul>
+        </nav>
 
-</section>
-<!-- fin Monitor Inicio -->
+    </section>
+    <!-- fin Monitor Inicio -->
 </div>

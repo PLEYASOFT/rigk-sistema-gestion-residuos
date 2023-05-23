@@ -289,6 +289,51 @@ export class SendStatementComponent implements OnInit, OnDestroy {
     return null;
   }
 
+  uploadDeclaration() {
+    const file = this.userForm.get('ARCHIVO').value;
+    const files = (document.getElementById('inp_archivo') as HTMLInputElement).files;
+    const id_statement = sessionStorage.getItem('id_statement');
+    if (!id_statement) {
+      console.log("No se encontró la id_statement en la sesión");
+      return;
+    }
+  
+    Swal.fire({
+      title: 'Subiendo archivo',
+      text: 'Espere mientras se sube el archivo...',
+      showCancelButton: false,
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    this.productorService.uploadOC(id_statement, files).subscribe({
+      next: resp => {
+        Swal.close();
+        Swal.fire({
+          icon: 'success',
+          title: 'Archivo subido exitosamente',
+          text: 'La declaración se ha enviado correctamente.',
+          showConfirmButton: true
+        }).then(() => {
+          window.location.href = '/#';
+        });
+      },
+      error: error => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al subir el archivo',
+          text: 'Ha ocurrido un error al subir la declaración. Por favor, inténtelo nuevamente.',
+          showConfirmButton: true
+        });
+      }
+     } );
+  }
+  
   getTotalEyE() {
     let metal = parseFloat(this.resume?.metal.replace(',', '.'));
     let papel = parseFloat(this.resume?.papel.replace(',', '.'));
@@ -296,8 +341,6 @@ export class SendStatementComponent implements OnInit, OnDestroy {
     let no_reciclable = parseFloat(this.resume?.no_reciclable.replace(',', '.'));
 
     let total = metal + papel + plastico + no_reciclable;
-
-    // Convertir de nuevo a una cadena con el formato deseado
     return total.toFixed(2).replace('.', ',');
   }
 

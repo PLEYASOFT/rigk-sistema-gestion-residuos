@@ -72,6 +72,11 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    //this.productorService.currentPosition.subscribe(position => this.position = position);
+    if (sessionStorage.getItem('state') && sessionStorage.getItem('state') == '2') {
+      //this.productorService.changePosition(3);
+      this.position = 3;
+    }
     this.sessionCheck = interval(100)
       .pipe(
         map(() => parseInt(sessionStorage.getItem('state') || '0')),
@@ -84,7 +89,6 @@ export class FormComponent implements OnInit, OnDestroy {
         }
       });
   }
-  
 
   updateBackButtonStatus(): void {
     this.disableBackButton = this.state === 2 && this.position === 3;
@@ -129,7 +133,7 @@ export class FormComponent implements OnInit, OnDestroy {
       id_statement: this.id_statement
     };
 
-    if (flagZero) {
+    if (flagZero && this.position !== 3) {
 
       detail.push({ precedence: 1, hazard: 1, recyclability: 1, type_residue: 1, value: 0, amount: 0 });
 
@@ -176,7 +180,8 @@ export class FormComponent implements OnInit, OnDestroy {
           this.position = 1;
         }
       });
-    } else {
+    } else if (tmp=== null) {
+    }else {
       if (!edited) {
         this.hour = new Date();
         return;

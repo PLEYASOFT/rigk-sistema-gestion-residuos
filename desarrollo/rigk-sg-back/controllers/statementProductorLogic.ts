@@ -450,15 +450,16 @@ class StatementProductorLogic {
     public async uploadOC(req: any, res: Response) {
         const { id } = req.params;
         const files = req.files;
+        console.log(files)
         if (!req.files || Object.keys(req.files).length == 0) {
             return res.status(400).send("No files");
         }
         try {
-            const r: any = await statementDao.changeStateHeader(2, id);
+            const r: any = await statementDao.changeStateHeader(1, id);
             if (!r) {
                 return res.status(400).json({ status: false, msg: "Algo salió mal", data: [] });
             }
-            const r2: any = await statementDao.saveOC(id, files[0]);
+            const r2: any = await statementDao.saveOC(id, files.file);
             if (!r2) {
                 await statementDao.changeStateHeader(0, id);
                 return res.status(400).json({ status: false, msg: "Algo salió mal", data: [] });

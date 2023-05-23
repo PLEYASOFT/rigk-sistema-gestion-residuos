@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -52,5 +51,11 @@ export class ProductorService {
     let headers = new HttpHeaders();
     headers = headers.set('Accept', 'application/pdf');
     return this.http.get<any>(`${this.url}/pdf/${id_business}/year/${year}`,{ headers: headers, responseType: 'blob' as 'json' });
+  }
+
+  uploadOC(id: any, file: any ) {
+    const body = new FormData();
+    body.append('file',file[0]);
+    return this.http.post<any>(`${this.url}/OC/${id}`, body);
   }
 }

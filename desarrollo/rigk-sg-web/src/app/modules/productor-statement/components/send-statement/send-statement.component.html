@@ -259,9 +259,7 @@
                               accept="application/pdf" 
                               required 
                               (change)="onFileSelected($event)">
-                            <div 
-                              *ngIf="userForm.controls['ARCHIVO'].errors && userForm.controls['ARCHIVO'].touched"
-                              class="text-danger pl-0">
+                            <div *ngIf="userForm.controls['ARCHIVO'].errors && userForm.controls['ARCHIVO'].touched" class="text-danger pl-0">
                               <p *ngIf="userForm.controls['ARCHIVO'].errors['invalidFileType']">
                                 El formato del archivo debe ser PDF.
                               </p>
@@ -269,17 +267,13 @@
                                 El tamaño del archivo no debe superar 1 MB.
                               </p>
                             </div>
-                            <div 
-                              class="button-container mt-3" 
-                              style="display: flex; justify-content: space-between">
+                            <div class="button-container mt-3" style="display: flex; justify-content: space-between">
                               <a href="#" class="btn btn-primary">Ingresar OC más tarde</a>
-                              <button 
-                                class="btn btn-primary" 
-                                [disabled]="!userForm.controls['ARCHIVO'].valid">Subir Archivo</button>
+                              <button class="btn btn-primary" [disabled]="!userForm.controls['ARCHIVO'].valid" (click)="uploadDeclaration()">Enviar declaración</button>
                             </div>
                           </form>
                         </div>
-                      </div>
+                      </div>                      
                 </div>
             </div>
             <div class="d-flex">

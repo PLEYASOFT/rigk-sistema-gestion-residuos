@@ -69,30 +69,30 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
   }
 
   ngOnInit(): void {
-    Swal.fire({
-      title: 'Cargando Datos',
-      text: 'Se está recuperando datos',
-      timerProgressBar: true,
-      showConfirmButton: false
-    });
-    Swal.showLoading();
-    this.ratesService.getCLP.subscribe({
-      next: r => {
-        this.rates = r.data;
-        this.getDraftStatement();
-        this.getValueStatementByYear();
-      },
-      error: error => {
-        Swal.close();
-        Swal.fire({
-          title: '¡Ups!',
-          icon: 'error',
-          text: 'No se logró obtener el valor de la UF',
-          showConfirmButton: true
-        });
-        console.log(error);
-      }
-    });
+      Swal.fire({
+        title: 'Cargando Datos',
+        text: 'Se está recuperando datos',
+        timerProgressBar: true,
+        showConfirmButton: false
+      });
+      Swal.showLoading();
+      this.ratesService.getCLP.subscribe({
+        next: r => {
+          this.rates = r.data;
+          this.getDraftStatement();
+          this.getValueStatementByYear();
+        },
+        error: error => {
+          Swal.close();
+          Swal.fire({
+            title: '¡Ups!',
+            icon: 'error',
+            text: 'No se logró obtener el valor de la UF',
+            showConfirmButton: true
+          });
+          console.log(error);
+        }
+      });
   }
 
   ngAfterViewChecked(): void {
@@ -107,13 +107,13 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     let weight_2 = 0.0;
     let weight_3 = 0.0;
     for (let i = 1; i <= 5; i++) {
-      const actual_recyclability_1 = parseFloat((document.getElementById(`actual_weight_1_${i}`) as HTMLInputElement).value.replace(",",'.'));
-      const actual_recyclability_2 = parseFloat((document.getElementById(`actual_weight_2_${i}`) as HTMLInputElement).value.replace(",",'.'));
-      const actual_recyclability_3 = parseFloat((document.getElementById(`actual_weight_3_${i}`) as HTMLInputElement).value.replace(",",'.'));
+      const actual_recyclability_1 = parseFloat((document.getElementById(`actual_weight_1_${i}`) as HTMLInputElement).value.replace(",", '.'));
+      const actual_recyclability_2 = parseFloat((document.getElementById(`actual_weight_2_${i}`) as HTMLInputElement).value.replace(",", '.'));
+      const actual_recyclability_3 = parseFloat((document.getElementById(`actual_weight_3_${i}`) as HTMLInputElement).value.replace(",", '.'));
 
-      const last_recyclability_1 = parseFloat((document.getElementById(`last_weight_1_${i}`) as HTMLElement).innerHTML.replace(",",'.'));
-      const last_recyclability_2 = parseFloat((document.getElementById(`last_weight_2_${i}`) as HTMLElement).innerHTML.replace(",",'.'));
-      const last_recyclability_3 = parseFloat((document.getElementById(`last_weight_3_${i}`) as HTMLElement).innerHTML.replace(",",'.'));
+      const last_recyclability_1 = parseFloat((document.getElementById(`last_weight_1_${i}`) as HTMLElement).innerHTML.replace(",", '.'));
+      const last_recyclability_2 = parseFloat((document.getElementById(`last_weight_2_${i}`) as HTMLElement).innerHTML.replace(",", '.'));
+      const last_recyclability_3 = parseFloat((document.getElementById(`last_weight_3_${i}`) as HTMLElement).innerHTML.replace(",", '.'));
 
       let diff_1 = actual_recyclability_1 - last_recyclability_1;
       let diff_2 = actual_recyclability_2 - last_recyclability_2;
@@ -137,9 +137,9 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
       weight_2 += parseFloat((document.getElementById(`actual_weight_2_${i}`) as HTMLInputElement).value.replace(",", ".")) || 0;
       weight_3 += parseFloat((document.getElementById(`actual_weight_3_${i}`) as HTMLInputElement).value.replace(",", ".")) || 0;
 
-      (document.getElementById(`actual_dif_1_${i}`) as HTMLInputElement).value = `${diff_1 == Infinity ? 100 : (diff_1.toFixed(2).replace(".",',')) || 0}`;
-      (document.getElementById(`actual_dif_2_${i}`) as HTMLInputElement).value = `${diff_2 == Infinity ? 100 : (diff_2.toFixed(2).replace(".",',')) || 0}`;
-      (document.getElementById(`actual_dif_3_${i}`) as HTMLInputElement).value = `${diff_3 == Infinity ? 100 : (diff_3.toFixed(2).replace(".",',')) || 0}`;
+      (document.getElementById(`actual_dif_1_${i}`) as HTMLInputElement).value = `${diff_1 == Infinity ? 100 : (diff_1.toFixed(2).replace(".", ',')) || 0}`;
+      (document.getElementById(`actual_dif_2_${i}`) as HTMLInputElement).value = `${diff_2 == Infinity ? 100 : (diff_2.toFixed(2).replace(".", ',')) || 0}`;
+      (document.getElementById(`actual_dif_3_${i}`) as HTMLInputElement).value = `${diff_3 == Infinity ? 100 : (diff_3.toFixed(2).replace(".", ',')) || 0}`;
     }
     (document.getElementById(`total_amount_1`) as HTMLSpanElement).innerHTML = amount_1.toFixed(2).replace(".", ",");
     (document.getElementById(`total_amount_2`) as HTMLSpanElement).innerHTML = amount_2.toFixed(2).replace(".", ",");
@@ -149,7 +149,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     (document.getElementById(`total_weight_2`) as HTMLSpanElement).innerHTML = weight_2.toFixed(2).replace(".", ",");
     (document.getElementById(`total_weight_3`) as HTMLSpanElement).innerHTML = weight_3.toFixed(2).replace(".", ",");
   }
-  lala: Subscription | null= null;
+  lala: Subscription | null = null;
   getDraftStatement() {
     this.detailForm = [];
     this.lala = this.productorService.getValueStatementByYear(this.id_business, this.year_statement, 1).subscribe({
@@ -163,7 +163,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
           sessionStorage.setItem('id_statement', this.id_statement?.toString() || 'null');
           for (let i = 0; i < resp.data.detail.length; i++) {
             const r = resp.data.detail[i];
-            (document.getElementById(`inp_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}_${r?.PRECEDENCE}_${r?.HAZARD}`) as HTMLInputElement).value ='0';
+            (document.getElementById(`inp_${r?.RECYCLABILITY}_${r?.TYPE_RESIDUE}_${r?.PRECEDENCE}_${r?.HAZARD}`) as HTMLInputElement).value = '0';
           }
 
           for (let i = 0; i < resp.data.detail.length; i++) {
