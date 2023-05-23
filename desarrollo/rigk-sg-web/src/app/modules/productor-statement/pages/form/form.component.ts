@@ -1,9 +1,11 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges, AfterViewChecked, OnDestroy } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { ProductorService } from '../../../../core/services/productor.service';
 import { BusinessService } from '../../../../core/services/business.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { interval, Subscription } from 'rxjs';
+import { map, takeWhile } from 'rxjs/operators';
 
 @Component({
   selector: 'app-form',
@@ -28,7 +30,10 @@ export class FormComponent implements OnInit, OnDestroy {
 
   position = 1;
   hour: Date | null = null;
-
+  disableBackButton: boolean = false;
+  state: number = 0;
+  sessionCheck: Subscription | null = null;
+  
   isSubmited = false;
   isEdited = false;
   _saving = false;
@@ -61,11 +66,29 @@ export class FormComponent implements OnInit, OnDestroy {
     sessionStorage.removeItem('detailForm');
     sessionStorage.removeItem('saving');
     sessionStorage.removeItem('detailLastForm');
+    if (this.sessionCheck !== null) {
+      this.sessionCheck.unsubscribe();
+    }
   }
 
   ngOnInit(): void {
+    this.sessionCheck = interval(100)
+      .pipe(
+        map(() => parseInt(sessionStorage.getItem('state') || '0')),
+        takeWhile((state) => state !== 2, true)  
+      )
+      .subscribe((newState) => {
+        if (this.state !== newState) { 
+          this.state = newState;
+          this.updateBackButtonStatus(); 
+        }
+      });
   }
+  
 
+  updateBackButtonStatus(): void {
+    this.disableBackButton = this.state === 2 && this.position === 3;
+  }
   getNameBusiness() {
     this.businessService.getBusiness(this.id_business.toString()).subscribe({
       next: resp => {
@@ -228,5 +251,6 @@ export class FormComponent implements OnInit, OnDestroy {
         this.position += val;
       }
     }
+    this.updateBackButtonStatus();
   }
 }

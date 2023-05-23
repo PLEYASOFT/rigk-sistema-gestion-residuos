@@ -74,7 +74,7 @@
                     <td class="text-center text-nowrap">
                         <!-- <a href="#"><i class="fa fa-file-text-o fa-fw fa-lg color-blue" aria-hidden="true"></i></a> -->
                         <button class="btn" (click)="downloadPDF(s.CODE_BUSINESS, s.YEAR_STATEMENT)" *ngIf="s.STATE == 1 "><i class="fa fa-file-pdf-o fa-fw fa-lg color-blue" aria-hidden="true"></i></button>
-                        <a *ngIf="s.STATE == 0 " [href]="'#/productor/form?year='+s.YEAR_STATEMENT+'&id_business='+s.CODE_BUSINESS"><i class="fa fa-file-text-o fa-fw fa-lg color-red" aria-hidden="true"></i></a>
+                        <a *ngIf="s.STATE == 0 || s.STATE == 2" [href]="'#/productor/form?year='+s.YEAR_STATEMENT+'&id_business='+s.CODE_BUSINESS"><i class="fa fa-file-text-o fa-fw fa-lg color-red" aria-hidden="true"></i></a>
                     </td>
                 </tr>
             </tbody>

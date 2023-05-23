@@ -41,6 +41,9 @@ export class ProductorService {
   updateValuesStatement(id_header: any, detail: any, header: any) {
     return this.http.put<any>(`${this.url}/${id_header}`, { header, detail });
   }
+  validateStatement(id: any) {
+    return this.http.put<any>(`${this.url}/validate/${id}`,{});
+  }
   verifyDraft(id_business: any, year: any) {
     return this.http.get<any>(`${this.url}/draft/${id_business}/year/${year}`);
   }

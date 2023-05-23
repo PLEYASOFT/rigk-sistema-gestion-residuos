@@ -152,7 +152,7 @@
                 <div class="box box-semiradius box-semiradius-secondary box-header mb-4 w-100">
                     <div style="display: flex; justify-content: center;">
 
-                        <table class="table table-even table-section table-borderless table-align-middle table-border d-lg-table table-statement ">
+                        <table class="table table-even table-section table-borderless table-align-middle d-lg-table table-statement ">
                             <thead class="box-header-h1">
                                 <tr class="box-header-h1">
                                     <th class="box-header-h1" colspan="2" style="text-align: center;">Total Eye (ton)</th>
@@ -202,13 +202,13 @@
                             </tbody>
                         </table>
                     </div>
-                    <div style="display: flex; justify-content: center;">
+                    <div style="display: flex; justify-content: center;margin-top: 25px">
 
                         <table
-                            class="table table-even table-section table-borderless table-align-middle table-border d-lg-table table-statement ">
+                            class="table table-even table-section table-borderless table-align-middle d-lg-table table-statement ">
                             <thead class="box-header-h1">
                                 <tr class="box-header-h1">
-                                    <th class="box-header-h1" colspan="2"style="border-radius: 1px;margin-top: 7px;text-align: center;">Total Facturado
+                                    <th class="box-header-h1" colspan="2"style="border-radius: 1px;text-align: center;">Total Facturado
                                         (CLP)</th>
                                 </tr>
                             </thead>
@@ -250,24 +250,36 @@
                     </h2>
                     <div *ngIf="isValidated">
                         <div class="mt-3" style="margin: 10px;">
-                            <input type="file" formControlName="ARCHIVO" id="inp_archivo" class="form-control"
-                                accept="application/pdf" required (change)="onFileSelected($event)">
-                            <div *ngIf="userForm.controls['ARCHIVO'].errors && userForm.controls['ARCHIVO'].touched"
-                                class="text-danger pl-0">
-                                <p *ngIf="userForm.controls['ARCHIVO'].errors['invalidFileType']">
-                                    El formato del archivo debe ser PDF.
-                                </p>
-                                <p *ngIf="userForm.controls['ARCHIVO'].errors['invalidFileSize']">
-                                    El tamaño del archivo no debe superar 1 MB.
-                                </p>
+                          <form [formGroup]="userForm">
+                            <input 
+                              type="file" 
+                              formControlName="ARCHIVO" 
+                              id="inp_archivo" 
+                              class="form-control"
+                              accept="application/pdf" 
+                              required 
+                              (change)="onFileSelected($event)">
+                            <div 
+                              *ngIf="userForm.controls['ARCHIVO'].errors && userForm.controls['ARCHIVO'].touched"
+                              class="text-danger pl-0">
+                              <p *ngIf="userForm.controls['ARCHIVO'].errors['invalidFileType']">
+                                El formato del archivo debe ser PDF.
+                              </p>
+                              <p *ngIf="userForm.controls['ARCHIVO'].errors['invalidFileSize']">
+                                El tamaño del archivo no debe superar 1 MB.
+                              </p>
                             </div>
-                            <div class="button-container mt-3" style="display: flex; justify-content: space-between">
-                                <a href="#" class="btn btn-primary">Ingresar OC más tarde</a>
-                                <button class="btn btn-primary" [disabled]="!userForm.controls['ARCHIVO'].valid">Subir
-                                    Archivo</button>
+                            <div 
+                              class="button-container mt-3" 
+                              style="display: flex; justify-content: space-between">
+                              <a href="#" class="btn btn-primary">Ingresar OC más tarde</a>
+                              <button 
+                                class="btn btn-primary" 
+                                [disabled]="!userForm.controls['ARCHIVO'].valid">Subir Archivo</button>
                             </div>
+                          </form>
                         </div>
-                    </div>
+                      </div>
                 </div>
             </div>
             <div class="d-flex">

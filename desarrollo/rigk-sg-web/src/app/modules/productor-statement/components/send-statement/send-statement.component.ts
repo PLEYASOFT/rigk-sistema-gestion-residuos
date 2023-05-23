@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { BusinessService } from 'src/app/core/services/business.service';
@@ -11,7 +11,7 @@ import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
   templateUrl: './send-statement.component.html',
   styleUrls: ['./send-statement.component.css']
 })
-export class SendStatementComponent implements OnInit {
+export class SendStatementComponent implements OnInit, OnDestroy {
 
   year_statement: number = 0;
   isValidated = false;
@@ -44,7 +44,6 @@ export class SendStatementComponent implements OnInit {
   constructor(public businessService: BusinessService,
     public productorService: ProductorService,
     public rateService: RatesTsService,
-    private router: Router,
     private actived: ActivatedRoute,
     private fb: FormBuilder) {
     this.actived.queryParams.subscribe(r => {
@@ -54,6 +53,8 @@ export class SendStatementComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.isValidated = false; // iniciar como no validado
+    this.isButtonVisible = true; // iniciar con el botón visible
     this.getResume();
     this.getUf();
     this.getBusiness();
@@ -63,6 +64,11 @@ export class SendStatementComponent implements OnInit {
     this.userForm = this.fb.group({
       ARCHIVO: [null, [Validators.required, this.fileTypeValidator, this.fileSizeValidator]],
     });
+  }
+  
+  ngOnDestroy(): void {
+    // Eliminar la variable de sesión cuando se abandona la vista
+    sessionStorage.removeItem('state');
   }
   getUf() {
     this.rateService.getUF.subscribe(r => {
@@ -99,20 +105,46 @@ export class SendStatementComponent implements OnInit {
   }
 
   getResume() {
-    this.productorService.getResumeById('PR-1',1909).subscribe({
-      next: resp => {
-        this.resume = resp;
-      },
-      error: r => {
-        Swal.close();
-        Swal.fire({
-          icon: 'error',
-          text: r.msg,
-          title: '¡Ups!'
-        });
-      }
+    this.actived.queryParams.subscribe(params => {
+      let year = params['year'];
+      let id_business = params['id_business'];
+  
+      // Mostrar el modal de carga
+      Swal.fire({
+        title: 'Cargando datos...',
+        allowOutsideClick: false
+      });
+      Swal.showLoading();
+  
+      this.productorService.getResumeById(id_business, year).subscribe({
+        next: resp => {
+          this.resume = resp;
+  
+          // Guardar el estado en la variable de sesión
+          sessionStorage.setItem('state', this.resume.state);
+
+          // Cerrar el modal de carga
+          Swal.close();
+  
+          if (this.resume.state == 2) {
+            this.isValidated = true;
+            this.isButtonVisible = false;
+          }
+        },
+        error: r => {
+          // Cerrar el modal de carga
+          Swal.close();
+  
+          Swal.fire({
+            icon: 'error',
+            text: r.msg,
+            title: '¡Ups!'
+          });
+        }
+      });
     });
   }
+
 
   getAmountDiff() {
     this.amount_previous_year = 0;
@@ -179,10 +211,32 @@ export class SendStatementComponent implements OnInit {
       cancelButtonText: 'Cancelar',
       reverseButtons: true
     })
-  
+
     if (result.isConfirmed) {
-      this.isValidated = true;
-      this.isButtonVisible = false;
+      const id_statement = sessionStorage.getItem('id_statement');
+      if (!id_statement) {
+        console.log("No se encontró la id_statement en la sesión");
+        return;
+      }
+      this.productorService.validateStatement(id_statement).subscribe({
+        next: resp => {
+          if (resp.status) {
+            console.log(resp)
+      
+            this.isValidated = true;
+            this.isButtonVisible = false;
+            sessionStorage.setItem('state', '2');
+          }
+        },
+        error: r => {
+          Swal.close();
+          Swal.fire({
+            icon: 'error',
+            text: r.msg,
+            title: '¡Ups!'
+          });
+        }
+      });
     }
   }
 
@@ -256,11 +310,18 @@ export class SendStatementComponent implements OnInit {
   }
 
   getTotalFacturado() {
-    let neto = parseInt(this.getNeto().replace('.',''));
-    let iva = parseInt(this.getIVA().replace('.',''));
+    let neto = this.parseMoney(this.getNeto());
+    let iva = this.parseMoney(this.getIVA());
     let total = neto + iva;
 
-    return this.formatMoney(total.toString());
+    return this.formatMoney(total.toFixed(0));
+  }
+
+
+  parseMoney(value: string) {
+    let newValue = value.replace(/\./g, '');
+    newValue = newValue.replace(',', '.');
+    return parseFloat(newValue);
   }
 
   formatMoney(value: string) {
