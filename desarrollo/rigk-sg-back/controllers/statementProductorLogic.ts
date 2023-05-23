@@ -460,6 +460,7 @@ class StatementProductorLogic {
             }
             const r2: any = await statementDao.saveOC(id, files[0]);
             if (!r2) {
+                await statementDao.changeStateHeader(0, id);
                 return res.status(400).json({ status: false, msg: "Algo salió mal", data: [] });
             }
             return res.status(200).json({ status: true, msg: "OK", data: [] });
@@ -474,6 +475,7 @@ class StatementProductorLogic {
     public async validateStatement(req: any, res: Response) {
         const { id } = req.params;
         try {
+            
             const r = await statementDao.validateStatement(id);
             if (r) {
                 return res.json({
@@ -483,7 +485,7 @@ class StatementProductorLogic {
             } else {
                 res.status(400).json({
                     status: false,
-                    msg: "Algo salió mal"
+                    msg: "Declaración no encontrada"
                 });
             }
         } catch (error) {
@@ -496,10 +498,8 @@ class StatementProductorLogic {
     }
     public async getResumeById(req: any, res: Response) {
         const { year, id } = req.params;
-        console.log(year);
         try {
-            const rates: any[] = await ratesDao.ratesID(year);
-            
+            const rates: any[] = await ratesDao.ratesID((parseInt(year)+1).toString());
             const ep = (rates.find(r => r.type == 1))?.price || 0;
             const eme = (rates.find(r => r.type == 2))?.price || 0;
             const epl = (rates.find(r => r.type == 3))?.price || 0;
@@ -513,12 +513,12 @@ class StatementProductorLogic {
                     msg: "Declaracion no encontrada"
                 });
             } else {
-                if(declaretion_ok == false ){
+                if (declaretion_ok == false) {
                     declaretion = declaretion_draft;
                 } else {
-                    declaretion= declaretion_ok;
+                    declaretion = declaretion_ok;
                 }
-                
+
             }
             const { detail, header } = declaretion!;
 
@@ -626,7 +626,7 @@ class StatementProductorLogic {
             const iva = (neto * 0.19);
             const total = (neto + iva);
 
-            return res.json({ neto:neto.toFixed(2).replace(".",","), iva:iva.toFixed(2).replace(".",","), total:total.toFixed(2).replace(".",","), papel: pr.toFixed(2).replace(".",","), metal: mer.toFixed(2).replace(".",","), plastico: plr.toFixed(2).replace(".",","), no_reciclable: (pnr + menr + plnr + onr).toFixed(2).replace(".",",") });
+            return res.json({ neto: neto.toFixed(2).replace(".", ","), iva: iva.toFixed(2).replace(".", ","), total: total.toFixed(2).replace(".", ","), papel: pr.toFixed(2).replace(".", ","), metal: mer.toFixed(2).replace(".", ","), plastico: plr.toFixed(2).replace(".", ","), no_reciclable: (pnr + menr + plnr + onr).toFixed(2).replace(".", ",") });
         } catch (error) {
             console.log("error pos " + error);
             res.status(500).json({

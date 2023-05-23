@@ -321,13 +321,11 @@ class statementProductorDao {
         return true;
     }
     public async saveOC(id: number, file: any,) {
-        // const conn = mysqlcon.getConnection();
-        // const tmp = await conn?.execute("UPDATE header_statement_form SET STATE = ?, UPDATED_AT=now() WHERE id = ?", [2, id]).then((res) => res[0]).catch(error => undefined);
-        // if (tmp == undefined) {
-        //     return false;
-        // }
-        // conn?.end();
-        // return true;
+        const conn = mysqlcon.getConnection();
+        const file_name = file.name;
+        await conn?.execute("UPDATE header_statement_form SET FILE_NAME=?, FILE_OC=? WHERE id=?", [file_name, file.data, id]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
+        conn?.end()
+        return true;
     }
     public async haveDraft(business: string, year: string) {
         const conn = mysqlcon.getConnection();
