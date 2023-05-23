@@ -496,15 +496,32 @@ class StatementProductorLogic {
     }
     public async getResumeById(req: any, res: Response) {
         const { year, id } = req.params;
+        console.log(year);
         try {
             const rates: any[] = await ratesDao.ratesID(year);
+            
             const ep = (rates.find(r => r.type == 1))?.price || 0;
             const eme = (rates.find(r => r.type == 2))?.price || 0;
             const epl = (rates.find(r => r.type == 3))?.price || 0;
             const enr = (rates.find(r => r.type == 4))?.price || 0;
+            const declaretion_ok: any = await statementDao.getDeclaretionByYear(id, year, 0);
+            const declaretion_draft: any = await statementDao.getDeclaretionByYear(id, year, 1);
+            let declaretion: any;
+            if (declaretion_ok == false && declaretion_draft == false) {
+                return res.status(500).json({
+                    status: false,
+                    msg: "Declaracion no encontrada"
+                });
+            } else {
+                if(declaretion_ok == false ){
+                    declaretion = declaretion_draft;
+                } else {
+                    declaretion= declaretion_ok;
+                }
+                
+            }
+            const { detail, header } = declaretion!;
 
-            const declaretion: any = await statementDao.getDeclaretionByYear(id, year, 0);
-            const { detail, header } = declaretion;
             const last_detail: any = await statementDao.getDetailById(id, (parseInt(year) - 1));
             const uf: any = await ratesDao.getUF((new Date(header.UPDATED_AT)).toISOString().split("T")[0]);
             let lrp = 0;
@@ -606,10 +623,10 @@ class StatementProductorLogic {
             const eval33 = (parseFloat(eval3.toString()) + (plr * epl));
             const eval44 = (parseFloat(eval4.toString()) + ((pnr + menr + plnr + onr) * enr));
             const neto = ((parseFloat(eval11.toString()) + parseFloat(eval22.toString()) + parseFloat(eval33.toString()) + parseFloat(eval44.toString())) * uf);
-            const iva = neto * 0.19;
-            const total = neto + iva;
+            const iva = (neto * 0.19);
+            const total = (neto + iva);
 
-            return res.json({ neto, iva, total, papel:pr, metal:mer, plastico: plr, no_reciclable: (pnr+menr+plnr+onr)});
+            return res.json({ neto:neto.toFixed(2).replace(".",","), iva:iva.toFixed(2).replace(".",","), total:total.toFixed(2).replace(".",","), papel: pr.toFixed(2).replace(".",","), metal: mer.toFixed(2).replace(".",","), plastico: plr.toFixed(2).replace(".",","), no_reciclable: (pnr + menr + plnr + onr).toFixed(2).replace(".",",") });
         } catch (error) {
             console.log("error pos " + error);
             res.status(500).json({
