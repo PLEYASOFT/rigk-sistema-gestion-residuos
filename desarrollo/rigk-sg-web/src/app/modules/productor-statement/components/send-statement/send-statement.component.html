@@ -218,7 +218,7 @@
                                       <strong>Monto Neto</strong>
                                     </td>
                                     <td class="columna2">
-                                      <strong>$ {{getNeto()}}</strong>
+                                      <strong>{{resume.neto}}</strong>
                                     </td>
                                   </tr>
                                   <tr>
@@ -226,7 +226,7 @@
                                       <strong>Monto I.V.A</strong>
                                     </td>
                                     <td class="columna2">
-                                      <strong>$ {{getIVA()}}</strong>
+                                      <strong>{{resume.iva}}</strong>
                                     </td>
                                   </tr>
                                   <tr>
@@ -234,7 +234,7 @@
                                       <strong>Monto Total</strong>
                                     </td>
                                     <td class="columna2">
-                                      <strong>$ {{getTotalFacturado()}}</strong>
+                                      <strong>{{resume.total}}</strong>
                                     </td>
                                   </tr>                                  
                                 <tr *ngIf="isButtonVisible">

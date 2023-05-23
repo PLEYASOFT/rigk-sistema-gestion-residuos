@@ -634,11 +634,15 @@ class StatementProductorLogic {
             const eval22 = (parseFloat(eval2.toString()) + (eme * mer));
             const eval33 = (parseFloat(eval3.toString()) + (plr * epl));
             const eval44 = (parseFloat(eval4.toString()) + ((pnr + menr + plnr + onr) * enr));
-            const neto = ((parseFloat(eval11.toString()) + parseFloat(eval22.toString()) + parseFloat(eval33.toString()) + parseFloat(eval44.toString())) * uf);
-            const iva = (neto * 0.19);
-            const total = (neto + iva);
+            let neto:any = ((parseFloat(eval11.toString()) + parseFloat(eval22.toString()) + parseFloat(eval33.toString()) + parseFloat(eval44.toString())) * uf);
+            let iva:any = (neto * 0.19);
+            let total:any = (neto + iva);
 
-            return res.json({ state: header.STATE, neto: neto.toFixed(2).replace(".", ","), iva: iva.toFixed(2).replace(".", ","), total: total.toFixed(2).replace(".", ","), papel: pr.toFixed(2).replace(".", ","), metal: mer.toFixed(2).replace(".", ","), plastico: plr.toFixed(2).replace(".", ","), no_reciclable: (pnr + menr + plnr + onr).toFixed(2).replace(".", ",") });
+            total = (neto + iva).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            neto = neto.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            iva = iva.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+
+            return res.json({ state: header.STATE, neto: neto, iva: iva, total: total, papel: pr.toFixed(2).replace(".", ","), metal: mer.toFixed(2).replace(".", ","), plastico: plr.toFixed(2).replace(".", ","), no_reciclable: (pnr + menr + plnr + onr).toFixed(2).replace(".", ",") });
         } catch (error) {
             console.log("error pos " + error);
             res.status(500).json({
