@@ -626,7 +626,7 @@ class StatementProductorLogic {
             const iva = (neto * 0.19);
             const total = (neto + iva);
 
-            return res.json({ neto: neto.toFixed(2).replace(".", ","), iva: iva.toFixed(2).replace(".", ","), total: total.toFixed(2).replace(".", ","), papel: pr.toFixed(2).replace(".", ","), metal: mer.toFixed(2).replace(".", ","), plastico: plr.toFixed(2).replace(".", ","), no_reciclable: (pnr + menr + plnr + onr).toFixed(2).replace(".", ",") });
+            return res.json({ state: header.STATE,neto: neto.toFixed(2).replace(".", ","), iva: iva.toFixed(2).replace(".", ","), total: total.toFixed(2).replace(".", ","), papel: pr.toFixed(2).replace(".", ","), metal: mer.toFixed(2).replace(".", ","), plastico: plr.toFixed(2).replace(".", ","), no_reciclable: (pnr + menr + plnr + onr).toFixed(2).replace(".", ",") });
         } catch (error) {
             console.log("error pos " + error);
             res.status(500).json({
