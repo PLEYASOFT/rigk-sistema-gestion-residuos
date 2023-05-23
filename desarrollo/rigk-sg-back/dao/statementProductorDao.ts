@@ -47,7 +47,7 @@ class statementProductorDao {
         const conn = mysqlcon.getConnection();
 
         // const res_business: any = await conn?.execute("SELECT h.ID AS ID_HEADER, h.ID_BUSINESS, h.STATE, h.CREATED_BY, h.UPDATED_AT, b.AM_FIRST_NAME, b.AM_LAST_NAME, b.CODE_BUSINESS, b.EMAIL, b.GIRO, b.INVOICE_EMAIL, b.INVOICE_NAME, b.INVOICE_PHONE, b.LOC_ADDRESS, b.NAME, b.PHONE, b.VAT FROM header_statement_form h JOIN business b ON h.ID_BUSINESS = b.ID WHERE h.YEAR_STATEMENT = ?", [year]).then((res) => res[0]).catch(error => { undefined });
-        const res_business: any = await conn?.execute("SELECT header_statement_form.*, header_statement_form.ID as HEADER_ID, detail_statement_form.*, user.*, business.* from header_statement_form inner join business on business.ID = header_statement_form.ID_BUSINESS left join detail_statement_form on detail_statement_form.ID_HEADER = header_statement_form.ID inner join user on user.ID = header_statement_form.CREATED_BY where YEAR_STATEMENT in (?, ?) ORDER BY header_statement_form.ID_BUSINESS ASC", [year, (parseInt(year)-1)]).then((res) => res[0]).catch(error => { undefined });
+        const res_business: any = await conn?.execute("SELECT header_statement_form.*, header_statement_form.ID as HEADER_ID, detail_statement_form.*, user.*, business.* from header_statement_form inner join business on business.ID = header_statement_form.ID_BUSINESS left join detail_statement_form on detail_statement_form.ID_HEADER = header_statement_form.ID inner join user on user.ID = header_statement_form.CREATED_BY where YEAR_STATEMENT in (?, ?) ORDER BY header_statement_form.ID_BUSINESS ASC", [year, (parseInt(year) - 1)]).then((res) => res[0]).catch(error => { undefined });
 
         if (res_business.length == 0) {
             return false;
@@ -58,25 +58,25 @@ class statementProductorDao {
     }
     public async restApi_save(header: any, detail: any) {
         const { codigo_emp, year } = header;
-        if(!codigo_emp || !year) {
-            return {'cod': 'E012', 'descr': `Solo se aceptan antes del año ${new Date().getFullYear()}`};
+        if (!codigo_emp || !year) {
+            return { 'cod': 'E012', 'descr': `Solo se aceptan antes del año ${new Date().getFullYear()}` };
         }
-        if(year >= new Date().getFullYear()) {
-            return {'cod': 'E014', 'descr': `Solo se aceptan antes del año ${new Date().getFullYear()}`};
+        if (year >= new Date().getFullYear()) {
+            return { 'cod': 'E014', 'descr': `Solo se aceptan antes del año ${new Date().getFullYear()}` };
         }
         const conn = mysqlcon.getConnection();
 
         const res_business: any = await conn?.execute("SELECT * FROM business WHERE CODE_BUSINESS = ?", [codigo_emp]).then((res) => res[0]).catch(error => { console.log(error); return undefined });
         if (res_business.length == 0) {
-            return {'cod': 'E013', 'descr': 'Empresa no existe'};
+            return { 'cod': 'E013', 'descr': 'Empresa no existe' };
         }
         const res_business_user: any = await conn?.execute("SELECT * FROM user_business WHERE ID_USER = ? AND ID_BUSINESS=?", [header.created_by, res_business[0].ID]).then((res) => res[0]).catch(error => { console.log(error); return undefined });
         if (res_business_user.length == 0) {
-            return {'cod': 'E010', 'descr': 'usuario no está asociado a empresa'};
+            return { 'cod': 'E010', 'descr': 'usuario no está asociado a empresa' };
         }
         const res_declaretion: any = await conn?.execute("SELECT * FROM header_statement_form WHERE ID_BUSINESS=? AND YEAR_STATEMENT=?", [res_business[0].ID, year]).then((res) => res[0]).catch(error => { console.log(error); return undefined });
         if (res_declaretion.length > 0) {
-            return {'cod': 'E011', 'descr': 'ya existe declaración envida para este año'};
+            return { 'cod': 'E011', 'descr': 'ya existe declaración envida para este año' };
         }
 
         const { REC, RET, NREC } = detail;
@@ -87,26 +87,26 @@ class statementProductorDao {
         if (REC) {
             types_A = Object.keys(REC);
             for (let i = 0; i < types_A.length; i++) {
-                const {PNP,PP,ST} = REC[types_A[i]];
-                if(PNP) {
+                const { PNP, PP, ST } = REC[types_A[i]];
+                if (PNP) {
                     const value = REC[types_A[i]].PNP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
+                        return { response: { 'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos' } };
                     }
                 }
-                if(PP) {
+                if (PP) {
                     const value = REC[types_A[i]].PP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
+                        return { response: { 'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos' } };
                     }
                 }
-                if(ST) {
+                if (ST) {
                     const value = REC[types_A[i]].ST;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
+                        return { response: { 'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos' } };
                     }
                 }
             }
@@ -114,26 +114,26 @@ class statementProductorDao {
         if (NREC) {
             types_B = Object.keys(NREC);
             for (let i = 0; i < types_B.length; i++) {
-                const {PNP,PP,ST} = NREC[types_B[i]];
-                if(PNP) {
+                const { PNP, PP, ST } = NREC[types_B[i]];
+                if (PNP) {
                     const value = NREC[types_B[i]].PNP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
+                        return { response: { 'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos' } };
                     }
                 }
-                if(PP) {
+                if (PP) {
                     const value = NREC[types_B[i]].PP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
+                        return { response: { 'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos' } };
                     }
                 }
-                if(ST) {
+                if (ST) {
                     const value = NREC[types_B[i]].ST;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
+                        return { response: { 'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos' } };
                     }
                 }
             }
@@ -141,26 +141,26 @@ class statementProductorDao {
         if (RET) {
             types_C = Object.keys(RET);
             for (let i = 0; i < types_C.length; i++) {
-                const {PNP,PP,ST} = RET[types_C[i]];
-                if(PNP) {
+                const { PNP, PP, ST } = RET[types_C[i]];
+                if (PNP) {
                     const value = RET[types_C[i]].PNP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
+                        return { response: { 'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos' } };
                     }
                 }
-                if(PP) {
+                if (PP) {
                     const value = RET[types_C[i]].PP;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
+                        return { response: { 'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos' } };
                     }
                 }
-                if(ST) {
+                if (ST) {
                     const value = RET[types_C[i]].ST;
                     const pattern = /^[0-9]+(,[0-9]+)?$/;
                     if (!pattern.test(value)) {
-                        return {response: {'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos'}};
+                        return { response: { 'cod': 'E014', 'descr': 'Error en valores númericos. Revisar formatos' } };
                     }
                 }
             }
@@ -176,72 +176,72 @@ class statementProductorDao {
             types_A = Object.keys(REC);
             for (let i = 0; i < types_A.length; i++) {
                 const type = parseInt(types_A[i]);
-                const rate = (rates.find(r=>r.type == type))?.price || 0;
-                const {PNP,PP,ST} = REC[types_A[i]];
-                if(PNP) {
-                    const value = parseFloat(REC[types_A[i]].PNP.replace(',','.'));
+                const rate = (rates.find(r => r.type == type))?.price || 0;
+                const { PNP, PP, ST } = REC[types_A[i]];
+                if (PNP) {
+                    const value = parseFloat(REC[types_A[i]].PNP.replace(',', '.'));
                     const amount = rate * value;
                     await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 2, 1, type, value, amount]).catch(err => console.log(err));
                 }
-                if(PP) {
-                    const value = parseFloat(REC[types_A[i]].PP.replace(',','.'));
+                if (PP) {
+                    const value = parseFloat(REC[types_A[i]].PP.replace(',', '.'));
                     const amount = rate * value;
                     await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 1, 1, type, value, amount]).catch(err => console.log(err));
                 }
-                if(ST) {
-                    const value = parseFloat(REC[types_A[i]].ST.replace(',','.'));
+                if (ST) {
+                    const value = parseFloat(REC[types_A[i]].ST.replace(',', '.'));
                     const amount = rate * value;
                     await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 2, 1, 1, type, value, amount]).catch(err => console.log(err));
                 }
             }
         }
-        if(NREC) {
+        if (NREC) {
             types_B = Object.keys(NREC);
             for (let i = 0; i < types_B.length; i++) {
                 const type = parseInt(types_B[i])
-                const rate = (rates.find(r=>r.type == 4))?.price || 0;
-                const {PNP,PP,ST} = NREC[types_B[i]];
-                if(PNP) {
-                    const value = parseFloat(NREC[types_B[i]].PNP.replace(',','.'));
+                const rate = (rates.find(r => r.type == 4))?.price || 0;
+                const { PNP, PP, ST } = NREC[types_B[i]];
+                if (PNP) {
+                    const value = parseFloat(NREC[types_B[i]].PNP.replace(',', '.'));
                     const amount = rate * value;
                     await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 2, 2, type, value, amount]).catch(err => console.log(err));
                 }
-                if(PP) {
-                    const value = parseFloat(NREC[types_B[i]].PP.replace(',','.'));
+                if (PP) {
+                    const value = parseFloat(NREC[types_B[i]].PP.replace(',', '.'));
                     const amount = rate * value;
                     await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 1, 2, type, value, amount]).catch(err => console.log(err));
                 }
-                if(ST) {
-                    const value = parseFloat(NREC[types_B[i]].ST.replace(',','.'));
+                if (ST) {
+                    const value = parseFloat(NREC[types_B[i]].ST.replace(',', '.'));
                     const amount = rate * value;
                     await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 2, 1, 2, type, value, amount]).catch(err => console.log(err));
                 }
             }
         }
-        if(RET) {
+        if (RET) {
             types_C = Object.keys(RET);
             for (let i = 0; i < types_C.length; i++) {
                 const type = parseInt(types_C[i])
                 const rate = 0;
-                const {PNP,PP,ST} = RET[types_C[i]];
-                if(PNP) {
-                    const value = parseFloat(RET[types_C[i]].PNP.replace(',','.'));
+                const { PNP, PP, ST } = RET[types_C[i]];
+                if (PNP) {
+                    const value = parseFloat(RET[types_C[i]].PNP.replace(',', '.'));
                     const amount = rate * value;
                     await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 2, 3, type, value, amount]).catch(err => console.log(err));
                 }
-                if(PP) {
-                    const value = parseFloat(RET[types_C[i]].PP.replace(',','.'));
+                if (PP) {
+                    const value = parseFloat(RET[types_C[i]].PP.replace(',', '.'));
                     const amount = rate * value;
                     await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 1, 1, 3, type, value, amount]).catch(err => console.log(err));
                 }
-                if(ST) {
-                    const value = parseFloat(RET[types_C[i]].ST.replace(',','.'));
+                if (ST) {
+                    const value = parseFloat(RET[types_C[i]].ST.replace(',', '.'));
                     const amount = rate * value;
                     await conn?.execute("INSERT INTO detail_statement_form(ID_HEADER,PRECEDENCE,HAZARD,RECYCLABILITY,TYPE_RESIDUE,VALUE, AMOUNT) VALUES (?,?,?,?,?,?,?)", [id_header, 2, 1, 3, type, value, amount]).catch(err => console.log(err));
                 }
             }
         }
-        return {'cod': 'I001', 'descr': 'declaracion ingresada'};
+        return { 'cod': 'I001', 'descr': 'declaracion ingresada' };
 
     }
     public async saveDeclaretion(header: any, detail: any[]) {
@@ -302,7 +302,7 @@ class statementProductorDao {
         conn?.end();
         return;
     }
-    public async changeStateHeader(state: boolean, id: number) {
+    public async changeStateHeader(state: boolean | number, id: number) {
         const conn = mysqlcon.getConnection();
         const tmp = await conn?.execute("UPDATE header_statement_form SET STATE = ?, UPDATED_AT=now() WHERE id = ?", [state, id]).then((res) => res[0]).catch(error => undefined);
         if (tmp == undefined) {
@@ -310,6 +310,24 @@ class statementProductorDao {
         }
         conn?.end();
         return true;
+    }
+    public async validateStatement(id: number) {
+        const conn = mysqlcon.getConnection();
+        const tmp = await conn?.execute("UPDATE header_statement_form SET STATE = ?, UPDATED_AT=now() WHERE id = ?", [2, id]).then((res) => res[0]).catch(error => undefined);
+        if (tmp == undefined) {
+            return false;
+        }
+        conn?.end();
+        return true;
+    }
+    public async saveOC(id: number, file: any,) {
+        // const conn = mysqlcon.getConnection();
+        // const tmp = await conn?.execute("UPDATE header_statement_form SET STATE = ?, UPDATED_AT=now() WHERE id = ?", [2, id]).then((res) => res[0]).catch(error => undefined);
+        // if (tmp == undefined) {
+        //     return false;
+        // }
+        // conn?.end();
+        // return true;
     }
     public async haveDraft(business: string, year: string) {
         const conn = mysqlcon.getConnection();
