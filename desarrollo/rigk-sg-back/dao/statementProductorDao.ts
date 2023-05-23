@@ -21,7 +21,8 @@ class statementProductorDao {
         if (res_business.length == 0) {
             return false;
         }
-        res_header = await conn?.execute("SELECT header_statement_form.*, business.name as BUSINESS_NAME, user.FIRST_NAME as USER_FIRSTNAME, user.LAST_NAME as USER_LASTNAME FROM header_statement_form INNER JOIN business on business.ID = header_statement_form.ID_BUSINESS INNER JOIN user ON user.ID = header_statement_form.CREATED_BY WHERE header_statement_form.ID_BUSINESS = ? AND header_statement_form.YEAR_STATEMENT = ? AND header_statement_form.STATE = ? ORDER BY ID DESC", [res_business[0].ID, year, isDraft]).then((res) => res[0]).catch(error => { console.log(error); return undefined });
+        const draft = isDraft == 2 ? isDraft: Math.abs(isDraft-1)
+        res_header = await conn?.execute("SELECT header_statement_form.*, business.name as BUSINESS_NAME, user.FIRST_NAME as USER_FIRSTNAME, user.LAST_NAME as USER_LASTNAME FROM header_statement_form INNER JOIN business on business.ID = header_statement_form.ID_BUSINESS INNER JOIN user ON user.ID = header_statement_form.CREATED_BY WHERE header_statement_form.ID_BUSINESS = ? AND header_statement_form.YEAR_STATEMENT = ? AND header_statement_form.STATE = ? ORDER BY ID DESC", [res_business[0].ID, year, draft]).then((res) => res[0]).catch(error => { console.log(error); return undefined });
         if (res_header.length == 0) {
             return false;
         }
