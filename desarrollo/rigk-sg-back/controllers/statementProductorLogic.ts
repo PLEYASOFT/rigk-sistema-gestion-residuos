@@ -450,7 +450,6 @@ class StatementProductorLogic {
     public async uploadOC(req: any, res: Response) {
         const { id } = req.params;
         const files = req.files;
-        console.log(files)
         if (!req.files || Object.keys(req.files).length == 0) {
             return res.status(400).send("No files");
         }

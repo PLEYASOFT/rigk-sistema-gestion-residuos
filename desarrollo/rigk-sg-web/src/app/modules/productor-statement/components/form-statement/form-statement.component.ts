@@ -283,7 +283,6 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
 
     const last_weight = parseFloat((document.getElementById(`last_weight_${recyclability}_${type_residue}`) as HTMLElement).innerHTML.replace(",", "."));
     const diff = sum - last_weight;
-    console.log(diff);
     (document.getElementById(`actual_dif_${recyclability}_${type_residue}`) as HTMLInputElement).value = `${diff == Infinity ? 100 : (diff.toFixed(2).replace(".", ",")) || 0} `;
     this.calculateDiff();
   }

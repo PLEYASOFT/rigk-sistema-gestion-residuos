@@ -215,14 +215,11 @@ export class SendStatementComponent implements OnInit, OnDestroy {
     if (result.isConfirmed) {
       const id_statement = sessionStorage.getItem('id_statement');
       if (!id_statement) {
-        console.log("No se encontró la id_statement en la sesión");
         return;
       }
       this.productorService.validateStatement(id_statement).subscribe({
         next: resp => {
           if (resp.status) {
-            console.log(resp)
-      
             this.isValidated = true;
             this.isButtonVisible = false;
             sessionStorage.setItem('state', '2');
@@ -294,7 +291,6 @@ export class SendStatementComponent implements OnInit, OnDestroy {
     const files = (document.getElementById('inp_archivo') as HTMLInputElement).files;
     const id_statement = sessionStorage.getItem('id_statement');
     if (!id_statement) {
-      console.log("No se encontró la id_statement en la sesión");
       return;
     }
   
