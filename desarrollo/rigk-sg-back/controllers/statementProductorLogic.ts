@@ -507,7 +507,6 @@ class StatementProductorLogic {
             const declaretion_ok: any = await statementDao.getDeclaretionByYear(id, year, 0);
             const declaretion_draft: any = await statementDao.getDeclaretionByYear(id, year, 1);
             const declaretion_pending: any = await statementDao.getDeclaretionByYear(id, year, 2);
-            console.log(declaretion_ok, declaretion_draft, declaretion_pending)
             let declaretion: any;
             if (declaretion_ok == false && declaretion_draft == false && declaretion_pending==false) {
                 return res.status(500).json({
