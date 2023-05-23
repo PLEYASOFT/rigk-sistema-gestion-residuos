@@ -20,7 +20,7 @@ export class SendStatementComponent implements OnInit {
   selectedFile: File | null = null;
   userForm: any;
   isButtonVisible = true;
-
+  resume: any;
   id_business: string = "";
   name_business: string = "";
   rut: string = "";
@@ -54,6 +54,7 @@ export class SendStatementComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.getResume();
     this.getUf();
     this.getBusiness();
     this.getAmountDiff();
@@ -85,6 +86,22 @@ export class SendStatementComponent implements OnInit {
           this.invoice_phone = resp.status[0].INVOICE_PHONE;
           this.giro = resp.status[0].GIRO;
         }
+      },
+      error: r => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          text: r.msg,
+          title: '¡Ups!'
+        });
+      }
+    });
+  }
+
+  getResume() {
+    this.productorService.getResumeById('PR-1',1909).subscribe({
+      next: resp => {
+        this.resume = resp;
       },
       error: r => {
         Swal.close();
@@ -216,5 +233,38 @@ export class SendStatementComponent implements OnInit {
       }
     }
     return null;
+  }
+
+  getTotalEyE() {
+    let metal = parseFloat(this.resume?.metal.replace(',', '.'));
+    let papel = parseFloat(this.resume?.papel.replace(',', '.'));
+    let plastico = parseFloat(this.resume?.plastico.replace(',', '.'));
+    let no_reciclable = parseFloat(this.resume?.no_reciclable.replace(',', '.'));
+
+    let total = metal + papel + plastico + no_reciclable;
+
+    // Convertir de nuevo a una cadena con el formato deseado
+    return total.toFixed(2).replace('.', ',');
+  }
+
+  getNeto() {
+    return this.formatMoney(this.resume?.neto);
+  }
+
+  getIVA() {
+    return this.formatMoney(this.resume?.iva);
+  }
+
+  getTotalFacturado() {
+    let neto = parseInt(this.getNeto().replace('.',''));
+    let iva = parseInt(this.getIVA().replace('.',''));
+    let total = neto + iva;
+
+    return this.formatMoney(total.toString());
+  }
+
+  formatMoney(value: string) {
+    let number = parseFloat(value);
+    return number.toFixed(0).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   }
 }

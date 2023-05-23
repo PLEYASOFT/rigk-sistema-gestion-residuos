@@ -29,6 +29,9 @@ export class ProductorService {
   getProductor(id: number) {
     return this.http.get<any>(`${this.url}/${id}`);
   }
+  getResumeById(id: string,year:number) {
+    return this.http.get<any>(`${this.url}/resume/${id}/year/${year}`);
+  }
   get getStatementByUser() {
     return this.http.get<any>(`${this.url}/byUser`);
   }
