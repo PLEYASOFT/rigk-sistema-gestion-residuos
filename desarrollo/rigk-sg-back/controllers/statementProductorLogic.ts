@@ -475,7 +475,7 @@ class StatementProductorLogic {
     public async validateStatement(req: any, res: Response) {
         const { id } = req.params;
         try {
-            
+
             const r = await statementDao.validateStatement(id);
             if (r) {
                 return res.json({
@@ -499,22 +499,34 @@ class StatementProductorLogic {
     public async getResumeById(req: any, res: Response) {
         const { year, id } = req.params;
         try {
-            const rates: any[] = await ratesDao.ratesID((parseInt(year)+1).toString());
+            const rates: any[] = await ratesDao.ratesID((parseInt(year) + 1).toString());
             const ep = (rates.find(r => r.type == 1))?.price || 0;
             const eme = (rates.find(r => r.type == 2))?.price || 0;
             const epl = (rates.find(r => r.type == 3))?.price || 0;
             const enr = (rates.find(r => r.type == 4))?.price || 0;
             const declaretion_ok: any = await statementDao.getDeclaretionByYear(id, year, 0);
             const declaretion_draft: any = await statementDao.getDeclaretionByYear(id, year, 1);
+            const declaretion_pending: any = await statementDao.getDeclaretionByYear(id, year, 2);
+            console.log(declaretion_ok, declaretion_draft, declaretion_pending)
             let declaretion: any;
-            if (declaretion_ok == false && declaretion_draft == false) {
+            if (declaretion_ok == false && declaretion_draft == false && declaretion_pending==false) {
                 return res.status(500).json({
                     status: false,
-                    msg: "Declaracion no encontrada"
+                    msg: "Declaracion no encontrada",
+                    state: -1,
+                    neto: "0,0", 
+                    iva: "0,0",
+                    total: "0,0",
+                    papel: "0,0",
+                    metal: "0,0", 
+                    plastico: "0,0",
+                    no_reciclable: "0,0"
                 });
             } else {
-                if (declaretion_ok == false) {
+                if (declaretion_ok == false && declaretion_pending == false) {
                     declaretion = declaretion_draft;
+                } else if (declaretion_ok == false && declaretion_draft == false) {
+                    declaretion = declaretion_pending;
                 } else {
                     declaretion = declaretion_ok;
                 }
@@ -626,7 +638,7 @@ class StatementProductorLogic {
             const iva = (neto * 0.19);
             const total = (neto + iva);
 
-            return res.json({ state: header.STATE,neto: neto.toFixed(2).replace(".", ","), iva: iva.toFixed(2).replace(".", ","), total: total.toFixed(2).replace(".", ","), papel: pr.toFixed(2).replace(".", ","), metal: mer.toFixed(2).replace(".", ","), plastico: plr.toFixed(2).replace(".", ","), no_reciclable: (pnr + menr + plnr + onr).toFixed(2).replace(".", ",") });
+            return res.json({ state: header.STATE, neto: neto.toFixed(2).replace(".", ","), iva: iva.toFixed(2).replace(".", ","), total: total.toFixed(2).replace(".", ","), papel: pr.toFixed(2).replace(".", ","), metal: mer.toFixed(2).replace(".", ","), plastico: plr.toFixed(2).replace(".", ","), no_reciclable: (pnr + menr + plnr + onr).toFixed(2).replace(".", ",") });
         } catch (error) {
             console.log("error pos " + error);
             res.status(500).json({
