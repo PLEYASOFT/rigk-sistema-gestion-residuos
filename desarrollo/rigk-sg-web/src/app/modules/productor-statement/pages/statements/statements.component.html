@@ -76,9 +76,13 @@
                             <button class="btn" (click)="downloadPDF(s.CODE_BUSINESS, s.YEAR_STATEMENT)"
                                 *ngIf="s.STATE == 1 "><i class="fa fa-file-pdf-o fa-fw fa-lg color-blue"
                                     aria-hidden="true"></i></button>
-                            <button class="btn" *ngIf="s.STATE == 0 || s.STATE == 2"
+                            <button class="btn" *ngIf="s.STATE == 0"
                                 (click)="navigateToForm(s.CODE_BUSINESS, s.YEAR_STATEMENT, s.ID, s.STATE)">
                                 <i class="fa fa-file-text-o fa-fw fa-lg" style="color: red;" aria-hidden="true"></i>
+                            </button>
+                            <button class="btn" *ngIf="s.STATE == 2"
+                                (click)="navigateToForm(s.CODE_BUSINESS, s.YEAR_STATEMENT, s.ID, s.STATE)">
+                                <i class="fa fa-file-text-o fa-fw fa-lg" style="color: #DEC300;" aria-hidden="true"></i>
                             </button>
                         </td>
                     </tr>
