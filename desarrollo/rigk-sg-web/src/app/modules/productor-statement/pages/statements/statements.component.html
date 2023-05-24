@@ -68,7 +68,7 @@
                         <td>{{s.CODE_BUSINESS}}</td>
                         <td>{{s.NAME_BUSINESS}}</td>
                         <td>{{s.YEAR_STATEMENT}}</td>
-                        <td>{{s.STATE == 1 ? 'Enviada': 'Borrador'}}</td>
+                        <td>{{s.STATE == 1 ? 'Enviada': s.STATE == 0 ? 'Borrador':'Pendiente'}}</td>
                         <td>{{s.AMOUNT.toFixed(2).replace(".",",")}}</td>
                         <td>{{s.UPDATED_AT | date: 'dd-MM-yyyy H:mm:ss'}}</td>
                         <td class="text-center text-nowrap">
