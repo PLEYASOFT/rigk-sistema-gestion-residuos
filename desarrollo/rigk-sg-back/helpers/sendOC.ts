@@ -34,7 +34,6 @@ export const sendOC = async ( id: any, file: any ) => {
             console.error('Ha ocurrido un error:',err);
             return false;
         }
-        console.log(response);
         return true;
     });
 }
