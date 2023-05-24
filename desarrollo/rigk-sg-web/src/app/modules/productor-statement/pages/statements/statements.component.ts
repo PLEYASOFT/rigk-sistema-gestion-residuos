@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductorService } from '../../../../core/services/productor.service';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-statements',
@@ -17,7 +18,7 @@ export class StatementsComponent implements OnInit {
   years: number[] = [];
   cant: number = 0;
 
-  constructor(public productorService: ProductorService) { }
+  constructor(public productorService: ProductorService, private router: Router) { }
 
   ngOnInit(): void {
     this.loadStatements();
@@ -102,6 +103,12 @@ export class StatementsComponent implements OnInit {
       window.URL.revokeObjectURL(link.href);
       Swal.close();
     });
+  }
+
+  navigateToForm(id: string, year: string, id_statement:any, state:number = 0) {
+    sessionStorage.setItem('state', state.toString() || '0');
+    sessionStorage.setItem('id_statement', id_statement?.toString() || 'null');
+    this.router.navigateByUrl(`/productor/form?year=${year}&id_business=${id}`);
   }
   setArrayFromNumber() {
     return new Array(this.cant);
