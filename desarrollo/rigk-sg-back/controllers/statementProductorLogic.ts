@@ -3,6 +3,7 @@ import statementDao from '../dao/statementProductorDao';
 import ratesDao from '../dao/ratesDao';
 import dateFormat, { i18n } from 'dateformat';
 import businessDao from '../dao/businessDao';
+import { sendOC } from '../helpers/sendOC';
 i18n.dayNames = [
     "Do",
     "Lu",
@@ -130,7 +131,7 @@ class StatementProductorLogic {
     public async getAllStatementByYear2(req: Request, res: Response) {
         const { year } = req.params;
         try {
-            const statements: any  = await statementDao.getAllStatementByYear2(year);
+            const statements: any = await statementDao.getAllStatementByYear2(year);
             if (statements === false) {
                 return res.status(200).json({
                     status: false,
@@ -432,19 +433,224 @@ class StatementProductorLogic {
             });
         }
     }
-    public async respApiSaveStatement(req: any,res: Response) {
-        const {header, body} = req.body;
+    public async respApiSaveStatement(req: any, res: Response) {
+        const { header, body } = req.body;
         header.created_by = req['uid'];
         try {
             const response = await statementDao.restApi_save(header, body);
-            if(response.cod == "I001") {
-                return res.json({response});
+            if (response.cod == "I001") {
+                return res.json({ response });
             } else {
-                return res.status(400).json({response});
+                return res.status(400).json({ response });
             }
         } catch (error) {
             console.log(error);
-            return res.status(400).json({response: {'cod': 'E012', 'descr': 'error en cálculo de declaración'}});
+            return res.status(400).json({ response: { 'cod': 'E012', 'descr': 'error en cálculo de declaración' } });
+        }
+    }
+    public async uploadOC(req: any, res: Response) {
+        const { id } = req.params;
+        const files = req.files;
+        if (!req.files || Object.keys(req.files).length == 0) {
+            return res.status(400).send("No files");
+        }
+        try {
+            const r: any = await statementDao.changeStateHeader(1, id);
+            if (!r) {
+                return res.status(400).json({ status: false, msg: "Algo salió mal", data: [] });
+            }
+            const r2: any = await statementDao.saveOC(id, files.file);
+            if (!r2) {
+                await statementDao.changeStateHeader(0, id);
+                return res.status(400).json({ status: false, msg: "Algo salió mal", data: [] });
+            }
+            
+            await sendOC(id, files.file);
+            return res.status(200).json({ status: true, msg: "OK", data: [] });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
+    public async validateStatement(req: any, res: Response) {
+        const { id } = req.params;
+        try {
+
+            const r = await statementDao.validateStatement(id);
+            if (r) {
+                return res.json({
+                    status: true,
+                    msg: "Declaración validada correctamente"
+                });
+            } else {
+                res.status(400).json({
+                    status: false,
+                    msg: "Declaración no encontrada"
+                });
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
+    public async getResumeById(req: any, res: Response) {
+        const { year, id } = req.params;
+        try {
+            const rates: any[] = await ratesDao.ratesID((parseInt(year) + 1).toString());
+            const ep = (rates.find(r => r.type == 1))?.price || 0;
+            const eme = (rates.find(r => r.type == 2))?.price || 0;
+            const epl = (rates.find(r => r.type == 3))?.price || 0;
+            const enr = (rates.find(r => r.type == 4))?.price || 0;
+            const declaretion_ok: any = await statementDao.getDeclaretionByYear(id, year, 0);
+            const declaretion_draft: any = await statementDao.getDeclaretionByYear(id, year, 1);
+            const declaretion_pending: any = await statementDao.getDeclaretionByYear(id, year, 2);
+            let declaretion: any;
+            if (declaretion_ok == false && declaretion_draft == false && declaretion_pending==false) {
+                return res.status(500).json({
+                    status: false,
+                    msg: "Declaracion no encontrada",
+                    state: -1,
+                    neto: "0,0", 
+                    iva: "0,0",
+                    total: "0,0",
+                    papel: "0,0",
+                    metal: "0,0", 
+                    plastico: "0,0",
+                    no_reciclable: "0,0"
+                });
+            } else {
+                if (declaretion_ok == false && declaretion_pending == false) {
+                    declaretion = declaretion_draft;
+                } else if (declaretion_ok == false && declaretion_draft == false) {
+                    declaretion = declaretion_pending;
+                } else {
+                    declaretion = declaretion_ok;
+                }
+
+            }
+            const { detail, header } = declaretion!;
+
+            const last_detail: any = await statementDao.getDetailById(id, (parseInt(year) - 1));
+            const uf: any = await ratesDao.getUF((new Date(header.UPDATED_AT)).toISOString().split("T")[0]);
+            let lrp = 0;
+            let lrme = 0;
+            let lrpl = 0;
+            let lnr = 0;
+            //table 1
+            let pr = 0;
+            let pnr = 0;
+            let mer = 0;
+            let menr = 0;
+            let plr = 0;
+            let plnr = 0;
+            let onr = 0;
+            for (let i = 0; i < last_detail.length; i++) {
+                const lde = last_detail[i];
+                if (lde.RECYCLABILITY == 1) {
+                    switch (lde.TYPE_RESIDUE) {
+                        case 1:
+                            lrp += lde.VALUE;
+                            break;
+                        case 2:
+                            lrme += lde.VALUE;
+                            break;
+                        case 3:
+                            lrpl += lde.VALUE;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                if (lde.RECYCLABILITY == 2) {
+                    switch (lde.TYPE_RESIDUE) {
+                        case 1:
+                            lnr += lde.VALUE;
+                            break;
+                        case 2:
+                            lnr += lde.VALUE;
+                            break;
+                        case 3:
+                            lnr += lde.VALUE;
+                            break;
+                        case 5:
+                            lnr += lde.VALUE;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            for (let i = 0; i < detail.length; i++) {
+                const t = detail[i];
+                if (t.RECYCLABILITY == 1) {
+                    switch (t.TYPE_RESIDUE) {
+                        case 1:
+                            pr += t.VALUE;
+                            break;
+                        case 2:
+                            mer += t.VALUE;
+                            break;
+                        case 3:
+                            plr += t.VALUE;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                if (t.RECYCLABILITY == 2) {
+                    switch (t.TYPE_RESIDUE) {
+                        case 1:
+                            pnr += t.VALUE;
+                            break;
+                        case 2:
+                            menr += t.VALUE;
+                            break;
+                        case 3:
+                            plnr += t.VALUE;
+                            break;
+                        case 5:
+                            onr += t.VALUE;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            const val1 = lrp == 0 ? "0.00" : (pr - lrp);
+            const val2 = lrme == 0 ? "0.00" : (mer - lrme);
+            const val3 = lrpl == 0 ? "0.00" : (plr - lrpl);
+            const val4 = lnr == 0 ? "0.00" : ((pnr + menr + plnr + onr) - lnr);
+
+            const eval1 = (parseFloat(val1.toString()) * ep);
+            const eval2 = (parseFloat(val2.toString()) * eme);
+            const eval3 = (parseFloat(val3.toString()) * epl);
+            const eval4 = (parseFloat(val4.toString()) * enr);
+            const eval11 = (parseFloat(eval1.toString()) + (ep * pr));
+            const eval22 = (parseFloat(eval2.toString()) + (eme * mer));
+            const eval33 = (parseFloat(eval3.toString()) + (plr * epl));
+            const eval44 = (parseFloat(eval4.toString()) + ((pnr + menr + plnr + onr) * enr));
+            let neto:any = ((parseFloat(eval11.toString()) + parseFloat(eval22.toString()) + parseFloat(eval33.toString()) + parseFloat(eval44.toString())) * uf);
+            let iva:any = (neto * 0.19);
+            let total:any = (neto + iva);
+
+            total = (neto + iva).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            neto = neto.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+            iva = iva.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+
+            return res.json({ state: header.STATE, neto: neto, iva: iva, total: total, papel: pr.toFixed(2).replace(".", ","), metal: mer.toFixed(2).replace(".", ","), plastico: plr.toFixed(2).replace(".", ","), no_reciclable: (pnr + menr + plnr + onr).toFixed(2).replace(".", ",") });
+        } catch (error) {
+            console.log("error pos " + error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
         }
     }
 }

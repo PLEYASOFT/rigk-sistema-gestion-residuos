@@ -299,7 +299,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
             this.setDeclaration(detail);
           });
 
-          if (statement.STATE) {
+          if (statement.STATE == 1 || statement.STATE == 2) {
             const fechaFormateada = new Date(statement.UPDATED_AT).toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' }).split('/').reverse().join('-');
             if (this.allUF.findIndex(r => r.date == fechaFormateada) == -1) {
               this.ratesUF = await this.ratesService.getUfDate(fechaFormateada).toPromise();
@@ -309,7 +309,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
             const fecha = statement.UPDATED_AT;
             const fechaFormateada__excel = new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
             this.datos.push({
-              'ID empresa': statement.CODE_BUSINESS, 'Nombre empresa': statement.NAME, 'Año declaración': y.toString(), 'Estado declaración': 'Enviada',
+              'ID empresa': statement.CODE_BUSINESS, 'Nombre empresa': statement.NAME, 'Año declaración': y.toString(), 'Estado declaración': statement.STATE == 1? 'Enviada': 'Pendiente',
               'Fecha de envío': fechaFormateada__excel, 'Usuario': user.FIRST_NAME + ' ' + user.LAST_NAME, 'R. Papel/cartón NP': this.setFormato(this.R_PapelCarton_NP),
               'R. Papel/cartón P': this.setFormato(this.R_PapelCarton_P), 'R. Papel/cartón ST': this.setFormato(this.R_PapelCarton_ST), 'R. Papel/cartón TOTAL': this.setFormato(this.R_PapelCarton_Total), 'R. Metal NP': this.setFormato(this.R_Metal_NP), 'R. Metal P': this.setFormato(this.R_Metal_P), 'R. Metal ST': this.setFormato(this.R_Metal_ST), 'R. Metal TOTAL': this.setFormato(this.R_Metal_Total),
               'R. Plástico NP': this.setFormato(this.R_Plastico_NP), 'R. Plástico P': this.setFormato(this.R_Plastico_P), 'R. Plástico ST': this.setFormato(this.R_Plastico_ST), 'R. Plástico TOTAL': this.setFormato(this.R_Plastico_Total), 'R. Madera NP': this.setFormato(this.R_Madera_NP), 'R. Madera P': this.setFormato(this.R_Madera_P), 'R. Madera ST': this.setFormato(this.R_Madera_ST), 'R. Madera TOTAL': this.setFormato(this.R_Madera_Total),
