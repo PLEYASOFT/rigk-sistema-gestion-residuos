@@ -15,19 +15,20 @@ export const sendOC = async ( id: any, file: any ) => {
         }
     });
     const conn = mysqlcon.getConnection()!;
-    const data: any = await conn.query("SELECT header_statement_form.YEAR_STATEMENT, business.CODE_BUSINESS FROM header_statement_form INNER JOIN business ON business.ID = header_statement_form.ID_BUSINESS WHERE header_statement_form.ID=?", [id]).then((res) => res[0]).catch(error => [{ undefined }]);
+    const data: any = await conn.query("SELECT header_statement_form.YEAR_STATEMENT, business.NAME, business.CODE_BUSINESS FROM header_statement_form INNER JOIN business ON business.ID = header_statement_form.ID_BUSINESS WHERE header_statement_form.ID=?", [id]).then((res) => res[0]).catch(error => [{ undefined }]);
     conn.end();
     const code_business = data[0].CODE_BUSINESS;
     const year = data[0].YEAR_STATEMENT;
+    const name = data[0].NAME;
 
     const mailOptions: MailOptions = {
         from: `PROREP noreply@prorep.cl`,
         to: process.env.EMAIL_OC,
-        subject: 'Envio ',
+        subject: `OC de empresa ${code_business} - ${name}`,
         attachments: [
             {filename: file.name, content: file.data}
         ],
-        text: `PROREP Informa:\n\nSe validó la declaración de la empresa ${code_business} año ${year}.\n\nAdjunto se encuentra OC.\n\nSaludos,\n\nEquipo PROREP\n\nPor favor, no responda a este email. Para más información, escriba a info@prorep.cl`
+        text: `Estimado:\n\nLa empresa ${code_business} - ${name} ha realizado una declaración para el año ${year} .\n\nAdjunto encontrará la OC ingresada.\n\nAtentemente,\n\nEquipo PROREP\n\nPor favor, no responda a este email. Para más información, escriba a info@prorep.cl`
     };
     transporter.sendMail(mailOptions, (err, response) => {
         if(err){
