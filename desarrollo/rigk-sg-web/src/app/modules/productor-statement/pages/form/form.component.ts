@@ -33,7 +33,7 @@ export class FormComponent implements OnInit, OnDestroy {
   disableBackButton: boolean = false;
   state: number = 0;
   sessionCheck: Subscription | null = null;
-  
+
   isSubmited = false;
   isEdited = false;
   _saving = false;
@@ -80,12 +80,12 @@ export class FormComponent implements OnInit, OnDestroy {
     this.sessionCheck = interval(100)
       .pipe(
         map(() => parseInt(sessionStorage.getItem('state') || '0')),
-        takeWhile((state) => state !== 2, true)  
+        takeWhile((state) => state !== 2, true)
       )
       .subscribe((newState) => {
-        if (this.state !== newState) { 
+        if (this.state !== newState) {
           this.state = newState;
-          this.updateBackButtonStatus(); 
+          this.updateBackButtonStatus();
         }
       });
   }
@@ -180,10 +180,13 @@ export class FormComponent implements OnInit, OnDestroy {
           this.position = 1;
         }
       });
-    } else if (tmp=== null) {
-    }else {
+    } else if (tmp === null) {
+      this._saving = false;
+      return;
+    } else {
       if (!edited) {
         this.hour = new Date();
+        this._saving = false;
         return;
       }
       if (this.id_statement == null && !_continue) {
