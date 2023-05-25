@@ -46,17 +46,16 @@ class statementProductorDao {
     }
     public async getAllStatementByYear2(year: string) {
         const conn = mysqlcon.getConnection();
-
-        // const res_business: any = await conn?.execute("SELECT h.ID AS ID_HEADER, h.ID_BUSINESS, h.STATE, h.CREATED_BY, h.UPDATED_AT, b.AM_FIRST_NAME, b.AM_LAST_NAME, b.CODE_BUSINESS, b.EMAIL, b.GIRO, b.INVOICE_EMAIL, b.INVOICE_NAME, b.INVOICE_PHONE, b.LOC_ADDRESS, b.NAME, b.PHONE, b.VAT FROM header_statement_form h JOIN business b ON h.ID_BUSINESS = b.ID WHERE h.YEAR_STATEMENT = ?", [year]).then((res) => res[0]).catch(error => { undefined });
-        const res_business: any = await conn?.execute("SELECT header_statement_form.*, header_statement_form.ID as HEADER_ID, detail_statement_form.*, user.*, business.* from header_statement_form inner join business on business.ID = header_statement_form.ID_BUSINESS left join detail_statement_form on detail_statement_form.ID_HEADER = header_statement_form.ID inner join user on user.ID = header_statement_form.CREATED_BY where YEAR_STATEMENT in (?, ?) ORDER BY header_statement_form.ID_BUSINESS ASC", [year, (parseInt(year) - 1)]).then((res) => res[0]).catch(error => { undefined });
-
+        const res_business: any = await conn?.execute("SELECT header_statement_form.STATE, header_statement_form.CREATED_BY, header_statement_form.ID_BUSINESS, header_statement_form.UPDATED_AT, header_statement_form.YEAR_STATEMENT, header_statement_form.ID as HEADER_ID, detail_statement_form.*, user.FIRST_NAME, user.LAST_NAME, business.CODE_BUSINESS, business.NAME from header_statement_form inner join business on business.ID = header_statement_form.ID_BUSINESS left join detail_statement_form on detail_statement_form.ID_HEADER = header_statement_form.ID inner join user on user.ID = header_statement_form.CREATED_BY where YEAR_STATEMENT in (?, ?) ORDER BY header_statement_form.ID_BUSINESS ASC", [year, (parseInt(year) - 1)]).then((res) => res[0]).catch(error => { undefined });
+    
         if (res_business.length == 0) {
             return false;
         }
-
+    
         conn?.end();
         return { res_business };
     }
+    
     public async restApi_save(header: any, detail: any) {
         const { codigo_emp, year } = header;
         if (!codigo_emp || !year) {
