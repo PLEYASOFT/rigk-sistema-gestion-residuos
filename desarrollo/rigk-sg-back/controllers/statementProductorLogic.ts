@@ -155,7 +155,8 @@ class StatementProductorLogic {
         const { business, year } = req.params;
         try {
             const haveDraft = await statementDao.haveDraft(business, year);
-            res.status(200).json({ status: haveDraft });
+            const { isOk, _res } = haveDraft;
+            res.status(200).json({ status: isOk, data: [{ state: _res[0]?.STATE || 0 }] });
         } catch (error) {
             console.log(error);
             res.status(500).json({
@@ -464,7 +465,7 @@ class StatementProductorLogic {
                 await statementDao.changeStateHeader(0, id);
                 return res.status(400).json({ status: false, msg: "Algo salió mal", data: [] });
             }
-            
+
             await sendOC(id, files.file);
             return res.status(200).json({ status: true, msg: "OK", data: [] });
         } catch (error) {
@@ -511,16 +512,16 @@ class StatementProductorLogic {
             const declaretion_draft: any = await statementDao.getDeclaretionByYear(id, year, 1);
             const declaretion_pending: any = await statementDao.getDeclaretionByYear(id, year, 2);
             let declaretion: any;
-            if (declaretion_ok == false && declaretion_draft == false && declaretion_pending==false) {
+            if (declaretion_ok == false && declaretion_draft == false && declaretion_pending == false) {
                 return res.status(500).json({
                     status: false,
                     msg: "Declaracion no encontrada",
                     state: -1,
-                    neto: "0,0", 
+                    neto: "0,0",
                     iva: "0,0",
                     total: "0,0",
                     papel: "0,0",
-                    metal: "0,0", 
+                    metal: "0,0",
                     plastico: "0,0",
                     no_reciclable: "0,0"
                 });
@@ -532,7 +533,6 @@ class StatementProductorLogic {
                 } else {
                     declaretion = declaretion_ok;
                 }
-
             }
             const { detail, header } = declaretion!;
 
@@ -636,15 +636,19 @@ class StatementProductorLogic {
             const eval22 = (parseFloat(eval2.toString()) + (eme * mer));
             const eval33 = (parseFloat(eval3.toString()) + (plr * epl));
             const eval44 = (parseFloat(eval4.toString()) + ((pnr + menr + plnr + onr) * enr));
-            let neto:any = ((parseFloat(eval11.toString()) + parseFloat(eval22.toString()) + parseFloat(eval33.toString()) + parseFloat(eval44.toString())) * uf);
-            let iva:any = (neto * 0.19);
-            let total:any = (neto + iva);
+            let neto: any = ((parseFloat(eval11.toString()) + parseFloat(eval22.toString()) + parseFloat(eval33.toString()) + parseFloat(eval44.toString())) * uf);
+            let iva: any = (neto * 0.19);
+            let total: any = (neto + iva);
 
             total = (neto + iva).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
             neto = neto.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
             iva = iva.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
 
-            return res.json({ state: header.STATE, neto: neto, iva: iva, total: total, papel: pr.toFixed(2).replace(".", ","), metal: mer.toFixed(2).replace(".", ","), plastico: plr.toFixed(2).replace(".", ","), no_reciclable: (pnr + menr + plnr + onr).toFixed(2).replace(".", ",") });
+            let date_limit = new Date(header.UPDATED_AT);
+            date_limit.setDate(date_limit.getDate() + 7);
+            const remaining = (( (date_limit.getTime() - (new Date()).getTime()) )/(1000*60*60*24)).toFixed(0);
+
+            return res.json({ state: header.STATE, remaining, neto: neto, iva: iva, total: total, papel: pr.toFixed(2).replace(".", ","), metal: mer.toFixed(2).replace(".", ","), plastico: plr.toFixed(2).replace(".", ","), no_reciclable: (pnr + menr + plnr + onr).toFixed(2).replace(".", ",") });
         } catch (error) {
             console.log("error pos " + error);
             res.status(500).json({
