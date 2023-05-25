@@ -155,7 +155,7 @@
                         <table class="table table-even table-section table-borderless table-align-middle d-lg-table table-statement ">
                             <thead class="box-header-h1">
                                 <tr class="box-header-h1">
-                                    <th class="box-header-h1" colspan="2" style="text-align: center;">Total Eye (ton)</th>
+                                    <th class="box-header-h1" colspan="2" style="text-align: center;">Total EyE (ton)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -164,7 +164,7 @@
                                         <strong>Papel/cartón Reciclable</strong>
                                     </td>
                                     <td class="columna2">
-                                        <strong>{{resume?.papel}} ton</strong>
+                                        <strong>{{resume?.papel}}</strong>
                                     </td>
                                 </tr>
                                 <tr>
@@ -172,7 +172,7 @@
                                         <strong>Metal Reciclable</strong>
                                     </td>
                                     <td class="columna2">
-                                        <strong>{{resume?.metal}} ton</strong>
+                                        <strong>{{resume?.metal}}</strong>
                                     </td>
                                 </tr>
                                 <tr>
@@ -180,7 +180,7 @@
                                         <strong>Plástico Reciclable</strong>
                                     </td>
                                     <td class="columna2">
-                                        <strong>{{resume?.plastico}} ton</strong>
+                                        <strong>{{resume?.plastico}}</strong>
                                     </td>
                                 </tr>
                                 <tr>
@@ -188,7 +188,7 @@
                                         <strong>No Reciclables</strong>
                                     </td>
                                     <td class="columna2">
-                                        <strong>{{resume?.no_reciclable}} ton</strong>
+                                        <strong>{{resume?.no_reciclable}}</strong>
                                     </td>
                                 </tr>
                                 <tr>
@@ -196,7 +196,7 @@
                                       <strong>Total EyE</strong>
                                     </td>
                                     <td class="columna2">
-                                      <strong>{{getTotalEyE()}} ton</strong>
+                                      <strong>{{getTotalEyE()}}</strong>
                                     </td>
                                   </tr>                                  
                             </tbody>
@@ -266,6 +266,9 @@
                               <p *ngIf="userForm.controls['ARCHIVO'].errors['invalidFileSize']">
                                 El tamaño del archivo no debe superar 1 MB.
                               </p>
+                            </div>
+                            <div *ngIf="isValidated">
+                                Quedan {{remaining}} días para ingresar la OC
                             </div>
                             <div class="button-container mt-3" style="display: flex; justify-content: space-between">
                               <a href="#" class="btn btn-primary">Volver a inicio</a>

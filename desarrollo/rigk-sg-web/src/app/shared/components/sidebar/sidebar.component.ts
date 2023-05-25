@@ -89,11 +89,17 @@ export class SidebarComponent implements OnInit {
                     if (!e.status) {
                       this.router.navigate(['/productor/form'], { queryParams: { year, id_business } });
                     } else {
-                      Swal.fire({
-                        icon: 'info',
-                        title: '¡Oops!',
-                        text: 'Ya existe declaración enviada'
-                      });
+                      console.log(e)
+                      if(e.data[0].state == 2) {
+                        this.router.navigate(['/productor/form'], { queryParams: { year, id_business } });
+                        sessionStorage.setItem("state", "2");
+                      } else {
+                        Swal.fire({
+                          icon: 'info',
+                          title: '¡Oops!',
+                          text: 'Ya existe declaración enviada'
+                        });
+                      }
                     }
                   }
                 });

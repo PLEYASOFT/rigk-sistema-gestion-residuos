@@ -28,7 +28,7 @@ export const sendOC = async ( id: any, file: any ) => {
         attachments: [
             {filename: file.name, content: file.data}
         ],
-        text: `Estimado:\n\nLa empresa ${code_business} - ${name} ha realizado una declaración para el año ${year} .\n\nAdjunto encontrará la OC ingresada.\n\nAtentemente,\n\nEquipo PROREP\n\nPor favor, no responda a este email. Para más información, escriba a info@prorep.cl`
+        text: `Estimado:\n\nLa empresa ${code_business} - ${name} ha realizado una declaración para el año ${year} .\n\nAdjunto encontrará la OC ingresada.\n\nAtentamente,\n\nEquipo PROREP\n\nPor favor, no responda a este email. Para más información, escriba a info@prorep.cl`
     };
     transporter.sendMail(mailOptions, (err, response) => {
         if(err){
