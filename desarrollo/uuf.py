@@ -63,12 +63,29 @@ def getRates(year):
             break
     # arch.close()
 
+def updateStatement():
+    mydb = mysql.connector.connect(
+        host="pleyades.dynu.net",
+        user="trazcov",
+        password="hJGcQh83YPk=",
+        database="rigk-sgr"
+    )
+    mycursor = mydb.cursor()
+
+    # query = "update header_statement_form set STATE = 0 where state = 2 and TIMESTAMPDIFF(second,CREATED_AT,now()) > 86400"
+    query = "update header_statement_form set STATE = 0 where ID = 217"
+
+    mycursor.execute(query)
+    mydb.commit()
+
 def main(argv):
     try:
         year = datetime.datetime.now().year
         print("año "+str(year))
         getRates(year)
-        print("ok")
+        print("Actualización de declaraciones ok")
+        updateStatement()
+        print("Actualización de UF ok")
     except Exception as e:
         print(e)
 

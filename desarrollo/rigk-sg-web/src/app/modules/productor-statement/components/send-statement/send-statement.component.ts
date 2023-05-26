@@ -103,7 +103,7 @@ export class SendStatementComponent implements OnInit, OnDestroy {
       }
     });
   }
-
+  remaining = -1;
   getResume() {
     this.actived.queryParams.subscribe(params => {
       let year = params['year'];
@@ -119,6 +119,7 @@ export class SendStatementComponent implements OnInit, OnDestroy {
       this.productorService.getResumeById(id_business, year).subscribe({
         next: resp => {
           this.resume = resp;
+          this.remaining = resp.remaining;
   
           // Guardar el estado en la variable de sesión
           sessionStorage.setItem('state', this.resume.state);
@@ -204,7 +205,7 @@ export class SendStatementComponent implements OnInit, OnDestroy {
   async validate() {
     const result = await Swal.fire({
       title: 'Confirmación',
-      text: 'Está a punto de validar la declaración, a partir de este momento no va a poder cambiar los valores ingresados y el valor de la declaración quedará fijado a la UF del día de hoy.',
+      text: 'Está a punto de validar la declaración, a partir de este momento no va a poder cambiar los valores ingresados y el valor de la declaración quedará fijado a la UF del día de hoy. Tiene un plazo de 7 días para subir la Orden de Compra en el campo que se habilitará al cerrar este mensaje. Pasado este plazo, la declaración volverá a estado borrador y se recalculará el valor de la UF',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Aceptar',
@@ -337,7 +338,7 @@ export class SendStatementComponent implements OnInit, OnDestroy {
     let no_reciclable = parseFloat(this.resume?.no_reciclable.replace(',', '.'));
 
     let total = metal + papel + plastico + no_reciclable;
-    return total.toFixed(2).replace('.', ',');
+    return (total||0).toFixed(2).replace('.', ',');
   }
 
   getNeto() {
@@ -355,8 +356,7 @@ export class SendStatementComponent implements OnInit, OnDestroy {
 
     return this.formatMoney(total.toFixed(0));
   }
-
-
+  
   parseMoney(value: string) {
     let newValue = value.replace(/\./g, '');
     newValue = newValue.replace(',', '.');
