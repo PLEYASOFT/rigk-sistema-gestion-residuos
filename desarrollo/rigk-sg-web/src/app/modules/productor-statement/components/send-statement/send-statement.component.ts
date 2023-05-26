@@ -45,6 +45,7 @@ export class SendStatementComponent implements OnInit, OnDestroy {
     public productorService: ProductorService,
     public rateService: RatesTsService,
     private actived: ActivatedRoute,
+    private router: Router,
     private fb: FormBuilder) {
     this.actived.queryParams.subscribe(r => {
       this.id_business = r['id_business'];
@@ -135,12 +136,15 @@ export class SendStatementComponent implements OnInit, OnDestroy {
             icon: 'error',
             text: r.msg,
             title: '¡Ups!'
+          }).then(btn=>{
+            if(btn.isConfirmed) {
+              this.router.navigate(['/productor']);
+            }
           });
         }
       });
     });
   }
-
 
   getAmountDiff() {
     this.amount_previous_year = 0;
