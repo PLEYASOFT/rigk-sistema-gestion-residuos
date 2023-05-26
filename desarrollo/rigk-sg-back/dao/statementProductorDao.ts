@@ -342,7 +342,7 @@ class statementProductorDao {
     }
     public async getDetailById(id: any, year: any) {
         const conn = mysqlcon.getConnection();
-        const table0 = await conn?.execute("SELECT SUM(VALUE) as VALUE, TYPE_RESIDUE, RECYCLABILITY FROM detail_statement_form INNER JOIN header_statement_form ON header_statement_form.ID = detail_statement_form.ID_HEADER WHERE ID_BUSINESS = (SELECT ID FROM business WHERE CODE_BUSINESS=?) AND YEAR_STATEMENT=? GROUP BY TYPE_RESIDUE, RECYCLABILITY", [id, year]).then((res) => res[0]).catch(error => { undefined });
+        const table0 = await conn?.execute("SELECT SUM(VALUE) as VALUE, TYPE_RESIDUE, RECYCLABILITY FROM detail_statement_form INNER JOIN header_statement_form ON header_statement_form.ID = detail_statement_form.ID_HEADER WHERE ID_BUSINESS = (SELECT ID FROM business WHERE CODE_BUSINESS=?) AND YEAR_STATEMENT=? AND STATE=1 GROUP BY TYPE_RESIDUE, RECYCLABILITY", [id, year]).then((res) => res[0]).catch(error => { undefined });
         conn?.end();
         return table0;
     }
