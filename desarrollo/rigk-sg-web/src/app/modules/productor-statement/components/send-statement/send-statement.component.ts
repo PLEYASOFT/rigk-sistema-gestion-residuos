@@ -65,7 +65,7 @@ export class SendStatementComponent implements OnInit, OnDestroy {
       ARCHIVO: [null, [Validators.required, this.fileTypeValidator, this.fileSizeValidator]],
     });
   }
-  
+
   ngOnDestroy(): void {
     // Eliminar la variable de sesión cuando se abandona la vista
     sessionStorage.removeItem('state');
@@ -108,34 +108,30 @@ export class SendStatementComponent implements OnInit, OnDestroy {
     this.actived.queryParams.subscribe(params => {
       let year = params['year'];
       let id_business = params['id_business'];
-  
+
       // Mostrar el modal de carga
       Swal.fire({
         title: 'Cargando datos...',
         allowOutsideClick: false
       });
       Swal.showLoading();
-  
+
       this.productorService.getResumeById(id_business, year).subscribe({
         next: resp => {
+          console.log(resp)
           this.resume = resp;
           this.remaining = resp.remaining;
-  
-          // Guardar el estado en la variable de sesión
           sessionStorage.setItem('state', this.resume.state);
-
-          // Cerrar el modal de carga
           Swal.close();
-  
+
           if (this.resume.state == 2) {
             this.isValidated = true;
             this.isButtonVisible = false;
           }
         },
         error: r => {
-          // Cerrar el modal de carga
           Swal.close();
-  
+
           Swal.fire({
             icon: 'error',
             text: r.msg,
@@ -294,7 +290,7 @@ export class SendStatementComponent implements OnInit, OnDestroy {
     if (!id_statement) {
       return;
     }
-  
+
     Swal.fire({
       title: 'Subiendo archivo',
       text: 'Espere mientras se sube el archivo...',
@@ -328,9 +324,9 @@ export class SendStatementComponent implements OnInit, OnDestroy {
           showConfirmButton: true
         });
       }
-     } );
+    });
   }
-  
+
   getTotalEyE() {
     let metal = parseFloat(this.resume?.metal.replace(',', '.'));
     let papel = parseFloat(this.resume?.papel.replace(',', '.'));
@@ -338,7 +334,7 @@ export class SendStatementComponent implements OnInit, OnDestroy {
     let no_reciclable = parseFloat(this.resume?.no_reciclable.replace(',', '.'));
 
     let total = metal + papel + plastico + no_reciclable;
-    return (total||0).toFixed(2).replace('.', ',');
+    return (total || 0).toFixed(2).replace('.', ',');
   }
 
   getNeto() {
@@ -356,7 +352,7 @@ export class SendStatementComponent implements OnInit, OnDestroy {
 
     return this.formatMoney(total.toFixed(0));
   }
-  
+
   parseMoney(value: string) {
     let newValue = value.replace(/\./g, '');
     newValue = newValue.replace(',', '.');
@@ -367,4 +363,14 @@ export class SendStatementComponent implements OnInit, OnDestroy {
     let number = parseFloat(value);
     return number.toFixed(0).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   }
+
+  formatNumber(numStr: string) {
+    if (!numStr) {
+      return '';
+    }
+    const parts = numStr.split(',');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return parts.join(',');
+  }
+
 }
