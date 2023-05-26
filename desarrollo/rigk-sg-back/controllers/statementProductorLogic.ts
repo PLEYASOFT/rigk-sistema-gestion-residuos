@@ -156,7 +156,7 @@ class StatementProductorLogic {
         try {
             const haveDraft = await statementDao.haveDraft(business, year);
             const { isOk, _res } = haveDraft;
-            res.status(200).json({ status: isOk, data: [{ state: _res[0]?.STATE || 0 }] });
+            res.status(200).json({ status: isOk, data: [{ id: _res[0]?.ID, state: _res[0]?.STATE || 0 }] });
         } catch (error) {
             console.log(error);
             res.status(500).json({
@@ -504,6 +504,20 @@ class StatementProductorLogic {
         const { year, id } = req.params;
         try {
             const rates: any[] = await ratesDao.ratesID((parseInt(year) + 1).toString());
+            if(rates.length == 0) {
+                                return res.status(500).json({
+                    status: false,
+                    msg: `Tarifas no disponible para el año ${year}`,
+                    state: -1,
+                    neto: "0,0",
+                    iva: "0,0",
+                    total: "0,0",
+                    papel: "0,0",
+                    metal: "0,0",
+                    plastico: "0,0",
+                    no_reciclable: "0,0"
+                });
+            }
             const ep = (rates.find(r => r.type == 1))?.price || 0;
             const eme = (rates.find(r => r.type == 2))?.price || 0;
             const epl = (rates.find(r => r.type == 3))?.price || 0;
@@ -536,8 +550,11 @@ class StatementProductorLogic {
             }
             const { detail, header } = declaretion!;
 
-            const last_detail: any = await statementDao.getDetailById(id, (parseInt(year) - 1));
-            const uf: any = await ratesDao.getUF((new Date(header.UPDATED_AT)).toISOString().split("T")[0]);
+            let last_detail: any = await statementDao.getDetailById(id, (parseInt(year) - 1));
+            if(last_detail.length > 0 && last_detail[0].STATE == 0) {
+                last_detail = [];
+            }
+            const uf: any = await ratesDao.getUF((new Date()).toISOString().split("T")[0]);
             let lrp = 0;
             let lrme = 0;
             let lrpl = 0;
