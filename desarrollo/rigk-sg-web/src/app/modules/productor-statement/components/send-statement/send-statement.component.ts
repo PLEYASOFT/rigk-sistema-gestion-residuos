@@ -201,13 +201,13 @@ export class SendStatementComponent implements OnInit, OnDestroy {
   async validate() {
     const result = await Swal.fire({
       title: 'Confirmación',
-      text: 'Está a punto de validar la declaración, a partir de este momento no va a poder cambiar los valores ingresados y el valor de la declaración quedará fijado a la UF del día de hoy. Tiene un plazo de 7 días para subir la Orden de Compra en el campo que se habilitará al cerrar este mensaje. Pasado este plazo, la declaración volverá a estado borrador y se recalculará el valor de la UF',
+      html: '<div style="text-align: justify; font-size: 0.8em;">Está a punto de validar la declaración, a partir de este momento no va a poder cambiar los valores ingresados y el valor de la declaración quedará fijado a la UF del día de hoy. Tiene un plazo de 7 días para subir la Orden de Compra en el campo que se habilitará al cerrar este mensaje. Pasado este plazo, la declaración volverá a estado borrador y se recalculará el valor de la UF.</div>',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Aceptar',
       cancelButtonText: 'Cancelar',
       reverseButtons: true
-    })
+    })    
 
     if (result.isConfirmed) {
       const id_statement = sessionStorage.getItem('id_statement');
