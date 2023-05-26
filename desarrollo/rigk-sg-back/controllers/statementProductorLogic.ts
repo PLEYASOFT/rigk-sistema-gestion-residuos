@@ -552,7 +552,6 @@ class StatementProductorLogic {
 
             const last_detail: any = await statementDao.getDetailById(id, (parseInt(year) - 1));
             const uf: any = await ratesDao.getUF((new Date()).toISOString().split("T")[0]);
-            console.log(uf)
             let lrp = 0;
             let lrme = 0;
             let lrpl = 0;
@@ -642,7 +641,6 @@ class StatementProductorLogic {
             const val2 = lrme == 0 ? "0.00" : (mer - lrme);
             const val3 = lrpl == 0 ? "0.00" : (plr - lrpl);
             const val4 = lnr == 0 ? "0.00" : ((pnr + menr + plnr + onr) - lnr);
-            console.log(val1)
 
             const eval1 = (parseFloat(val1.toString()) * ep);
             const eval2 = (parseFloat(val2.toString()) * eme);
