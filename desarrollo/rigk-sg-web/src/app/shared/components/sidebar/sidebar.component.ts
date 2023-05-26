@@ -93,6 +93,7 @@ export class SidebarComponent implements OnInit {
                       if(e.data[0].state == 2) {
                         this.router.navigate(['/productor/form'], { queryParams: { year, id_business } });
                         sessionStorage.setItem("state", "2");
+                        sessionStorage.setItem("id_statement", e.data[0].id);
                       } else {
                         Swal.fire({
                           icon: 'info',

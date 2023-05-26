@@ -164,7 +164,7 @@
                                         <strong>Papel/cartón Reciclable</strong>
                                     </td>
                                     <td class="columna2">
-                                        <strong>{{resume?.papel}}</strong>
+                                        <strong>{{formatNumber(resume?.papel)}}</strong>
                                     </td>
                                 </tr>
                                 <tr>
@@ -172,7 +172,7 @@
                                         <strong>Metal Reciclable</strong>
                                     </td>
                                     <td class="columna2">
-                                        <strong>{{resume?.metal}}</strong>
+                                        <strong>{{formatNumber(resume?.metal)}}</strong>
                                     </td>
                                 </tr>
                                 <tr>
@@ -180,15 +180,15 @@
                                         <strong>Plástico Reciclable</strong>
                                     </td>
                                     <td class="columna2">
-                                        <strong>{{resume?.plastico}}</strong>
+                                        <strong>{{formatNumber(resume?.plastico)}}</strong>
                                     </td>
-                                </tr>
+                                </tr>                                
                                 <tr>
                                     <td class="columna1">
                                         <strong>No Reciclables</strong>
                                     </td>
                                     <td class="columna2">
-                                        <strong>{{resume?.no_reciclable}}</strong>
+                                        <strong>{{formatNumber(resume?.no_reciclable)}}</strong>
                                     </td>
                                 </tr>
                                 <tr>
@@ -196,7 +196,7 @@
                                       <strong>Total EyE</strong>
                                     </td>
                                     <td class="columna2">
-                                      <strong>{{getTotalEyE()}}</strong>
+                                      <strong>{{formatNumber(getTotalEyE())}}</strong>
                                     </td>
                                   </tr>                                  
                             </tbody>
