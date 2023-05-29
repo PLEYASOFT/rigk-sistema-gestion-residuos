@@ -6,9 +6,9 @@ import datetime;
 def getRates(year):
 
     mydb = mysql.connector.connect(
-        host="pleyades.dynu.net",
-        user="trazcov",
-        password="hJGcQh83YPk=",
+        host="db-prorep-instance-1.crxwdt2oupkd.us-east-1.rds.amazonaws.com",
+        user="admin",
+        password="prorep$2023!",
         database="rigk-sgr"
     )
     mycursor = mydb.cursor()
@@ -65,9 +65,9 @@ def getRates(year):
 
 def updateStatement():
     mydb = mysql.connector.connect(
-        host="pleyades.dynu.net",
-        user="trazcov",
-        password="hJGcQh83YPk=",
+        host="db-prorep-instance-1.crxwdt2oupkd.us-east-1.rds.amazonaws.com",
+        user="admin",
+        password="prorep$2023!",
         database="rigk-sgr"
     )
     mycursor = mydb.cursor()
