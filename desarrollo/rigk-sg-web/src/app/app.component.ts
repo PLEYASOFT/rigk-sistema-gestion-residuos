@@ -49,7 +49,7 @@ export class AppComponent implements OnInit {
     this.timer = setTimeout(() => {
       this.inactiveSeconds++;
       // if (this.inactiveSeconds >= 1800) { //30 minutos
-      if (this.inactiveSeconds >= 120) {
+      if (this.inactiveSeconds >= 10) {
         this.router.navigate(['/auth/login'], { queryParams: { logout: true } });
         Swal.fire({
           icon: 'error',
