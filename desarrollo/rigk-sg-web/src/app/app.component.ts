@@ -19,7 +19,6 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
-        console.log(event)
         if (event.url === '/auth/login' || event.url === '/auth/login?logout=true' || event.url === '/auth/sendCode') {
           this.inactiveSeconds = 0;
           this.active = false;
