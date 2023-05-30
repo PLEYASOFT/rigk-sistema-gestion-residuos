@@ -20,28 +20,30 @@ export class AppComponent implements OnInit {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         if (event.url === '/auth/login' || event.url === '/auth/login?logout=true' || event.url === '/auth/sendCode') {
-          clearTimeout(this.timer);
           this.inactiveSeconds = 0;
-          this.resetTimer();
+          this.active = false;
         } else {
+          this.active = true;
           clearTimeout(this.timer);
           this.inactiveSeconds = 0;
           this.startTimer();
+
+
+          document.addEventListener('click', () => {
+            clearTimeout(this.timer);
+            this.inactiveSeconds = 0;
+            this.startTimer();
+          });
+
+          document.addEventListener('keypress', () => {
+            clearTimeout(this.timer);
+            this.inactiveSeconds = 0;
+            this.startTimer();
+          });
         }
       }
     });
 
-    document.addEventListener('click', () => {
-      clearTimeout(this.timer);
-      this.inactiveSeconds = 0;
-      this.startTimer();
-    });
-
-    document.addEventListener('keypress', () => {
-      clearTimeout(this.timer);
-      this.inactiveSeconds = 0;
-      this.startTimer();
-    });
   }
 
   startTimer() {
@@ -49,7 +51,7 @@ export class AppComponent implements OnInit {
     this.timer = setTimeout(() => {
       this.inactiveSeconds++;
       // if (this.inactiveSeconds >= 1800) { //30 minutos
-      if (this.inactiveSeconds >= 10) {
+      if (this.inactiveSeconds >= 1800) {
         this.router.navigate(['/auth/login'], { queryParams: { logout: true } });
         Swal.fire({
           icon: 'error',
@@ -60,16 +62,5 @@ export class AppComponent implements OnInit {
         this.startTimer();
       }
     }, 1000);
-  }
-
-  stopTimer() {
-    this.active = false;
-    this.inactiveSeconds = 0;
-  }
-
-  resetTimer() {
-    this.stopTimer();
-    this.active = true;
-    this.startTimer();
   }
 }
