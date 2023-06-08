@@ -20,7 +20,7 @@
                     <label class="form-label">EMPRESAS:</label> <br>
                     <p-autoComplete class="custom-autocomplete" formControlName="BUSINESS"
                         [suggestions]="filteredBusinesses" (completeMethod)="filterBusinesses($event)" field="label"
-                        [dropdown]="true" placeholder="Buscar empresa">
+                        [dropdown]="true" placeholder="Buscar empresa" (input)="updateFiltersBusiness($event)" (onSelect)="updateFiltersBusiness($event)">
                         <ng-template let-business pTemplate="item">
                             <div>{{business.label}}</div>
                         </ng-template>
@@ -28,12 +28,12 @@
                             <div>{{business.label}}</div>
                         </ng-template>
                     </p-autoComplete>
-                </div>
+                </div>                             
                 <div class="col-12 col-xl-3 mb-3 mb-xl-0">
                     <label class="form-label">Año:</label> <br>
                     <p-autoComplete class="custom-autocomplete" formControlName="YEAR"
                         [suggestions]="filteredYear" (completeMethod)="filterYear($event)" field="label"
-                        [dropdown]="true" placeholder="Buscar Año">
+                        [dropdown]="true" placeholder="Buscar Año" (input)="updateFiltersYears($event)" (onSelect)="updateFiltersYears($event)">
                         <ng-template let-business pTemplate="item">
                             <div>{{business.label}}</div>
                         </ng-template>

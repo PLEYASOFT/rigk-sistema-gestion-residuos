@@ -76,10 +76,7 @@ export class StatementsComponent implements OnInit {
             yearSet.add(e.YEAR_STATEMENT);
           }
         });
-
-        console.log(yearSet)
         this.business_year = Array.from(yearSet).map(name => ({ label: name, value: name }));
-        console.log(this.business_year)
         this.business_name = Array.from(businessSet).map(name => ({ label: name, value: name }));
         this.years.sort((a, b) => b - a);
         this.dbStatements = r.data;
@@ -88,20 +85,149 @@ export class StatementsComponent implements OnInit {
       }
     })
   }
+  updateFiltersBusiness(event: any) {
+    let n: any;0
+    if (event && event.type == 'input') { // Esto indica que es un evento (input)
+      const businessControl = this.form.get('BUSINESS');
+      if (businessControl && businessControl.value) {
+        n = businessControl.value;
+      }
+    } else { // Esto indica que es un evento (onSelect)
+      n = event && event.value;
+    }
+    if (n != -1 && n != null) {
+      n = n.replace(/.*-\s*/, '');
+    }
 
+    else {
+      return;
+    }
+    const tmp = this.dbStatements.filter(r => {
+      if (n != '-1' && r.NAME_BUSINESS == n) {
+        return r;
+      }
+    });
+
+    let yearSet = new Set();
+    (tmp as any[]).forEach(e => {
+      yearSet.add(e.YEAR_STATEMENT);
+    });
+
+    this.business_year = Array.from(yearSet).map(name => ({ label: name, value: name }));
+
+  }
+
+  updateFiltersYears(event: any) {
+    let n: any;
+    if (event && event.type == 'input') { // Esto indica que es un evento (input)
+      const businessControl = this.form.get('YEAR');
+      if (businessControl && businessControl.value) {
+        n = businessControl.value;
+      }
+    } else { // Esto indica que es un evento (onSelect)
+      n = event && event.value;
+    }
+    if (n != -1 && n != null) {
+      n = n.toString().replace(/.*-\s*/, '');
+    }
+    else {
+      return;
+    }
+    const tmp = this.dbStatements.filter(r => {
+      if (n != '-1' && r.YEAR_STATEMENT == n) {
+        return r;
+      }
+    });
+
+    let yearSet = new Set();
+    (tmp as any[]).forEach(e => {
+      yearSet.add(e.NAME_BUSINESS);
+    });
+    this.business_name = Array.from(yearSet).map(name => ({ label: name, value: name }));
+  }
   filter() {
+
+    let n: any;
+    let y: any;
+    let lengthBussiness: any;
+    let lengthYear: any;
+
     const businessControl = this.form.get('BUSINESS');
     const yearControl = this.form.get('YEAR');
     if (businessControl && businessControl.value && yearControl && yearControl.value) {
-      let n = businessControl.value.value;
-      const y = yearControl.value.value;
-      console.log(n, y)
-      if (n != undefined) {
-        if (y != undefined) {
-          if (n != -1) {
-            n = n.replace(/.*-\s*/, '');
+      if (businessControl.value) {
+        if (typeof businessControl.value === 'string') {
+          lengthBussiness = 1;
+        } else {
+          lengthBussiness = Object.keys(businessControl.value).length;
+        }
+      }
+
+      if (yearControl.value) {
+        if (typeof yearControl.value === 'string') {
+          lengthYear = 1;
+        } else {
+          lengthYear = Object.keys(yearControl.value).length;
+        }
+      }
+      if (lengthBussiness > 1) {
+        if (lengthYear > 1) {
+          n = businessControl.value.value;
+          y = yearControl.value.value;
+        }
+        else {
+          n = businessControl.value.value;
+          if (yearControl.value == 'Todos') {
+            y = -1;
           }
-          console.log(n, y)
+          else {
+            y = yearControl.value;
+          }
+        }
+      }
+      else if (lengthYear > 1) {
+        if (businessControl.value == 'Todos') {
+          n = -1;
+          y = yearControl.value.value;
+        }
+        else {
+          n = businessControl.value;
+          y = yearControl.value;
+        }
+      }
+      else {
+        if (businessControl.value == 'Todos') {
+          n = -1;
+          if (yearControl.value == 'Todos') {
+            y = -1;
+          }
+          else {
+            y = yearControl.value;
+          }
+        }
+        else {
+          if (yearControl.value == 'Todos') {
+            n = businessControl.value;
+            y = -1;
+          }
+          else {
+            n = businessControl.value;
+            y = yearControl.value;
+          }
+        }
+      }
+
+      if (n != -1) {
+        n = n.toString().replace(/.*-\s*/, '');
+      
+        this.business_name = this.business_name.map((business: { value: any; label: any; }) => {
+          const value = business.value.replace(/.*-\s*/, '');
+          const label = business.label.replace(/.*-\s*/, '');
+          return { value, label };
+        });
+      }
+      if (n == -1 || this.business_name.some((business: { value: any; label: any; }) => business.value === n)) {
+        if (y != undefined && !isNaN(Number(y))) {
           const tmp = this.dbStatements.filter(r => {
             if (n != '-1' && r.NAME_BUSINESS == n) {
               if (y != '-1') {
@@ -137,7 +263,7 @@ export class StatementsComponent implements OnInit {
       else {
         Swal.fire({
           title: 'Error',
-          text: 'Debe ingresar una empresa válida.',
+          text: 'Debe ingresar una empresa o año válido.',
           icon: 'error',
           confirmButtonText: 'Aceptar'
         });
