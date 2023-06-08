@@ -25,6 +25,7 @@ export class StatementsComponent implements OnInit {
   selectedBusiness: any;
   filteredBusinesses: any[] = [];
   filteredYear: any[] = [];
+
   constructor(public productorService: ProductorService, private router: Router) {
     this.form = new FormGroup({
       BUSINESS: new FormControl(null, Validators.required),
@@ -86,7 +87,7 @@ export class StatementsComponent implements OnInit {
     })
   }
   updateFiltersBusiness(event: any) {
-    let n: any;0
+    let n: any; 0
     if (event && event.type == 'input') { // Esto indica que es un evento (input)
       const businessControl = this.form.get('BUSINESS');
       if (businessControl && businessControl.value) {
@@ -95,11 +96,20 @@ export class StatementsComponent implements OnInit {
     } else { // Esto indica que es un evento (onSelect)
       n = event && event.value;
     }
+    if(n == 'Todos'){
+      n = -1
+    }
     if (n != -1 && n != null) {
       n = n.replace(/.*-\s*/, '');
     }
-
+    
     else {
+      let yearSet = new Set();
+      (this.dbStatements as any[]).forEach(e => {
+        yearSet.add(e.YEAR_STATEMENT);
+      });
+
+      this.business_year = Array.from(yearSet).map(name => ({ label: name, value: name }));
       return;
     }
     const tmp = this.dbStatements.filter(r => {
@@ -127,10 +137,18 @@ export class StatementsComponent implements OnInit {
     } else { // Esto indica que es un evento (onSelect)
       n = event && event.value;
     }
+    if(n == 'Todos'){
+      n = -1
+    }
     if (n != -1 && n != null) {
       n = n.toString().replace(/.*-\s*/, '');
     }
     else {
+      let yearSet = new Set();
+      (this.dbStatements as any[]).forEach(e => {
+        yearSet.add(e.NAME_BUSINESS);
+      });
+      this.business_name = Array.from(yearSet).map(name => ({ label: name, value: name }));
       return;
     }
     const tmp = this.dbStatements.filter(r => {
@@ -219,13 +237,13 @@ export class StatementsComponent implements OnInit {
 
       if (n != -1) {
         n = n.toString().replace(/.*-\s*/, '');
-      
-        this.business_name = this.business_name.map((business: { value: any; label: any; }) => {
-          const value = business.value.replace(/.*-\s*/, '');
-          const label = business.label.replace(/.*-\s*/, '');
-          return { value, label };
-        });
       }
+
+      this.business_name = this.business_name.map((business: { value: any; label: any; }) => {
+        const value = business.value.replace(/.*-\s*/, '');
+        const label = business.label.replace(/.*-\s*/, '');
+        return { value, label };
+      });
       if (n == -1 || this.business_name.some((business: { value: any; label: any; }) => business.value === n)) {
         if (y != undefined && !isNaN(Number(y))) {
           const tmp = this.dbStatements.filter(r => {

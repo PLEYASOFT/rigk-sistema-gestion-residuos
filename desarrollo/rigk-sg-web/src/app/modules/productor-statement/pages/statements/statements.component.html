@@ -16,7 +16,7 @@
 
         <div class="box box-form mb-4" [formGroup]="form">
             <div class="row align-items-end">
-                <div class="col-12 col-xl-3 mb-3 mb-xl-0">
+                <div class="col-12 col-xl-4 mb-3 mb-xl-0">
                     <label class="form-label">EMPRESAS:</label> <br>
                     <p-autoComplete class="custom-autocomplete" formControlName="BUSINESS"
                         [suggestions]="filteredBusinesses" (completeMethod)="filterBusinesses($event)" field="label"
@@ -29,7 +29,7 @@
                         </ng-template>
                     </p-autoComplete>
                 </div>                             
-                <div class="col-12 col-xl-3 mb-3 mb-xl-0">
+                <div class="col-12 col-xl-4 mb-3 mb-xl-0">
                     <label class="form-label">Año:</label> <br>
                     <p-autoComplete class="custom-autocomplete" formControlName="YEAR"
                         [suggestions]="filteredYear" (completeMethod)="filterYear($event)" field="label"
@@ -42,10 +42,10 @@
                         </ng-template>
                     </p-autoComplete>
                 </div>
-                <div class="col-12 col-xl-3 mb-3 mb-xl-0">
+                <div class="col-12 col-xl-4 mb-3 mb-xl-0">
                     <div class="row">
                         <div class="col-6">
-                            <button class="btn btn-primary col-12" (click)="filter()">Mostrar</button>
+                            <button class="btn btn-primary col-12" style="height: 2.875rem; border-radius: .25rem;" (click)="filter()">Mostrar</button>
                         </div>
                     </div>
                 </div>
