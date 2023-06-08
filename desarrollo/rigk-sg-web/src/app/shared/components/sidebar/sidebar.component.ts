@@ -20,6 +20,7 @@ export class SidebarComponent implements OnInit {
   menuProductor = [
     { title: "Inicio", path: "#/productor/home", icon: "fa-home" },
     { title: "Mi Perfil", path: "#/productor/profile", icon: "fa-user" },
+    { title: "Tarifas", path: "#/productor/rates", icon: "fa-dollar" },
     { title: "Preguntas frecuentes", path: "#/productor/faq", icon: "fa-search" },
     { title: "Registro de declaración", path: "#/productor/form", icon: "fa-file-text" },
     { title: "Consulta de declaración", path: "#/productor/statements", icon: "fa-search" },

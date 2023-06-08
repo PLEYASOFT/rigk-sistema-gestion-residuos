@@ -12,6 +12,7 @@ import { StatementsComponent } from './pages/statements/statements.component';
 import { SummaryStatementComponent } from './components/summary-statement/summary-statement.component';
 import { FormStatementComponent } from './components/form-statement/form-statement.component';
 import { SendStatementComponent } from './components/send-statement/send-statement.component';
+import { RatesComponent } from './pages/rates/rates.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { SendStatementComponent } from './components/send-statement/send-stateme
     StatementsComponent,
     SummaryStatementComponent,
     FormStatementComponent,
-    SendStatementComponent
+    SendStatementComponent,
+    RatesComponent
   ],
   imports: [
     CommonModule,

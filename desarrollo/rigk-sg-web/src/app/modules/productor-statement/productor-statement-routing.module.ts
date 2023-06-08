@@ -7,6 +7,7 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { StatementsComponent } from './pages/statements/statements.component';
 import { SummaryStatementComponent } from './components/summary-statement/summary-statement.component';
 import { FaqComponent } from 'src/app/shared/components/faq/faq.component';
+import { RatesComponent } from './pages/rates/rates.component';
 
 const routes: Routes = [
   {
@@ -14,6 +15,7 @@ const routes: Routes = [
     component: LayoutComponent,
     children: [
       { path: 'home', component: HomeComponent },
+      { path: 'rates', component: RatesComponent },
       { path: 'form', component: FormComponent },
       { path: 'profile', component: ProfileComponent },
       { path: 'statements', component: StatementsComponent },
