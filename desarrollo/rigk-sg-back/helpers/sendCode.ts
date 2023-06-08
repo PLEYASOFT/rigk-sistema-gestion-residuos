@@ -14,7 +14,7 @@ export const sendCode = async ( output: any, cod: any, res: Response ) => {
         }
     });
     const conn = mysqlcon.getConnection()!;
-    const result: any = await conn.query("SELECT FIRST_NAME,LAST_NAME FROM USER WHERE EMAIL =?", [output.EMAIL]).then((res) => res[0]).catch(error => [{ undefined }]);
+    const result: any = await conn.query("SELECT FIRST_NAME,LAST_NAME FROM user WHERE EMAIL =?", [output.EMAIL]).then((res) => res[0]).catch(error => [{ undefined }]);
     const mailOptions = {
         from: `PROREP noreply@prorep.cl`,
         to: `${output.EMAIL}`,
