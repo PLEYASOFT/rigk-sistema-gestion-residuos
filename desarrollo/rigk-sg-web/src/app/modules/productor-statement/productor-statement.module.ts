@@ -13,7 +13,6 @@ import { SummaryStatementComponent } from './components/summary-statement/summar
 import { FormStatementComponent } from './components/form-statement/form-statement.component';
 import { SendStatementComponent } from './components/send-statement/send-statement.component';
 import { AutoCompleteModule } from 'primeng/autocomplete';
-import { DropdownModule } from 'primeng/dropdown';
 @NgModule({
   declarations: [
     FormComponent,
@@ -32,7 +31,6 @@ import { DropdownModule } from 'primeng/dropdown';
     FormsModule,
     ReactiveFormsModule,
     AutoCompleteModule,
-    DropdownModule
   ],
   providers: [CurrencyPipe]
 })
