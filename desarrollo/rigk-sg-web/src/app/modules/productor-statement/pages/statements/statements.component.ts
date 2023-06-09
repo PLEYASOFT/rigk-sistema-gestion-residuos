@@ -71,7 +71,7 @@ export class StatementsComponent implements OnInit {
         let businessSet = new Set();
         let yearSet = new Set();
         (r.data as any[]).forEach(e => {
-          businessSet.add(e.CODE_BUSINESS + '-' + e.NAME_BUSINESS);
+          businessSet.add(e.CODE_BUSINESS + ' — ' + e.NAME_BUSINESS);
           if (this.years.indexOf(e.YEAR_STATEMENT) == -1) {
             this.years.push(e.YEAR_STATEMENT);
             yearSet.add(e.YEAR_STATEMENT);
@@ -100,7 +100,7 @@ export class StatementsComponent implements OnInit {
       n = -1
     }
     if (n != -1 && n != null) {
-      n = n.replace(/.*-\s*/, '');
+      n = n.replace(/.* — \s*/, '');
     }
     
     else {
@@ -141,12 +141,12 @@ export class StatementsComponent implements OnInit {
       n = -1
     }
     if (n != -1 && n != null) {
-      n = n.toString().replace(/.*-\s*/, '');
+      n = n.toString().replace(/.* — \s*/, '');
     }
     else {
       let yearSet = new Set();
       (this.dbStatements as any[]).forEach(e => {
-        yearSet.add(e.NAME_BUSINESS);
+        yearSet.add(e.CODE_BUSINESS + ' — ' + e.NAME_BUSINESS);
       });
       this.business_name = Array.from(yearSet).map(name => ({ label: name, value: name }));
       return;
@@ -159,7 +159,7 @@ export class StatementsComponent implements OnInit {
 
     let yearSet = new Set();
     (tmp as any[]).forEach(e => {
-      yearSet.add(e.NAME_BUSINESS);
+      yearSet.add(e.CODE_BUSINESS + ' — ' + e.NAME_BUSINESS);
     });
     this.business_name = Array.from(yearSet).map(name => ({ label: name, value: name }));
   }
@@ -236,16 +236,19 @@ export class StatementsComponent implements OnInit {
       }
 
       if (n != -1) {
-        n = n.toString().replace(/.*-\s*/, '');
+        n = n.toString().replace(/.* — \s*/, '');
       }
 
+      let aux = this.business_name;
       this.business_name = this.business_name.map((business: { value: any; label: any; }) => {
-        const value = business.value.replace(/.*-\s*/, '');
-        const label = business.label.replace(/.*-\s*/, '');
+        const value = business.value.replace(/.* — \s*/, '');
+        const label = business.label.replace(/.* — \s*/, '');
         return { value, label };
       });
       if (n == -1 || this.business_name.some((business: { value: any; label: any; }) => business.value === n)) {
+        this.business_name = aux;
         if (y != undefined && !isNaN(Number(y))) {
+          this.business_name = aux;
           const tmp = this.dbStatements.filter(r => {
             if (n != '-1' && r.NAME_BUSINESS == n) {
               if (y != '-1') {
@@ -270,6 +273,7 @@ export class StatementsComponent implements OnInit {
           return;
         }
         else {
+          this.business_name = aux;
           Swal.fire({
             title: 'Error',
             text: 'Debe ingresar un año válido.',
@@ -279,6 +283,7 @@ export class StatementsComponent implements OnInit {
         }
       }
       else {
+        this.business_name = aux;
         Swal.fire({
           title: 'Error',
           text: 'Debe ingresar una empresa o año válido.',
