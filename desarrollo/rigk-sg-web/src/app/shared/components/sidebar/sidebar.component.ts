@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import { BusinessService } from '../../../core/services/business.service';
 import { ProductorService } from '../../../core/services/productor.service';
 import { ConsumerService } from '../../../core/services/consumer.service';
+import { RatesTsService } from 'src/app/core/services/rates.ts.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -56,6 +57,7 @@ export class SidebarComponent implements OnInit {
   constructor(private router: Router,
     public businessService: BusinessService,
     public ss: ConsumerService,
+    public rates: RatesTsService,
     private productorService: ProductorService) { }
 
   ngOnInit(): void {
@@ -67,59 +69,75 @@ export class SidebarComponent implements OnInit {
     }
   }
   async showDialog() {
-    Swal.fire({
-      title: 'Ingrese Datos',
-      html: '<input id="inp_id_business" type="text" placeholder="ID Empresa" class="form-control"><br><input id="inp_year" type="number" placeholder="AÑO Declaración" class="form-control"><p>Corresponde declarar año ' + (+this.year - 1) + '</p>',
-      showCancelButton: true,
-      confirmButtonText: 'Aceptar ',
-      cancelButtonText: 'Cancelar',
-      preConfirm: async () => {
-        const id_business = ((document.getElementById('inp_id_business') as HTMLInputElement).value);
-        const year = parseInt((document.getElementById('inp_year') as HTMLInputElement).value);
-        const actual = new Date().getFullYear();
-        if (!(year < actual && id_business != '')) {
-          Swal.showValidationMessage(`Solo se aceptan antes del año ${actual}`);
-          return;
-        }
-        if ((year >= 1000 && year <= 9999) && year < actual && id_business != '') {
-          await this.businessService.verifyBusiness(id_business).subscribe({
-            next: r => {
-              if (r.status) {
-                this.productorService.verifyDraft(id_business, year).subscribe({
-                  next: e => {
-                    if (!e.status) {
-                      this.router.navigate(['/productor/form'], { queryParams: { year, id_business } });
+    this.rates.getCLP.subscribe({
+      next: r=> {
+        if(r.data.length < 4) {
+          Swal.fire({
+            icon: 'info',
+            text: `Las tarifas del año ${this.year} no han sido ingresadas. Por favor contacte al administrador`,
+            showConfirmButton: true
+          }).then(btn=>{
+            if(btn.isConfirmed){
+              this.router.navigate(['/productor/home']);
+            }
+          });
+        } else {
+          Swal.fire({
+            title: 'Ingrese Datos',
+            html: '<input id="inp_id_business" type="text" placeholder="ID Empresa" class="form-control"><br><input id="inp_year" type="number" placeholder="AÑO Declaración" class="form-control"><p>Corresponde declarar año ' + (+this.year - 1) + '</p>',
+            showCancelButton: true,
+            confirmButtonText: 'Aceptar ',
+            cancelButtonText: 'Cancelar',
+            preConfirm: async () => {
+              const id_business = ((document.getElementById('inp_id_business') as HTMLInputElement).value);
+              const year = parseInt((document.getElementById('inp_year') as HTMLInputElement).value);
+              const actual = new Date().getFullYear();
+              if (!(year < actual && id_business != '')) {
+                Swal.showValidationMessage(`Solo se aceptan antes del año ${actual}`);
+                return;
+              }
+              if ((year >= 1000 && year <= 9999) && year < actual && id_business != '') {
+                await this.businessService.verifyBusiness(id_business).subscribe({
+                  next: r => {
+                    if (r.status) {
+                      this.productorService.verifyDraft(id_business, year).subscribe({
+                        next: e => {
+                          if (!e.status) {
+                            this.router.navigate(['/productor/form'], { queryParams: { year, id_business } });
+                          } else {
+                            if(e.data[0].state == 2) {
+                              this.router.navigate(['/productor/form'], { queryParams: { year, id_business } });
+                              sessionStorage.setItem("state", "2");
+                              sessionStorage.setItem("id_statement", e.data[0].id);
+                            } else {
+                              Swal.fire({
+                                icon: 'info',
+                                title: '¡Oops!',
+                                text: 'Ya existe declaración enviada'
+                              });
+                            }
+                          }
+                        }
+                      });
                     } else {
-                      console.log(e)
-                      if(e.data[0].state == 2) {
-                        this.router.navigate(['/productor/form'], { queryParams: { year, id_business } });
-                        sessionStorage.setItem("state", "2");
-                        sessionStorage.setItem("id_statement", e.data[0].id);
-                      } else {
-                        Swal.fire({
-                          icon: 'info',
-                          title: '¡Oops!',
-                          text: 'Ya existe declaración enviada'
-                        });
-                      }
+                      Swal.fire({
+                        icon: 'error',
+                        title: '¡Oops!',
+                        text: 'Usuario no pertenece a empresa'
+                      });
                     }
                   }
                 });
               } else {
-                Swal.fire({
-                  icon: 'error',
-                  title: '¡Oops!',
-                  text: 'Usuario no pertenece a empresa'
-                });
+                Swal.showValidationMessage('ID y/o Año incorrecto. Favor verificar')
               }
             }
+          }).then(result => {
           });
-        } else {
-          Swal.showValidationMessage('ID y/o Año incorrecto. Favor verificar')
         }
       }
-    }).then(result => {
-    });
+    })
+
   }
   async showDialog2() {
     Swal.fire({
@@ -151,7 +169,7 @@ export class SidebarComponent implements OnInit {
             }
           });
         } else {
-          Swal.showValidationMessage('ID y/o Año incorrecto. Favor verificar')
+          Swal.showValidationMessage('ID y/o Año incorrecto. Favor verificar');
         }
       }
     }).then(result => {
