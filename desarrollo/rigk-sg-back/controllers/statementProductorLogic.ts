@@ -504,7 +504,6 @@ class StatementProductorLogic {
         const { year, id } = req.params;
         try {
             const rates: any[] = await ratesDao.ratesID((parseInt(year) + 1).toString());
-            console.log("_>",rates)
             if(rates.length == 0) {
                                 return res.status(500).json({
                     status: false,
@@ -639,7 +638,6 @@ class StatementProductorLogic {
                     }
                 }
             }
-            
             const val1 = lrp == 0 ? "0.00" : (pr - lrp);
             const val2 = lrme == 0 ? "0.00" : (mer - lrme);
             const val3 = lrpl == 0 ? "0.00" : (plr - lrpl);
