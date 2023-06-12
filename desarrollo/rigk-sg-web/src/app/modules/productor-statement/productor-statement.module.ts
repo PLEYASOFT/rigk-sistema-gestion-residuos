@@ -13,7 +13,7 @@ import { SummaryStatementComponent } from './components/summary-statement/summar
 import { FormStatementComponent } from './components/form-statement/form-statement.component';
 import { SendStatementComponent } from './components/send-statement/send-statement.component';
 import { RatesComponent } from './pages/rates/rates.component';
-
+import { AutoCompleteModule } from 'primeng/autocomplete';
 @NgModule({
   declarations: [
     FormComponent,
@@ -31,7 +31,8 @@ import { RatesComponent } from './pages/rates/rates.component';
     ProductorStatementRoutingModule,
     SharedModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AutoCompleteModule,
   ],
   providers: [CurrencyPipe]
 })

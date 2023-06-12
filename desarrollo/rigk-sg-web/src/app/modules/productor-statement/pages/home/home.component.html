@@ -1,4 +1,4 @@
-<div id="content">
+<div id="content" style=" width: 60vw; margin: 0; padding: 0;">
     <!-- inicio breadcrumbs -->  
     <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -12,8 +12,8 @@
         <h1>Inicio</h1>
         <div class="box box-inicio">
             <div class="row">
-                <!-- columna 1 -->
-                <div class="col-12 col-md-7">
+                <!-- box total-->
+                <div class="col-12 col-md-12">
                     <h2 class="h1">Bienvenido/a a Mi Declaración</h2>
                     <p>Como parte de las obligaciones que establece la Ley REP, los Productores deben informar la cantidad de EyE no domiciliarios (POM) puestos en el mercado el año anterior.</p>
                     <p>ProREP pone a disposición de sus socios la plataforma de declaración que dará cumplimiento a la obligación de informar sus EyE.</p>
@@ -26,7 +26,7 @@
                     <p>Celular <strong><a class="color-white" href="tel:+56979168394">+56 9 7916 8394</a></strong>
                 </div>
                 <!-- columna 2 -->
-                <div class="col-12 col-md-5">
+                <!-- <div class="col-12 col-md-5">
                     <div class="pt-4 pt-md-0 mt-3 mt-md-0 border-top border-top-md-0">
                         <p>Las tarifas por subcategoría son de carácter anual por lo que estarán vigentes por todo el año 2023.</p>
                         <ul class="list list-tarifas list-unstyled">
@@ -39,11 +39,46 @@
                             
                         </ul>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
         <!-- fin box inicio -->
-
+        <p></p>
+        <div class="table-responsive">
+            <table class="table table-even table-section table-borderless table-radius">
+                <thead class="vertical-middle">
+                    <tr>
+                        <th>ID Empresa</th>
+                        <th>Nombre Empresa</th>
+                        <th>Año Declaración</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let s of allBusiness">
+                        <td>{{s.CODE_BUSINESS}}</td>
+                        <td>{{s.NAME}}</td>
+                        <td>{{year}}</td>
+                        <td>
+                            <span class= "circle" [ngClass]="{'green-circle':businessById(s.ID).code==1,'red-circle':businessById(s.ID).code==0 || businessById(s.ID).code== -1,'yellow-circle':businessById(s.ID).code==2 }"></span>
+                            {{businessById(s.ID).status}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Pagination -->
+        <nav aria-label="Navegación resultados">
+            <ul class="pagination">
+                <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
+                <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
+                <li *ngFor="let in of setArrayFromNumber(); let i = index"><button class="border btn btn-sm"
+                        [ngClass]="{ 'btn-info':pos==(i+1), 'btn-primary': pos != (i+1)}"
+                        (click)="pagTo(i)">{{i+1}}</button></li>
+                <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
+                <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
+            </ul>
+        </nav>
     </section>
     <!-- fin Monitor Inicio -->
 
