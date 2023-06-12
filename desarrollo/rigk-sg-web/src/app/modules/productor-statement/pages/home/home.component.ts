@@ -37,27 +37,9 @@ export class HomeComponent implements OnInit {
   loadStatements() {
     const idUser = JSON.parse(sessionStorage.getItem('user')!).ID;
     this.businessServices.getBusinessById(idUser, this.year.toString()).subscribe(r => {
-      console.log("rrrrr",r)
       this.allStatement = r.data.statements;
       this.allBusiness = (r.data.business as any).sort((a:any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
     })
-    // this.productorService.getStatementByUser.subscribe(r => {
-    //   if (r.status) {
-    //     const currentYearMinusOne = (new Date().getFullYear()) - 1;
-    //     r.data = r.data.filter((e: any) => e.YEAR_STATEMENT === currentYearMinusOne);
-  
-    //     (r.data as any[]).forEach(e => {
-    //       if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
-    //         this.business_name.push(e.NAME_BUSINESS);
-    //       }
-    //     });
-  
-    //     this.years.push(currentYearMinusOne);
-    //     this.dbStatements = r.data;
-    //     this.cant = Math.ceil(this.dbStatements.length / 10);
-    //     this.db = this.dbStatements.slice(0, 10).sort((a, b) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
-    //   }
-    // });
   }
   allStatement: any[]=[];
   allBusiness: any[]=[];
