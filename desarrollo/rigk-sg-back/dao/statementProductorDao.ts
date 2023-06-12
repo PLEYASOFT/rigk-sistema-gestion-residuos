@@ -3,7 +3,7 @@ import ratesDao from '../dao/ratesDao';
 class statementProductorDao {
     public async getDeclaretionsByUser(user: string) {
         const conn = mysqlcon.getConnection();
-        const statements = await conn?.execute("SELECT header_statement_form.ID, header_statement_form.ID_BUSINESS, header_statement_form.STATE, header_statement_form.CREATED_BY, header_statement_form.UPDATED_AT, header_statement_form.YEAR_STATEMENT, business.NAME as NAME_BUSINESS, business.CODE_BUSINESS, SUM(detail_statement_form.AMOUNT) as AMOUNT  FROM header_statement_form INNER JOIN business ON business.id = header_statement_form.ID_BUSINESS INNER JOIN detail_statement_form ON detail_statement_form.ID_HEADER = header_statement_form.ID WHERE ID_BUSINESS in (SELECT ID_BUSINESS FROM user_business WHERE ID_USER=?) GROUP BY header_statement_form.ID", [user]).then((res) => res[0]).catch(error => { undefined });
+        const statements = await conn?.execute("SELECT header_statement_form.ID, header_statement_form.ID_BUSINESS, header_statement_form.STATE, header_statement_form.CREATED_BY, header_statement_form.UPDATED_AT, header_statement_form.VALIDATED_AT,  header_statement_form.YEAR_STATEMENT, business.NAME as NAME_BUSINESS, business.CODE_BUSINESS, SUM(detail_statement_form.AMOUNT) as AMOUNT  FROM header_statement_form INNER JOIN business ON business.id = header_statement_form.ID_BUSINESS INNER JOIN detail_statement_form ON detail_statement_form.ID_HEADER = header_statement_form.ID WHERE ID_BUSINESS in (SELECT ID_BUSINESS FROM user_business WHERE ID_USER=?) GROUP BY header_statement_form.ID", [user]).then((res) => res[0]).catch(error => { undefined });
         conn?.end();
         return { statements };
     }    
@@ -304,6 +304,15 @@ class statementProductorDao {
     }
     public async changeStateHeader(state: boolean | number, id: number) {
         const conn = mysqlcon.getConnection();
+        const tmp0:any=await conn?.execute("select VALIDATED_AT FROM header_statement_form WHERE id = ? AND VALIDATED_AT IS not NULL", [id]).then((res) => res[0]).catch(error => undefined);
+        if(tmp0.length > 0) {
+            const tmp = await conn?.execute("UPDATE header_statement_form SET STATE = ?, UPDATED_AT= ? WHERE id = ?", [state,tmp0[0].VALIDATED_AT, id]).then((res) => res[0]).catch(error => undefined);
+            conn?.end();
+            if (tmp == undefined) {
+                return false;
+            }
+            return true;
+        }
         const tmp = await conn?.execute("UPDATE header_statement_form SET STATE = ?, UPDATED_AT=now() WHERE id = ?", [state, id]).then((res) => res[0]).catch(error => undefined);
         if (tmp == undefined) {
             return false;
@@ -313,7 +322,7 @@ class statementProductorDao {
     }
     public async validateStatement(id: number) {
         const conn = mysqlcon.getConnection();
-        const tmp = await conn?.execute("UPDATE header_statement_form SET STATE = ?, UPDATED_AT=now() WHERE id = ?", [2, id]).then((res) => res[0]).catch(error => undefined);
+        const tmp = await conn?.execute("UPDATE header_statement_form SET STATE = ?, UPDATED_AT=now(), VALIDATED_AT=now() WHERE id = ?", [2, id]).then((res) => res[0]).catch(error => undefined);
         if (tmp == undefined) {
             return false;
         }
