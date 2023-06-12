@@ -313,7 +313,7 @@ class statementProductorDao {
     }
     public async validateStatement(id: number) {
         const conn = mysqlcon.getConnection();
-        const tmp = await conn?.execute("UPDATE header_statement_form SET STATE = ?, UPDATED_AT=now() WHERE id = ?", [2, id]).then((res) => res[0]).catch(error => undefined);
+        const tmp = await conn?.execute("UPDATE header_statement_form SET STATE = ?, UPDATED_AT=now(), VALIDATED_AT=now() WHERE id = ?", [2, id]).then((res) => res[0]).catch(error => undefined);
         if (tmp == undefined) {
             return false;
         }
