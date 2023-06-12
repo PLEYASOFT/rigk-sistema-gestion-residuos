@@ -18,7 +18,6 @@ export class RatesComponent implements OnInit {
     this.ratesService.getRates(this.year).subscribe({
       next:resp => {
         if (resp.status) {
-          console.log(resp.data);
           if(resp.data.length < 4) {
             Swal.fire({
               icon: 'info',
