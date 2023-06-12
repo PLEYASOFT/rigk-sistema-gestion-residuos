@@ -8,6 +8,7 @@ router.get('/business/check/:establishmentId/:businessId/:specificType', [valida
 router.get('/business/vat/:vat', [validarJWT, verifyParameters], businessLogic.getBusinessByVAT);
 router.get('/verify/:id', [validarJWT, verifyParameters], businessLogic.verifyId);
 router.get('/business/:id', [validarJWT, verifyParameters], businessLogic.getBusiness);
+router.get('/businessById/:id/:year', [validarJWT], businessLogic.getAllBusinessById);
 router.get('/business', [validarJWT, verifyParameters], businessLogic.getAllBusiness);
 router.get('/user', [validarJWT], businessLogic.getBusinessByUser);
 router.post('/business', [validarJWT, verifyParameters], businessLogic.postBusiness);

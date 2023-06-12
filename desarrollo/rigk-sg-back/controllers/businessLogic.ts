@@ -119,6 +119,19 @@ class BusinessLogic {
             });
         }
     }
+    async getAllBusinessById(req: any, res: Response) {
+        const { id, year } = req.params;
+        try {
+            const data = await businessDao.getAllBusinessById(id, year);
+            res.status(200).json({ status: true, data, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
 }
 const businessLogic = new BusinessLogic();
 export default businessLogic;
