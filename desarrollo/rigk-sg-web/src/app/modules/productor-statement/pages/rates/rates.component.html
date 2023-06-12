@@ -1,0 +1,50 @@
+<div id="content">
+    <!-- inicio breadcrumbs -->  
+    <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" aria-current="page"><i class="fa fa-home" aria-hidden="true"></i> Inicio</li>
+        </ol>
+    </nav>
+    <!-- fin breadcrumbs -->
+    
+    <!-- inicio Inicio -->
+    <section class="inicio">
+        <h1>Tarifas</h1>
+        <div class="box box-inicio">
+            <div class="row">
+                <!-- columna 1 -->
+                <div class="col-12 col-md-7">
+                    <p>
+                        El costo anual que deberá pagar en marzo del año correspondiente al cumplimiento:
+                        <img src="assets/images/rigk_eq.png" class="img-fluid">
+                    </p>
+                    donde:
+                    <ul>
+                        <li>P es el precio tarifa UF por tonelada</li>
+                        <li>Q son las toneladas declaradas</li>
+                    </ul>
+                    <br>
+                    Ejemplo: <br>
+                    <br>
+                   <b>Costo Anual =</b> <p *ngFor="let t of rates; let i = index">+({{t.price}}UF x POM {{typex[i]}})</p>
+                </div>
+                <!-- columna 2 -->
+                <div class="col-12 col-md-5">
+                    <div class="pt-4 pt-md-0 mt-3 mt-md-0 border-top border-top-md-0">
+                        <p>Las tarifas por subcategoría son de carácter anual por lo que estarán vigentes por todo el año 2023.</p>
+                        <ul class="list list-tarifas list-unstyled">
+                            <li class=" d-block bg-blue color-white">Tarifas por tonelada (UF)</li>
+                            
+                            <li *ngFor="let type of rates;">
+                                <span>{{type.name}}</span>
+                                <span>{{type.price}}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- fin box inicio -->
+    </section>
+    <!-- fin Monitor Inicio -->
+</div>

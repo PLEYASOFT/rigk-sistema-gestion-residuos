@@ -12,8 +12,8 @@ import { StatementsComponent } from './pages/statements/statements.component';
 import { SummaryStatementComponent } from './components/summary-statement/summary-statement.component';
 import { FormStatementComponent } from './components/form-statement/form-statement.component';
 import { SendStatementComponent } from './components/send-statement/send-statement.component';
+import { RatesComponent } from './pages/rates/rates.component';
 import { AutoCompleteModule } from 'primeng/autocomplete';
-import { DropdownModule } from 'primeng/dropdown';
 @NgModule({
   declarations: [
     FormComponent,
@@ -23,7 +23,8 @@ import { DropdownModule } from 'primeng/dropdown';
     StatementsComponent,
     SummaryStatementComponent,
     FormStatementComponent,
-    SendStatementComponent
+    SendStatementComponent,
+    RatesComponent
   ],
   imports: [
     CommonModule,
@@ -32,7 +33,6 @@ import { DropdownModule } from 'primeng/dropdown';
     FormsModule,
     ReactiveFormsModule,
     AutoCompleteModule,
-    DropdownModule
   ],
   providers: [CurrencyPipe]
 })
