@@ -305,7 +305,6 @@ class statementProductorDao {
     public async changeStateHeader(state: boolean | number, id: number) {
         const conn = mysqlcon.getConnection();
         const tmp0:any=await conn?.execute("select VALIDATED_AT FROM header_statement_form WHERE id = ? AND VALIDATED_AT IS not NULL", [id]).then((res) => res[0]).catch(error => undefined);
-        console.log(tmp0);
         if(tmp0.length > 0) {
             const tmp = await conn?.execute("UPDATE header_statement_form SET STATE = ?, UPDATED_AT= ? WHERE id = ?", [state,tmp0[0].VALIDATED_AT, id]).then((res) => res[0]).catch(error => undefined);
             conn?.end();
