@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { RatesTsService } from 'src/app/core/services/rates.ts.service';
 import Swal from 'sweetalert2';
 
@@ -12,7 +13,7 @@ export class RatesComponent implements OnInit {
   typex = ['Papel/cartón', 'Metal', 'Plástico', 'No Reciclable'];
   year = new Date().getFullYear();
   rates: any[] = []
-  constructor(public ratesService: RatesTsService) { }
+  constructor(public ratesService: RatesTsService, private router: Router) { }
 
   ngOnInit(): void {
     this.ratesService.getRates(this.year).subscribe({
@@ -21,7 +22,11 @@ export class RatesComponent implements OnInit {
           if(resp.data.length < 4) {
             Swal.fire({
               icon: 'info',
-              text: `Tarifa año ${this.year} no ha sido ingresada. Contacte al administrador`
+              text: `Las tarifas del año ${this.year} no han sido ingresadas. Por favor contacte al administrador`
+            }).then(btn=>{
+              if (btn.isConfirmed) {
+                this.router.navigate(['/productor/home']);
+              }
             });
           }
           resp.data.forEach((lalala: any) => {
@@ -36,9 +41,9 @@ export class RatesComponent implements OnInit {
           icon: 'error',
           text: `Algo salió mal`
         });
-        return;
+        this.router.navigate(['/productor/home']);
       }
     }
-    )
+    );
   }
 }
