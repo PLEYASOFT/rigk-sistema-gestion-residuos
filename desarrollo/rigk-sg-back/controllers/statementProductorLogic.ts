@@ -549,12 +549,11 @@ class StatementProductorLogic {
                 }
             }
             const { detail, header } = declaretion!;
-
             let last_detail: any = await statementDao.getDetailById(id, (parseInt(year) - 1));
             if(last_detail.length > 0 && last_detail[0].STATE == 0) {
                 last_detail = [];
             }
-            const uf: any = await ratesDao.getUF((new Date()).toISOString().split("T")[0]);
+            const uf: any = await ratesDao.getUF((new Date(header.VALIDATED_AT || header.UPDATED_AT)).toISOString().split("T")[0]);
             let lrp = 0;
             let lrme = 0;
             let lrpl = 0;
@@ -639,7 +638,6 @@ class StatementProductorLogic {
                     }
                 }
             }
-
             const val1 = lrp == 0 ? "0.00" : (pr - lrp);
             const val2 = lrme == 0 ? "0.00" : (mer - lrme);
             const val3 = lrpl == 0 ? "0.00" : (plr - lrpl);
@@ -664,7 +662,7 @@ class StatementProductorLogic {
             let date_limit = new Date(header.UPDATED_AT);
             date_limit.setDate(date_limit.getDate() + 7);
             const remaining = (( (date_limit.getTime() - (new Date()).getTime()) )/(1000*60*60*24)).toFixed(0);
-
+            
             return res.json({ state: header.STATE, remaining, neto: neto, iva: iva, total: total, papel: pr.toFixed(2).replace(".", ","), metal: mer.toFixed(2).replace(".", ","), plastico: plr.toFixed(2).replace(".", ","), no_reciclable: (pnr + menr + plnr + onr).toFixed(2).replace(".", ",") });
         } catch (error) {
             console.log("error pos " + error);
