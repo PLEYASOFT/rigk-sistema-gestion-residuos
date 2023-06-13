@@ -13,6 +13,7 @@ export class StatementsComponent implements OnInit {
 
   form: FormGroup;
   dbStatements: any[] = [];
+  filtered: any[] = [];
   db: any[] = [];
   pos = 1;
 
@@ -67,7 +68,8 @@ export class StatementsComponent implements OnInit {
   loadStatements() {
     this.productorService.getStatementByUser.subscribe(r => {
       if (r.status) {
-        r.data = r.data.sort(((a: any, b: any) => b.YEAR_STATEMENT - a.YEAR_STATEMENT));
+        r.data = r.data.sort(((a: any, b: any) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime()));
+        const rStatement = r.data.sort(((a: any, b: any) => b.YEAR_STATEMENT - a.YEAR_STATEMENT));
         let businessSet = new Set();
         let yearSet = new Set();
         (r.data as any[]).forEach(e => {
@@ -80,9 +82,10 @@ export class StatementsComponent implements OnInit {
         this.business_year = Array.from(yearSet).map(name => ({ label: name, value: name }));
         this.business_name = Array.from(businessSet).map(name => ({ label: name, value: name }));
         this.years.sort((a, b) => b - a);
-        this.dbStatements = r.data;
+        this.dbStatements = rStatement;
+        this.filtered = r.data;
         this.cant = Math.ceil(this.dbStatements.length / 10);
-        this.db = this.dbStatements.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+        this.db = this.dbStatements.slice(0, 10).sort((a, b) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime());
       }
     })
   }
@@ -267,8 +270,9 @@ export class StatementsComponent implements OnInit {
               }
             }
           });
-
-          this.db = tmp.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+          this.pos = 1;
+          this.filtered = tmp;
+          this.db = tmp.slice(0, 10).sort((a, b) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime());
           this.cant = Math.ceil(tmp.length / 10);
           return;
         }
@@ -308,18 +312,19 @@ export class StatementsComponent implements OnInit {
   }
   pagTo(i: number) {
     this.pos = i + 1;
-    this.db = this.dbStatements.slice((i * 10), (i + 1) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
+    this.db = this.filtered.slice((i * 10), (i + 1) * 10).sort((a, b) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime());
   }
   next() {
     if (this.pos >= this.cant) return;
     this.pos++;
-    this.db = this.dbStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
+    this.db = this.filtered.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime());
   }
   previus() {
     if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
     this.pos = this.pos - 1;
-    this.db = this.dbStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
+    this.db = this.filtered.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime());
   }
+  
   downloadPDF(id: any, year: any) {
     Swal.fire({
       title: 'Espere',
