@@ -271,7 +271,7 @@ export class StatementsComponent implements OnInit {
             }
           });
           this.pos = 1;
-          this.filtered = tmp;
+          this.filtered = tmp.sort(((a: any, b: any) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime()));;
           this.db = tmp.slice(0, 10).sort((a, b) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime());
           this.cant = Math.ceil(tmp.length / 10);
           return;
