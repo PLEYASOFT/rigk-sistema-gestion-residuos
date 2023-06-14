@@ -67,8 +67,8 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   ajuste = Array.from({ length: 5 }, () => 0);
   costoAnual = Array.from({ length: 5 }, () => 0);
   sumaAmount = 0;
-  sumaAjuste = 0;
-  amountAnual = 0;
+  sumaNeto = 0;
+  sumaIva = 0;
 
   constructor(private fb: FormBuilder,
     public productorService: ProductorService,
@@ -119,7 +119,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
             this.costoAnual[r?.type_residue - 1] = this.result;
           }
         }
-
+        this.costoAnual[r?.type_residue - 1] = this.tonSums.primario[r?.type_residue - 1] + this.tonSums.secundario[r?.type_residue - 1] + this.tonSums.terciario[r?.type_residue - 1];
       }
       else if (r.recyclability == 2) {
         if (r?.type_residue != 4) {
@@ -142,6 +142,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
             document.getElementById(`ter_weight_4`)!.innerHTML = this.setFormato(this.result)
             this.costoAnual[3] = this.result;
           }
+          this.costoAnual[3] = this.tonNoReciclablePrim + this.tonNoReciclableSec + this.tonNoReciclableTer;
         }
       }
 
@@ -150,22 +151,21 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
           this.tonRetPrim = this.tonRetPrim + parseFloat(r?.value);
           this.result = this.tonRetPrim;
           document.getElementById(`prim_weight_5`)!.innerHTML = this.setFormato(this.result);
-          this.costoAnual[4] = this.result;
         }
         if (r.precedence == 2) {
           this.tonRetSec = this.tonRetSec + parseFloat(r?.value);
           this.result = this.tonRetSec;
           document.getElementById(`sec_weight_5`)!.innerHTML = this.setFormato(this.result);
-          this.costoAnual[4] = this.result;
         }
         if (r.precedence == 3) {
           this.tonRetTer = this.tonRetTer + parseFloat(r?.value);
           this.result = this.tonRetTer;
           document.getElementById(`ter_weight_5`)!.innerHTML = this.setFormato(this.result);
-          this.costoAnual[4] = this.result;
         }
+        this.costoAnual[4] = this.tonRetPrim + this.tonRetSec + this.tonRetTer;
       }
     }
+    console.log(this.costoAnual)
     for (let i = 1; i <= 5; i++) {
       this.result = parseFloat(document.getElementById(`prim_weight_${i}`)!.innerHTML.replace(",", ".")) + parseFloat(document.getElementById(`sec_weight_${i}`)!.innerHTML.replace(",", ".")) + parseFloat(document.getElementById(`ter_weight_${i}`)!.innerHTML.replace(",", "."));
       console.log(document.getElementById(`sec_weight_${i}`)!.innerHTML)
@@ -180,33 +180,35 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     this.ratesService.getCLP.pipe(
       concatMap(clp => {
         this.sumaAmount = 0;
+        console.log(clp)
         // Procesamiento de los datos de la primera suscripción
         for (let i = 0; i < 4; i++) {
           document.getElementById(`actual_amount_${i}`)!.innerHTML = this.setFormato(clp.data[i].price);
           document.getElementById(`amount_anual_${i}`)!.innerHTML = this.setFormato(clp.data[i].price * this.costoAnual[i]);
-          document.getElementById(`amount_corregido_${i}`)!.innerHTML = this.setFormato(clp.data[i].price * this.ajuste[i]);
-          document.getElementById(`total_category_amount_${i}`)!.innerHTML = this.setFormato((clp.data[i].price * this.costoAnual[i]) + (clp.data[i].price * this.ajuste[i]));
           this.sumaAmount = this.sumaAmount + parseFloat((clp.data[i].price * this.costoAnual[i]).toFixed(2)) + parseFloat((clp.data[i].price * this.ajuste[i]).toFixed(2));
           this.dif[i] = clp.data[i].price * this.costoAnual[i] + clp.data[i].price * this.ajuste[i];
-          this.sumaAjuste = this.sumaAjuste + parseFloat((clp.data[i].price * this.ajuste[i]).toFixed(2));
-          this.amountAnual = this.amountAnual + parseFloat((clp.data[i].price * this.costoAnual[i]).toFixed(2));
         }
-        // Se regresa un observable para la segunda suscripción
-        document.getElementById(`anual_amount`)!.innerHTML = this.setFormato(this.amountAnual);
-        document.getElementById(`ajuste_amount`)!.innerHTML = this.setFormato(this.sumaAjuste);
-        document.getElementById(`total_amount`)!.innerHTML = this.setFormato(this.sumaAmount);
-        document.getElementById(`amount_total`)!.innerHTML = document.getElementById(`total_amount`)!.innerHTML
         return this.ratesService.getUF;
       }),
     )
       .subscribe(uf => {
         // Procesamiento de los datos de la segunda suscripción
         this.sumaAmount = 0;
+        console.log(uf)
+        console.log(this.dif)
         for (let i = 0; i < 4; i++) {
-          this.sumaAmount = this.sumaAmount + parseInt((this.dif[i] * uf.data * 1.19).toFixed(0));
+          this.sumaAmount = this.sumaAmount + (this.dif[i] * uf.data * 1.19);
+          document.getElementById(`total_neto${i}`)!.innerHTML = '$' +this.setFormato((this.dif[i] * uf.data).toFixed(0));
+          document.getElementById(`iva_${i}`)!.innerHTML = '$' +this.setFormato((parseInt((this.dif[i] * uf.data * 1.19).toFixed(0)) - parseInt((this.dif[i] * uf.data).toFixed(0))));
           document.getElementById(`uf_clp_${i}`)!.innerHTML = '$' + this.setFormato(parseInt((this.dif[i] * uf.data * 1.19).toFixed(0)));
+
+          this.sumaNeto = this.sumaNeto + this.dif[i] * uf.data;
+          this.sumaIva = this.sumaIva + (this.dif[i] * uf.data * 1.19 - this.dif[i] * uf.data);
         }
-        document.getElementById(`total_uf_clp`)!.innerHTML = '$' + this.setFormato(this.sumaAmount);
+        document.getElementById(`total_uf_clp`)!.innerHTML = '$' + this.setFormato(parseInt(this.sumaAmount.toFixed(0)));
+        document.getElementById(`amount_clp`)!.innerHTML = '$' + this.setFormato(parseInt(this.sumaAmount.toFixed(0)));
+        document.getElementById(`ajuste_amount`)!.innerHTML = '$' +this.setFormato(parseInt(this.sumaNeto.toFixed(0)));
+        document.getElementById(`total_amount_iva`)!.innerHTML = '$' +this.setFormato(parseInt(this.sumaIva.toFixed(0)));
       });
   }
 
