@@ -69,7 +69,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   sumaAmount = 0;
   sumaNeto = 0;
   sumaIva = 0;
-
+  sumaUF = 0;
   constructor(private fb: FormBuilder,
     public productorService: ProductorService,
     private actived: ActivatedRoute,
@@ -180,14 +180,15 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     this.ratesService.getCLP.pipe(
       concatMap(clp => {
         this.sumaAmount = 0;
-        console.log(clp)
         // Procesamiento de los datos de la primera suscripción
         for (let i = 0; i < 4; i++) {
           document.getElementById(`actual_amount_${i}`)!.innerHTML = this.setFormato(clp.data[i].price);
           document.getElementById(`amount_anual_${i}`)!.innerHTML = this.setFormato(clp.data[i].price * this.costoAnual[i]);
           this.sumaAmount = this.sumaAmount + parseFloat((clp.data[i].price * this.costoAnual[i]).toFixed(2)) + parseFloat((clp.data[i].price * this.ajuste[i]).toFixed(2));
+          this.sumaUF = this.sumaUF + parseFloat((clp.data[i].price * this.costoAnual[i]).toFixed(2))
           this.dif[i] = clp.data[i].price * this.costoAnual[i] + clp.data[i].price * this.ajuste[i];
         }
+        document.getElementById(`anual_amount`)!.innerHTML = this.setFormato(this.sumaUF);
         return this.ratesService.getUF;
       }),
     )
