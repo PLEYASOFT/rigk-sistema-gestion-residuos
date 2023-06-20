@@ -58,4 +58,14 @@ export class ProductorService {
     body.append('file',file[0]);
     return this.http.post<any>(`${this.url}/OC/${id}`, body);
   }
+  downloadPDFTerminos() {
+    let headers = new HttpHeaders();
+    headers = headers.set('Accept', 'application/pdf');
+    return this.http.get<any>(`${environment.API_V1_URL}/utiles/download/pdf`,{ headers: headers, responseType: 'blob' as 'json' });
+  }
+  uploadPDFTerminos(id: any, file: any ) {
+    const body = new FormData();
+    body.append('file',file[0]);
+    return this.http.post<any>(`${this.url}/PDF/${id}`, body);
+  }
 }

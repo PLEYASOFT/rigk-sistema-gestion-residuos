@@ -3,7 +3,9 @@ import { RatesTsService } from '../../../../core/services/rates.ts.service';
 import { ProductorService } from '../../../../core/services/productor.service';
 import { Router } from '@angular/router';
 import { BusinessService } from 'src/app/core/services/business.service';
-
+import Swal from 'sweetalert2';
+// import CryptoJS from "crypto-js";
+// import * as CryptoJS from 'crypto-js';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -33,6 +35,11 @@ export class HomeComponent implements OnInit {
         });
       }
     })
+    //verificar si inicie sesión
+    const isLoggedIn = sessionStorage.getItem('user');
+    if (isLoggedIn) {
+      this.openTermsAndConditions();
+    }
   }
   loadStatements() {
     const idUser = JSON.parse(sessionStorage.getItem('user')!).ID;
@@ -123,5 +130,143 @@ export class HomeComponent implements OnInit {
   setArrayFromNumber() {
     return new Array(this.cant);
   }
-
+decrypt = (Base64: string) => {
+  const bytesDescifrados: Uint8Array = Buffer.from(Base64, 'base64');
+  const textoDescifrado: string = Buffer.from(bytesDescifrados).toString('utf-8');
+  return textoDescifrado;
 }
+
+//1. recibe un base64 retorna bytes
+  base64ToArrayBuffer = (base64: any) => {
+    base64 = this.decrypt(base64);//desencripta base64
+    if (base64.charAt(0) === "0") {
+        base64 = base64.substring(1).replaceAll("\n", "").replaceAll(" ", "");
+    }
+    let binaryString = base64.atob(base64);//tenía Bae64 con mayuscula 
+    let binaryLen = binaryString.length;
+    let bytes = new Uint8Array(binaryLen);
+    for (let i = 0; i < binaryLen; i++) {
+        let ascii = binaryString.charCodeAt(i);
+        bytes[i] = ascii;
+    }
+    return bytes;
+};
+  // saveByteArrayPDF = (reportName:any, byte: any) => {
+  //   let blob = new Blob([byte], { type: "application/pdf" }); //blob
+  //   let link = document.createElement("a");
+  //   link.href = window.URL.createObjectURL(blob);
+  //   let fileName = reportName;
+  //   link.download = fileName;
+  //   link.dispatchEvent(new MouseEvent("click"));
+    // setCargando(false);
+    // document.body.removeChild(document.getElementById("modal-overlay")!);
+    // document.body.classList.remove("modal-open");
+    // document.body.style.overflow = "auto";
+    // document.body.style.paddingRight = "0";
+// };
+
+  
+  dowloadPdf(){
+    this.productorService.downloadPDFTerminos().subscribe(r => {
+      const file = new Blob([r], { type: 'application/pdf' });
+      let link = document.createElement('a');
+      link.href = window.URL.createObjectURL(file);
+      link.download = "pdf";
+      document.body.appendChild(link);
+      link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+      link.remove();
+      window.URL.revokeObjectURL(link.href);
+      // Swal.close();
+    });
+  }
+  adjuntar() {
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.style.display = 'none';
+    input.onchange = function(e) {
+      var target = e.target as HTMLInputElement;
+      var file = target.files![0];
+      if (file) {
+        var path = URL.createObjectURL(file);
+        console.log("Ruta de la carpeta seleccionada:", '/');
+      }
+    };
+    document.body.appendChild(input);
+    input.click();
+  }
+
+
+  // saveBase64AsBlob (base64, mimeType, fileName) {
+  //   const byte = base64ToArrayBuffer(base64);
+  //   const blob = new Blob([byte], { type: mimeType });
+  // }
+  
+  openTermsAndConditions(){
+    document.getElementById('modalDownloadPdfTerms')!.click()
+    //popUp
+    Swal.fire({
+      title: 'Términos y condiciones',
+      html: 'Debe adjuntar firmado términos y condiciones <br><br> <a href="javascript:void(0)" id="download" >Descargar términos y condiciones</a>',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      cancelButtonText: 'Cancelar',
+      confirmButtonText: 'Adjuntar',
+      allowOutsideClick: false,
+      didOpen: () => { const dW = Swal.getPopup()?.querySelector('#download');
+        dW!.addEventListener('click', (r) => {r.preventDefault(); r.stopPropagation(); this.dowloadPdf() } )}
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire(
+          'Enviado!',
+          'Su declaración fue enviada.',
+          'success'
+          )
+        }
+      })
+      // document.querySelector('#download')?.addEventListener('click', (r) => {r.stopPropagation(); this.dowloadPdf() } )
+      document.querySelector('#add')?.addEventListener('click', (r) => {r.stopPropagation(); this.adjuntar() } )
+      
+  }
+  // openTermsAndConditions() {
+  //   document.getElementById('modalDownloadPdfTerms')!.click();
+  //   //popUp
+  //   Swal.fire({
+  //     title: 'Términos y condiciones',
+  //     html: 'Debe adjuntar firmado términos y condiciones <br><br> <a href="javascript:void(0)" id="download" >Descargar términos y condiciones</a>',
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonColor: '#3085d6',
+  //     cancelButtonColor: '#d33',
+  //     cancelButtonText: 'Cancelar',
+  //     confirmButtonText: 'Adjuntar',
+  //     allowOutsideClick: false,
+  //     didOpen: () => {
+  //       const dW = Swal.getPopup()?.querySelector('#download');
+  //       dW!.addEventListener('click', (r) => {
+  //         r.preventDefault();
+  //         r.stopPropagation();
+  //         this.dowloadPdf();
+  //       });
+  //       const addButton = Swal.getPopup()?.querySelector('#add');
+  //       addButton!.addEventListener('click', (r) => {
+  //         r.stopPropagation();
+  //         this.adjuntar();
+  //       });
+  //     }
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       Swal.fire(
+  //         'Enviado!',
+  //         'Su declaración fue enviada.',
+  //         'success'
+  //       );
+  //     }
+  //   });
+  // }
+  
+  
+    
+  }
+  
