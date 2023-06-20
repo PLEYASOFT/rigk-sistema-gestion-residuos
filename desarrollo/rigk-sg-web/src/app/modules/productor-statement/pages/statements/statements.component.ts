@@ -68,17 +68,19 @@ export class StatementsComponent implements OnInit {
   loadStatements() {
     this.productorService.getStatementByUser.subscribe(r => {
       if (r.status) {
-        r.data = r.data.sort(((a: any, b: any) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime()));
         const rStatement = r.data.sort(((a: any, b: any) => b.YEAR_STATEMENT - a.YEAR_STATEMENT));
+
         let businessSet = new Set();
         let yearSet = new Set();
-        (r.data as any[]).forEach(e => {
+        (rStatement as any[]).forEach(e => {
           businessSet.add(e.CODE_BUSINESS + ' — ' + e.NAME_BUSINESS);
           if (this.years.indexOf(e.YEAR_STATEMENT) == -1) {
             this.years.push(e.YEAR_STATEMENT);
             yearSet.add(e.YEAR_STATEMENT);
           }
         });
+        r.data = r.data.sort(((a: any, b: any) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime()));
+
         this.business_year = Array.from(yearSet).map(name => ({ label: name, value: name }));
         this.business_name = Array.from(businessSet).map(name => ({ label: name, value: name }));
         this.years.sort((a, b) => b - a);
@@ -99,21 +101,24 @@ export class StatementsComponent implements OnInit {
     } else { // Esto indica que es un evento (onSelect)
       n = event && event.value;
     }
-    if(n == 'Todos'){
+    if (n == 'Todos') {
       n = -1
     }
     if (n != -1 && n != null) {
       n = n.replace(/.* — \s*/, '');
     }
-    
+
     else {
       let yearSet = new Set();
-      (this.dbStatements as any[]).forEach(e => {
+      let aux = this.dbStatements.slice(); 
+      this.dbStatements.sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT).forEach(e => {
         yearSet.add(e.YEAR_STATEMENT);
       });
 
       this.business_year = Array.from(yearSet).map(name => ({ label: name, value: name }));
+      this.dbStatements = aux; 
       return;
+
     }
     const tmp = this.dbStatements.filter(r => {
       if (n != '-1' && r.NAME_BUSINESS == n) {
@@ -140,7 +145,7 @@ export class StatementsComponent implements OnInit {
     } else { // Esto indica que es un evento (onSelect)
       n = event && event.value;
     }
-    if(n == 'Todos'){
+    if (n == 'Todos') {
       n = -1
     }
     if (n != -1 && n != null) {
@@ -271,7 +276,7 @@ export class StatementsComponent implements OnInit {
             }
           });
           this.pos = 1;
-          this.filtered = tmp.sort(((a: any, b: any) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime()));;
+          this.filtered = tmp;
           this.db = tmp.slice(0, 10).sort((a, b) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime());
           this.cant = Math.ceil(tmp.length / 10);
           return;
@@ -324,7 +329,7 @@ export class StatementsComponent implements OnInit {
     this.pos = this.pos - 1;
     this.db = this.filtered.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime());
   }
-  
+
   downloadPDF(id: any, year: any) {
     Swal.fire({
       title: 'Espere',
