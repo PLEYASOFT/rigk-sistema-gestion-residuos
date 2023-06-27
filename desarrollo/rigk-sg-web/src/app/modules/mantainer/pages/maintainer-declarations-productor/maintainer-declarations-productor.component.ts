@@ -13,7 +13,7 @@ import * as XLSX from 'xlsx';
 export class MaintainerDeclarationsProductorComponent implements OnInit {
 
   datos: any[] = [];
-
+  resumen: any[] = [];
   R_PapelCarton_NP: any = 0;
   R_PapelCarton_P: any = 0;
   R_PapelCarton_Sec: any = 0;
@@ -92,11 +92,6 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
   EyE_Ret: any = 0;
   Total_EyE: any = 0;
 
-  EyE_PapelCarton_Rec_Total: any = 0;
-  EyE_Metal_Rec_Total: any = 0;
-  EyE_Plastico_Rec_Total: any = 0;
-  EyE_NR_Total: any = 0;
-  EyE_Ret_Total: any = 0;
   PapelCarton_Rec_Uf: any = 0;
   Metal_Rec_Uf: any = 0;
   Plastico_Rec_Uf: any = 0;
@@ -115,7 +110,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
   Plastico_IVA: any = 0;
   NR_IVA: any = 0;
   totalIVA: any = 0;
-  
+
   PapelCarton_Bruto: any = 0;
   Metal_Bruto: any = 0;
   Plastico_Bruto: any = 0;
@@ -133,6 +128,8 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
   headLastForm: any;
   rates: any;
   ratesUF: any;
+
+  valores = new Array(29).fill(0);
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
@@ -286,7 +283,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
             'RET. Madera NP': this.setFormato(this.RET_Madera_NP), 'RET. Madera P': this.setFormato(this.RET_Madera_P), 'RET. Madera Sec': this.setFormato(this.RET_Madera_Sec), 'RET. Madera Ter': this.setFormato(this.RET_Madera_Ter), 'RET. Madera TOTAL': this.setFormato(this.RET_Madera_Total), 'RET. Total Ton': this.setFormato(this.RET_Total_Ton),
             'EyE Papel/cartón Rec': this.setFormato(this.EyE_PapelCarton_Rec), 'EyE Metal Rec': this.setFormato(this.EyE_Metal_Rec), 'EyE Plastico Rec': this.setFormato(this.EyE_Plastico_Rec), 'EyE NR': this.setFormato(this.EyE_NR), 'EyE Ret': this.setFormato(this.EyE_Ret), 'TOTAL EyE': this.setFormato(this.Total_EyE),
             'Papel/cartón Rec UF': this.setFormato(this.PapelCarton_Rec_Uf), 'Metal Rec UF': this.setFormato(this.Metal_Rec_Uf), 'Plastico Rec UF': this.setFormato(this.Plastico_Rec_Uf), 'NR UF': this.setFormato(this.NR_Uf), 'TOTAL UF': this.setFormato(this.Total_Uf),
-            'EyE Papel/cartón Rec TOTAL': this.setFormato(this.EyE_PapelCarton_Rec_Total), 'EyE Metal Rec TOTAL': this.setFormato(this.EyE_Metal_Rec_Total), 'EyE Plastico Rec TOTAL': this.setFormato(this.EyE_Plastico_Rec_Total), 'EyE NR TOTAL': this.setFormato(this.EyE_NR_Total), 'EyE Ret TOTAL': this.setFormato(this.EyE_Ret_Total), 'TOTAL PESO': this.setFormato(this.Total_Peso),
+            'EyE Papel/cartón Rec TOTAL': this.setFormato(this.EyE_PapelCarton_Rec), 'EyE Metal Rec TOTAL': this.setFormato(this.EyE_Metal_Rec), 'EyE Plastico Rec TOTAL': this.setFormato(this.EyE_Plastico_Rec), 'EyE NR TOTAL': this.setFormato(this.EyE_NR), 'EyE Ret TOTAL': this.setFormato(this.EyE_Ret), 'TOTAL PESO': this.setFormato(this.Total_EyE),
             'Papel/cartón Rec Tarifa': this.setFormato(this.rates[0].price), 'Metal Rec Tarifa': this.setFormato(this.rates[1].price), 'Plastico Rec Tarifa': this.setFormato(this.rates[2].price), 'NR Tarifa': this.setFormato(this.rates[3].price),
             'Papel/cartón Rec Costo Anual UF': this.setFormato(this.PapelCarton_Rec_Uf), 'Metal Rec Costo Anual UF': this.setFormato(this.Metal_Rec_Uf), 'Plastico Rec Costo Anual UF': this.setFormato(this.Plastico_Rec_Uf), 'NR Costo Anual UF': this.setFormato(this.NR_Uf), 'Total Costo Anual (UF)': this.setFormato(this.Total_Uf),
             'Papel/cartón Neto CLP': this.setFormato(this.PapelCarton_Neto), 'Metal Rec UF Neto CLP': this.setFormato(this.Metal_Neto), 'Plastico Rec UF Neto CLP': this.setFormato(this.Plastico_Neto), 'NR UF Neto CLP': this.setFormato(this.NR_Neto), 'Total Neto (CLP)': this.setFormato(this.TotalBruto),
@@ -303,8 +300,48 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
           });
         }
 
+        let claves = [
+          'Total EyE Productores',
+          'Total EyE Puestos en el mercado',
+          'Papel / cartón TOTAL',
+          'Metal TOTAL',
+          'Plástico TOTAL',
+          'Madera TOTAL',
+          'Papel /  cartón TOTAL',
+          'Metal  TOTAL',
+          'Plástico  TOTAL',
+          'Madera  TOTAL',
+          'Papel /   cartón TOTAL',
+          'Metal   TOTAL',
+          'Plástico   TOTAL',
+          'Total No Reciclable',
+          'Total Primarios No Peligrosos',
+          'Total Primarios  Peligrosos',
+          'Total Secundarios',
+          'Total Terciarios',
+          'Papel / cartón UF TOTAL',
+          'Metal UF TOTAL',
+          'Plastico UF TOTAL',
+          'NR.Total UF',
+          'Total UF',
+          'Papel / cartón Neto CLP',
+          'Metal  Neto CLP',
+          'Plastico Neto CLP',
+          'NR Neto CLP',
+          'Total Neto(CLP)',
+          'TOTAL NETO + IVA'
+        ];
+
+        for (let i = 0; i < claves.length; i++) {
+          this.resumen.push({
+            'Campo': claves[i],
+            'Valor': this.valores[i]
+          });
+        }
+
         const libro = XLSX.utils.book_new();
         const hoja = XLSX.utils.json_to_sheet(this.datos);
+        const hojaResumen = XLSX.utils.json_to_sheet(this.resumen);
 
         let objectMaxLength: number[] = [];
         for (let i = 0; i < this.datos.length; i++) {
@@ -319,10 +356,27 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
           wscols.push({ width: objectMaxLength[i] });
         }
         hoja["!cols"] = wscols;
+
+        let objectMaxLengthResumen: number[] = [];
+        for (let i = 0; i < this.resumen.length; i++) {
+          let value = <any>Object.values(this.resumen[i]);
+          for (let j = 0; j < value.length; j++) {
+            objectMaxLengthResumen[j] = 30;
+          }
+        }
+
+        var wscolsResumen = [];
+        for (let i = 0; i < objectMaxLengthResumen.length; i++) {
+          wscolsResumen.push({ width: objectMaxLengthResumen[i] });
+        }
+        hojaResumen["!cols"] = wscolsResumen;
+
         XLSX.utils.book_append_sheet(libro, hoja, 'Datos');
+        XLSX.utils.book_append_sheet(libro, hojaResumen, 'Resumen totalizadores');
         XLSX.writeFile(libro, `${nombreArchivo}_${y}.xlsx`);
         Swal.close();
         this.datos = []
+        this.resumen = []
       }
       else {
         Swal.fire({
@@ -503,9 +557,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     this.NR_Plastico_Total = 0; this.NR_Madera_Total = 0; this.NR_Compuestos_Total = 0;
     this.RET_PapelCarton_Total = 0; this.RET_Metal_Total = 0; this.RET_Plastico_Total = 0;
     this.RET_Madera_Total = 0; this.EyE_PapelCarton_Rec = 0; this.EyE_Metal_Rec = 0;
-    this.EyE_Plastico_Rec = 0; this.EyE_NR = 0; this.EyE_Ret = 0;
-    this.EyE_PapelCarton_Rec_Total = 0; this.EyE_Metal_Rec_Total = 0; this.EyE_Plastico_Rec_Total = 0;
-    this.EyE_NR_Total = 0; this.EyE_Ret_Total = 0; this.PapelCarton_Rec_Uf = 0;
+    this.EyE_Plastico_Rec = 0; this.EyE_NR = 0; this.EyE_Ret = 0; this.PapelCarton_Rec_Uf = 0;
     this.Metal_Rec_Uf = 0; this.Plastico_Rec_Uf = 0; this.NR_Uf = 0;
     this.Total_Uf = 0; this.Total_Ajuste_Uf = 0;
 
@@ -547,7 +599,6 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     this.EyE_Ret = this.RET_Total_Ton;
 
     this.Total_EyE = this.EyE_PapelCarton_Rec + this.EyE_Metal_Rec + this.EyE_Plastico_Rec + this.EyE_NR;
-    this.Total_Peso = this.EyE_PapelCarton_Rec_Total + this.EyE_Metal_Rec_Total + this.EyE_Plastico_Rec_Total + this.EyE_NR_Total + this.EyE_Ret_Total;
 
     this.PapelCarton_Rec_Uf = this.EyE_PapelCarton_Rec * this.rates[0].price;
     this.Metal_Rec_Uf = this.EyE_Metal_Rec * this.rates[1].price;
