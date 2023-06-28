@@ -124,7 +124,6 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       else if (r.recyclability == 2) {
         if (r?.type_residue != 4) {
           if (r.precedence == 1) {
-            console.log(r)
             this.tonNoReciclablePrim = this.tonNoReciclablePrim + parseFloat(r?.value);
             this.result = this.tonNoReciclablePrim;
             document.getElementById(`prim_weight_4`)!.innerHTML = this.setFormato(this.result)
@@ -165,11 +164,8 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         this.costoAnual[4] = this.tonRetPrim + this.tonRetSec + this.tonRetTer;
       }
     }
-    console.log(this.costoAnual)
     for (let i = 1; i <= 5; i++) {
       this.result = parseFloat(document.getElementById(`prim_weight_${i}`)!.innerHTML.replace(",", ".")) + parseFloat(document.getElementById(`sec_weight_${i}`)!.innerHTML.replace(",", ".")) + parseFloat(document.getElementById(`ter_weight_${i}`)!.innerHTML.replace(",", "."));
-      console.log(document.getElementById(`sec_weight_${i}`)!.innerHTML)
-      console.log(this.result)
       document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.setFormato(this.result);
       this.sumaAmount = this.sumaAmount + this.result;
     }
@@ -195,8 +191,6 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       .subscribe(uf => {
         // Procesamiento de los datos de la segunda suscripción
         this.sumaAmount = 0;
-        console.log(uf)
-        console.log(this.dif)
         for (let i = 0; i < 4; i++) {
           this.sumaAmount = this.sumaAmount + (this.dif[i] * uf.data * 1.19);
           document.getElementById(`total_neto${i}`)!.innerHTML = '$' +this.setFormato((this.dif[i] * uf.data).toFixed(0));
