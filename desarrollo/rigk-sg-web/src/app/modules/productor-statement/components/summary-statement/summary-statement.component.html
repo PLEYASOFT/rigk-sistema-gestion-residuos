@@ -24,20 +24,19 @@
                         <thead>
                             <tr class="text-center w-100">
                                 <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Subcategoría</th>
-                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">{{year_statement - 1}}</th>
-                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">{{year_statement}}</th>
-                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Ajuste {{year_statement -
-                                    1}} vs {{year_statement}} (Ton)</th>
-                                <th class="columna-doble" style="background-color: rgb(8, 148, 110);color: white;">Total Neto (Ton)</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Primarios</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Secundarios</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Terciarios</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Peso Total (Ton)</th>
                             </tr>
                         </thead>
 
                         <tbody>
                             <tr class="text-end w-100" *ngFor="let r of residuos; let x = index">
                                 <td class="text-start">{{r}}</td>
-                                <td id="last_weight_{{x+1}}">0</td>
-                                <td id="actual_weight_{{x+1}}">0</td>
-                                <td id="ajuste_{{x+1}}">0</td>
+                                <td id="prim_weight_{{x+1}}">0</td>
+                                <td id="sec_weight_{{x+1}}">0</td>
+                                <td id="ter_weight_{{x+1}}">0</td>
                                 <td style="background-color: rgb(217, 217, 217);" id="total_category_weight_{{x+1}}">0
                                 </td>
                             </tr>
@@ -59,11 +58,6 @@
             </td>
         </tr>
         <p></p>
-        <tr>
-            <td colspan="13">
-                En el primer año de ejercicio (2023) no hay corrección de lo proyectado vs datos reales debido a que no
-                existen datos históricos</td>
-        </tr>
         <p></p>
         <div class="row w-100">
             <!-- Columna 1 -->
@@ -82,14 +76,13 @@
                         <thead>
                             <tr class="text-center w-100">
                                 <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Subcategoría</th>
-                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Ecotarifa {{+year_statement
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Tarifa {{+year_statement
                                     + 1}} (UF)</th>
                                 <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Costo Anual
                                     {{year_statement}} (UF)</th>
-                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Ajuste {{year_statement -
-                                    1}} vs {{year_statement}} (UF)</th>
-                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Total corregido (UF)</th>
-                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Total Neto (CLP) + IVA
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Total Neto (CL$)</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">IVA</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Total (CL$)
                                 </th>
                             </tr>
                         </thead>
@@ -99,8 +92,8 @@
                                     <td class="text-start">{{r}}</td>
                                     <td id="actual_amount_{{x}}">0</td>
                                     <td id="amount_anual_{{x}}">0</td>
-                                    <td id="amount_corregido_{{x}}">0</td>
-                                    <td style="background-color: rgb(217, 217, 217);" id="total_category_amount_{{x}}">0
+                                    <td id="total_neto{{x}}">0</td>
+                                    <td style="background-color: rgb(217, 217, 217);" id="iva_{{x}}">0
                                     </td>
                                     <td style="background-color: rgb(217, 217, 217);" id="uf_clp_{{x}}">$0</td>
                                 </ng-container>
@@ -112,7 +105,7 @@
                                     colspan="2">Total (Costo)</td>
                                 <td style="background-color: rgb(8, 148, 110);color: white;" id="anual_amount">0</td>
                                 <td style="background-color: rgb(8, 148, 110);color: white;" id="ajuste_amount">0</td>
-                                <td style="background-color: rgb(8, 148, 110);color: white;" id="total_amount">0</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;" id="total_amount_iva">0</td>
                                 <td style="background-color: rgb(8, 148, 110);color: white;" id="total_uf_clp">$0</td>
                             </tr>
                         </tfoot>
@@ -141,7 +134,7 @@
                 </thead>
                 <tbody>
                     <tr class="text-center w-100">
-                        <td class="text-start">Total EyE</td>
+                        <td class="text-start">Total EyE (Ton)</td>
                         <td id="pom_total">0</td>
                     </tr>
                 </tbody>
@@ -168,7 +161,7 @@
                 <tbody>
                     <tr class="text-center w-100">
                         <td class="text-start">Costo Total</td>
-                        <td id="amount_total">0</td>
+                        <td id="amount_clp">0</td>
                     </tr>
                 </tbody>
             </table>
