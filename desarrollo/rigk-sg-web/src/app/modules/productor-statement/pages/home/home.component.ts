@@ -39,6 +39,8 @@ export class HomeComponent implements OnInit {
     this.businessServices.getBusinessById(idUser, this.year.toString()).subscribe(r => {
       this.allStatement = r.data.statements;
       this.allBusiness = (r.data.business as any).sort((a:any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
+      this.cant=Math.ceil(this.allBusiness.length/10);
+      this.db = this.allBusiness.slice((this.pos-1)*10, this.pos*10).sort((a:any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
     })
   }
   allStatement: any[]=[];
@@ -87,7 +89,7 @@ export class HomeComponent implements OnInit {
         }
       }
     });
-    this.db = tmp.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+    this.db = tmp.slice(0, 10).sort((a:any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
     this.cant = Math.ceil(tmp.length / 10);
   }
 
@@ -97,19 +99,19 @@ export class HomeComponent implements OnInit {
 
   pagTo(i: number) {
     this.pos = i + 1;
-    this.db = this.dbStatements.slice((i * 10), (i + 1) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+    this.db = this.allBusiness.slice((i * 10), (i + 1) * 10).sort((a:any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
   }
 
   next() {
     if (this.pos >= this.cant) return;
     this.pos++;
-    this.db = this.dbStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+    this.db = this.allBusiness.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a:any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
   }
 
   previus() {
     if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
     this.pos = this.pos - 1;
-    this.db = this.dbStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+    this.db = this.allBusiness.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a:any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
   }
 
   navigateToForm(id: string, year: string, id_statement: any, state: number = 0) {
