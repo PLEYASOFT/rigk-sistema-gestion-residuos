@@ -96,10 +96,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
   Metal_Rec_Uf: any = 0;
   Plastico_Rec_Uf: any = 0;
   NR_Uf: any = 0;
-  PapelCarton_Rec_Uf_Corregido: any = 0;
-  Metal_Rec_Uf_Corregido: any = 0;
-  Plastico_Rec_Uf_Corregido: any = 0;
-  NR_Uf_Corregido: any = 0;
+
   PapelCarton_Neto: any = 0;
   Metal_Neto: any = 0;
   Plastico_Neto: any = 0;
@@ -116,12 +113,9 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
   Plastico_Bruto: any = 0;
   NR_Bruto: any = 0;
 
-  Total_Peso: any = 0;
-  TotalCorregido: any = 0;
   TotalBruto: any = 0;
   TotalBruto_IVA: any = 0;
   Total_Uf: any = 0;
-  Total_Ajuste_Uf: any = 0;
 
   userData: any | null;
   detailLastForm: any;
@@ -267,7 +261,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
             this.ratesUF = await this.ratesService.getUfDate(fechaFormateada).toPromise();
             this.allUF.push({ date: fechaFormateada, data: this.ratesUF.data });
           }
-          this.calculoAjustes(fechaFormateada);
+          this.calculoAjustes(fechaFormateada, statement.STATE);
           const fecha = statement.UPDATED_AT;
           const fechaFormateada__excel = new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
           this.datos.push({
@@ -301,42 +295,27 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
         }
 
         let claves = [
-          'Total EyE Productores',
-          'Total EyE Puestos en el mercado',
-          'Papel / cartón TOTAL',
-          'Metal TOTAL',
-          'Plástico TOTAL',
-          'Madera TOTAL',
-          'Papel /  cartón TOTAL',
-          'Metal  TOTAL',
-          'Plástico  TOTAL',
-          'Madera  TOTAL',
-          'Papel /   cartón TOTAL',
-          'Metal   TOTAL',
-          'Plástico   TOTAL',
-          'Total No Reciclable',
-          'Total Primarios No Peligrosos',
-          'Total Primarios  Peligrosos',
-          'Total Secundarios',
-          'Total Terciarios',
-          'Papel / cartón UF TOTAL',
-          'Metal UF TOTAL',
-          'Plastico UF TOTAL',
-          'NR.Total UF',
-          'Total UF',
-          'Papel / cartón Neto CLP',
-          'Metal  Neto CLP',
-          'Plastico Neto CLP',
-          'NR Neto CLP',
-          'Total Neto(CLP)',
-          'TOTAL NETO + IVA'
+          'Total EyE Productores','Total EyE Puestos en el mercado','Papel / cartón TOTAL','Metal TOTAL','Plástico TOTAL','Madera TOTAL','Papel /  cartón TOTAL',
+          'Metal  TOTAL','Plástico  TOTAL','Madera  TOTAL','Papel /   cartón TOTAL','Metal   TOTAL','Plástico   TOTAL','Total No Reciclable',
+          'Total Primarios No Peligrosos','Total Primarios  Peligrosos','Total Secundarios','Total Terciarios','Papel / cartón UF TOTAL',
+          'Metal UF TOTAL','Plastico UF TOTAL','NR.Total UF','Total UF','Papel / cartón Neto CLP','Metal  Neto CLP','Plastico Neto CLP',
+          'NR Neto CLP','Total Neto(CLP)','TOTAL NETO + IVA'
         ];
 
         for (let i = 0; i < claves.length; i++) {
-          this.resumen.push({
-            'Campo': claves[i],
-            'Valor': this.valores[i]
-          });
+          if (i < 23) {
+            this.resumen.push({
+              'Campo': claves[i],
+              'Valor': this.setFormato(this.valores[i])
+            });
+          }
+          else {
+            this.resumen.push({
+              'Campo': claves[i],
+              'Valor': '$' + this.setFormato(this.valores[i])
+            });
+          }
+
         }
 
         const libro = XLSX.utils.book_new();
@@ -377,6 +356,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
         Swal.close();
         this.datos = []
         this.resumen = []
+        this.valores = new Array(29).fill(0);
       }
       else {
         Swal.fire({
@@ -549,7 +529,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     this.RET_Total_Ton = 0; this.RET_Total_UF = 0;
 
 
-    this.Total_EyE = 0; this.Total_Peso = 0; this.TotalCorregido = 0;
+    this.Total_EyE = 0;
     this.TotalBruto = 0; this.TotalBruto_IVA = 0;
 
     this.R_PapelCarton_Total = 0; this.R_Metal_Total = 0; this.R_Plastico_Total = 0;
@@ -559,10 +539,9 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     this.RET_Madera_Total = 0; this.EyE_PapelCarton_Rec = 0; this.EyE_Metal_Rec = 0;
     this.EyE_Plastico_Rec = 0; this.EyE_NR = 0; this.EyE_Ret = 0; this.PapelCarton_Rec_Uf = 0;
     this.Metal_Rec_Uf = 0; this.Plastico_Rec_Uf = 0; this.NR_Uf = 0;
-    this.Total_Uf = 0; this.Total_Ajuste_Uf = 0;
+    this.Total_Uf = 0; 
 
-    this.PapelCarton_Rec_Uf_Corregido = 0; this.Metal_Rec_Uf_Corregido = 0; this.Plastico_Rec_Uf_Corregido = 0;
-    this.NR_Uf_Corregido = 0; this.PapelCarton_Neto = 0; this.Metal_Neto = 0;
+    this.PapelCarton_Neto = 0; this.Metal_Neto = 0;
     this.Plastico_Neto = 0; this.NR_Neto = 0; this.PapelCarton_Bruto = 0;
     this.Metal_Bruto = 0; this.Plastico_Bruto = 0; this.NR_Bruto = 0;
 
@@ -573,7 +552,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     this.totalIVA = 0;
   }
 
-  calculoAjustes(year: string = "") {
+  calculoAjustes(year: string = "", state: number) {
     if (year != "") {
       this.ratesUF = this.allUF.find(r => r.date == year);
     }
@@ -600,17 +579,12 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
 
     this.Total_EyE = this.EyE_PapelCarton_Rec + this.EyE_Metal_Rec + this.EyE_Plastico_Rec + this.EyE_NR;
 
+
     this.PapelCarton_Rec_Uf = this.EyE_PapelCarton_Rec * this.rates[0].price;
     this.Metal_Rec_Uf = this.EyE_Metal_Rec * this.rates[1].price;
     this.Plastico_Rec_Uf = this.EyE_Plastico_Rec * this.rates[2].price;
     this.NR_Uf = this.EyE_NR * this.rates[3].price;
     this.Total_Uf = this.PapelCarton_Rec_Uf + this.Metal_Rec_Uf + this.Plastico_Rec_Uf + this.NR_Uf;
-
-
-    const c1 = this.rates[0].price * (this.R_PapelCarton_P + this.R_PapelCarton_Sec + this.R_PapelCarton_Ter + this.R_PapelCarton_NP);
-    const c2 = this.rates[1].price * (this.R_Metal_P + this.R_Metal_Sec + this.R_Metal_Ter + this.R_Metal_NP);
-    const c3 = this.rates[2].price * (this.R_Plastico_P + this.R_Plastico_Sec + this.R_Plastico_Ter + this.R_Plastico_NP);
-    const c4 = this.rates[3].price * (this.NR_PapelCarton_P + this.NR_PapelCarton_Sec + this.NR_PapelCarton_Ter + this.NR_PapelCarton_NP + this.NR_Metal_P + this.NR_Metal_Sec + this.NR_Metal_Ter + this.NR_Metal_NP + this.NR_Plastico_P + this.NR_Plastico_Sec + this.NR_Plastico_Ter + this.NR_Plastico_NP + this.NR_Compuestos_P + this.NR_Compuestos_Sec + this.NR_Compuestos_Ter + this.NR_Compuestos_NP);
 
     this.PapelCarton_Neto = (this.PapelCarton_Rec_Uf * this.ratesUF.data).toFixed(0);
     this.Metal_Neto = (this.Metal_Rec_Uf * this.ratesUF.data).toFixed(0);
@@ -630,5 +604,37 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     this.totalIVA = this.PapelCarton_IVA + this.Metal_IVA + this.Plastico_IVA + this.NR_IVA;
     this.TotalBruto = parseInt(this.PapelCarton_Neto) + parseInt(this.Metal_Neto) + parseInt(this.Plastico_Neto) + parseInt(this.NR_Neto);
     this.TotalBruto_IVA = parseInt(this.PapelCarton_Bruto) + parseInt(this.Metal_Bruto) + parseInt(this.Plastico_Bruto) + parseInt(this.NR_Bruto);
+
+    if (state != 0) {
+      this.valores[0] = this.valores[0] + parseFloat(this.Total_EyE) + parseFloat(this.EyE_Ret);
+      this.valores[1] = this.valores[1] + parseFloat(this.Total_EyE);
+      this.valores[2] = this.valores[2] + parseFloat(this.R_PapelCarton_Total) + parseFloat(this.NR_PapelCarton_Total) + parseFloat(this.RET_PapelCarton_Total);
+      this.valores[3] = this.valores[3] + parseFloat(this.R_Metal_Total) + parseFloat(this.NR_Metal_Total) + parseFloat(this.RET_Metal_Total);
+      this.valores[4] = this.valores[4] + parseFloat(this.R_Plastico_Total) + parseFloat(this.NR_Plastico_Total) + parseFloat(this.RET_Plastico_Total);
+      this.valores[5] = this.valores[5] + parseFloat(this.R_Madera_Total) + parseFloat(this.NR_Madera_Total) + parseFloat(this.RET_Madera_Total);
+      this.valores[6] = this.valores[6] + parseFloat(this.R_PapelCarton_Total) + parseFloat(this.NR_PapelCarton_Total);
+      this.valores[7] = this.valores[7] + parseFloat(this.R_Metal_Total) + parseFloat(this.NR_Metal_Total);
+      this.valores[8] = this.valores[8] + parseFloat(this.R_Plastico_Total) + parseFloat(this.NR_Plastico_Total);
+      this.valores[9] = this.valores[9] + parseFloat(this.R_Madera_Total) + parseFloat(this.NR_Madera_Total);
+      this.valores[10] = this.valores[10] + parseFloat(this.R_PapelCarton_Total);
+      this.valores[11] = this.valores[11] + parseFloat(this.R_Metal_Total);
+      this.valores[12] = this.valores[12] + parseFloat(this.R_Plastico_Total);
+      this.valores[13] = this.valores[13] + parseFloat(this.NR_Total_Ton);
+      this.valores[14] = this.valores[14] + parseFloat(this.R_PapelCarton_NP) + parseFloat(this.R_Metal_NP) + parseFloat(this.R_Plastico_NP) + parseFloat(this.R_Madera_NP) + parseFloat(this.NR_PapelCarton_NP) + parseFloat(this.NR_Metal_NP) + parseFloat(this.NR_Plastico_NP) + parseFloat(this.NR_Madera_NP) + parseFloat(this.NR_Madera_NP);
+      this.valores[15] = this.valores[15] + parseFloat(this.R_PapelCarton_P) + parseFloat(this.R_Metal_P) + parseFloat(this.R_Plastico_P) + parseFloat(this.R_Madera_P) + parseFloat(this.NR_PapelCarton_P) + parseFloat(this.NR_Metal_P) + parseFloat(this.NR_Plastico_P) + parseFloat(this.NR_Madera_P) + parseFloat(this.NR_Madera_P);
+      this.valores[16] = this.valores[16] + parseFloat(this.R_PapelCarton_Sec) + parseFloat(this.R_Metal_Sec) + parseFloat(this.R_Plastico_Sec) + parseFloat(this.R_Madera_Sec) + parseFloat(this.NR_PapelCarton_Sec) + parseFloat(this.NR_Metal_Sec) + parseFloat(this.NR_Plastico_Sec) + parseFloat(this.NR_Madera_Sec) + parseFloat(this.NR_Madera_Sec);
+      this.valores[17] = this.valores[17] + parseFloat(this.R_PapelCarton_Ter) + parseFloat(this.R_Metal_Ter) + parseFloat(this.R_Plastico_Ter) + parseFloat(this.R_Madera_Ter) + parseFloat(this.NR_PapelCarton_Ter) + parseFloat(this.NR_Metal_Ter) + parseFloat(this.NR_Plastico_Ter) + parseFloat(this.NR_Madera_Ter) + parseFloat(this.NR_Madera_Ter);
+      this.valores[18] = this.valores[18] + parseFloat(this.PapelCarton_Rec_Uf);
+      this.valores[19] = this.valores[19] + parseFloat(this.Metal_Rec_Uf);
+      this.valores[20] = this.valores[20] + parseFloat(this.Plastico_Rec_Uf);
+      this.valores[21] = this.valores[21] + parseFloat(this.NR_Uf);
+      this.valores[22] = this.valores[22] + parseFloat(this.Total_Uf);
+      this.valores[23] = this.valores[23] + parseFloat(this.PapelCarton_Neto);
+      this.valores[24] = this.valores[24] + parseFloat(this.Metal_Neto);
+      this.valores[25] = this.valores[25] + parseFloat(this.Plastico_Neto);
+      this.valores[26] = this.valores[26] + parseFloat(this.NR_Neto);
+      this.valores[27] = this.valores[27] + parseFloat(this.TotalBruto);
+      this.valores[28] = this.valores[28] + parseFloat(this.TotalBruto_IVA);
+    }
   }
 }
