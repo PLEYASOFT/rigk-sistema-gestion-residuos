@@ -52,7 +52,6 @@ class AuthLogic {
                         delete output.CODE
                         res.header('x-token', token!.toString());
                         res.header("Access-Control-Expose-Headers", "*");
-                        console.log(output.ID);
                         await createLog('AUTENTICACION', output.ID, null);
                         res.status(200).json({ status: true, msg: '', data: { user: output } });
                     }
