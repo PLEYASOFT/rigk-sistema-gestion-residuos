@@ -11,6 +11,7 @@ import ratesRoutes from './routes/rates';
 import establishmentRoutes from './routes/establishment';
 import consumerRoutes from './routes/consumer';
 import managerRoutes from './routes/manager';
+import logsRoutes from './routes/logs';
 class Server {
     private app: Application;
     private port: string;
@@ -21,7 +22,8 @@ class Server {
         consumer: '/api/v1/consumer',
         rates: '/api/v1/rates',
         establishment: '/api/v1/establishment',
-        manager: '/api/v1/manager'
+        manager: '/api/v1/manager',
+        logs: '/api/v1/logs'
     };
     constructor() {
         this.app = express();
@@ -36,6 +38,7 @@ class Server {
         this.app.use(this.apiPath.form, statementRoutes);
         this.app.use(this.apiPath.rates, ratesRoutes);
         this.app.use(this.apiPath.establishment, establishmentRoutes);
+        this.app.use(this.apiPath.logs, logsRoutes);
         this.app.use(this.apiPath.manager, managerRoutes);
         this.app.use((error: any, req: any, res: any, next: any) => {
             if (error) {

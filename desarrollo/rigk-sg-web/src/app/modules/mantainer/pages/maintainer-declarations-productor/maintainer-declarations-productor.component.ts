@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BusinessService } from 'src/app/core/services/business.service';
+import { LogsService } from 'src/app/core/services/logs.service';
 import { ProductorService } from 'src/app/core/services/productor.service';
 import { RatesTsService } from 'src/app/core/services/rates.ts.service';
 import Swal from 'sweetalert2';
@@ -205,6 +206,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
   //Automatizado para años posteriores
   constructor(private businesService: BusinessService,
     public productorService: ProductorService,
+    public ls: LogsService,
     public ratesService: RatesTsService) {
     const currentYear = new Date().getFullYear();
     for (let year = 2022; year <= currentYear; year++) {
@@ -309,7 +311,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
             const fecha = statement.UPDATED_AT;
             const fechaFormateada__excel = new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
             this.datos.push({
-              'ID empresa': statement.CODE_BUSINESS, 'Nombre empresa': statement.NAME, 'Año declaración': y.toString(), 'Estado declaración': statement.STATE == 1? 'Enviada': 'Pendiente',
+              'ID empresa': statement.CODE_BUSINESS, 'Nombre empresa': statement.NAME, 'Año declaración': y.toString(), 'Estado declaración': statement.STATE == 1 ? 'Enviada' : 'Pendiente',
               'Fecha de envío': fechaFormateada__excel, 'Usuario': user.FIRST_NAME + ' ' + user.LAST_NAME, 'R. Papel/cartón NP': this.setFormato(this.R_PapelCarton_NP),
               'R. Papel/cartón P': this.setFormato(this.R_PapelCarton_P), 'R. Papel/cartón ST': this.setFormato(this.R_PapelCarton_ST), 'R. Papel/cartón TOTAL': this.setFormato(this.R_PapelCarton_Total), 'R. Metal NP': this.setFormato(this.R_Metal_NP), 'R. Metal P': this.setFormato(this.R_Metal_P), 'R. Metal ST': this.setFormato(this.R_Metal_ST), 'R. Metal TOTAL': this.setFormato(this.R_Metal_Total),
               'R. Plástico NP': this.setFormato(this.R_Plastico_NP), 'R. Plástico P': this.setFormato(this.R_Plastico_P), 'R. Plástico ST': this.setFormato(this.R_Plastico_ST), 'R. Plástico TOTAL': this.setFormato(this.R_Plastico_Total), 'R. Madera NP': this.setFormato(this.R_Madera_NP), 'R. Madera P': this.setFormato(this.R_Madera_P), 'R. Madera ST': this.setFormato(this.R_Madera_ST), 'R. Madera TOTAL': this.setFormato(this.R_Madera_Total),
@@ -381,10 +383,12 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
         hoja["!cols"] = wscols;
         XLSX.utils.book_append_sheet(libro, hoja, 'Datos');
         XLSX.writeFile(libro, `${nombreArchivo}_${y}.xlsx`);
+        this.ls.createLog.subscribe(r => { });
         Swal.close();
-        this.datos = []
+        this.datos = [];
       }
       else {
+        this.ls.errorLog('No se encuentran declaraciones asociadas al año seleccionado').subscribe(r => { });
         Swal.fire({
           title: '¡Ups!',
           icon: 'warning',
@@ -393,6 +397,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
         });
       }
     } catch (error) {
+      this.ls.errorLog('Ha sucedido un error al generar el archivo Excel, por favor pruebe de nuevo en unos minutos. Si el problema persiste póngase en contacto con administración').subscribe(r => { });
       Swal.fire({
         title: '¡Ups!',
         icon: 'error',

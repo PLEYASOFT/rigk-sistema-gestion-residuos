@@ -14,6 +14,7 @@ import {MultiSelectModule} from 'primeng/multiselect';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { MaintainerDeclarationsProductorComponent } from './pages/maintainer-declarations-productor/maintainer-declarations-productor.component';
 import { MaintainerManagersComponent } from './pages/maintainer-managers/maintainer-managers.component';
+import { LogsComponent } from './pages/logs/logs.component';
 
 
 @NgModule({
@@ -24,7 +25,8 @@ import { MaintainerManagersComponent } from './pages/maintainer-managers/maintai
     MaintainerEstablishmentComponent,
     MantainerUsersComponent,
     MaintainerDeclarationsProductorComponent,
-    MaintainerManagersComponent
+    MaintainerManagersComponent,
+    LogsComponent
   ],
   imports: [
     CommonModule,

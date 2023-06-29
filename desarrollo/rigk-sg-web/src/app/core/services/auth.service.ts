@@ -49,4 +49,7 @@ export class AuthService {
   getProfile(email:string) {
     return this.http.get<any>(`${this.url}/profile/${email}`);
   }
+  get logout() {
+    return this.http.get<any>(`${this.url}/logout`);
+  }
 }
