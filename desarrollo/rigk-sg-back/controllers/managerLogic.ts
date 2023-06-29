@@ -1,16 +1,19 @@
 import { Request, Response } from "express";
 import managerDao from '../dao/managerDao';
+import { createLog } from "../helpers/createLog";
 class ManagerLogic {
-    async addManager(req: Request, res: Response) {
+    async addManager(req: Request|any, res: Response) {
         const type_material = req.body.type_material;
         const region = req.body.region;
         const id_business = req.body.id_business
         try {
             await managerDao.addManager(type_material, region, id_business);
+            await createLog('AGREGA_TIPO_MATERIAL', req.uid, null);
             res.status(200).json({ status: true, msg: 'Has creado un gestor', data: {} })
         }
-        catch (err) {
-            console.log(err)
+        catch (err:any) {
+            console.log(err);
+            await createLog('AGREGA_TIPO_MATERIAL', req.uid, err.message);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
@@ -43,9 +46,11 @@ class ManagerLogic {
         const id = req.params.id;
         try {
             const manager = await managerDao.deleteManager(id);
+            await createLog('ELIMINA_TIPO_MATERIAL', req.uid, null);
             res.status(200).json({ status: manager, data: {}, msg: '' });
-        } catch (err) {
+        } catch (err:any) {
             console.log(err);
+            await createLog('ELIMINA_TIPO_MATERIAL', req.uid, err.message);
             res.status(500).json({
                 status: false,
                 message: "Algo salió mal"

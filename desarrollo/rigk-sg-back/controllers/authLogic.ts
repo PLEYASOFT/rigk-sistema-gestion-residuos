@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { generarJWT } from '../helpers/jwt';
 import { sendCode } from '../helpers/sendCode';
 import authDao from '../dao/authDao';
+import { createLog } from '../helpers/createLog';
 class AuthLogic {
     async modifyPassword(req: any, res: Response) {
         const { newPassword, actual } = req.body;
@@ -21,14 +22,17 @@ class AuthLogic {
                     if (r) {
                         let passwordHash = bcrypt.hashSync(newPassword, 8);
                         await authDao.updatePassword(passwordHash, user);
+                        await createLog('CAMBIA_CONTRASENA', req.uid, null);
                         res.status(200).json({ status: true, msg: 'Contraseña cambiada', data: {} });
                     }
                     else {
+                        await createLog('CAMBIA_CONTRASENA', req.uid, 'Contraseña Incorrecta');
                         res.status(200).json({ status: false, msg: 'Contraseña incorrecta, intenta nuevamente', data: {} });
                     }
                 });
             }
-        } catch (err) {
+        } catch (err: any) {
+            await createLog('CAMBIA_CONTRASENA', req.uid, err.message);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
@@ -48,19 +52,22 @@ class AuthLogic {
                         delete output.CODE
                         res.header('x-token', token!.toString());
                         res.header("Access-Control-Expose-Headers", "*");
+                        await createLog('AUTENTICACION', output.ID, null);
                         res.status(200).json({ status: true, msg: '', data: { user: output } });
                     }
                     else {
+                        await createLog('AUTENTICACION', output.ID, `Usuario y/o contraseña incorrectos. Usuario: ${user}`);
                         res.status(200).json({ status: false, msg: 'Usuario y/o contraseña incorrectos, intenta nuevamente', data: {} });
                     }
                 });
             }
             else {
+                await createLog('AUTENTICACION', output.ID, `Usuario y/o contraseña incorrectos. Usuario: ${user}`);
                 res.status(200).json({ status: false, msg: 'Usuario y/o contraseña incorrectos, intenta nuevamente', data: {} });
             }
         }
-        catch (err) {
-            console.log(err);
+        catch (err: any) {
+            await createLog('AUTENTICACION', null, `${err.message}. Usuario: ${user}`);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
@@ -148,7 +155,7 @@ class AuthLogic {
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
-    async register(req: Request, res: Response) {
+    async register(req: Request | any, res: Response) {
         const user = req.body.EMAIL;
         const first_name = req.body.FIRST_NAME;
         const last_name = req.body.LAST_NAME;
@@ -161,35 +168,37 @@ class AuthLogic {
             let passwordHash = bcrypt.hashSync(password, 8);
             const result = await authDao.register(user, first_name, last_name, passwordHash, phone, phone_office, position, ROL);
             if (result.length == 0) {
+                await createLog('AGREGA_USUARIO', req.uid, 'Correo Existe');
                 return res.status(200).json({ status: false, msg: 'Correo existe', data: {} });
             }
             for (let i = 0; i < BUSINESS.length; i++) {
                 const b = BUSINESS[i];
                 await authDao.addUserBusiness(result.insertId, b);
             }
-
+            await createLog('AGREGA_USUARIO', req.uid, null);
             res.status(200).json({ status: true, msg: 'Has creado usuario', data: {} });
         }
-        catch (err) {
+        catch (err: any) {
             console.log(err);
+            await createLog('AGREGA_USUARIO', req.uid, err.message);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
     public async getUsers(req: Request, res: Response) {
         try {
             const users = await authDao.users();
-            const tmp:any[] = [];
+            const tmp: any[] = [];
             for (let i = 0; i < users.length; i++) {
                 const u = users[i];
-                const indx = tmp.findIndex(r=>r.ID == u.ID);
-                if(indx == -1) {
-                    u.BUSINESS = [{ID_BUSINESS: u.ID_BUSINESS, NAME:u.BUSINESS_NAME}];
+                const indx = tmp.findIndex(r => r.ID == u.ID);
+                if (indx == -1) {
+                    u.BUSINESS = [{ ID_BUSINESS: u.ID_BUSINESS, NAME: u.BUSINESS_NAME }];
                     tmp.push(u);
                     continue;
                 } else {
-                    tmp[indx].BUSINESS.push({ID_BUSINESS: u.ID_BUSINESS, NAME:u.BUSINESS_NAME});
+                    tmp[indx].BUSINESS.push({ ID_BUSINESS: u.ID_BUSINESS, NAME: u.BUSINESS_NAME });
                     continue;
-                }                
+                }
             }
             res.status(200).json({ status: true, msg: '', data: tmp });
         } catch (error) {
@@ -206,17 +215,19 @@ class AuthLogic {
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
-    public async deleteUserByID(req: Request, res: Response) {
+    public async deleteUserByID(req: Request | any, res: Response) {
         const { id } = req.params;
         try {
             await authDao.deleteUser(id);
+            await createLog('ELIMINA_EMPRESA', req.uid, null);
             res.status(200).json({ status: true, msg: 'Usuario eliminado', data: [] });
-        } catch (error) {
+        } catch (error: any) {
             console.log(error);
+            await createLog('ELIMINA_EMPRESA', req.uid, error.message);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
-    public async updateUser(req: Request, res: Response) {
+    public async updateUser(req: Request | any, res: Response) {
         const { ID, FIRST_NAME, LAST_NAME, EMAIL, ROL, PHONE, PHONE_OFFICE, POSITION, BUSINESS } = req.body;
         try {
             await authDao.updateUser(ID, FIRST_NAME, LAST_NAME, EMAIL, ROL, PHONE, PHONE_OFFICE, POSITION);
@@ -224,11 +235,17 @@ class AuthLogic {
                 const b = BUSINESS[i];
                 await authDao.addUserBusiness(ID, b);
             }
+            await createLog('MODIFICA_USUARIO', req.uid, null);
             res.status(200).json({ status: true, msg: 'Usuario actualizado satisfactoriamente', data: [] });
-        } catch (error) {
+        } catch (error: any) {
+            await createLog('MODIFICA_USUARIO', req.uid, error.message);
             console.log(error);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
+    }
+    public async logout(req: any, res: Response) {
+        await createLog('CIERRE_SESION', req.uid, null);
+        res.json({ status: true });
     }
 }
 const authLogic = new AuthLogic();

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BusinessService } from 'src/app/core/services/business.service';
+import { LogsService } from 'src/app/core/services/logs.service';
 import { ProductorService } from 'src/app/core/services/productor.service';
 import { RatesTsService } from 'src/app/core/services/rates.ts.service';
 import Swal from 'sweetalert2';
@@ -168,6 +169,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
   //Automatizado para años posteriores
   constructor(private businesService: BusinessService,
     public productorService: ProductorService,
+    public ls: LogsService,
     public ratesService: RatesTsService) {
     const currentYear = new Date().getFullYear();
     for (let year = 2022; year <= currentYear; year++) {
@@ -353,12 +355,14 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
         XLSX.utils.book_append_sheet(libro, hoja, 'Datos');
         XLSX.utils.book_append_sheet(libro, hojaResumen, 'Resumen totalizadores');
         XLSX.writeFile(libro, `${nombreArchivo}_${y}.xlsx`);
+        this.ls.createLog.subscribe(r => { });
         Swal.close();
         this.datos = []
         this.resumen = []
         this.valores = new Array(29).fill(0);
       }
       else {
+        this.ls.errorLog('No se encuentran declaraciones asociadas al año seleccionado').subscribe(r => { });
         Swal.fire({
           title: '¡Ups!',
           icon: 'warning',
@@ -367,6 +371,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
         });
       }
     } catch (error) {
+      this.ls.errorLog('Ha sucedido un error al generar el archivo Excel, por favor pruebe de nuevo en unos minutos. Si el problema persiste póngase en contacto con administración').subscribe(r => { });
       Swal.fire({
         title: '¡Ups!',
         icon: 'error',

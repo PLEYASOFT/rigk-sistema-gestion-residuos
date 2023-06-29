@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import industrialConsumerDao from "../dao/industrialConsumerDao";
 import establishmentDao from '../dao/establishmentDao';
 import ExcelJS from 'exceljs';
+import { createLog } from "../helpers/createLog";
 class IndustrialConsumer {
     public async saveForm(req: any, res: Response) {
         const header = JSON.parse(req.body.header);
@@ -10,9 +11,11 @@ class IndustrialConsumer {
         try {
             header.created_by = req['uid'];
             const id_header = await industrialConsumerDao.saveForm(header, detail, files);
+            await createLog('ENVIO_DECLARACION_CI', req.uid, null);
             res.json({ status: true, data: id_header });
-        } catch (error) {
+        } catch (error:any) {
             console.log(error);
+            await createLog('ENVIO_DECLARACION_CI', req.uid, error.message);
             res.status(500).json({
                 status: false,
                 message: "Algo salió mal"
@@ -43,10 +46,12 @@ class IndustrialConsumer {
         const { idDetail, fileName, typeFile } = req.body;
         const fileBuffer = req.files.fileBuffer.data;
         try {
+            await createLog('AGREGA_MEDIO_VERIFICACION_DECLARACION_CI', req.uid, null);
             const id_header = await industrialConsumerDao.saveFile(idDetail, fileName, fileBuffer, typeFile);
             res.json({ status: true, data: id_header });
-        } catch (error) {
+        } catch (error:any) {
             console.log(error);
+            await createLog('AGREGA_MEDIO_VERIFICACION_DECLARACION_CI', req.uid, error.message);
             res.status(500).json({
                 status: false,
                 message: "Algo salió mal"
@@ -63,9 +68,11 @@ class IndustrialConsumer {
             createdAt,
             yearStatement
           );
+          await createLog('ENVIO_MASIVO_DECLARACION_CI', req.uid, null);
           res.json({ status: true, data: idHeader });
-        } catch (error) {
+        } catch (error:any) {
           console.log(error);
+          await createLog('ENVIO_MASIVO_DECLARACION_CI', req.uid, error.message);
           res.status(500).json({
             status: false,
             message: "Algo salió mal",
@@ -87,9 +94,11 @@ class IndustrialConsumer {
             LER,
             TREATMENT_TYPE
           );
+        //   await createLog('ENVIO_DECLARACION_CI', req.uid, null);
           res.json({ status: true, data: idDetail });
-        } catch (error) {
+        } catch (error:any) {
           console.log(error);
+        //   await createLog('OC_PRODUCTOR', req.uid, error);
           res.status(500).json({
             status: false,
             message: "Algo salió mal",
@@ -133,10 +142,12 @@ class IndustrialConsumer {
     public async deleteById(req: any, res: Response) {
         const { id } = req.params;
         try {
+            await createLog('ELIMINA_MEDIO_VERIFICACION_DECLARACION_CI', req.uid, null);
             const id_header = await industrialConsumerDao.deleteById(id);
             res.json({ status: true, data: id_header });
-        } catch (error) {
+        } catch (error:any) {
             console.log(error);
+            await createLog('ELIMINA_MEDIO_VERIFICACION_DECLARACION_CI', req.uid, error.message);
             res.status(500).json({
                 status: false,
                 message: "Algo salió mal"

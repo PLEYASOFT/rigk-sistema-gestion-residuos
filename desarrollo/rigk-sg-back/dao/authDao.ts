@@ -14,7 +14,8 @@ class AuthDao {
     }
     async login(USER: string) {
         const conn = mysqlcon.getConnection()!;
-        const res: any = await conn.query("SELECT user.*,user_rol.ROL_ID AS ROL, rol.NAME AS ROL_NAME, business.NAME AS BUSINESS, business.ID as ID_BUSINESS FROM user INNER JOIN user_rol ON user_rol.USER_ID = user.ID INNER JOIN user_business ON user_business.ID_USER = user.ID INNER JOIN business ON business.ID = user_business.ID_BUSINESS INNER JOIN rol ON rol.ID=user_rol.ROL_ID WHERE user.EMAIL = ? AND user.STATE=1", [USER]).then((res) => res[0]).catch(error => {console.log(error); [{ undefined }]});
+        const res: any = await conn.query("SELECT user.*,user_rol.ROL_ID AS ROL, rol.NAME AS ROL_NAME, business.NAME AS BUSINESS, business.ID as ID_BUSINESS FROM user INNER JOIN user_rol ON user_rol.USER_ID = user.ID INNER JOIN user_business ON user_business.ID_USER = user.ID INNER JOIN business ON business.ID = user_business.ID_BUSINESS INNER JOIN rol ON rol.ID=user_rol.ROL_ID WHERE user.EMAIL = ? AND user.STATE=1", [USER]).then((res) => res[0]).catch(error => { console.log(error);[{ undefined }] });
+        conn.end();
         let user: any = {}
         let name_business = [];
         let id_business = [];
@@ -29,10 +30,12 @@ class AuthDao {
         if (res != null && res != undefined && res.length > 0) {
             login = true;
         }
-        conn.end();
-        return user || undefined;
+        if (login) {
+            return user;
+        }
+        return undefined;
     }
-    
+
     async verifyEmail(USER: string) {
         const conn = mysqlcon.getConnection()!;
         const res: any = await conn.query("SELECT EMAIL,ID,PASSWORD FROM user WHERE EMAIL = ?", [USER]).then((res) => res[0]).catch(error => [{ undefined }]);
@@ -90,7 +93,7 @@ class AuthDao {
     }
     public async deleteUser(id: any) {
         const conn = mysqlcon.getConnection()!;
-        const res:any = await conn.query("UPDATE user SET STATE=0 WHERE ID=?", [id]).then((res) => res[0]).catch(error => {console.log(error); return undefined});
+        const res: any = await conn.query("UPDATE user SET STATE=0 WHERE ID=?", [id]).then((res) => res[0]).catch(error => { console.log(error); return undefined });
         conn.end();
         return res;
     }
