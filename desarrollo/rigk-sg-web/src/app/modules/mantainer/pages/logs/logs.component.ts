@@ -42,11 +42,16 @@ export class LogsComponent implements OnInit {
       });
       return;
     }
+    
     Swal.fire({
       icon: 'info',
       text: 'Generando Excel',
+      timerProgressBar: true,
+      showConfirmButton: false,
+      allowEscapeKey: false,
+      allowOutsideClick: false
     });
-    Swal.isLoading();
+    Swal.showLoading();
     this.ls.downloadExcel(ds, de).subscribe(r => {
       Swal.close();
       if (r) {
