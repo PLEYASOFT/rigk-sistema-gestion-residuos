@@ -11,7 +11,7 @@
 
     <!-- inicio Inicio -->
     <section class="inicio">
-        <button (click)="dowloadPdf()">a</button>
+        <!-- <button (click)="dowloadPdf()">a</button>   -->
         <h1>Inicio</h1>
         <div class="box box-inicio">
             <div class="row">
@@ -94,26 +94,28 @@
 </div>
 
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary text-center" id="modalDownloadPdfTerms" data-bs-toggle="modal"
+<button type="button" class="btn btn-primary text-center d-none" id="modalDownloadPdfTerms" data-bs-toggle="modal"
     data-bs-target="#Modal">
     Launch demo modal
 </button>
 
 <!-- Modal -->
-<div class="modal fade" id="Modal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
+<div class="modal fade" id="Modal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header text-center">
-                <i class="fas fa-exclamation-triangle color-orange fa-3x"></i>
-                <h2 class="modal-title text-center" id="ModalLabel">Términos y condiciones</h2>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="container">
+                    <i class="fas fa-exclamation-triangle color-orange fa-3x icon-orange"></i><br>
+                    <h2 class="modal-title text-center" id="ModalLabel">Términos y condiciones</h2>
+                </div>
+                <button type="button" id="modal_terminos_close" class="btn-close d-none" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center">
                 <p>Debe adjuntar firmado términos y condiciones</p>
                 <a href="javascript:void(0)" (click)="dowloadPdf()">Descargar términos y condiciones</a>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="logout()">Cancelar</button>
                 <button type="button" class="btn btn-primary" (click)="adjuntar()">Adjuntar</button>
             </div>
         </div>
