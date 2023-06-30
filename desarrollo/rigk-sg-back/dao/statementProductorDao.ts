@@ -322,9 +322,10 @@ class statementProductorDao {
     }
     public async validateStatement(id: number) {
         const conn = mysqlcon.getConnection();
-        const tmp = await conn?.execute("UPDATE header_statement_form SET STATE = ?, UPDATED_AT=now(), VALIDATED_AT=now() WHERE id = ?", [2, id]).then((res) => res[0]).catch(error => undefined);
-        if (tmp == undefined) {
-            return false;
+        let error;
+        const tmp:any = await conn?.execute("UPDATE header_statement_form SET STATE = ?, UPDATED_AT=now(), VALIDATED_AT=now() WHERE id = ?", [2, id]).then((res) => res[0]).catch(err=> { error=err; return undefined});
+        if (tmp == undefined || tmp.affectedRows == 0) {
+            return error||'Declaración no encontrada';
         }
         conn?.end();
         return true;
@@ -332,9 +333,13 @@ class statementProductorDao {
     public async saveOC(id: number, file: any,) {
         const conn = mysqlcon.getConnection();
         const file_name = file.name;
-        await conn?.execute("UPDATE header_statement_form SET FILE_NAME=?, FILE_OC=? WHERE id=?", [file_name, file.data, id]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
+        let error:any = undefined;
+        await conn?.execute("UPDATE header_statement_form SET FILE_NAME=?, FILE_OC=? WHERE id=?", [file_name, file.data, id]).then((res) => res[0]).catch(err => { error = err; console.log(err); return [{ undefined }] });
         conn?.end()
-        return true;
+        if (error == undefined) {
+            return true;
+        }
+        return error;
     }
     public async haveDraft(business: string, year: string) {
         const conn = mysqlcon.getConnection();

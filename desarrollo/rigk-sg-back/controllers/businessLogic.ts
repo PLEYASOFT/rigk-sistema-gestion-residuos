@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import businessDao from '../dao/businessDao';
+import { createLog } from "../helpers/createLog";
 class BusinessLogic {
     async verifyId(req: any, res: Response) {
         const { id } = req.params;
@@ -83,9 +84,11 @@ class BusinessLogic {
         const { name, vat, loc_address, email, phone, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business, giro } = req.body;
         try {
             const business = await businessDao.postBusiness(name, vat, loc_address, phone, email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business, giro);
+            await createLog('AGREGA_EMPRESA', req.uid, null);
             res.status(200).json({ status: business, data: {}, msg: '' });
-        } catch (err) {
+        } catch (err:any) {
             console.log(err);
+            await createLog('AGREGA_EMPRESA', req.uid, err.message);
             res.status(500).json({
                 status: false,
                 message: "Algo salió mal"
@@ -96,9 +99,11 @@ class BusinessLogic {
         const id = req.params.id;
         try {
             const business = await businessDao.deleteBusiness(id);
+            await createLog('ELIMINA_EMPRESA', req.uid, null);
             res.status(200).json({ status: business, data: {}, msg: '' });
-        } catch (err) {
+        } catch (err:any) {
             console.log(err);
+            await createLog('ELIMINA_EMPRESA', req.uid, err.message);
             res.status(500).json({
                 status: false,
                 message: "Algo salió mal"
@@ -110,9 +115,11 @@ class BusinessLogic {
         const { id } = req.params;
         try {
             const business = await businessDao.updateBusiness(id, name, vat, loc_address, phone, email, am_first_name, am_last_name, invoice_name, invoice_email, invoice_phone, code_business, giro);
+            await createLog('MODIFICA_EMPRESA', req.uid, null);
             res.status(200).json({ status: business, data: {}, msg: '' });
-        } catch (err) {
+        } catch (err:any) {
             console.log(err);
+            await createLog('MODIFICA_EMPRESA', req.uid, err.message);
             res.status(500).json({
                 status: false,
                 message: "Algo salió mal"
