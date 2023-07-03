@@ -4,22 +4,24 @@
     border-radius: 50%;
     display: inline-block;
     margin-right: 5px;
-  }
-  
+}
+
 .green-circle {
     background-color: green;
 }
-  
+
 .red-circle {
     background-color: red;
 }
+
 .yellow-circle {
     background-color: yellow;
 }
 
 body {
-    font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Helvetica, Arial, sans-serif; 
+    font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
+
 .icon-orange {
-    color:#f8bb86;
+    color: #f8bb86;
 }
