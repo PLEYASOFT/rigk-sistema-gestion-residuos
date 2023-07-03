@@ -142,25 +142,35 @@ export class HomeComponent implements OnInit {
 
   dowloadPdf() {
     this.productorService.downloadPDFTerminos().subscribe(r => {
-      const file = new Blob([r], { type: 'application/pdf' });
-      let link = document.createElement('a');
-      link.href = window.URL.createObjectURL(file);
-      link.download = "pdf";
-      document.body.appendChild(link);
-      link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
-      link.remove();
-      window.URL.revokeObjectURL(link.href);
+      const blob = new Blob([r], { type: r.type });
+        const url = window.URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = "file.pdf";
+        link.click();
+
+        window.URL.revokeObjectURL(url);
+      // const file = new Blob([r], { type: 'application/pdf' });
+      // let link = document.createElement('a');
+      // link.href = window.URL.createObjectURL(file);
+      // link.download = "pdf";
+      // document.body.appendChild(link);
+      // link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+      // link.remove();
+      // window.URL.revokeObjectURL(link.href);
     });
   }
 
   adjuntar() {
     var input = document.createElement('input');
     input.type = 'file';
+    // input.accept = 'application/pdf';
     input.style.display = 'none';
     input.onchange = (e) => {
       var target = e.target as HTMLInputElement;
       let _file = target.files![0];
-      if (_file) {
+      if (_file && _file.type === 'application/pdf' && _file.size/1000 <= 1000) {
         this.file = _file;
         this.productorService.uploadPDFTerminos(_file).subscribe({
           next: (res) => {
@@ -168,13 +178,18 @@ export class HomeComponent implements OnInit {
               document.getElementById("modal_terminos_close")!.click();
             }
           }
+        });
+      }else {
+        Swal.fire({
+          icon: 'info',
+          text: 'El archivo debe ser PDF y debe pesar menos de 1MB'
         })
       }
     }
     document.body.appendChild(input);
     input.click();
   }
-  
+
   openTermsAndConditions() {
     this.productorService.veryfyPDFTerminos().subscribe((res) => {
       if(!res.status){
@@ -182,4 +197,7 @@ export class HomeComponent implements OnInit {
       }
     });
   }
+  downloadPdfFirma(){
+    this.productorService.veryfyPDFTerminos().subscribe(r=>{}
+  )}
 }

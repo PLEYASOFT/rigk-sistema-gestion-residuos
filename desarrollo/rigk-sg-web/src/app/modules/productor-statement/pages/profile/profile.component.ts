@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { ProductorService } from 'src/app/core/services/productor.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -22,6 +23,7 @@ export class ProfileComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
     private authService: AuthService,
+    private productorServices: ProductorService,
     private router: Router) { }
 
   ngOnInit(): void {
@@ -50,13 +52,13 @@ export class ProfileComponent implements OnInit {
           this.formData.reset();
         }
       },
-    error: err => {
-      Swal.fire({
-        title: 'Formato inválido',
-        text: 'Contraseña debe contener al menos 8 caracteres',
-        icon: 'error'
-      })
-    }
+      error: err => {
+        Swal.fire({
+          title: 'Formato inválido',
+          text: 'Contraseña debe contener al menos 8 caracteres',
+          icon: 'error'
+        })
+      }
     });
   }
 
@@ -66,5 +68,29 @@ export class ProfileComponent implements OnInit {
     } else {
       this.pos = "right";
     }
+  }
+  pos2 = "right"
+  displayModifyPassword2() {
+    if (this.pos2 == "right") {
+      this.pos2 = "down";
+    } else {
+      this.pos2 = "right";
+    }
+  }
+  downloadTerminos() {
+    this.productorServices.downloadPdfFirma().subscribe({
+      next: (r) => {
+        if (r) {
+          const file = new Blob([r], { type: 'application/pdf' });
+          let link = document.createElement('a');
+          link.href = window.URL.createObjectURL(file);
+          link.download = "Declaración Jurada Firmada";
+          document.body.appendChild(link);
+          link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+          link.remove();
+          window.URL.revokeObjectURL(link.href);
+        }
+      }
+    })
   }
 }
