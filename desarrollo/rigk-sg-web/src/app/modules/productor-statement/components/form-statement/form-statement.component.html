@@ -52,9 +52,10 @@
                         <td><input value="0" id="actual_dif_{{i+1}}_{{x+1}}" readonly type="text"
                                 style='border: none; background-color: transparent; text-align: center;'></td>
                         <td style="display: none;" id="last_weight_{{i+1}}_{{x+1}}" class="bg-grey-light">0</td>
-                        <td><input value="0" id="actual_weight_{{i+1}}_{{x+1}}" readonly
-                                style='border: none; background-color: transparent; text-align: center;'></td>
-
+                        <td>
+                            <input value="0" id="actual_weight_{{i+1}}_{{x+1}}" readonly
+                                style='border: none; background-color: transparent; text-align: center; font-weight: bold;'>
+                        </td>
                     </ng-template>
                     <ng-template
                         [ngIf]="!(r !== 'Envases compuestos' || (r === 'Envases compuestos' && t === 'EyE No Reciclables'))">
