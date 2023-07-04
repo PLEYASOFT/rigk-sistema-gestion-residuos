@@ -22,16 +22,16 @@ export class ConsumerService {
     return this.http.post<any>(`${this.url}`, body);
   }
   saveFile(idDetail: number, fileName: string, file: string, typeFile: number) {
-      const formData = new FormData();
-      formData.append('idDetail', idDetail.toString());
-      formData.append('fileName', fileName);
-      formData.append('fileBuffer', file); 
-      formData.append('typeFile', typeFile.toString());
+    const formData = new FormData();
+    formData.append('idDetail', idDetail.toString());
+    formData.append('fileName', fileName);
+    formData.append('fileBuffer', file);
+    formData.append('typeFile', typeFile.toString());
 
-      const headers = new HttpHeaders().set('Content-Type', 'multipart/form-data');
+    const headers = new HttpHeaders().set('Content-Type', 'multipart/form-data');
 
-      return this.http.post<any>(`${this.url}/saveFile`, formData, {headers});
-}
+    return this.http.post<any>(`${this.url}/saveFile`, formData, { headers });
+  }
 
   getForm(id: any) {
     return this.http.get<any>(`${this.url}/${id}`);
@@ -41,7 +41,8 @@ export class ConsumerService {
   }
   downloadMV(id: any): Observable<Blob> {
     return this.http.get<any>(`${this.url}/download/${id}`, {
-      responseType: 'blob' as 'json',});
+      responseType: 'blob' as 'json',
+    });
   }
   deleteById(id: any) {
     return this.http.delete<any>(`${this.url}/detailMV/${id}`);
@@ -60,8 +61,8 @@ export class ConsumerService {
     headers = headers.set('Accept', 'application/vnd.ms-excel');
     return this.http.get<any>(`${this.url}/excel/${id_business}`, { headers: headers, responseType: 'blob' as 'json' });
   }
-  checkRow(row:any) {
-    return this.http.post<any>(`${this.url}/verifyRow/`,row);
+  checkRow(row: any) {
+    return this.http.post<any>(`${this.url}/verifyRow/`, row);
   }
   saveHeaderFromExcel(formData: any) {
     return this.http.post(`${this.url}/headerForm`, formData);

@@ -3,7 +3,7 @@ import { RatesTsService } from '../../../../core/services/rates.ts.service';
 import { ProductorService } from '../../../../core/services/productor.service';
 import { Router } from '@angular/router';
 import { BusinessService } from 'src/app/core/services/business.service';
-
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -18,9 +18,10 @@ export class HomeComponent implements OnInit {
   cant: number = 0;
   types = ['EyE reciclables de papel/cartón', 'EyE reciclables de metal', 'EyE reciclables de plásticos', 'EyE no reciclables'];
   year: number = (new Date().getFullYear()) - 1;
-  rates: any[] = []
+  rates: any[] = [];
+  file: any;
   // constructor(public ratesService: RatesTsService ) { }
-  constructor(public productorService: ProductorService, private router: Router,  public ratesService: RatesTsService, public businessServices: BusinessService) { }
+  constructor(public productorService: ProductorService, private router: Router, public ratesService: RatesTsService, public businessServices: BusinessService) { }
 
   ngOnInit(): void {
     this.loadStatements();
@@ -33,40 +34,45 @@ export class HomeComponent implements OnInit {
         });
       }
     })
+    //verificar si inicie sesión
+    const isLoggedIn = sessionStorage.getItem('user');
+    if (isLoggedIn) {
+      this.openTermsAndConditions();
+    }
   }
   loadStatements() {
     const idUser = JSON.parse(sessionStorage.getItem('user')!).ID;
     this.businessServices.getBusinessById(idUser, this.year.toString()).subscribe(r => {
       this.allStatement = r.data.statements;
-      this.allBusiness = (r.data.business as any).sort((a:any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
-      this.cant=Math.ceil(this.allBusiness.length/10);
-      this.db = this.allBusiness.slice((this.pos-1)*10, this.pos*10).sort((a:any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
+      this.allBusiness = (r.data.business as any).sort((a: any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
+      this.cant = Math.ceil(this.allBusiness.length / 10);
+      this.db = this.allBusiness.slice((this.pos - 1) * 10, this.pos * 10).sort((a: any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
     })
   }
-  allStatement: any[]=[];
-  allBusiness: any[]=[];
+  allStatement: any[] = [];
+  allBusiness: any[] = [];
 
-  businessById(id: string){
-    const tmp = this.allStatement.find(r=>r.ID_BUSINESS==id);
+  businessById(id: string) {
+    const tmp = this.allStatement.find(r => r.ID_BUSINESS == id);
     let status = "";
     let code = -1;
-    if(tmp == undefined) {
-        status = "No Enviado";//-1
+    if (tmp == undefined) {
+      status = "No Enviado";//-1
     } else {
       code = tmp.STATE
-        switch(tmp.STATE) {
-            case 1:
-                status = "Enviada";
-                break;
-            case 0:
-                status = "Borrador";
-                break;
-            case 2:
-                status = "Pendiente";
-                break;
-        }
+      switch (tmp.STATE) {
+        case 1:
+          status = "Enviada";
+          break;
+        case 0:
+          status = "Borrador";
+          break;
+        case 2:
+          status = "Pendiente";
+          break;
+      }
     }
-  return {status, code};
+    return { status, code };
   }
   filter() {
     const n = (document.getElementById('f_name') as HTMLSelectElement).value;
@@ -89,7 +95,7 @@ export class HomeComponent implements OnInit {
         }
       }
     });
-    this.db = tmp.slice(0, 10).sort((a:any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
+    this.db = tmp.slice(0, 10).sort((a: any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
     this.cant = Math.ceil(tmp.length / 10);
   }
 
@@ -99,19 +105,19 @@ export class HomeComponent implements OnInit {
 
   pagTo(i: number) {
     this.pos = i + 1;
-    this.db = this.allBusiness.slice((i * 10), (i + 1) * 10).sort((a:any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
+    this.db = this.allBusiness.slice((i * 10), (i + 1) * 10).sort((a: any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
   }
 
   next() {
     if (this.pos >= this.cant) return;
     this.pos++;
-    this.db = this.allBusiness.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a:any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
+    this.db = this.allBusiness.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a: any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
   }
 
   previus() {
     if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
     this.pos = this.pos - 1;
-    this.db = this.allBusiness.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a:any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
+    this.db = this.allBusiness.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a: any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
   }
 
   navigateToForm(id: string, year: string, id_statement: any, state: number = 0) {
@@ -123,5 +129,66 @@ export class HomeComponent implements OnInit {
   setArrayFromNumber() {
     return new Array(this.cant);
   }
+  decrypt = (Base64: string) => {
+    const bytesDescifrados: Uint8Array = Buffer.from(Base64, 'base64');
+    const textoDescifrado: string = Buffer.from(bytesDescifrados).toString('utf-8');
+    return textoDescifrado;
+  }
 
+  logout() {
+    this.router.navigate(['/auth/login'], { queryParams: { logout: true } });
+  }
+
+  dowloadPdf() {
+    this.productorService.downloadPDFTerminos().subscribe(r => {
+      const blob = new Blob([r], { type: r.type });
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = "Declaracion Jurada.pdf";
+      link.click();
+
+      window.URL.revokeObjectURL(url);
+    });
+  }
+
+  adjuntar() {
+    var input = document.createElement('input');
+    input.type = 'file';
+    // input.accept = 'application/pdf';
+    input.style.display = 'none';
+    input.onchange = (e) => {
+      var target = e.target as HTMLInputElement;
+      let _file = target.files![0];
+      if (_file && _file.type === 'application/pdf' && _file.size / 1000 <= 1000) {
+        this.file = _file;
+        this.productorService.uploadPDFTerminos(_file).subscribe({
+          next: (res) => {
+            if (res.status) {
+              document.getElementById("modal_terminos_close")!.click();
+            }
+          }
+        });
+      } else {
+        Swal.fire({
+          icon: 'info',
+          text: 'El archivo debe ser PDF y debe pesar menos de 1MB'
+        })
+      }
+    }
+    document.body.appendChild(input);
+    input.click();
+  }
+  openTermsAndConditions() {
+    this.productorService.veryfyPDFTerminos().subscribe((res) => {
+      if (!res.status) {
+        document.getElementById('modalDownloadPdfTerms')!.click()
+      }
+    });
+  }
+  downloadPdfFirma() {
+    this.productorService.veryfyPDFTerminos().subscribe(r => { }
+    )
+  }
 }

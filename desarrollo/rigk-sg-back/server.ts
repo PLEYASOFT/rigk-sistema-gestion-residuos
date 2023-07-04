@@ -11,6 +11,7 @@ import ratesRoutes from './routes/rates';
 import establishmentRoutes from './routes/establishment';
 import consumerRoutes from './routes/consumer';
 import managerRoutes from './routes/manager';
+import utilesRoutes from './routes/utiles'
 import logsRoutes from './routes/logs';
 class Server {
     private app: Application;
@@ -23,6 +24,7 @@ class Server {
         rates: '/api/v1/rates',
         establishment: '/api/v1/establishment',
         manager: '/api/v1/manager',
+        utiles: '/api/v1/utiles',
         logs: '/api/v1/logs'
     };
     constructor() {
@@ -40,6 +42,7 @@ class Server {
         this.app.use(this.apiPath.establishment, establishmentRoutes);
         this.app.use(this.apiPath.logs, logsRoutes);
         this.app.use(this.apiPath.manager, managerRoutes);
+        this.app.use(this.apiPath.utiles, utilesRoutes);
         this.app.use((error: any, req: any, res: any, next: any) => {
             if (error) {
                 console.log(error)
