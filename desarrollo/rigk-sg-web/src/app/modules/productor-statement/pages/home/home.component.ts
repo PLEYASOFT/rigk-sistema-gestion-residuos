@@ -146,7 +146,7 @@ export class HomeComponent implements OnInit {
 
       const link = document.createElement('a');
       link.href = url;
-      link.download = "file.pdf";
+      link.download = "Declaracion Jurada.pdf";
       link.click();
 
       window.URL.revokeObjectURL(url);

@@ -4,7 +4,7 @@ import utilesDao from "../dao/utilesDao";
 
 class utilesLogic {
     async downloadPdf(req: any, res: Response) {
-        const outputPath = path.join(__dirname, '../../files/templates/1462023 125625.pdf');
+        const outputPath = path.join(__dirname, '../../files/templates/DJ PROREP - Plataforma.pdf');
         return res.download(outputPath);
     }
 
@@ -43,7 +43,7 @@ class utilesLogic {
             const fileContent = Buffer.from(r[0].FILE, 'binary');
 
             res.setHeader('Content-Type', "application/pdf");
-            res.setHeader('Content-Disposition', `attachment; filename=archivo.pdf`);
+            res.setHeader('Content-Disposition', `attachment; filename=Declaracion Jurada.pdf`);
             res.send(fileContent);
         } catch (error) {
             console.log(error);
