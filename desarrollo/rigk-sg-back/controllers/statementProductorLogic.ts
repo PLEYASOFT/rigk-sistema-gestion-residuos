@@ -4,6 +4,7 @@ import ratesDao from '../dao/ratesDao';
 import dateFormat, { i18n } from 'dateformat';
 import businessDao from '../dao/businessDao';
 import { sendOC } from '../helpers/sendOC';
+import { createLog } from '../helpers/createLog';
 i18n.dayNames = [
     "Do",
     "Lu",
@@ -170,12 +171,18 @@ class StatementProductorLogic {
             const { header, detail } = req.body;
             header.created_by = req['uid'];
             const { id_header } = await statementDao.saveDeclaretion(header, detail);
+            if (header.state == 0) {
+                await createLog('BORRADOR_DECLARACION', req.uid, null);
+            }
             res.status(200).json({
                 status: true,
                 data: id_header
             });
-        } catch (error) {
+        } catch (error: any) {
             console.log(error);
+            if (req.body?.header?.state == 0) {
+                await createLog('BORRADOR_DECLARACION', req.uid, error.mesagge);
+            }
             res.status(500).json({
                 status: false,
                 msg: "Algo salió mal"
@@ -195,14 +202,16 @@ class StatementProductorLogic {
             });
         }
     }
-    public async updateValuesForm(req: Request, res: Response) {
+    public async updateValuesForm(req: Request | any, res: Response) {
         const { id } = req.params;
         const { detail } = req.body;
         try {
             await statementDao.updateValueStatement(id, detail);
+            await createLog('BORRADOR_DECLARACION', req.uid, null);
             res.status(200).json({ status: true });
-        } catch (error) {
+        } catch (error: any) {
             console.log(error);
+            await createLog('BORRADOR_DECLARACION', req.uid, error.message);
             res.status(500).json({
                 status: false,
                 msg: "Algo salió mal"
@@ -223,7 +232,7 @@ class StatementProductorLogic {
             });
         }
     }
-    public async generatePDF(req: Request, res: Response) {
+    public async generatePDF(req: Request | any, res: Response) {
         const { id, year } = req.params;
         try {
             //table 1
@@ -425,9 +434,11 @@ class StatementProductorLogic {
                 compression: "DEFLATE",
             });
             fs.writeFileSync(path.resolve('files/templates', `plantilla_${header.ID}.docx`), buf);
+            await createLog('CERTIFICADO_PRODUCTOR', req.uid, null);
             convertWordToPDF(header.ID, res);
-        } catch (error) {
+        } catch (error: any) {
             console.log("error pos " + error);
+            await createLog('CERTIFICADO_PRODUCTOR', req.uid, error.message);
             res.status(500).json({
                 status: false,
                 msg: "Algo salió mal"
@@ -453,23 +464,27 @@ class StatementProductorLogic {
         const { id } = req.params;
         const files = req.files;
         if (!req.files || Object.keys(req.files).length == 0) {
+            await createLog('OC_PRODUCTOR', req.uid, 'No Sube Archivo');
             return res.status(400).send("No files");
         }
         try {
             const r: any = await statementDao.changeStateHeader(1, id);
             if (!r) {
+                await createLog('OC_PRODUCTOR', req.uid, r);
                 return res.status(400).json({ status: false, msg: "Algo salió mal", data: [] });
             }
             const r2: any = await statementDao.saveOC(id, files.file);
             if (!r2) {
                 await statementDao.changeStateHeader(0, id);
+                await createLog('OC_PRODUCTOR', req.uid, r2);
                 return res.status(400).json({ status: false, msg: "Algo salió mal", data: [] });
             }
-
             await sendOC(id, files.file);
+            await createLog('OC_PRODUCTOR', req.uid, null);
             return res.status(200).json({ status: true, msg: "OK", data: [] });
-        } catch (error) {
+        } catch (error: any) {
             console.log(error);
+            await createLog('OC_PRODUCTOR', req.uid, error.message);
             res.status(500).json({
                 status: false,
                 msg: "Algo salió mal"
@@ -480,20 +495,23 @@ class StatementProductorLogic {
         const { id } = req.params;
         try {
 
-            const r = await statementDao.validateStatement(id);
-            if (r) {
+            const r: any = await statementDao.validateStatement(id);
+            if (r === true) {
+                await createLog('VALIDAR_DECLARACION', req.uid, null);
                 return res.json({
                     status: true,
                     msg: "Declaración validada correctamente"
                 });
             } else {
-                res.status(400).json({
+                await createLog('VALIDAR_DECLARACION', req.uid, r);
+                return res.status(400).json({
                     status: false,
                     msg: "Declaración no encontrada"
                 });
             }
-        } catch (error) {
+        } catch (error: any) {
             console.log(error);
+            await createLog('VALIDAR_DECLARACION', req.uid, error.message);
             res.status(500).json({
                 status: false,
                 msg: "Algo salió mal"
@@ -504,8 +522,8 @@ class StatementProductorLogic {
         const { year, id } = req.params;
         try {
             const rates: any[] = await ratesDao.ratesID((parseInt(year) + 1).toString());
-            if(rates.length == 0) {
-                                return res.status(500).json({
+            if (rates.length == 0) {
+                return res.status(500).json({
                     status: false,
                     msg: `Tarifas no disponible para el año ${year}`,
                     state: -1,
@@ -621,8 +639,8 @@ class StatementProductorLogic {
 
             let date_limit = new Date(header.UPDATED_AT);
             date_limit.setDate(date_limit.getDate() + 7);
-            const remaining = (( (date_limit.getTime() - (new Date()).getTime()) )/(1000*60*60*24)).toFixed(0);
-            
+            const remaining = (((date_limit.getTime() - (new Date()).getTime())) / (1000 * 60 * 60 * 24)).toFixed(0);
+
             return res.json({ state: header.STATE, remaining, neto: neto, iva: iva, total: total, papel: pr.toFixed(2).replace(".", ","), metal: mer.toFixed(2).replace(".", ","), plastico: plr.toFixed(2).replace(".", ","), no_reciclable: (pnr + menr + plnr + onr).toFixed(2).replace(".", ",") });
         } catch (error) {
             console.log("error pos " + error);

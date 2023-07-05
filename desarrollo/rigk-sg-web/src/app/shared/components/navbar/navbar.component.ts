@@ -1,6 +1,7 @@
 import { outputAst } from '@angular/compiler';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -14,7 +15,8 @@ export class NavbarComponent implements OnInit {
   
   @Output() isVisibleBar: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-  constructor(private router: Router) { }
+  constructor(private router: Router,
+              public auth: AuthService) { }
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
@@ -22,7 +24,13 @@ export class NavbarComponent implements OnInit {
   }
 
   logout() {
-    this.router.navigate(['/auth/login'], { queryParams: { logout: true } });
+    this.auth.logout.subscribe({
+      next: r=> {
+        if(r.status) {
+          this.router.navigate(['/auth/login'], { queryParams: { logout: true } });
+        }
+      }
+    })
   }
   toggleMenu() {
     this.isVisible = !this.isVisible;
