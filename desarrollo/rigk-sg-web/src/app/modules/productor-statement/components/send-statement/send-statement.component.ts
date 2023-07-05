@@ -119,7 +119,6 @@ export class SendStatementComponent implements OnInit, OnDestroy {
 
       this.productorService.getResumeById(id_business, year).subscribe({
         next: resp => {
-          console.log(resp)
           this.resume = resp;
           this.remaining = resp.remaining;
           sessionStorage.setItem('state', this.resume.state);

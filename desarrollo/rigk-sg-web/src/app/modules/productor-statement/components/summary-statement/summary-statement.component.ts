@@ -195,7 +195,6 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         this.sumaAmount = 0;
         for (let i = 0; i < 4; i++) {
           this.sumaAmount = this.sumaAmount + (this.dif[i] * uf.data * 1.19);
-          console.log(this.dif[i], uf.data)
           document.getElementById(`total_neto${i}`)!.innerHTML = '$' + this.setFormato((this.dif[i] * uf.data).toFixed(0));
           document.getElementById(`iva_${i}`)!.innerHTML = '$' + this.setFormato((parseInt((this.dif[i] * uf.data * 1.19).toFixed(0)) - parseInt((this.dif[i] * uf.data).toFixed(0))));
           document.getElementById(`uf_clp_${i}`)!.innerHTML = '$' + this.setFormato(parseInt((this.dif[i] * uf.data * 1.19).toFixed(0)));

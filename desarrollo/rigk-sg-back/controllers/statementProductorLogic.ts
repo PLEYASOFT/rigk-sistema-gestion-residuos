@@ -504,7 +504,6 @@ class StatementProductorLogic {
         const { year, id } = req.params;
         try {
             const rates: any[] = await ratesDao.ratesID((parseInt(year) + 1).toString());
-            console.log(rates)
             if(rates.length == 0) {
                                 return res.status(500).json({
                     status: false,
