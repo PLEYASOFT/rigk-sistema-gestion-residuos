@@ -504,6 +504,7 @@ class StatementProductorLogic {
         const { year, id } = req.params;
         try {
             const rates: any[] = await ratesDao.ratesID((parseInt(year) + 1).toString());
+            console.log(rates)
             if(rates.length == 0) {
                                 return res.status(500).json({
                     status: false,
@@ -549,10 +550,6 @@ class StatementProductorLogic {
                 }
             }
             const { detail, header } = declaretion!;
-            let last_detail: any = await statementDao.getDetailById(id, (parseInt(year) - 1));
-            if(last_detail.length > 0 && last_detail[0].STATE == 0) {
-                last_detail = [];
-            }
             const uf: any = await ratesDao.getUF((new Date(header.VALIDATED_AT || header.UPDATED_AT)).toISOString().split("T")[0]);
             let lrp = 0;
             let lrme = 0;
@@ -566,42 +563,6 @@ class StatementProductorLogic {
             let plr = 0;
             let plnr = 0;
             let onr = 0;
-            for (let i = 0; i < last_detail.length; i++) {
-                const lde = last_detail[i];
-                if (lde.RECYCLABILITY == 1) {
-                    switch (lde.TYPE_RESIDUE) {
-                        case 1:
-                            lrp += lde.VALUE;
-                            break;
-                        case 2:
-                            lrme += lde.VALUE;
-                            break;
-                        case 3:
-                            lrpl += lde.VALUE;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                if (lde.RECYCLABILITY == 2) {
-                    switch (lde.TYPE_RESIDUE) {
-                        case 1:
-                            lnr += lde.VALUE;
-                            break;
-                        case 2:
-                            lnr += lde.VALUE;
-                            break;
-                        case 3:
-                            lnr += lde.VALUE;
-                            break;
-                        case 5:
-                            lnr += lde.VALUE;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
             for (let i = 0; i < detail.length; i++) {
                 const t = detail[i];
                 if (t.RECYCLABILITY == 1) {
