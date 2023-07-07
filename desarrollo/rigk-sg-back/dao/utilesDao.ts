@@ -18,6 +18,17 @@ class UtilesDao {
         }
         return false
     }
+
+    async findFile(USER: string) {
+        const conn = mysqlcon.getConnection()!;
+        const res: any = await conn.query("SELECT FILE FROM user WHERE ID=?", [USER]).then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        console.log(res);
+        if (res.length == 0){
+            return false
+        }
+        return res[0].FILE
+    }
 }
 const utilesDao = new UtilesDao();
 export default utilesDao;

@@ -44,7 +44,7 @@ class AuthLogic {
             if (output != undefined) {
                 bcrypt.compare(password, output.PASSWORD).then(async (r) => {
                     if (r) {
-                        const token = await generarJWT(output.ID, user, output.ROL);
+                        const token: any = await generarJWT(output.ID, user, output.ROL);
                         delete output.PASSWORD;
                         delete output.SALT;
                         delete output.STATE;

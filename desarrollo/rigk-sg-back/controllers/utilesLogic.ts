@@ -39,9 +39,10 @@ class utilesLogic {
     }
     public async download(req: any, res: Response) {
         try {
-            const r: any = await utilesDao.verifyUser(req.uid);
-            if (r == undefined || r[0].FILE == undefined || !r[0].FILE) return res.status(200).json({ status: false, msg: 'undefined o null', data: {} });
-            const fileContent = Buffer.from(r[0].FILE, 'binary');
+            const r: any = await utilesDao.findFile(req.uid);
+            console.log("...",r);
+            if (r == false ) return res.status(200).json({ status: false, msg: 'undefined o null', data: {} });
+            const fileContent = Buffer.from(r, 'binary');
 
             res.setHeader('Content-Type', "application/pdf");
             res.setHeader('Content-Disposition', `attachment; filename=Declaracion.pdf`);
