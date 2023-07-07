@@ -29,8 +29,9 @@ class utilesLogic {
     public async verifyUser(req: any, res: Response) {
         try {
             const r: any = await utilesDao.verifyUser(req.uid);
-            if (r == undefined || r[0].FILE == undefined || !r[0].FILE) return res.status(200).json({ status: false, msg: 'undefined o null', data: {} });
-            res.status(200).json({ status: true, msg: '', data: r[0].FILE });
+            console.log(r);
+            if (r == false) return res.status(200).json({ status: false, msg: 'undefined o null', data: {} });
+            res.status(200).json({ status: true, msg: '', data: {}});
         } catch (error) {
             console.log(error);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });

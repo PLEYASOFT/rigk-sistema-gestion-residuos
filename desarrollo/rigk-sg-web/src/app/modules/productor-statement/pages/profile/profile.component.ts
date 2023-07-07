@@ -41,7 +41,7 @@ export class ProfileComponent implements OnInit {
             text: "La contraseña fue cambiada exitosamente",
             icon: "success",
           })
-          this.router.navigate(['/auth/login']);
+          this.router.navigate(['/productor/home']);
         }
         else {
           Swal.fire({
