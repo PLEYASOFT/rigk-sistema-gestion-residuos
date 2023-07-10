@@ -219,11 +219,11 @@ class AuthLogic {
         const { id } = req.params;
         try {
             await authDao.deleteUser(id);
-            await createLog('ELIMINA_EMPRESA', req.uid, null);
+            await createLog('ELIMINA_USUARIO', req.uid, null);
             res.status(200).json({ status: true, msg: 'Usuario eliminado', data: [] });
         } catch (error: any) {
             console.log(error);
-            await createLog('ELIMINA_EMPRESA', req.uid, error.message);
+            await createLog('ELIMINA_USUARIO', req.uid, error.message);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
