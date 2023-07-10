@@ -7,7 +7,6 @@ export const createLog = async (action: string, id_user: number | null, errorDB:
     try {
 
         let res: any;
-        throw new Error('Error forzado');
         const conn = mysqlcon.getConnection()!;
         if (errorDB) {
             res = await conn.execute("INSERT INTO logs(ACTION, ID_USER, ERROR_LOG, STATUS) VALUES (?,?,?,'Nok')", [action, id_user || null, errorDB]).then(res => res[0]).catch(err => { console.log("=>", err); return undefined; });
