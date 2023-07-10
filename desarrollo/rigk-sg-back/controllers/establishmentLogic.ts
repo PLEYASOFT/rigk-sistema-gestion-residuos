@@ -1,16 +1,19 @@
 import { Request, Response } from "express";
 import establishmentDao from '../dao/establishmentDao';
+import { createLog } from "../helpers/createLog";
 class EstablishmentLogic {
-    async addEstablishment(req: Request, res: Response) {
+    async addEstablishment(req: Request|any, res: Response) {
         const name = req.body.name;
         const region = req.body.region;
         const id_business = req.body.id_business
         try {
             await establishmentDao.addEstablishment(name, region, id_business);
+            await createLog('AGREGA_ESTABLECIMIENTO', req.uid, null);
             res.status(200).json({ status: true, msg: 'Has creado un establecimiento', data: {} })
         }
-        catch (err) {
-            console.log(err)
+        catch (err:any) {
+            console.log(err);
+            await createLog('AGREGA_ESTABLECIMIENTO', req.uid, err.message);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
@@ -56,9 +59,11 @@ class EstablishmentLogic {
         const id = req.params.id;
         try {
             const establishment = await establishmentDao.deleteEstablishment(id);
+            await createLog('ELIMINA_ESTABLECIMIENTO', req.uid, null);
             res.status(200).json({ status: establishment, data: {}, msg: '' });
-        } catch (err) {
+        } catch (err:any) {
             console.log(err);
+            await createLog('ELIMINA_ESTABLECIMIENTO', req.uid, err.message);
             res.status(500).json({
                 status: false,
                 message: "Algo salió mal"
@@ -86,12 +91,15 @@ class EstablishmentLogic {
         try {
             const data: any = await establishmentDao.saveInvoice(vat, id_business, invoice_number, id_detail, date_pr, value, files['file'], valued_total, req.uid, treatment, id_material);
             if (data || data[0] != undefined) {
+                await createLog('APRUEBA_DECLARACION_GESTOR', req.uid, null);
                 return res.status(200).json({ status: true, data: {}, msg: 'Registro guardado satisfactoriamente' });
             } else {
+                await createLog('APRUEBA_DECLARACION_GESTOR', req.uid, 'error inserción en base de datos');
                 return res.status(500).json({ status: false, data: {}, msg: 'Algo salió mal' });
             }
-        } catch (error) {
+        } catch (error:any) {
             console.log(error);
+            await createLog('APRUEBA_DECLARACION_GESTOR', req.uid, error.message);
             res.status(500).json({
                 status: false,
                 message: "Algo salió mal"

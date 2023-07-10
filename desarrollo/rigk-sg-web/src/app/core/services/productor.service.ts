@@ -58,4 +58,24 @@ export class ProductorService {
     body.append('file',file[0]);
     return this.http.post<any>(`${this.url}/OC/${id}`, body);
   }
+  downloadPDFTerminos() {
+    let headers = new HttpHeaders();
+    headers = headers.set('Accept', 'application/pdf');
+    return this.http.get<any>(`${environment.API_V1_URL}/utiles/download/pdf`,{ headers: headers, responseType: 'blob' as 'json' });
+  }
+  uploadPDFTerminos(file: any ) {
+    const body = new FormData();
+    body.append('file',file);
+    return this.http.post<any>(`${environment.API_V1_URL}/utiles/upload/pdf`, body);
+  }
+  veryfyPDFTerminos() {
+    let headers = new HttpHeaders();
+    headers = headers.set('Accept', 'application/pdf');
+    return this.http.post<any>(`${environment.API_V1_URL}/utiles/verifyUser`, { headers: headers, responseType: 'blob' as 'json' });
+  }
+  downloadPdfFirma() {
+    let headers = new HttpHeaders();
+    headers = headers.set('Accept', 'application/pdf');
+    return this.http.get<any>(`${environment.API_V1_URL}/utiles/download`, { responseType: 'blob' as 'json' });
+  }
 }
