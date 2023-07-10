@@ -28,7 +28,7 @@ export class ProductorService {
   getProductor(id: number) {
     return this.http.get<any>(`${this.url}/${id}`);
   }
-  getResumeById(id: string,year:number) {
+  getResumeById(id: string, year: number) {
     return this.http.get<any>(`${this.url}/resume/${id}/year/${year}`);
   }
   get getStatementByUser() {
@@ -41,31 +41,31 @@ export class ProductorService {
     return this.http.put<any>(`${this.url}/${id_header}`, { header, detail });
   }
   validateStatement(id: any) {
-    return this.http.put<any>(`${this.url}/validate/${id}`,{});
+    return this.http.put<any>(`${this.url}/validate/${id}`, {});
   }
   verifyDraft(id_business: any, year: any) {
     return this.http.get<any>(`${this.url}/draft/${id_business}/year/${year}`);
   }
-  
+
   downloadPDF(id_business: any, year: any) {
     let headers = new HttpHeaders();
     headers = headers.set('Accept', 'application/pdf');
-    return this.http.get<any>(`${this.url}/pdf/${id_business}/year/${year}`,{ headers: headers, responseType: 'blob' as 'json' });
+    return this.http.get<any>(`${this.url}/pdf/${id_business}/year/${year}`, { headers: headers, responseType: 'blob' as 'json' });
   }
 
-  uploadOC(id: any, file: any ) {
+  uploadOC(id: any, file: any) {
     const body = new FormData();
-    body.append('file',file[0]);
+    body.append('file', file[0]);
     return this.http.post<any>(`${this.url}/OC/${id}`, body);
   }
   downloadPDFTerminos() {
     let headers = new HttpHeaders();
     headers = headers.set('Accept', 'application/pdf');
-    return this.http.get<any>(`${environment.API_V1_URL}/utiles/download/pdf`,{ headers: headers, responseType: 'blob' as 'json' });
+    return this.http.get<any>(`${environment.API_V1_URL}/utiles/download/pdf`, { headers: headers, responseType: 'blob' as 'json' });
   }
-  uploadPDFTerminos(file: any ) {
+  uploadPDFTerminos(file: any) {
     const body = new FormData();
-    body.append('file',file);
+    body.append('file', file);
     return this.http.post<any>(`${environment.API_V1_URL}/utiles/upload/pdf`, body);
   }
   veryfyPDFTerminos() {

@@ -29,7 +29,6 @@ class utilesLogic {
     public async verifyUser(req: any, res: Response) {
         try {
             const r: any = await utilesDao.verifyUser(req.uid);
-            console.log(r);
             if (r == false) return res.status(200).json({ status: false, msg: 'undefined o null', data: {} });
             res.status(200).json({ status: true, msg: '', data: {}});
         } catch (error) {
@@ -40,7 +39,6 @@ class utilesLogic {
     public async download(req: any, res: Response) {
         try {
             const r: any = await utilesDao.findFile(req.uid);
-            console.log("...",r);
             if (r == false ) return res.status(200).json({ status: false, msg: 'undefined o null', data: {} });
             const fileContent = Buffer.from(r, 'binary');
 
