@@ -12,7 +12,6 @@ class UtilesDao {
         const conn = mysqlcon.getConnection()!;
         const res: any = await conn.query("SELECT ID FROM user WHERE FILE IS NULL AND ID=?", [USER]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
-        console.log(res);
         if (res.length == 0){
             return true
         }
@@ -23,7 +22,6 @@ class UtilesDao {
         const conn = mysqlcon.getConnection()!;
         const res: any = await conn.query("SELECT FILE FROM user WHERE ID=?", [USER]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
-        console.log(res);
         if (res.length == 0){
             return false
         }
