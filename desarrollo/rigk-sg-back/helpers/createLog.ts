@@ -27,7 +27,6 @@ const getLastId = (_path: string): number => {
     if (fs.existsSync(_path)) {
         const data = fs.readFileSync(_path, 'utf8');
         const lines = data.split('\n');
-        console.log(lines.length)
         if (lines.length > 1) {
             const lastLine = lines[lines.length - 2];
             const lastIdString = lastLine.split(';')[0];
