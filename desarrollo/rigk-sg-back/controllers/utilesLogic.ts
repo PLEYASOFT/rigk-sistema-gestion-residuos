@@ -43,7 +43,7 @@ class utilesLogic {
             const fileContent = Buffer.from(r[0].FILE, 'binary');
 
             res.setHeader('Content-Type', "application/pdf");
-            res.setHeader('Content-Disposition', `attachment; filename=Declaracion Jurada.pdf`);
+            res.setHeader('Content-Disposition', `attachment; filename=Declaracion.pdf`);
             res.send(fileContent);
         } catch (error) {
             console.log(error);
