@@ -187,8 +187,4 @@ export class HomeComponent implements OnInit {
       }
     });
   }
-  downloadPdfFirma() {
-    this.productorService.veryfyPDFTerminos().subscribe(r => { }
-    )
-  }
 }
