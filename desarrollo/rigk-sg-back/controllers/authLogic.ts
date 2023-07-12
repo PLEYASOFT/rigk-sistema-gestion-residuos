@@ -67,7 +67,7 @@ class AuthLogic {
             }
         }
         catch (err: any) {
-            await createLog('AUTENTICACION', null, `${err.message}. Usuario: ${user}`);
+            await createLog('AUTENTICACION', null, `${err.message}`);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }

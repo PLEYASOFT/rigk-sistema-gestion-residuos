@@ -2,10 +2,18 @@ import dotenv from 'dotenv';
 import mysqlcon from '../db';
 import fs from 'fs';
 import path from 'path';
-export const createLog = async (action: string, id_user: number | null, errorDB: string | null) => {
-    const out: string = process.env.PATH_LOG!;
-    try {
 
+export const createLog = async (action: string, id_user: number | null, errorDB: string | null) => {
+    const baseLogPath: string = process.env.PATH_LOG!;
+
+    let date = new Date();
+    let day = String(date.getDate()).padStart(2, '0');
+    let month = String(date.getMonth() + 1).padStart(2, '0'); 
+    let year = String(date.getFullYear()).slice(-2);
+
+    const out = path.join(baseLogPath, `errors_${day}${month}${year}.log`);
+
+    try {
         let res: any;
         const conn = mysqlcon.getConnection()!;
         if (errorDB) {
@@ -22,6 +30,7 @@ export const createLog = async (action: string, id_user: number | null, errorDB:
         saveLog('GUARDADO_LOG', id_user || null, errorDB, out);
     }
 };
+
 
 const getLastId = (_path: string): number => {
     if (fs.existsSync(_path)) {
@@ -40,6 +49,10 @@ const getLastId = (_path: string): number => {
 const saveLog = async (action: string, id_user: number | null, error: string | null, _path: string) => {
     try {
         const t = path.resolve(_path);
+        const directory = path.dirname(t);
+
+        await fs.promises.mkdir(directory, { recursive: true });
+
         let status = 'Ok';
         if (error) {
             status = 'Nok';
