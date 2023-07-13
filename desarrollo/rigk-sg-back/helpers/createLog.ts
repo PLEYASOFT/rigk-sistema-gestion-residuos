@@ -56,7 +56,7 @@ const saveLog = async (action: string, id_user: number | null, error: string | n
         await fs.promises.mkdir(directory, { recursive: true });
 
         let status = 'Ok';
-        if (error) {
+        if (error || error == null) {
             status = 'Nok';
         }
 
