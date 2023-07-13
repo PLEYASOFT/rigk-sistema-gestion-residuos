@@ -23,11 +23,13 @@ export const createLog = async (action: string, id_user: number | null, errorDB:
         }
         conn.end();
         if (res == undefined) {
-            return await saveLog('GUARDADO_LOG', id_user || null, errorDB, out);
+            await saveLog('GUARDADO_LOG', id_user || null, errorDB, out);
+            await saveLog(action, id_user || null, errorDB, out);
         }
         return true;
     } catch (error) {
-        saveLog('GUARDADO_LOG', id_user || null, errorDB, out);
+        await saveLog('GUARDADO_LOG', id_user || null, errorDB, out);
+        await saveLog(action, id_user || null, errorDB, out);
     }
 };
 
