@@ -10,6 +10,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { BulkUploadComponent } from './pages/bulk-upload/bulk-upload.component';
 import { StatementsDetailComponent } from './pages/statements-detail/statements-detail.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { StatementsDetailComponent } from './pages/statements-detail/statements-
     StatementsComponent,
     FormComponent,
     BulkUploadComponent,
-    StatementsDetailComponent
+    StatementsDetailComponent,
+    DashboardComponent
   ],
   imports: [
     CommonModule,
