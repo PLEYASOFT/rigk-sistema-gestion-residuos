@@ -10,7 +10,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { BulkUploadComponent } from './pages/bulk-upload/bulk-upload.component';
 import { StatementsDetailComponent } from './pages/statements-detail/statements-detail.component';
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { NgxChartsModule }from '@swimlane/ngx-charts';
 
 @NgModule({
@@ -20,8 +19,7 @@ import { NgxChartsModule }from '@swimlane/ngx-charts';
     StatementsComponent,
     FormComponent,
     BulkUploadComponent,
-    StatementsDetailComponent,
-    DashboardComponent
+    StatementsDetailComponent
   ],
   imports: [
     CommonModule,

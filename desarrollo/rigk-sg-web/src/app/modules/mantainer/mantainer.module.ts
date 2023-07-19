@@ -15,6 +15,8 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { MaintainerDeclarationsProductorComponent } from './pages/maintainer-declarations-productor/maintainer-declarations-productor.component';
 import { MaintainerManagersComponent } from './pages/maintainer-managers/maintainer-managers.component';
 import { LogsComponent } from './pages/logs/logs.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { NgxChartsModule }from '@swimlane/ngx-charts';
 
 
 @NgModule({
@@ -26,7 +28,8 @@ import { LogsComponent } from './pages/logs/logs.component';
     MantainerUsersComponent,
     MaintainerDeclarationsProductorComponent,
     MaintainerManagersComponent,
-    LogsComponent
+    LogsComponent,
+    DashboardComponent
   ],
   imports: [
     CommonModule,
@@ -34,7 +37,8 @@ import { LogsComponent } from './pages/logs/logs.component';
     FormsModule,
     ReactiveFormsModule,
     MultiSelectModule,
-    SharedModule
+    SharedModule,
+    NgxChartsModule
   ]
 })
 export class MantainerModule { }

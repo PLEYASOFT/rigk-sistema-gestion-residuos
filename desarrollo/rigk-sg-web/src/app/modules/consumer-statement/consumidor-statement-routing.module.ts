@@ -8,7 +8,6 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { StatementsComponent } from './pages/statements/statements.component';
 import { BulkUploadComponent } from './pages/bulk-upload/bulk-upload.component';
 import { StatementsDetailComponent } from './pages/statements-detail/statements-detail.component';
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 const routes: Routes = [{
     path: '',
@@ -23,7 +22,6 @@ const routes: Routes = [{
       { path: 'statements', component: StatementsComponent },
       { path: 'statements/:id_header_/:id_detail', component: StatementsDetailComponent },
       { path: 'faq', component: FaqComponent },
-      { path: 'dashboard', component: DashboardComponent },
       { path: '**', redirectTo: 'home', pathMatch: 'full' }
     ]
   }
