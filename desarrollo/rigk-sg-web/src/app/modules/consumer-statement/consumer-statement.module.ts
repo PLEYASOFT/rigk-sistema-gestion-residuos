@@ -11,6 +11,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { BulkUploadComponent } from './pages/bulk-upload/bulk-upload.component';
 import { StatementsDetailComponent } from './pages/statements-detail/statements-detail.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { NgxChartsModule }from '@swimlane/ngx-charts';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
     SharedModule,
     FormsModule,
     ReactiveFormsModule,
-    MultiSelectModule
+    MultiSelectModule,
+    NgxChartsModule
   ]
 })
 export class ConsumerStatementModule { }
