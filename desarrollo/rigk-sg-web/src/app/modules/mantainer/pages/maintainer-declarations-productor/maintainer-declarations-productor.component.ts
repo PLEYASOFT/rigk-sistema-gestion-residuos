@@ -582,9 +582,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
 
     this.Total_EyE = this.EyE_PapelCarton_Rec + this.EyE_Metal_Rec + this.EyE_Plastico_Rec + this.EyE_NR;
 
-    console.log(this.Total_EyE)
-    console.log(this.R_PapelCarton_Total+ this.R_Metal_Total+this.R_Plastico_Total+this.NR_PapelCarton_Total + this.NR_Metal_Total + this.NR_Plastico_Total + this.NR_Compuestos_Total)
-    this.PapelCarton_Rec_Uf = this.EyE_PapelCarton_Rec * this.rates[0].price;
+   this.PapelCarton_Rec_Uf = this.EyE_PapelCarton_Rec * this.rates[0].price;
     this.Metal_Rec_Uf = this.EyE_Metal_Rec * this.rates[1].price;
     this.Plastico_Rec_Uf = this.EyE_Plastico_Rec * this.rates[2].price;
     this.NR_Uf = this.EyE_NR * this.rates[3].price;
