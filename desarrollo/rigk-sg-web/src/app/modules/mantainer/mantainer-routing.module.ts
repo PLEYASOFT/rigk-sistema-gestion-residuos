@@ -10,6 +10,7 @@ import { FaqComponent } from 'src/app/shared/components/faq/faq.component';
 import { MaintainerDeclarationsProductorComponent } from './pages/maintainer-declarations-productor/maintainer-declarations-productor.component';
 import { MaintainerManagersComponent } from './pages/maintainer-managers/maintainer-managers.component';
 import { LogsComponent } from './pages/logs/logs.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 const routes: Routes = [{
   path: '',
@@ -24,6 +25,7 @@ const routes: Routes = [{
   { path: 'faq', component: FaqComponent },
   { path: 'managers', component: MaintainerManagersComponent },
   { path: 'logs', component: LogsComponent },
+  { path: 'dashboard', component: DashboardComponent },
   { path: '**', redirectTo: 'home', pathMatch: 'full' }]
 }
   
