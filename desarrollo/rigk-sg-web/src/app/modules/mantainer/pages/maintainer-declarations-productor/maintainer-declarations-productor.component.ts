@@ -124,7 +124,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
   rates: any;
   ratesUF: any;
 
-  valores = new Array(29).fill(0);
+  valores = new Array(30).fill(0);
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
@@ -303,7 +303,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
         ];
 
         for (let i = 0; i < claves.length; i++) {
-          if (i < 23) {
+          if (i < 24) {
             this.resumen.push({
               'Items': claves[i],
               'Valor': this.setFormato(this.valores[i])
@@ -606,7 +606,6 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     this.totalIVA = this.PapelCarton_IVA + this.Metal_IVA + this.Plastico_IVA + this.NR_IVA;
     this.TotalBruto = parseInt(this.PapelCarton_Neto) + parseInt(this.Metal_Neto) + parseInt(this.Plastico_Neto) + parseInt(this.NR_Neto);
     this.TotalBruto_IVA = parseInt(this.PapelCarton_Bruto) + parseInt(this.Metal_Bruto) + parseInt(this.Plastico_Bruto) + parseInt(this.NR_Bruto);
-
     if (state != 0) {
       this.valores[0] = this.valores[0] + parseFloat(this.Total_EyE) + parseFloat(this.EyE_Ret);
       this.valores[1] = this.valores[1] + parseFloat(this.Total_EyE);
