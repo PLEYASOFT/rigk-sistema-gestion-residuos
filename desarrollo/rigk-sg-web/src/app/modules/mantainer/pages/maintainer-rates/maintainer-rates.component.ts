@@ -92,7 +92,6 @@ export class MaintainerRatesComponent implements OnInit {
     const pattern = /^[0-9]+(,[0-9]+)?$/;
     if(!pattern.test(this.ratesForm.value.type_1!))
     {
-      console.log(this.ratesForm.value.type_1!);
       Swal.fire({
         icon: 'warning',
         text:'Separador de miles con punto y separador de decimales con coma. Máximo 2 decimales'
@@ -102,9 +101,7 @@ export class MaintainerRatesComponent implements OnInit {
     if(this.isEditing) {
       this.ratesTsService.updateRatesByYear(this.ratesForm.value).subscribe({
         next: r=> {
-          console.log(this.ratesForm.value);
           if(r.status){
-            console.log("status", r.status);
             this.getAllRates();
             document.getElementById('closeModallll')?.click();
             document.getElementById('closeModallll2')?.click();
