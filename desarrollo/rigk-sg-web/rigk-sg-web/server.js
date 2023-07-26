@@ -5,17 +5,14 @@ const app = express();
 
 app.use(express.static(path.join(__dirname, 'dist/rigk-sg-web')));
 
-
 app.get('*', function(req, res) {
 	res.sendFile(path.join(__dirname, 'dist/rigk-sg-web/index.html'));
 });
-
 /*
 app.get('*', function(req, res) {
-	res.sendFile(path.join(__dirname, 'dist/rigk-sg-web/.well-known/pki-validation/68764FFE98C9346A9950E5F014C728F8.txt'));
+	res.sendFile(path.join(__dirname, 'dist/rigk-sg-web/.well-known/pki-validation/F7D7C8D2A11907DE9AC2DE651BAA52A8.txt'));
 });
 */
-
 app.listen(port, () => {
 	console.log('Servidor iniciado');
 	console.log(port);
