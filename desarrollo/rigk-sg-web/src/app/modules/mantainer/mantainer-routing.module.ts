@@ -11,6 +11,7 @@ import { MaintainerDeclarationsProductorComponent } from './pages/maintainer-dec
 import { MaintainerManagersComponent } from './pages/maintainer-managers/maintainer-managers.component';
 import { LogsComponent } from './pages/logs/logs.component';
 import { MaintainerRatesComponent } from './pages/maintainer-rates/maintainer-rates.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 const routes: Routes = [{
   path: '',
@@ -26,6 +27,7 @@ const routes: Routes = [{
   { path: 'faq', component: FaqComponent },
   { path: 'managers', component: MaintainerManagersComponent },
   { path: 'logs', component: LogsComponent },
+  { path: 'dashboard', component: DashboardComponent },
   { path: '**', redirectTo: 'home', pathMatch: 'full' }]
 }
   

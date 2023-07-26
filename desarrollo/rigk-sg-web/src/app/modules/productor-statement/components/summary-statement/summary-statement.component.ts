@@ -165,7 +165,9 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
       }
     }
     for (let i = 1; i <= 5; i++) {
-      this.result = parseFloat(document.getElementById(`prim_weight_${i}`)!.innerHTML.replace(",", ".")) + parseFloat(document.getElementById(`sec_weight_${i}`)!.innerHTML.replace(",", ".")) + parseFloat(document.getElementById(`ter_weight_${i}`)!.innerHTML.replace(",", "."));
+      this.result = parseFloat(document.getElementById(`prim_weight_${i}`)!.innerHTML.replace(/\./g, "").replace(",", "."))
+        + parseFloat(document.getElementById(`sec_weight_${i}`)!.innerHTML.replace(/\./g, "").replace(",", "."))
+        + parseFloat(document.getElementById(`ter_weight_${i}`)!.innerHTML.replace(/\./g, "").replace(",", "."));
       document.getElementById(`total_category_weight_${i}`)!.innerHTML = this.setFormato(this.result);
       this.sumaAmount = this.sumaAmount + this.result;
     }
@@ -193,8 +195,8 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         this.sumaAmount = 0;
         for (let i = 0; i < 4; i++) {
           this.sumaAmount = this.sumaAmount + (this.dif[i] * uf.data * 1.19);
-          document.getElementById(`total_neto${i}`)!.innerHTML = '$' +this.setFormato((this.dif[i] * uf.data).toFixed(0));
-          document.getElementById(`iva_${i}`)!.innerHTML = '$' +this.setFormato((parseInt((this.dif[i] * uf.data * 1.19).toFixed(0)) - parseInt((this.dif[i] * uf.data).toFixed(0))));
+          document.getElementById(`total_neto${i}`)!.innerHTML = '$' + this.setFormato((this.dif[i] * uf.data).toFixed(0));
+          document.getElementById(`iva_${i}`)!.innerHTML = '$' + this.setFormato((parseInt((this.dif[i] * uf.data * 1.19).toFixed(0)) - parseInt((this.dif[i] * uf.data).toFixed(0))));
           document.getElementById(`uf_clp_${i}`)!.innerHTML = '$' + this.setFormato(parseInt((this.dif[i] * uf.data * 1.19).toFixed(0)));
 
           this.sumaNeto = this.sumaNeto + this.dif[i] * uf.data;
@@ -202,8 +204,8 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
         }
         document.getElementById(`total_uf_clp`)!.innerHTML = '$' + this.setFormato(parseInt(this.sumaAmount.toFixed(0)));
         document.getElementById(`amount_clp`)!.innerHTML = '$' + this.setFormato(parseInt(this.sumaAmount.toFixed(0)));
-        document.getElementById(`ajuste_amount`)!.innerHTML = '$' +this.setFormato(parseInt(this.sumaNeto.toFixed(0)));
-        document.getElementById(`total_amount_iva`)!.innerHTML = '$' +this.setFormato(parseInt(this.sumaIva.toFixed(0)));
+        document.getElementById(`ajuste_amount`)!.innerHTML = '$' + this.setFormato(parseInt(this.sumaNeto.toFixed(0)));
+        document.getElementById(`total_amount_iva`)!.innerHTML = '$' + this.setFormato(parseInt(this.sumaIva.toFixed(0)));
       });
   }
 

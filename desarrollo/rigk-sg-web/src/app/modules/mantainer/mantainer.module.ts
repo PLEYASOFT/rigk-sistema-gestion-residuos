@@ -16,6 +16,8 @@ import { MaintainerDeclarationsProductorComponent } from './pages/maintainer-dec
 import { MaintainerManagersComponent } from './pages/maintainer-managers/maintainer-managers.component';
 import { LogsComponent } from './pages/logs/logs.component';
 import { MaintainerRatesComponent } from './pages/maintainer-rates/maintainer-rates.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { NgxChartsModule }from '@swimlane/ngx-charts';
 
 
 @NgModule({
@@ -28,7 +30,8 @@ import { MaintainerRatesComponent } from './pages/maintainer-rates/maintainer-ra
     MaintainerDeclarationsProductorComponent,
     MaintainerManagersComponent,
     LogsComponent,
-    MaintainerRatesComponent
+    MaintainerRatesComponent,
+    DashboardComponent
   ],
   imports: [
     CommonModule,
@@ -36,7 +39,8 @@ import { MaintainerRatesComponent } from './pages/maintainer-rates/maintainer-ra
     FormsModule,
     ReactiveFormsModule,
     MultiSelectModule,
-    SharedModule
+    SharedModule,
+    NgxChartsModule
   ]
 })
 export class MantainerModule { }

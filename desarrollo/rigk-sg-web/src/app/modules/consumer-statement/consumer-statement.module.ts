@@ -10,6 +10,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { BulkUploadComponent } from './pages/bulk-upload/bulk-upload.component';
 import { StatementsDetailComponent } from './pages/statements-detail/statements-detail.component';
+import { NgxChartsModule }from '@swimlane/ngx-charts';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { StatementsDetailComponent } from './pages/statements-detail/statements-
     SharedModule,
     FormsModule,
     ReactiveFormsModule,
-    MultiSelectModule
+    MultiSelectModule,
+    NgxChartsModule
   ]
 })
 export class ConsumerStatementModule { }
