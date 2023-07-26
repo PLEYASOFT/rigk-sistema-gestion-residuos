@@ -1,0 +1,337 @@
+<!-- inicio breadcrumbs -->
+<nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+        <li class="breadcrumb-item"><a href="#">Mantenedor Tarifa</a></li>
+    </ol>
+</nav>
+
+<h1>Tarifas por tonelada (UF)</h1>
+
+<div class="buttonRight">
+
+    <button class="btn btn-primary" [disabled]="isok" (click)="ratesForm.reset({year:'0'}); isEditing = false" data-bs-toggle="modal" data-bs-target="#exampleModal" >Agregar Tarifa</button>
+</div>            
+<div style="height: 50px;"></div>
+<div class="row mb-3">
+    <div class="col-md-12">
+        <label>Filtro:</label>
+        <input type="text" class="form-control" placeholder="Filtro de búsqueda" (keyup)="filter($event.target)">
+        <!-- $event.target -->
+        <!-- (keyup)="filter($event.target) -->
+    </div>
+</div>
+<div class="table-responsive mb-4">
+    <!-- inicio Consulta de Declaración -->
+    <section >
+        <div class="row w-100 ">
+            <!-- Columna 1 -->
+            <div id = "table" #table1 class="w-100 ">
+                 <div class="w-100">
+                    <!-- Tabla Desktop -->
+                    <table class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table" >
+                        
+                        <thead>
+                            <tr class="text-center w-100" >
+                                <th >AÑO</th>
+                                <th >EyE reciclables de papel/cartón</th>
+                                <th >EyE reciclables de metal</th>
+                                <th >EyE reciclables de plásticos</th>
+                                <th >EyE no reciclables</th>
+                                <th ></th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <!-- 1. Aquí debo leer los parametros que inicialmente estaran vacios para el 2024, es decir aaño siguiente -->
+                            <!-- 2. crear la query -->
+                            <tr class="text-end w-100" *ngFor="let r of rates||[]" >
+                                <td >{{getYear(r)}}</td>
+                                <td>{{getPrice(r,1).toFixed(2).replace(".",",")}}</td>
+                                <td>{{getPrice(r,2).toFixed(2).replace(".",",")}}</td>
+                                <td>{{getPrice(r,3).toFixed(2).replace(".",",")}}</td>
+                                <td>{{getPrice(r,4).toFixed(2).replace(".",",")}}</td>
+                                <td > 
+                                    <!-- <div class="btn-group">
+                                        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="modify(r)">Modificar</button>
+                                    </div> -->
+
+                                    <div class="btn-group">
+                                        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal2"(click)="modify(r)" >Modificar</button>
+                                      </div>
+                                      <!-- <select class="form-control" formControlName="year">
+                                        <option *ngFor="let year of defaultYear" [value]="year" [disabled]="year !== selectedYear">{{ year }}</option>
+                                      </select> -->
+                                      <!-- *ngFor="let r of defaultYear" value="{{r}}"   -->
+                                      
+                                </td>
+                                <!-- <td > 
+                                    <div class="btn-group">
+                                        <button class="btn btn-danger btn-sm">Eliminar</button>
+                                    </div>
+                                </td> -->
+                            </tr>
+                        </tbody>
+                    </table>
+                    <nav aria-label="Navegación resultados">
+                        <ul class="pagination">
+                            <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
+                            <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
+                            <!-- <li *ngFor="let in of setArrayFromNumber(); let i = index"><button class="border btn btn-sm"
+                                    [ngClass]="{ 'btn-info':pos==(i+1), 'btn-primary': pos != (i+1)}"
+                                    (click)="pagTo(i)">{{i+1}}</button></li> -->
+                            <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
+                            <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
+                        </ul>
+                    </nav>
+                    <!-- <button class="btn btn-primary" (click)="popupVisible = !popupVisible">Agregar Empresa</button> -->
+
+                        <div class="dark-background " *ngIf="popupVisible" >
+                            <!-- Aquí va el contenido de la ventana emergente -->
+                        </div>
+                        <div class="dark-background " *ngIf="popupModify">
+                            <!-- Aquí va el contenido de la ventana emergente -->
+                            <!-- <form #miFormulari02="ngForm" class="popup" style="overflow-y: scroll;scroll-behavior: smooth; height: 800px;"
+                            autocomplete="off"
+                            [formGroup]="formData"> -->
+                            <div class="mb-4">
+                                <label for="code_business" style="color: rgb(0, 138, 92);"><strong>Código de la empresa</strong></label>
+                                <div class="input-group">
+                                    <!-- <input type="code_business" class="form-control" id="code_business" formControlName="code_business"  placeholder="Código de la empresa" [(ngModel)]="this.db[index].CODE_BUSINESS"> -->
+                                </div>
+                                <div *ngIf="formData.controls['code_business'].errors && formData.controls['code_business'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['code_business'].errors['required']">El código de la empresa es requerido.</p>
+                                    <p *ngIf="formData.controls['code_business'].value != '' && !formData.controls['code_business'].errors['verifyCode']">El código de empresa ya existe.</p>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="name_business" style="color: rgb(0, 138, 92);"><strong>Nombre de la empresa</strong></label>
+                                <div class="input-group">
+                                    <!-- <input type="name_business" class="form-control" id="name_business" formControlName="name_business"  placeholder="Nombre" [(ngModel)]="this.db[index].NAME"/> -->
+                                </div>
+                                <div *ngIf="formData.controls['name_business'].errors && formData.controls['name_business'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['name_business'].errors['required']">El nombre de la empresa es requerido.</p>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="rut" style="color: rgb(0, 138, 92);"><strong>Rut de la empresa</strong></label>
+                                <div class="input-group">
+                                    <!-- <input type="rut" class="form-control" id="rut" formControlName="rut" placeholder="Rut" [(ngModel)]="this.db[index].VAT"/> -->
+                                </div>
+                                <div *ngIf="formData.controls['rut'].errors && formData.controls['rut'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['rut'].errors['required']">El rut de la empresa es requerido.</p>
+                                    <p *ngIf="formData.controls['rut'].errors['pattern']">El formato del RUT es inválido (Sin puntos y con guión).</p>
+                                    <p *ngIf="formData.controls['rut'].errors['rut']">El digito verificador es incorrecto.</p>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="loc_address" style="color: rgb(0, 138, 92);"><strong>Dirección de la empresa</strong></label>
+                                <div class="input-group">
+                                    <!-- <input type="loc_address" class="form-control" id="loc_address" formControlName="loc_address" placeholder="Dirección" [(ngModel)]="this.db[index].LOC_ADDRESS"> -->
+                                </div>
+                                <div *ngIf="formData.controls['loc_address'].errors && formData.controls['loc_address'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['loc_address'].errors['required']">La dirección de la empresa es requerida.</p>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="phone" style="color: rgb(0, 138, 92);"><strong>Teléfono/Celular de la empresa</strong></label>
+                                <div class="input-group">
+                                    <!-- <input type="phone" class="form-control" id="phone" formControlName="phone" placeholder="Teléfono/Celular" [(ngModel)]="this.db[index].PHONE"> -->
+                                </div>
+                                <div *ngIf="formData.controls['phone'].errors && formData.controls['phone'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['phone'].errors['required']">El número de Teléfono/Celular de la empresa es requerido (7 - 12 dígitos).</p>
+                                    <p *ngIf="formData.controls['phone'].errors['pattern']">El formato del Teléfono/Celular es inválido (7 - 12 dígitos).</p>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="email" style="color: rgb(0, 138, 92);"><strong>Correo de la empresa</strong></label>
+                                <div class="input-group">
+                                    <!-- <input type="email" class="form-control" id="email" formControlName="email" placeholder="E-mail" [(ngModel)]="this.db[index].EMAIL"> -->
+                                </div>
+                                <div *ngIf="formData.controls['email'].errors && formData.controls['email'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['email'].errors['required']">El correo de la empresa es requerido (ejemplo@correo.com).</p>
+                                    <p *ngIf="formData.controls['email'].errors['email']">El formato del correo es inválido (ejemplo@correo.com).</p>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="am_first_name" style="color: rgb(0, 138, 92);"><strong>Nombre Account Manager</strong></label>
+                                <div class="input-group">
+                                    <!-- <input type="am_first_name" class="form-control" id="am_first_name" formControlName="am_first_name" placeholder="Nombre Account Manager" [(ngModel)]="this.db[index].AM_FIRST_NAME"> -->
+                                </div>
+                                <div *ngIf="formData.controls['am_first_name'].errors && formData.controls['am_first_name'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['am_first_name'].errors['required']">El nombre del account manager es requerido.</p>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="am_last_name" style="color: rgb(0, 138, 92);"><strong>Apellido Account Manager</strong></label>
+                                <div class="input-group">
+                                    <!-- <input type="am_last_name" class="form-control" id="am_last_name" formControlName="am_last_name" placeholder="Apellido Account Manager" [(ngModel)]="this.db[index].AM_LAST_NAME"> -->
+                                </div>
+                                <div *ngIf="formData.controls['am_last_name'].errors && formData.controls['am_last_name'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['am_last_name'].errors['required']">El apellido del account manager es requerido.</p>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="invoice_name" style="color: rgb(0, 138, 92);"><strong>Nombre contacto facturación</strong></label>
+                                <div class="input-group">
+                                    <!-- <input type="invoice_name" class="form-control" id="invoice_name" formControlName="invoice_name" placeholder="Nombre contacto facturación" [(ngModel)]="this.db[index].INVOICE_NAME"> -->
+                                </div>
+                                <div *ngIf="formData.controls['invoice_name'].errors && formData.controls['invoice_name'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['invoice_name'].errors['required']">El nombre contacto de facturación es requerido.</p>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="invoice_email" style="color: rgb(0, 138, 92);"><strong>Correo contacto facturación</strong></label>
+                                <div class="input-group">
+                                    <!-- <input type="invoice_email" class="form-control" id="invoice_email" formControlName="invoice_email" placeholder="Correo contacto facturación" [(ngModel)]="this.db[index].INVOICE_EMAIL"> -->
+                                </div>
+                                <div *ngIf="formData.controls['invoice_email'].errors && formData.controls['invoice_email'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['invoice_email'].errors['required']">El email contacto de facturación es requerido (ejemplo@correo.com).</p>
+                                    <p *ngIf="formData.controls['invoice_email'].errors['email']">El formato del correo es inválido (ejemplo@correo.com).</p>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="invoice_phone" style="color: rgb(0, 138, 92);"><strong>Teléfono/Celular contacto facturación</strong></label>
+                                <div class="input-group">
+                                    <!-- <input type="invoice_phone" class="form-control" id="invoice_phone" formControlName="invoice_phone" placeholder="Teléfono/Celular contacto facturación" [(ngModel)]="this.db[index].INVOICE_PHONE"> -->
+                                </div>
+                                <div *ngIf="formData.controls['invoice_phone'].errors && formData.controls['invoice_phone'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['invoice_phone'].errors['required']">El teléfono de facturación es requerido (7 - 12 dígitos).</p>
+                                    <p *ngIf="formData.controls['invoice_phone'].errors['pattern']">El formato del teléfono es inválido (7 - 12 dígitos).</p>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="giro" style="color: rgb(0, 138, 92);"><strong>Giro empresa</strong></label>
+                                <div class="input-group">
+                                    <!-- <input type="giro" class="form-control" id="giro" formControlName="giro" placeholder="Giro Empresa"  [(ngModel)]="this.db[index].GIRO"> -->
+                                </div>
+                                <div *ngIf="formData.controls['giro'].errors && formData.controls['giro'].touched" class="text-danger pl-0">
+                                    <p *ngIf="formData.controls['giro'].errors['required']">El giro de la empresa es requerido.</p>
+                                </div>
+                            </div>
+                                <!-- <button type="button" class="btn btn-primary" style="width: 150px;margin-left: 400px;" (click)="btnUpdateBusiness(id);getAllBusiness();pagTo(0)" [disabled]="miFormulari02.invalid" >Aceptar</button> -->
+                                <!-- <button type="button" class="btn btn-secondary buttonRight" style="width: 150px;"(click)="popupModify = !popupModify">Cancelar</button> -->
+                              <!-- </form> -->
+                        </div>
+                        
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- fin Consulta de Declaración -->
+</div>
+
+
+
+  
+  <!-- Modal 1 agregar-->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel" style="color: rgb(0, 138, 92);">Formulario Tarifas</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="ratesForm" >
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- <div class="col-md-12">
+                            <label for="">jkjcskjaj</label>
+                            <div>{{obj}}</div>
+                          </div> -->
+                        <select class="form-select mb-4" formControlName="year">
+                            <option value="0">Seleccione Años</option>
+                            <option *ngFor="let r of defaultYear" value="{{r}}">{{r}}</option>
+                        </select>
+                        <!-- <select class="form-control" formControlName="year">
+                            <option *ngFor="let year of defaultYear" [value]="year" [disabled]="year !== selectedYear">{{ year }}</option>
+                          </select> -->
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <label for="" style="color: rgb(0, 138, 92);"><strong>reciclables de papel/cartón</strong> </label>
+                        <input type="text" class="form-control" formControlName="type_1">
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <label for="" style="color: rgb(0, 138, 92);"><strong>EyE reciclables de metal</strong></label>
+                        <input type="text" class="form-control" formControlName="type_2">
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <label for="" style="color: rgb(0, 138, 92);"><strong>EyE reciclables de plásticos</strong></label>
+                        <input type="text" class="form-control" formControlName="type_3">
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <label for="" style="color: rgb(0, 138, 92);"><strong>EyE no reciclables</strong></label>
+                        <input type="text" class="form-control" formControlName="type_4">
+                    </div>
+                </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="closeModallll" class="btn btn-secondary" data-bs-dismiss="modal">CANCELAR</button>
+          <button type="button" class="btn btn-primary" (click)="saveForm()">ACEPTAR</button>
+        </div>
+      </div>
+    </div>
+  </div>
+ <!-- Modal 2 Modificar-->
+ <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel" style="color: rgb(0, 138, 92);">Formulario Tarifas</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="ratesForm" >
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- <div class="col-md-12">
+                            <label for="">jkjcskjaj</label>
+                            <div>{{obj}}</div>
+                          </div> -->
+                        <!-- <select class="form-select" formControlName="year">
+                            <option value="0">Seleccione Años</option>
+                            <option *ngFor="let r of defaultYear" value="{{r}}">{{r}}</option>
+                        </select> -->
+                        <select class="form-control mb-4" formControlName="year">
+                            <option *ngFor="let year of defaultYear" [value]="year" [disabled]="year !== selectedYear">{{ year }}</option>
+                          </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <label for="" style="color: rgb(0, 138, 92);"><strong> reciclables de papel/cartón</strong></label>
+                        <input type="text" class="form-control" formControlName="type_1">
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <label for="" style="color: rgb(0, 138, 92);"><strong> reciclables de metal</strong></label>
+                        <input type="text" class="form-control" formControlName="type_2">
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <label for="" style="color: rgb(0, 138, 92);"><strong> reciclables de plásticos</strong></label>
+                        <input type="text" class="form-control" formControlName="type_3">
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <label for="" style="color: rgb(0, 138, 92);"><strong> EyE no reciclables</strong></label>
+                        <input type="text" class="form-control" formControlName="type_4">
+                    </div>
+                </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="closeModallll2" class="btn btn-secondary" data-bs-dismiss="modal">CANCELAR</button>
+          <button type="button" class="btn btn-primary" (click)="saveForm()">ACEPTAR</button>
+        </div>
+      </div>
+    </div>
+  </div>
