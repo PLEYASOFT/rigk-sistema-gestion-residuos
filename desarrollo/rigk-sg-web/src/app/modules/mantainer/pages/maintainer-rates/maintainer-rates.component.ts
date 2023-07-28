@@ -85,7 +85,7 @@ export class MaintainerRatesComponent implements OnInit {
     if(this.ratesForm.invalid) {
       Swal.fire({
         icon: 'warning',
-        text:'Por favor, debe ingresar todos los campos.'
+        text:'Debe ingresar todos los campos. Todas las tarifas deben ser numéricas mayores o iguales a cero.'
       });
       return;
     }
@@ -240,7 +240,7 @@ export class MaintainerRatesComponent implements OnInit {
     if (this.formData.invalid) {
       Swal.fire({
         title: "Validar información",
-        text: 'Debe completar todos los campos',
+        text: 'Debe completar todos los campos' ,
         icon: "error",
       });
       return;
