@@ -64,7 +64,6 @@ export class StatementsComponent implements OnInit {
     }
   }
 
-
   loadStatements() {
     this.productorService.getStatementByUser.subscribe(r => {
       if (r.status) {
@@ -91,6 +90,7 @@ export class StatementsComponent implements OnInit {
       }
     })
   }
+
   updateFiltersBusiness(event: any) {
     let n: any; 0
     if (event && event.type == 'input') { // Esto indica que es un evento (input)
@@ -171,6 +171,7 @@ export class StatementsComponent implements OnInit {
     });
     this.business_name = Array.from(yearSet).map(name => ({ label: name, value: name }));
   }
+
   filter() {
 
     let n: any;
@@ -311,7 +312,6 @@ export class StatementsComponent implements OnInit {
     }
   }
 
-
   reset() {
     this.loadStatements();
   }
@@ -355,6 +355,7 @@ export class StatementsComponent implements OnInit {
     sessionStorage.setItem('id_statement', id_statement?.toString() || 'null');
     this.router.navigateByUrl(`/productor/form?year=${year}&id_business=${id}`);
   }
+
   setArrayFromNumber() {
     return new Array(this.cant);
   }
