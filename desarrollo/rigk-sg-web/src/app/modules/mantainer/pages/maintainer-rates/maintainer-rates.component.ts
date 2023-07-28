@@ -90,7 +90,7 @@ export class MaintainerRatesComponent implements OnInit {
       return;
     }
     const pattern = /^[0-9]+(,[0-9]+)?$/;
-    if(!pattern.test(this.ratesForm.value.type_2!) && !pattern.test(this.ratesForm.value.type_2!) && !pattern.test(this.ratesForm.value.type_3!) && !pattern.test(this.ratesForm.value.type_4!))
+    if(!pattern.test(this.ratesForm.value.type_1!) || !pattern.test(this.ratesForm.value.type_2!) || !pattern.test(this.ratesForm.value.type_3!) || !pattern.test(this.ratesForm.value.type_4!))
     {
       Swal.fire({
         icon: 'warning',
@@ -103,6 +103,7 @@ export class MaintainerRatesComponent implements OnInit {
         next: r=> {
           if(r.status){
             this.getAllRates();
+            console.log("ifff");
             document.getElementById('closeModallll')?.click();
             document.getElementById('closeModallll2')?.click();
           } else {
@@ -175,6 +176,7 @@ export class MaintainerRatesComponent implements OnInit {
 
   getPrice(val:any,type:number){
     const r = val.data.findIndex((e:any)=>e.type == type);
+    console.log(val.data[r].price);
     return val.data[r].price || 0;
   }
   
