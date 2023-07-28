@@ -215,15 +215,16 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-6">
+                        <strong style="color: rgb(0, 138, 92);">Año</strong>
                         <select class="form-select mb-4" formControlName="year">
-                            <option value="0">Seleccione Años</option>
+                            <option value="0">Seleccionar año</option>
                             <option *ngFor="let r of defaultYear" value="{{r}}">{{r}}</option>
                         </select>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12 mb-4">
-                        <label for="" style="color: rgb(0, 138, 92);"><strong>reciclables de papel/cartón</strong> </label>
+                        <label for="" style="color: rgb(0, 138, 92);"><strong>EyE reciclables de papel/cartón</strong> </label>
                         <input type="text" class="form-control" formControlName="type_1">
                     </div>
                     <div class="col-md-12 mb-4">
@@ -264,6 +265,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-6">
+                        <strong style="color: rgb(0, 138, 92);">Año</strong>
                         <select class="form-control mb-4" formControlName="year">
                             <option *ngFor="let year of defaultYear" [value]="year" [disabled]="year !== selectedYear">{{ year }}</option>
                           </select>
