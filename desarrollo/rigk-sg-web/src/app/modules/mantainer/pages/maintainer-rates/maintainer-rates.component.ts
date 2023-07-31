@@ -77,7 +77,7 @@ export class MaintainerRatesComponent implements OnInit {
     });
 
     for (let i = 2021; i <= (new Date()).getFullYear()+1; i++) {
-      this.defaultYear.push(i); 
+      this.defaultYear.push(i);
     }
   }
   isEditing = false;
@@ -85,12 +85,12 @@ export class MaintainerRatesComponent implements OnInit {
     if(this.ratesForm.invalid) {
       Swal.fire({
         icon: 'warning',
-        text:'Todas las tarifas son requeridas y deben ser valores positivo'
+        text:'Debe ingresar todos los campos. Todas las tarifas deben ser numéricas mayores o iguales a cero.'
       });
       return;
     }
     const pattern = /^[0-9]+(,[0-9]+)?$/;
-    if(!pattern.test(this.ratesForm.value.type_1!))
+    if(!pattern.test(this.ratesForm.value.type_2!) && !pattern.test(this.ratesForm.value.type_2!) && !pattern.test(this.ratesForm.value.type_3!) && !pattern.test(this.ratesForm.value.type_4!))
     {
       Swal.fire({
         icon: 'warning',
@@ -240,7 +240,7 @@ export class MaintainerRatesComponent implements OnInit {
     if (this.formData.invalid) {
       Swal.fire({
         title: "Validar información",
-        text: 'Debe completar todos los campos',
+        text: 'Debe completar todos los campos' ,
         icon: "error",
       });
       return;
@@ -311,25 +311,6 @@ export class MaintainerRatesComponent implements OnInit {
     return new Array(this.cant);
   }
 
-  filterrates(target: any) {
-    const value = target.value?.toLowerCase();
-    this.pos = 1;
-    const listIndex:any = []
-    if (target.value != '') {
-      this.cant = 1;
-      this.db = this.list.filter(r => {
-        if (r.PRICE?.toLowerCase().indexOf(value)){
-            listIndex.push(r);
-          } 
-      });
-      this.db = listIndex.slice(0, 10);
-      this.cant = Math.ceil(listIndex.length / 10);
-      return this.db;
-    }
-    this.db = this.list.slice(0, 10);
-    this.cant = Math.ceil(this.list.length / 10);
-    return this.db;
-  }
   filter(target: any) {
     const value = target.value?.toLowerCase();
     this.pos = 1;
