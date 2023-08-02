@@ -4,7 +4,7 @@ import utilesDao from "../dao/utilesDao";
 
 class utilesLogic {
     async downloadPdf(req: any, res: Response) {
-        const outputPath = path.join(__dirname, '../../files/templates/DJ PROREP - Plataforma.pdf');
+        const outputPath = path.join(__dirname, '../../files/templates/DJ PROREP - Plataforma.docx');
         return res.download(outputPath);
     }
 

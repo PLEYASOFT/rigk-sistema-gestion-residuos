@@ -146,7 +146,7 @@ export class HomeComponent implements OnInit {
 
       const link = document.createElement('a');
       link.href = url;
-      link.download = "Declaracion Jurada.pdf";
+      link.download = "Declaracion Jurada.docx";
       link.click();
 
       window.URL.revokeObjectURL(url);
@@ -180,6 +180,7 @@ export class HomeComponent implements OnInit {
     document.body.appendChild(input);
     input.click();
   }
+
   openTermsAndConditions() {
     this.productorService.veryfyPDFTerminos().subscribe((res) => {
       if (!res.status) {
