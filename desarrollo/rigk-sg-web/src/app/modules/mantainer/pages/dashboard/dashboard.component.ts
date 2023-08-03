@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DashboardService } from 'src/app/core/services/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,6 +10,12 @@ export class DashboardComponent implements OnInit {
   currentMonth: any;
   months: Array<{ num: any; name: any; isCurrent: any; }> | undefined;
   toneladas: any;
+  graphCumGlobal: any;
+  graphCumPapel: any;
+  graphCumMetal: any;
+  graphCumPlastico: any;
+
+
   single1: any;
   single2: any;
   single3: any;
@@ -38,9 +45,11 @@ export class DashboardComponent implements OnInit {
   showYAxisLabel = true;
   yAxisLabel = 'Toneladas Valorizadas';
 
-  constructor() { }
+  dashboardData: any;
+  constructor( private dashboardService: DashboardService) { }
 
   ngOnInit() {
+    this.getDataCum();
     this.currentMonth = new Date().getMonth() + 1;  
     this.months = [
       {num: 1, name: 'Ene', isCurrent: false},
@@ -194,5 +203,65 @@ export class DashboardComponent implements OnInit {
   isLastMonth(month: any): boolean {
     return this.months ? this.months.indexOf(month) === this.months.length - 1 : false;
   }  
+  
+  getDataCum(): any{
+    this.dashboardService.getDashboard().subscribe({
+      next: r => {
+        console.log(r)
+        this.dashboardData = r.data;
+        this.showDataCum();
+      },
+      error: error => {
+        console.log(error);
+      }
+    });
+  }
+
+  showDataCum(): any {
+    if (!Array.isArray(this.dashboardData)) {
+      console.error('this.dashboardData should be an array, but got', this.dashboardData);
+      return;
+    }
+    const currentYear = new Date().getFullYear();
+    
+    // Assuming dashboardData is a class property and available within this method
+    const currentYearData = this.dashboardData.filter((data:any) => data.ANIO === currentYear);
+    console.log(this.dashboardData)
+    this.graphCumGlobal = this.transformDataToSingle(currentYearData.filter((data:any) => data.TYPE_MATERIAL === 'Global'));
+    this.graphCumPapel = this.transformDataToSingle(currentYearData.filter((data:any) => data.TYPE_MATERIAL === 'Papel/Carton'));
+    this.graphCumMetal = this.transformDataToSingle(currentYearData.filter((data:any) => data.TYPE_MATERIAL === 'Metal'));
+    this.graphCumPlastico = this.transformDataToSingle(currentYearData.filter((data:any) => data.TYPE_MATERIAL === 'Plastico'));
+  
+    console.log(this.graphCumGlobal)
+    console.log(this.graphCumPapel)
+    console.log(this.graphCumMetal)
+    console.log(this.graphCumPlastico)
+  
+    // Now update single1, single2, single3, single4
+    this.single1 = this.graphCumGlobal;
+    this.single2 = this.graphCumPapel;
+    this.single3 = this.graphCumMetal;
+    this.single4 = this.graphCumPlastico;
+  }
+  
+  transformDataToSingle(rawData: any[]): any[] {
+    const segments = Array(9).fill(0);
+    let rawValue = Math.min(rawData[0].percentage, 800); // Ensure the maximum value is 800
+    segments[Math.floor(rawValue / 100)] = rawValue % 100;
+    for (let i = Math.floor(rawValue / 100) - 1; i >= 0; i--) {
+        segments[i] = 100;
+    }
+
+    return segments.map((value, index) => {
+        return {
+            name: `${index * 100}-${(index + 1) * 100}`,
+            value: Number(value.toFixed(1)) // Round to 1 decimal place, if it has
+        }
+    }).filter(segment => segment.value > 0);
+}
+
+  
+  
+  
   
 }
