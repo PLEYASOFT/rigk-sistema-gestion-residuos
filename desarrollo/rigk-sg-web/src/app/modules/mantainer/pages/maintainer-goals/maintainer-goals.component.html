@@ -1,0 +1,162 @@
+<!-- inicio breadcrumbs -->
+<nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+        <li class="breadcrumb-item"><a href="#">Mantenedor Metas</a></li>
+    </ol>
+</nav>
+
+<h1>Metas</h1>
+
+<div class="buttonRight">
+    <button class="btn btn-primary" [disabled]="isok" (click)="goalsForm.reset({year:'0'}); isEditing = false" data-bs-toggle="modal" data-bs-target="#addModal" >Agregar Metas</button>
+</div>
+<div style="height: 50px;"></div>
+<div class="row mb-3">
+    <div class="col-md-12">
+        <!--label>Filtro:</label>
+        <input type="text" class="form-control" placeholder="Filtro de búsqueda" (keyup)="filter($event.target)"-->
+    </div>
+</div>
+<div class="table-responsive mb-4">
+    <section >
+        <div class="row w-100 ">
+            <!-- Columna 1 -->
+            <div id = "table" #table1 class="w-100 ">
+                 <div class="w-100">
+                    <!-- Tabla Desktop -->
+                    <table class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table" >
+                        <thead>
+                            <tr class="text-center w-100" >
+                                <th >Año</th>
+                                <th >Material</th>
+                                <th >Cumplimiento</th>
+                                <th ></th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <tr class="text-end w-100" *ngFor="let r of goals||[]">
+                                <td >{{getYear(r)}}</td>
+                                <td>{{getMaterial(r)}}</td>
+                                <td>{{(r.goal*100).toFixed(2).replace(".",",")}}</td>
+                                <td > 
+                                    <div class="btn-group">
+                                        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal2"(click)="modify(r)" >Modificar</button>
+                                    </div>                                      
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!--nav aria-label="Navegación resultados">
+                        <ul class="pagination">
+                            <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
+                            <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
+                            <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
+                            <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
+                        </ul>
+                    </nav-->
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Modal 1 agregar-->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel" style="color: rgb(0, 138, 92);">Formulario Metas</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="goalsForm" >
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <strong style="color: rgb(0, 138, 92);">Año</strong>
+                    <select class="form-select mb-4" formControlName="year">
+                        <option value="0">Seleccionar año</option>
+                        <option *ngFor="let r of defaultYear" value="{{r}}">{{r}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-4">
+                    <label for="" style="color: rgb(0, 138, 92);"><strong>% Cumplimiento global</strong> </label>
+                    <input type="text" class="form-control" formControlName="type_0">
+                </div>
+                <div class="col-md-12 mb-4">
+                    <label for="" style="color: rgb(0, 138, 92);"><strong>% Cumplimiento papel</strong></label>
+                    <input type="text" class="form-control" formControlName="type_1">
+                </div>
+                <div class="col-md-12 mb-4">
+                    <label for="" style="color: rgb(0, 138, 92);"><strong>% Cumplimiento plástico</strong></label>
+                    <input type="text" class="form-control" formControlName="type_2">
+                </div>
+                <div class="col-md-12 mb-4">
+                    <label for="" style="color: rgb(0, 138, 92);"><strong>% Cumplimiento metal</strong></label>
+                    <input type="text" class="form-control" formControlName="type_3">
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" id="closeModallll" class="btn btn-secondary" data-bs-dismiss="modal">CANCELAR</button>
+        <button type="button" class="btn btn-primary" (click)="saveForm()">ACEPTAR</button>
+    </div>
+    </div>
+</div>
+</div>
+ <!-- Modal 2 Modificar-->
+ <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel" style="color: rgb(0, 138, 92);">Formulario Tarifas</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="goalsForm" >
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong style="color: rgb(0, 138, 92);">Año</strong>
+                        <select class="form-control mb-4" formControlName="year">
+                            <option *ngFor="let year of defaultYear" [value]="year" [disabled]="year !== selectedYear">{{ year }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <label for="" style="color: rgb(0, 138, 92);"><strong>% Cumplimiento global</strong> </label>
+                        <input type="text" class="form-control" formControlName="type_0" max="100">
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <label for="" style="color: rgb(0, 138, 92);"><strong>% Cumplimiento papel</strong></label>
+                        <input type="text" class="form-control" formControlName="type_1">
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <label for="" style="color: rgb(0, 138, 92);"><strong>% Cumplimiento plástico</strong></label>
+                        <input type="text" class="form-control" formControlName="type_2">
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <label for="" style="color: rgb(0, 138, 92);"><strong>% Cumplimiento metal</strong></label>
+                        <input type="text" class="form-control" formControlName="type_3">
+                    </div>
+                </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="closeModallll2" class="btn btn-secondary" data-bs-dismiss="modal">CANCELAR</button>
+          <button type="button" class="btn btn-primary" (click)="saveForm()">ACEPTAR</button>
+        </div>
+      </div>
+    </div>
+  </div>
