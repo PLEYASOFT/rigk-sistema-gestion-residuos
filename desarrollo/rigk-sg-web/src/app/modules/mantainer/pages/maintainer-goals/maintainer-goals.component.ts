@@ -16,10 +16,7 @@ export class MaintainerGoalsComponent implements OnInit {
   
     list: any[] = [];
     pos = 1;
-    db: any[] = [];
     cant = 0;
-
-    x1 = '';
   
     formData: any;
     existingCode: any = '';
@@ -54,10 +51,10 @@ export class MaintainerGoalsComponent implements OnInit {
       this.goalsForm.controls['year'].setValue(this.getYear(goal));
       this.selectedYear = this.getYear(goal);
 
-      const g0 = (parseFloat(this.getCumpYear(this.goals,this.selectedYear,"0"))*100).toFixed(2).replace(".",",");
-      const g1 = (parseFloat(this.getCumpYear(this.goals,this.selectedYear,"1"))*100).toFixed(2).replace(".",",");
-      const g2 = (parseFloat(this.getCumpYear(this.goals,this.selectedYear,"2"))*100).toFixed(2).replace(".",",");
-      const g3 = (parseFloat(this.getCumpYear(this.goals,this.selectedYear,"3"))*100).toFixed(2).replace(".",",");
+      const g0 = (parseFloat(this.getCumpYear(this.list,this.selectedYear,"0"))*100).toFixed(2).replace(".",",");
+      const g1 = (parseFloat(this.getCumpYear(this.list,this.selectedYear,"1"))*100).toFixed(2).replace(".",",");
+      const g2 = (parseFloat(this.getCumpYear(this.list,this.selectedYear,"2"))*100).toFixed(2).replace(".",",");
+      const g3 = (parseFloat(this.getCumpYear(this.list,this.selectedYear,"3"))*100).toFixed(2).replace(".",",");
 
       this.goalsForm.controls['type_0'].setValue(g0);
       this.goalsForm.controls['type_1'].setValue(g1);
@@ -157,6 +154,7 @@ export class MaintainerGoalsComponent implements OnInit {
     goals:{year_material:string, goal:any}[]=[];
 
     getAllGoals() {
+      this.list = [];
       this.goals = [];
       this.dbGoals = [];
       this.year = [];
@@ -165,7 +163,7 @@ export class MaintainerGoalsComponent implements OnInit {
       this.goalsTsService.getAllGoals().subscribe({
         next: resp => {
           if(resp.status){
-            this.dbGoals = resp.data
+            this.dbGoals = resp.data;
             this.dbGoals.forEach(r => {
               const index = this.goals.findIndex((e:any)=>e.year_material == r.YEAR + '_' + r.TYPE_MATERIAL);
               if(index > -1) {
@@ -177,6 +175,9 @@ export class MaintainerGoalsComponent implements OnInit {
             if(this.goals.length == (new Date()).getFullYear() - 2021+2) {
               this.isok = true;
             }
+            this.list = this.goals;
+            this.cant = Math.ceil(this.goals.length / 10) || 1;
+            this.goals = this.list.slice(0, 10);
           }
         },
         error: r => {
@@ -239,25 +240,28 @@ export class MaintainerGoalsComponent implements OnInit {
      }
     }
 
-    getCumpYear(goals:any,year:string,material:string){
-      const i = goals.findIndex((e:any)=>e.year_material == year + '_' + material);
-      return this.goals[i].goal || 0;
+    getCumpYear(_goals:any,year:string,material:string){
+      const i = _goals.findIndex((e:any)=>e.year_material == year + '_' + material);
+      return this.list[i].goal || 0;
     }
   
     pagTo(i: number) {
       this.pos = i + 1;
-      this.db = this.list.slice((i * 10), (i + 1) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+      this.goals = this.list.slice((i * 10), (i + 1) * 10);
     }
+
     next() {
       if (this.pos >= this.cant) return;
       this.pos++;
-      this.db = this.list.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+      this.goals = this.list.slice((this.pos - 1) * 10, (this.pos) * 10);
     }
+
     previus() {
       if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
       this.pos = this.pos - 1;
-      this.db = this.list.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+      this.goals = this.list.slice((this.pos - 1) * 10, (this.pos) * 10);
     }
+
     setArrayFromNumber() {
       return new Array(this.cant);
     }
