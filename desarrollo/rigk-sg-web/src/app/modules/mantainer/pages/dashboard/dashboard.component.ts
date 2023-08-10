@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DashboardService } from 'src/app/core/services/dashboard.service';
+import { GoalsTsService } from 'src/app/core/services/goals.ts.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -8,7 +9,14 @@ import { DashboardService } from 'src/app/core/services/dashboard.service';
 })
 export class DashboardComponent implements OnInit {
   currentMonth: any;
+  pom:any
+  globalGoal: any;
+  paperCardboardGoal: any;
+  metalGoal: any;
+  plasticGoal: any;
+  count_business:any;
   months: Array<{ num: any; name: any; isCurrent: any; }> | undefined;
+  currentYear = new Date().getFullYear();
   toneladas: any;
   graphCumGlobal: any;
   graphCumPapel: any;
@@ -46,12 +54,15 @@ export class DashboardComponent implements OnInit {
   yAxisLabel = 'Toneladas Valorizadas';
 
   dashboardData: any;
-  constructor(private dashboardService: DashboardService) { }
+  constructor(private dashboardService: DashboardService, private goalsService: GoalsTsService) { }
 
   ngOnInit() {
     this.getDataCum();
     this.getDataSemester();
     this.getYearlyMaterialWeights();
+    this.getCountBusiness();
+    this.getAllTonByYear();
+    this.getAllGoals();
     this.currentMonth = new Date().getMonth() + 1;
     this.months = [
       { num: 1, name: 'Ene', isCurrent: false },
@@ -74,8 +85,7 @@ export class DashboardComponent implements OnInit {
   }
 
   generateYears(): void {
-    const currentYear = new Date().getFullYear();
-    for (let i = 2022; i <= currentYear; i++) {
+    for (let i = 2022; i <= this.currentYear; i++) {
       this.years.push(i);
     }
   }
@@ -122,6 +132,45 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  getAllTonByYear(): any {
+    this.dashboardService.getAllTonByYear(this.currentYear - 1).subscribe({
+      next: r => {
+        this.pom = r.data.statements[0].totalToneladas;
+      },
+      error: error => {
+        console.log(error);
+      }
+    });
+  }
+
+  getAllGoals(): any {
+    this.goalsService.getAllGoals().subscribe({
+      next: r => {
+        const currentYear = new Date().getFullYear();
+        const currentYearGoals = r.data.filter((item:any) => item.YEAR === currentYear);
+        for (const goal of currentYearGoals) {
+          switch(goal.TYPE_MATERIAL) {
+            case '0':
+              this.globalGoal = goal.PERCENTAGE_CUM;
+              break;
+            case '1':
+              this.paperCardboardGoal = goal.PERCENTAGE_CUM;
+              break;
+            case '2':
+              this.metalGoal = goal.PERCENTAGE_CUM;
+              break;
+            case '3':
+              this.plasticGoal = goal.PERCENTAGE_CUM;
+              break;
+          }
+        }
+      },
+      error: error => {
+        console.log(error);
+      }
+    });
+  }
+  
   getDataSemester(): any {
     this.dashboardService.getSemesterDashboard().subscribe({
       next: r => {
@@ -138,6 +187,17 @@ export class DashboardComponent implements OnInit {
       next: r => {
         this.multi2 = [...r.data];
         this.multi2Original = [...r.data];
+      },
+      error: error => {
+        console.log(error);
+      }
+    });
+  }
+
+  getCountBusiness(): any {
+    this.dashboardService.getCountBusiness().subscribe({
+      next: r => {
+        this.count_business = r.data[0].total_empresas;
       },
       error: error => {
         console.log(error);
@@ -179,5 +239,14 @@ export class DashboardComponent implements OnInit {
     this.single2 = this.graphCumPapel;
     this.single3 = this.graphCumMetal;
     this.single4 = this.graphCumPlastico;
+  }
+
+  setFormato(num: number | string): string {
+    const numero = typeof num === 'string' ? parseFloat(num.replace(/,/g, '')) : num;
+    const decimal = Math.round(numero * 100) / 100;
+    const [entero, decimales] = decimal.toString().split('.');
+    const enteroConPuntos = entero.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+    return decimales && decimales !== '0' ? `${enteroConPuntos},${decimales.padEnd(2, '0')}` : enteroConPuntos;
   }
 }

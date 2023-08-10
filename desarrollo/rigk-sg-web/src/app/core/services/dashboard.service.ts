@@ -21,4 +21,12 @@ export class DashboardService {
   getYearlyMaterialWeights() {
     return this.http.get<any>(`${this.url}/getMatYears`);
   }
+
+  getAllTonByYear(year:any) {
+    return this.http.get<any>(`${this.url}/getPOM/${year}`);
+  }
+
+  getCountBusiness() {
+    return this.http.get<any>(`${this.url}/getBusiness`);
+  }
 }

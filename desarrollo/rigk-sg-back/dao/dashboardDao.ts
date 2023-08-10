@@ -135,6 +135,25 @@ class EstablishmentDao {
 
         return Object.values(resultMapping);
     }
+
+    public async getAllTonByYear(year: string) {
+        const conn = mysqlcon.getConnection();
+        const statements = await conn?.execute(`
+        SELECT SUM(ds.VALUE) as totalToneladas
+        FROM detail_statement_form ds
+        JOIN header_statement_form hs ON ds.ID_HEADER = hs.id
+        WHERE hs.YEAR_STATEMENT = ?
+    `, [year]).then((res) => res[0]).catch(error => { undefined });
+        conn?.end();
+        return { statements };
+    }
+
+    public async getCountBusiness() {
+        const conn = mysqlcon.getConnection()!;
+        const res: any = await conn.query(`SELECT COUNT(DISTINCT NAME) AS total_empresas FROM business`).then(res => res[0]).catch(erro => undefined);
+        conn.end();
+        return res;
+    }
 }
 const establishmentDao = new EstablishmentDao();
 export default establishmentDao;
