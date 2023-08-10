@@ -28,7 +28,7 @@ class Server {
         manager: '/api/v1/manager',
         utiles: '/api/v1/utiles',
         logs: '/api/v1/logs',
-        dashboard: '/api/v1/dashboard'
+        dashboard: '/api/v1/dashboard',
         goals: '/api/v1/goals'
     };
     constructor() {

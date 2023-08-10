@@ -81,7 +81,7 @@ class EstablishmentDao {
         JOIN tbd_cum_materiales ON tbh_porc_cump_ci.ID = tbd_cum_materiales.ID_CUMP
         JOIN tbm_anios ON tbd_cum_anio.ID_ANIO = tbm_anios.ID
         JOIN tbm_materiales ON tbd_cum_materiales.ID_MATERIAL = tbm_materiales.ID
-        WHERE tbm_anios.ANIO >= 2022 AND tbm_anios.ANIO <= ? AND tbm_materiales.ID <> 0
+        WHERE tbm_anios.ANIO >= 2022 AND tbm_anios.ANIO < ? AND tbm_materiales.ID <> 0
         GROUP BY tbm_anios.ANIO, tbm_materiales.TYPE_MATERIAL
         ORDER BY tbm_anios.ANIO, tbm_materiales.TYPE_MATERIAL
     `, [currentYear]).catch(error => {
@@ -89,18 +89,21 @@ class EstablishmentDao {
             return [];
         });
 
+
         const [currentYearData]: any = await conn.query(`
-            SELECT 
-                tbm_materiales.TYPE_MATERIAL as material,
-                SUM(tbh_porc_cump_ci.VALOR_TON_VAL) as value
-            FROM tbh_porc_cump_ci
-            JOIN tbd_cum_anio ON tbh_porc_cump_ci.ID = tbd_cum_anio.ID_CUMP
-            JOIN tbd_cum_materiales ON tbh_porc_cump_ci.ID = tbd_cum_materiales.ID_CUMP
-            JOIN tbm_anios ON tbd_cum_anio.ID_ANIO = tbm_anios.ID
-            JOIN tbm_materiales ON tbd_cum_materiales.ID_MATERIAL = tbm_materiales.ID
-            WHERE tbm_anios.ANIO = ? AND tbm_materiales.ID <> 0
-            GROUP BY tbm_materiales.TYPE_MATERIAL
-            ORDER BY tbm_materiales.TYPE_MATERIAL
+        SELECT 
+            tbm_anios.ANIO as year,
+            tbm_materiales.TYPE_MATERIAL as material,
+            MAX(tbh_porc_cump_ci.VALOR_TON_VAL) as value
+        FROM tbh_porc_cump_ci
+        JOIN tbd_cum_anio ON tbh_porc_cump_ci.ID = tbd_cum_anio.ID_CUMP
+        JOIN tbd_cum_materiales ON tbh_porc_cump_ci.ID = tbd_cum_materiales.ID_CUMP
+        JOIN tbm_anios ON tbd_cum_anio.ID_ANIO = tbm_anios.ID
+        JOIN tbm_materiales ON tbd_cum_materiales.ID_MATERIAL = tbm_materiales.ID
+        JOIN tbd_cum_meses ON tbh_porc_cump_ci.ID = tbd_cum_meses.ID_CUMP
+        WHERE tbm_anios.ANIO = ? AND tbm_materiales.ID <> 0 AND tbd_cum_meses.ID_MES = 12
+        GROUP BY tbm_anios.ANIO, tbm_materiales.TYPE_MATERIAL
+        ORDER BY tbm_materiales.TYPE_MATERIAL
         `, [currentYear]).catch(error => {
             console.error("Error while executing SQL query:", error);
             return [];
@@ -118,15 +121,15 @@ class EstablishmentDao {
             }
             resultMapping[row.year].series.push({
                 name: row.material,
-                value: parseFloat(row.value.toFixed(1))
+                value: parseFloat(parseFloat(row.value).toFixed(1))
             });
         }
-
+        
         resultMapping[currentYear] = {
             name: currentYear.toString(),
             series: currentYearData.map((row: any) => ({
                 name: row.material,
-                value: parseFloat(row.value.toFixed(1))
+                value: parseFloat(parseFloat(row.value).toFixed(1))
             }))
         };
 
