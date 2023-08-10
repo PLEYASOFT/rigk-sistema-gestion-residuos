@@ -13,4 +13,12 @@ export class DashboardService {
   getDashboard() {
     return this.http.get<any>(`${this.url}/get`);
   }
+
+  getSemesterDashboard() {
+    return this.http.get<any>(`${this.url}/getSemester`);
+  }
+
+  getYearlyMaterialWeights() {
+    return this.http.get<any>(`${this.url}/getMatYears`);
+  }
 }
