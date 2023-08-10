@@ -67,6 +67,54 @@ class RatesLogic {
         }
 
     }
+    async getAllRates(req: any, res: Response) {
+        try {
+            const allRates = await ratesDao.getAllRates();
+            res.status(200).json({ status: true, data: allRates, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+    async updateRates(req: any, res: Response) {
+        const data = req.body;
+        try {
+            const rates = await ratesDao.updateRatesByYear(data);
+            if(rates == false) {
+                return res.json({ status: false, data: {}, msg: 'No es posible modificar las tarifas porque existen declaraciones pendientes y/o enviadas en el año' });
+            }
+            // await createLog('MODIFICA_EMPRESA', req.uid, null);
+            res.status(200).json({ status: true, data: {}, msg: '' });
+        } catch (err:any) {
+            console.log(err);
+            // await createLog('MODIFICA_EMPRESA', req.uid, err.message);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+    async saveRates(req: any, res: Response) {
+        const data = req.body;
+        try {
+            const rates = await ratesDao.saveRate(data);
+            if(rates == false) {
+                return res.json({ status: false, data: {}, msg: 'Año ya existe' });
+            }
+            // await createLog('MODIFICA_EMPRESA', req.uid, null);
+            res.status(200).json({ status: true, data: {}, msg: '' });
+        } catch (err:any) {
+            console.log(err);
+            // await createLog('MODIFICA_EMPRESA', req.uid, err.message);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
 }
 const ratesLogic = new RatesLogic();
 export default ratesLogic;

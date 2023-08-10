@@ -5,26 +5,14 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class RatesTsService {
-  url = `${environment.API_V1_URL}/rates`;
+export class GoalsTsService {
+  url = `${environment.API_V1_URL}/goals`;
 
   constructor(private http: HttpClient) { }
-  getRates(year: number) {
-    return this.http.get<any>(`${this.url}/${year}`);
-  }
-  get getCLP() {
-    return this.http.get<any>(`${this.url}/clp`);
-  }
-  get getUF() {
-    return this.http.get<any>(`${this.url}/uf`);
+  getAllGoals(){
+    return this.http.get<any>(`${this.url}/goals/`);
   }
 
-  getUfDate(date: any) {
-    return this.http.get<any>(`${this.url}/uf/${date}`);
-  }
-  getAllRates(){
-    return this.http.get<any>(`${this.url}/algo/`);
-  }
   updateRates(id: any, price:any) {
     return this.http.put<any>(`${this.url}/updateRates/${id}`, {price});
   }

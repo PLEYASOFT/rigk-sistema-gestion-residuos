@@ -15,8 +15,10 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { MaintainerDeclarationsProductorComponent } from './pages/maintainer-declarations-productor/maintainer-declarations-productor.component';
 import { MaintainerManagersComponent } from './pages/maintainer-managers/maintainer-managers.component';
 import { LogsComponent } from './pages/logs/logs.component';
+import { MaintainerRatesComponent } from './pages/maintainer-rates/maintainer-rates.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { NgxChartsModule }from '@swimlane/ngx-charts';
+import { MaintainerGoalsComponent } from './pages/maintainer-goals/maintainer-goals.component';
 
 
 @NgModule({
@@ -29,7 +31,10 @@ import { NgxChartsModule }from '@swimlane/ngx-charts';
     MaintainerDeclarationsProductorComponent,
     MaintainerManagersComponent,
     LogsComponent,
-    DashboardComponent
+    MaintainerRatesComponent,
+    MaintainerGoalsComponent,
+    DashboardComponent,
+    MaintainerGoalsComponent
   ],
   imports: [
     CommonModule,
