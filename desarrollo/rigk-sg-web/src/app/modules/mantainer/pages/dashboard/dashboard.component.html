@@ -8,22 +8,21 @@
   
     <div class="gauge-container">
       <div class="circle-container">
-        <div *ngFor="let month of months" class="circle-with-line" [class.past-month]="month.isCurrent">
-          <div class="month-circle">
-            {{month.num}}
-          </div>
-          <div class="line" *ngIf="!isLastMonth(month)"></div>
+        <div *ngFor="let month of months; let idx = index" (click)="selectMonth(idx)" class="circle-with-line" [class.past-month]="month.isCurrent">
+            <div class="month-circle">
+                {{month.num}}
+            </div>
+            <div class="line" *ngIf="!isLastMonth(month)"></div>
         </div>
-      </div>    
+    </div>  
       <div class="row justify-content-start">
   
         <div class="col-12 col-lg-6 mb-5">
           <div class="gauge-container-graph-big">
             <ngx-charts-gauge [view]="bigView" [scheme]="colorScheme" [results]="single1"
-              [valueFormatting]="valueFormatting" (select)="onSelect($event)" (activate)="onActivate($event)"
-              (deactivate)="onDeactivate($event)"></ngx-charts-gauge>
+              [valueFormatting]="valueFormatting"></ngx-charts-gauge>
             <div class="chart-subtitle" style="margin-left: 130px;">CUMPLIMIENTO GENERAL</div>
-            <p class="toneladas-label" style="margin-left: 190px;">TONELADAS: 2.500</p>
+            <p class="toneladas-label" style="margin-left: 190px;">TONELADAS: {{setFormato(single1?.[0]?.toneladas)}}</p>
           </div>
         </div>
   
@@ -37,27 +36,27 @@
                 <tbody>
                   <tr>
                     <td>N° Socios</td>
-                    <td>230 Ton</td>
+                    <td>{{count_business}}</td>
                   </tr>
                   <tr>
                     <td>POM Total</td>
-                    <td>75.000 Ton</td>
+                    <td>{{setFormato(pom)}} Ton</td>
                   </tr>
                   <tr>
                     <td>POM Meta 2023</td>
-                    <td>29.000 Ton</td>
+                    <td>{{setFormato(pom * globalGoal)}} Ton</td>
                   </tr>
                   <tr>
                     <td>POM Meta Papel/Cartón 2023</td>
-                    <td>13.000 Ton</td>
+                    <td>{{setFormato(pom * paperCardboardGoal * globalGoal)}} Ton</td>
                   </tr>
                   <tr>
                     <td>POM Meta Metal 2023</td>
-                    <td>5.000 Ton</td>
+                    <td>{{setFormato(pom * metalGoal * globalGoal)}} Ton</td>
                   </tr>
                   <tr>
                     <td>POM Meta Plástico 2023</td>
-                    <td>11.000 Ton</td>
+                    <td>{{setFormato(pom * plasticGoal * globalGoal)}} Ton</td>
                   </tr>
                 </tbody>
               </table>
@@ -69,42 +68,37 @@
         <div class="col-lg-4">
           <div class="gauge-container-graph">
             <ngx-charts-gauge [view]="smallView" [scheme]="colorScheme" [results]="single2"
-              [valueFormatting]="valueFormatting" (select)="onSelect($event)" (activate)="onActivate($event)"
-              (deactivate)="onDeactivate($event)"></ngx-charts-gauge>
+              [valueFormatting]="valueFormatting"></ngx-charts-gauge>
             <div class="chart-subtitle-small">CUMPLIMIENTO PAPEL/CARTÓN</div>
-            <p class="toneladas-label">TONELADAS: 1.000</p>
+            <p class="toneladas-label">TONELADAS: {{setFormato(single2?.[0]?.toneladas)}}</p>
           </div>
         </div>
         <div class="col-lg-4">
           <div class="gauge-container-graph">
             <ngx-charts-gauge [view]="smallView" [scheme]="colorScheme" [results]="single3"
-              [valueFormatting]="valueFormatting" (select)="onSelect($event)" (activate)="onActivate($event)"
-              (deactivate)="onDeactivate($event)"></ngx-charts-gauge>
+              [valueFormatting]="valueFormatting"></ngx-charts-gauge>
             <div class="chart-subtitle-small">CUMPLIMIENTO METAL</div>
-            <p class="toneladas-label">TONELADAS: 1.250</p>
+            <p class="toneladas-label">TONELADAS: {{setFormato(single3?.[0]?.toneladas)}}</p>
           </div>
         </div>
         <div class="col-lg-4">
           <div class="gauge-container-graph">
             <ngx-charts-gauge [view]="smallView" [scheme]="colorScheme" [results]="single4"
-              [valueFormatting]="valueFormatting" (select)="onSelect($event)" (activate)="onActivate($event)"
-              (deactivate)="onDeactivate($event)"></ngx-charts-gauge>
+              [valueFormatting]="valueFormatting"></ngx-charts-gauge>
             <div class="chart-subtitle-small">CUMPLIMIENTO PLÁSTICO</div>
-            <p class="toneladas-label">TONELADAS: 750</p>
+            <p class="toneladas-label">TONELADAS: {{setFormato(single4?.[0]?.toneladas)}}</p>
           </div>
         </div>
       </div>
       <p class="legend"></p>
-      <p class="legend">La información de este gráfico corresponde SOLO al año 2023.</p>
+      <p class="legend">La información de este gráfico corresponde SOLO al año {{currentYear}}.</p>
     </div>
   
-    <div class="row justify-content-start">
-      <select class="select-btn" id="anioSelector">
-        <option value="">Seleccionar Año</option>
-        <option value="2022">2022</option>
-        <option value="2023">2023</option>
-      </select>
-    </div>
+    <select class="select-btn" id="anioSelector" [(ngModel)]="selectedYear" (change)="onYearChange()">
+      <option value="">Seleccionar Año</option>
+      <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+  </select>
+  
   
     <div class="chart-container">
       <div class="row">

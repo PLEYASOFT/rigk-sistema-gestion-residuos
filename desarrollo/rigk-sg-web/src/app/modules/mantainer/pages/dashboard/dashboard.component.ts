@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { DashboardService } from 'src/app/core/services/dashboard.service';
+import { GoalsTsService } from 'src/app/core/services/goals.ts.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,8 +9,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DashboardComponent implements OnInit {
   currentMonth: any;
+  pom:any
+  globalGoal: any;
+  paperCardboardGoal: any;
+  metalGoal: any;
+  plasticGoal: any;
+  count_business:any;
   months: Array<{ num: any; name: any; isCurrent: any; }> | undefined;
+  currentYear = new Date().getFullYear();
   toneladas: any;
+  graphCumGlobal: any;
+  graphCumPapel: any;
+  graphCumMetal: any;
+  graphCumPlastico: any;
+  years: number[] = [];
+  selectedYear: any = '';
   single1: any;
   single2: any;
   single3: any;
@@ -21,13 +36,13 @@ export class DashboardComponent implements OnInit {
   colorScheme: any = {
     domain: ['#08a47c', '#FCB241', '#FFA500', '#FF8C00', '#FF7F50', '#FF6347', '#FF4500', '#FF0000']
   };
-  colorBarras:any = {
+  colorBarras: any = {
     domain: ['#6FCF97', '#9B51E0', '#56CCF2', '#F2C94C', '#FFA69E', '#FFCAD4', '#D0F0C0', '#F3C4FB']
   };
-  
 
   multi: any[] = [];
   multi2: any[] = [];
+  multi2Original: any[] = [];
   showXAxis = true;
   showYAxis = true;
   gradient = false;
@@ -38,161 +53,200 @@ export class DashboardComponent implements OnInit {
   showYAxisLabel = true;
   yAxisLabel = 'Toneladas Valorizadas';
 
-  constructor() { }
+  dashboardData: any;
+  constructor(private dashboardService: DashboardService, private goalsService: GoalsTsService) { }
 
   ngOnInit() {
-    this.currentMonth = new Date().getMonth() + 1;  
+    this.getDataCum();
+    this.getDataSemester();
+    this.getYearlyMaterialWeights();
+    this.getCountBusiness();
+    this.getAllTonByYear();
+    this.getAllGoals();
+    this.currentMonth = new Date().getMonth() + 1;
     this.months = [
-      {num: 1, name: 'Ene', isCurrent: false},
-      {num: 2, name: 'Feb', isCurrent: false},
-      {num: 3, name: 'Mar', isCurrent: false},
-      {num: 4, name: 'Abr', isCurrent: false},
-      {num: 5, name: 'May', isCurrent: false},
-      {num: 6, name: 'Jun', isCurrent: false},
-      {num: 7, name: 'Jul', isCurrent: false},
-      {num: 8, name: 'Ago', isCurrent: false},
-      {num: 9, name: 'Sep', isCurrent: false},
-      {num: 10, name: 'Oct', isCurrent: false},
-      {num: 11, name: 'Nov', isCurrent: false},
-      {num: 12, name: 'Dic', isCurrent: false},
+      { num: 1, name: 'Ene', isCurrent: false },
+      { num: 2, name: 'Feb', isCurrent: false },
+      { num: 3, name: 'Mar', isCurrent: false },
+      { num: 4, name: 'Abr', isCurrent: false },
+      { num: 5, name: 'May', isCurrent: false },
+      { num: 6, name: 'Jun', isCurrent: false },
+      { num: 7, name: 'Jul', isCurrent: false },
+      { num: 8, name: 'Ago', isCurrent: false },
+      { num: 9, name: 'Sep', isCurrent: false },
+      { num: 10, name: 'Oct', isCurrent: false },
+      { num: 11, name: 'Nov', isCurrent: false },
+      { num: 12, name: 'Dic', isCurrent: false },
     ];
     for (let i = 0; i < this.currentMonth; i++) {
       this.months[i].isCurrent = true;
     }
-    this.toneladas = 0;
-    this.single1 = this.generateData(800);
-    this.single2 = this.generateData(800);
-    this.single3 = this.generateData(800);
-    this.single4 = this.generateData(800);
-
-    this.multi = [
-      {
-        name: 'Total',
-        series: [
-          {
-            name: 'Semestre 1',
-            value: 10000
-          },
-          {
-            name: 'Semestre 2',
-            value: 8000
-          }
-        ]
-      },
-      {
-        name: 'Papel/Cartón',
-        series: [
-          {
-            name: 'Semestre 1',
-            value: 3000
-          },
-          {
-            name: 'Semestre 2',
-            value: 2500
-          }
-        ]
-      },
-      {
-        name: 'Metal',
-        series: [
-          {
-            name: 'Semestre 1',
-            value: 2000
-          },
-          {
-            name: 'Semestre 2',
-            value: 1500
-          }
-        ]
-      },
-      {
-        name: 'Plástico',
-        series: [
-          {
-            name: 'Semestre 1',
-            value: 3000
-          },
-          {
-            name: 'Semestre 2',
-            value: 2500
-          }
-        ]
-      }
-    ];
-
-    this.multi2 = [
-      {
-        name: '2022',
-        series: [
-          {
-            name: 'Papel/Cartón',
-            value: 500
-          },
-          {
-            name: 'Metal',
-            value: 240
-          },
-          {
-            name: 'Plástico',
-            value: 1050
-          }
-        ]
-      },
-      {
-        name: '2023',
-        series: [
-          {
-            name: 'Papel/Cartón',
-            value: 890
-          },
-          {
-            name: 'Metal',
-            value: 500
-          },
-          {
-            name: 'Plástico',
-            value: 1000
-          }
-        ]
-      }
-    ];
+    this.generateYears();
   }
 
-  generateData(maxValue: number): any[] {
-    const rawData = Math.floor(Math.random() * (maxValue + 1));
+  generateYears(): void {
+    for (let i = 2022; i <= this.currentYear; i++) {
+      this.years.push(i);
+    }
+  }
+
+  onYearChange(): void {
+    if (this.selectedYear) {
+      // Aquí irá la lógica para filtrar los datos basado en el año seleccionado
+      this.filterDataBasedOnYear();
+    } else {
+      // Si no hay un año seleccionado, mostramos todos los datos
+      this.showAllData();
+    }
+  }
+
+  showAllData(): void {
+    this.multi2 = [...this.multi2Original];
+  }
+
+  filterDataBasedOnYear(): void {
+    if (this.selectedYear && this.multi2Original) {
+      this.multi2 = this.multi2Original.filter(data => {
+        return parseInt(data.name) >= this.selectedYear!;
+      });
+    }
+  }
+
+  valueFormatting(c: any): string {
+    return `${c}%`;
+  }
+
+  isLastMonth(month: any): boolean {
+    return this.months ? this.months.indexOf(month) === this.months.length - 1 : false;
+  }
+
+  getDataCum(): any {
+    this.dashboardService.getDashboard().subscribe({
+      next: r => {
+        this.dashboardData = r.data;
+        this.selectMonth(this.currentMonth - 1);  // Restamos 1 porque los meses están indexados desde 0 en JavaScript.
+      },
+      error: error => {
+        console.log(error);
+      }
+    });
+  }
+
+  getAllTonByYear(): any {
+    this.dashboardService.getAllTonByYear(this.currentYear - 1).subscribe({
+      next: r => {
+        this.pom = r.data.statements[0].totalToneladas;
+      },
+      error: error => {
+        console.log(error);
+      }
+    });
+  }
+
+  getAllGoals(): any {
+    this.goalsService.getAllGoals().subscribe({
+      next: r => {
+        const currentYear = new Date().getFullYear();
+        const currentYearGoals = r.data.filter((item:any) => item.YEAR === currentYear);
+        for (const goal of currentYearGoals) {
+          switch(goal.TYPE_MATERIAL) {
+            case '0':
+              this.globalGoal = goal.PERCENTAGE_CUM;
+              break;
+            case '1':
+              this.paperCardboardGoal = goal.PERCENTAGE_CUM;
+              break;
+            case '2':
+              this.metalGoal = goal.PERCENTAGE_CUM;
+              break;
+            case '3':
+              this.plasticGoal = goal.PERCENTAGE_CUM;
+              break;
+          }
+        }
+      },
+      error: error => {
+        console.log(error);
+      }
+    });
+  }
+  
+  getDataSemester(): any {
+    this.dashboardService.getSemesterDashboard().subscribe({
+      next: r => {
+        this.multi = r.data
+      },
+      error: error => {
+        console.log(error);
+      }
+    });
+  }
+
+  getYearlyMaterialWeights(): any {
+    this.dashboardService.getYearlyMaterialWeights().subscribe({
+      next: r => {
+        this.multi2 = [...r.data];
+        this.multi2Original = [...r.data];
+      },
+      error: error => {
+        console.log(error);
+      }
+    });
+  }
+
+  getCountBusiness(): any {
+    this.dashboardService.getCountBusiness().subscribe({
+      next: r => {
+        this.count_business = r.data[0].total_empresas;
+      },
+      error: error => {
+        console.log(error);
+      }
+    });
+  }
+
+  transformDataForSelectedMonth(rawData: any[]): any[] {
+    if (rawData.length === 0) return [];
+
+    const currentMonthData = rawData[0];
     const segments = Array(9).fill(0);
-    segments[Math.min(Math.floor(rawData / 100), 8)] = rawData % 100;
-    for (let i = Math.min(Math.floor(rawData / 100), 8) - 1; i >= 0; i--) {
+    let rawValue = Math.min(currentMonthData.percentage, 800);
+    segments[Math.floor(rawValue / 100)] = rawValue % 100;
+    for (let i = Math.floor(rawValue / 100) - 1; i >= 0; i--) {
       segments[i] = 100;
     }
 
     return segments.map((value, index) => {
       return {
         name: `${index * 100}-${(index + 1) * 100}`,
-        value: value
+        value: Number(value.toFixed(1)),
+        toneladas: parseFloat(currentMonthData.value)
       }
     }).filter(segment => segment.value > 0);
   }
 
 
-  onSelect(data: any): void {
-    console.log('Item clicked', JSON.parse(JSON.stringify(data)));
+  selectMonth(selectedMonth: number) {
+    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const currentMonthData = this.dashboardData.filter((data: any) => data.MESES_ABREV === months[selectedMonth]);
+
+    this.graphCumGlobal = this.transformDataForSelectedMonth(currentMonthData.filter((data: any) => data.TYPE_MATERIAL === 'Global'));
+    this.graphCumPapel = this.transformDataForSelectedMonth(currentMonthData.filter((data: any) => data.TYPE_MATERIAL === 'Papel/Carton'));
+    this.graphCumMetal = this.transformDataForSelectedMonth(currentMonthData.filter((data: any) => data.TYPE_MATERIAL === 'Metal'));
+    this.graphCumPlastico = this.transformDataForSelectedMonth(currentMonthData.filter((data: any) => data.TYPE_MATERIAL === 'Plastico'));
+
+    this.single1 = this.graphCumGlobal;
+    this.single2 = this.graphCumPapel;
+    this.single3 = this.graphCumMetal;
+    this.single4 = this.graphCumPlastico;
   }
 
-  onActivate(data: any): void {
-    console.log('Activate', JSON.parse(JSON.stringify(data)));
-  }
+  setFormato(num: number | string): string {
+    const numero = typeof num === 'string' ? parseFloat(num.replace(/,/g, '')) : num;
+    const decimal = Math.round(numero * 100) / 100;
+    const [entero, decimales] = decimal.toString().split('.');
+    const enteroConPuntos = entero.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
-  onDeactivate(data: any): void {
-    console.log('Deactivate', JSON.parse(JSON.stringify(data)));
+    return decimales && decimales !== '0' ? `${enteroConPuntos},${decimales.padEnd(2, '0')}` : enteroConPuntos;
   }
-
-  valueFormatting(c: any): string {
-    return `${c}%`;
-  }
-  
-  isLastMonth(month: any): boolean {
-    return this.months ? this.months.indexOf(month) === this.months.length - 1 : false;
-  }  
-  
 }
