@@ -98,7 +98,7 @@
   </div>
 
   <select class="select-btn" id="anioSelector" [(ngModel)]="selectedYear" (change)="onYearChange()">
-    <option value="">Seleccionar Año</option>
+    <option value="" disabled>Seleccionar Año</option>
     <option *ngFor="let year of years" [value]="year">{{ year }}</option>
   </select>
 
