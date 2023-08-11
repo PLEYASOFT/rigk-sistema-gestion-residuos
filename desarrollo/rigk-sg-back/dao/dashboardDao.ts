@@ -56,9 +56,9 @@ class EstablishmentDao {
             }
             const currentValue = parseFloat(row.value);
             if (row.semester === 'Semestre 1') {
-                resultMapping[row.name].series[0].value = parseFloat(currentValue.toFixed(1));
+                resultMapping[row.name].series[0].value = parseFloat(currentValue.toFixed(2));
             } else {
-                const sem2Value = parseFloat((currentValue - resultMapping[row.name].series[0].value).toFixed(1));
+                const sem2Value = parseFloat((currentValue - resultMapping[row.name].series[0].value).toFixed(2));
                 resultMapping[row.name].series[1].value = sem2Value;
             }
         }
@@ -121,7 +121,7 @@ class EstablishmentDao {
             }
             resultMapping[row.year].series.push({
                 name: row.material,
-                value: parseFloat(parseFloat(row.value).toFixed(1))
+                value: parseFloat(parseFloat(row.value).toFixed(2))
             });
         }
         
@@ -129,7 +129,7 @@ class EstablishmentDao {
             name: currentYear.toString(),
             series: currentYearData.map((row: any) => ({
                 name: row.material,
-                value: parseFloat(parseFloat(row.value).toFixed(1))
+                value: parseFloat(parseFloat(row.value).toFixed(2))
             }))
         };
 
@@ -139,14 +139,16 @@ class EstablishmentDao {
     public async getAllTonByYear(year: string) {
         const conn = mysqlcon.getConnection();
         const statements = await conn?.execute(`
-        SELECT SUM(ds.VALUE) as totalToneladas
-        FROM detail_statement_form ds
-        JOIN header_statement_form hs ON ds.ID_HEADER = hs.id
-        WHERE hs.YEAR_STATEMENT = ?
-    `, [year]).then((res) => res[0]).catch(error => { undefined });
+        SELECT  SUM(d.VALUE) as totalToneladas
+        FROM detail_statement_form AS d
+        INNER JOIN header_statement_form AS h
+        ON d.ID_HEADER = h.ID
+        WHERE h.YEAR_STATEMENT = ? AND (d.RECYCLABILITY = 1 OR d.RECYCLABILITY = 2) AND h.STATE = 1 and (d.TYPE_RESIDUE  = 1 OR d.TYPE_RESIDUE = 2 or d.TYPE_RESIDUE = 3)
+        `, [year]).then((res) => res[0]).catch(error => { return undefined });
         conn?.end();
         return { statements };
     }
+    
 
     public async getCountBusiness() {
         const conn = mysqlcon.getConnection()!;

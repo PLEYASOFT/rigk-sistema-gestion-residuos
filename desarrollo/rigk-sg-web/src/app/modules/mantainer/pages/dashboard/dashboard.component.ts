@@ -9,13 +9,13 @@ import { GoalsTsService } from 'src/app/core/services/goals.ts.service';
 })
 export class DashboardComponent implements OnInit {
   currentMonth: any;
-  pom:any
+  pom: any
   globalGoal: any;
   paperCardboardGoal: any;
   metalGoal: any;
   plasticGoal: any;
-  count_business:any;
-  months: Array<{ num: any; name: any; isCurrent: any; }> | undefined;
+  count_business: any;
+  months: any;
   currentYear = new Date().getFullYear();
   toneladas: any;
   graphCumGlobal: any;
@@ -65,23 +65,24 @@ export class DashboardComponent implements OnInit {
     this.getAllGoals();
     this.currentMonth = new Date().getMonth() + 1;
     this.months = [
-      { num: 1, name: 'Ene', isCurrent: false },
-      { num: 2, name: 'Feb', isCurrent: false },
-      { num: 3, name: 'Mar', isCurrent: false },
-      { num: 4, name: 'Abr', isCurrent: false },
-      { num: 5, name: 'May', isCurrent: false },
-      { num: 6, name: 'Jun', isCurrent: false },
-      { num: 7, name: 'Jul', isCurrent: false },
-      { num: 8, name: 'Ago', isCurrent: false },
-      { num: 9, name: 'Sep', isCurrent: false },
-      { num: 10, name: 'Oct', isCurrent: false },
-      { num: 11, name: 'Nov', isCurrent: false },
-      { num: 12, name: 'Dic', isCurrent: false },
+      { num: 1, name: 'Ene', isCurrent: false, isDisabled: false },
+      { num: 2, name: 'Feb', isCurrent: false, isDisabled: false },
+      { num: 3, name: 'Mar', isCurrent: false, isDisabled: false },
+      { num: 4, name: 'Abr', isCurrent: false, isDisabled: false },
+      { num: 5, name: 'May', isCurrent: false, isDisabled: false },
+      { num: 6, name: 'Jun', isCurrent: false, isDisabled: false },
+      { num: 7, name: 'Jul', isCurrent: false, isDisabled: false },
+      { num: 8, name: 'Ago', isCurrent: false, isDisabled: false },
+      { num: 9, name: 'Sep', isCurrent: false, isDisabled: false },
+      { num: 10, name: 'Oct', isCurrent: false, isDisabled: false },
+      { num: 11, name: 'Nov', isCurrent: false, isDisabled: false },
+      { num: 12, name: 'Dic', isCurrent: false, isDisabled: false },
     ];
     for (let i = 0; i < this.currentMonth; i++) {
       this.months[i].isCurrent = true;
     }
     this.generateYears();
+    this.setDisabledMonths();
   }
 
   generateYears(): void {
@@ -147,9 +148,9 @@ export class DashboardComponent implements OnInit {
     this.goalsService.getAllGoals().subscribe({
       next: r => {
         const currentYear = new Date().getFullYear();
-        const currentYearGoals = r.data.filter((item:any) => item.YEAR === currentYear);
+        const currentYearGoals = r.data.filter((item: any) => item.YEAR === currentYear);
         for (const goal of currentYearGoals) {
-          switch(goal.TYPE_MATERIAL) {
+          switch (goal.TYPE_MATERIAL) {
             case '0':
               this.globalGoal = goal.PERCENTAGE_CUM;
               break;
@@ -170,7 +171,7 @@ export class DashboardComponent implements OnInit {
       }
     });
   }
-  
+
   getDataSemester(): any {
     this.dashboardService.getSemesterDashboard().subscribe({
       next: r => {
@@ -187,6 +188,8 @@ export class DashboardComponent implements OnInit {
       next: r => {
         this.multi2 = [...r.data];
         this.multi2Original = [...r.data];
+        this.selectedYear = this.currentYear;
+        this.onYearChange();
       },
       error: error => {
         console.log(error);
@@ -229,7 +232,7 @@ export class DashboardComponent implements OnInit {
   selectMonth(selectedMonth: number) {
     const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     const currentMonthData = this.dashboardData.filter((data: any) => data.MESES_ABREV === months[selectedMonth]);
-
+    this.currentMonth = selectedMonth + 1;
     this.graphCumGlobal = this.transformDataForSelectedMonth(currentMonthData.filter((data: any) => data.TYPE_MATERIAL === 'Global'));
     this.graphCumPapel = this.transformDataForSelectedMonth(currentMonthData.filter((data: any) => data.TYPE_MATERIAL === 'Papel/Carton'));
     this.graphCumMetal = this.transformDataForSelectedMonth(currentMonthData.filter((data: any) => data.TYPE_MATERIAL === 'Metal'));
@@ -249,4 +252,14 @@ export class DashboardComponent implements OnInit {
 
     return decimales && decimales !== '0' ? `${enteroConPuntos},${decimales.padEnd(2, '0')}` : enteroConPuntos;
   }
+
+  setDisabledMonths() {
+    const currentMonthNumber = new Date().getMonth() + 1;
+    for (let month of this.months) {
+      if (month.num > currentMonthNumber) {
+        month.isDisabled = true;
+      }
+    }
+  }
+
 }
