@@ -8,11 +8,13 @@ import loginRoutes from './routes/login';
 import businessRoutes from './routes/business';
 import statementRoutes from './routes/statmentProductor';
 import ratesRoutes from './routes/rates';
+import goalsRoutes from './routes/goals';
 import establishmentRoutes from './routes/establishment';
 import consumerRoutes from './routes/consumer';
 import managerRoutes from './routes/manager';
 import utilesRoutes from './routes/utiles'
 import logsRoutes from './routes/logs';
+import dashboardRoutes from './routes/dashboard';
 class Server {
     private app: Application;
     private port: string;
@@ -25,7 +27,9 @@ class Server {
         establishment: '/api/v1/establishment',
         manager: '/api/v1/manager',
         utiles: '/api/v1/utiles',
-        logs: '/api/v1/logs'
+        logs: '/api/v1/logs',
+        dashboard: '/api/v1/dashboard',
+        goals: '/api/v1/goals'
     };
     constructor() {
         this.app = express();
@@ -39,8 +43,10 @@ class Server {
         this.app.use(this.apiPath.consumer, consumerRoutes);
         this.app.use(this.apiPath.form, statementRoutes);
         this.app.use(this.apiPath.rates, ratesRoutes);
+        this.app.use(this.apiPath.goals, goalsRoutes);
         this.app.use(this.apiPath.establishment, establishmentRoutes);
         this.app.use(this.apiPath.logs, logsRoutes);
+        this.app.use(this.apiPath.dashboard, dashboardRoutes);
         this.app.use(this.apiPath.manager, managerRoutes);
         this.app.use(this.apiPath.utiles, utilesRoutes);
         this.app.use((error: any, req: any, res: any, next: any) => {

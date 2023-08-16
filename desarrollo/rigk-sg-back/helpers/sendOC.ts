@@ -23,7 +23,7 @@ export const sendOC = async ( id: any, file: any ) => {
 
     const mailOptions: MailOptions = {
         from: `PROREP noreply@prorep.cl`,
-        to: `${process.env.EMAIL_OC},admin@prorep.cl,lbustos@prorep.cl,kuzmicic@rigk.cl,crlumar@gmail.com`,
+        to: `${process.env.EMAIL_OC}`, //,admin@prorep.cl,lbustos@prorep.cl,kuzmicic@rigk.cl,crlumar@gmail.com`,
         subject: `OC de empresa ${code_business} - ${name}`,
         attachments: [
             {filename: file.name, content: file.data}
