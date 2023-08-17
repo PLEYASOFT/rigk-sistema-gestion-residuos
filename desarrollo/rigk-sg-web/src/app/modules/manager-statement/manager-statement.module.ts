@@ -7,13 +7,15 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { StatementsComponent } from './pages/statements/statements.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
+import { BulkUploadComponent } from './pages/bulk-upload/bulk-upload.component';
 
 
 @NgModule({
   declarations: [
     HomeComponent,
     ProfileComponent,
-    StatementsComponent
+    StatementsComponent,
+    BulkUploadComponent
   ],
   imports: [
     CommonModule,
