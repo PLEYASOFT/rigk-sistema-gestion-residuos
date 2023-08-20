@@ -19,11 +19,10 @@ class EstablishmentDao {
     async getSemesterDashboard() {
         const conn = mysqlcon.getEtlConnection()!;
         const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
         const currentMonth = currentDate.getMonth() + 1;
-
+    
         let semester2Month = currentMonth > 6 ? currentMonth : 0;
-
+    
         const res: any = await conn.query(`
             SELECT 
                 COALESCE(tbm_materiales.TYPE_MATERIAL, 'Total') as name,
@@ -31,7 +30,8 @@ class EstablishmentDao {
                     WHEN tbm_meses.ID = 6 THEN 'Semestre 1'
                     WHEN tbm_meses.ID = ? THEN 'Semestre 2'
                 END AS semester,
-                tbh_porc_cump_ci.VALOR_TON_VAL as value 
+                tbh_porc_cump_ci.VALOR_TON_VAL as value,
+                tbm_anios.ANIO as year
             FROM tbh_porc_cump_ci
             JOIN tbd_cum_anio ON tbh_porc_cump_ci.ID = tbd_cum_anio.ID_CUMP
             JOIN tbd_cum_materiales ON tbh_porc_cump_ci.ID = tbd_cum_materiales.ID_CUMP
@@ -39,32 +39,35 @@ class EstablishmentDao {
             LEFT JOIN tbm_materiales ON tbd_cum_materiales.ID_MATERIAL = tbm_materiales.ID
             JOIN tbd_cum_meses ON tbh_porc_cump_ci.ID = tbd_cum_meses.ID_CUMP
             JOIN tbm_meses ON tbd_cum_meses.ID_MES = tbm_meses.ID
-            WHERE tbm_anios.ANIO = ? AND tbm_meses.ID IN (6, ?)
-            ORDER BY tbm_materiales.TYPE_MATERIAL, tbm_meses.ID
-        `, [semester2Month, currentYear, semester2Month]).then(res => res[0]).catch(error => undefined);
-
+            WHERE tbm_anios.ANIO >= 2022 AND tbm_anios.ANIO <= (SELECT MAX(ANIO) FROM tbm_anios) AND tbm_meses.ID IN (6, ?)
+            ORDER BY tbm_anios.ANIO, tbm_materiales.TYPE_MATERIAL, tbm_meses.ID
+        `, [semester2Month, semester2Month]).then(res => res[0]).catch(error => undefined);
+    
         conn.end();
-
+    
         const resultMapping: any = {};
-
+    
         for (const row of res) {
-            if (!resultMapping[row.name]) {
-                resultMapping[row.name] = {
+            const key = `${row.name}-${row.year}`;
+            if (!resultMapping[key]) {
+                resultMapping[key] = {
                     name: row.name,
+                    year: row.year,
                     series: [{ name: 'Semestre 1', value: 0.0 }, { name: 'Semestre 2', value: 0.0 }]
                 };
             }
             const currentValue = parseFloat(row.value);
             if (row.semester === 'Semestre 1') {
-                resultMapping[row.name].series[0].value = parseFloat(currentValue.toFixed(2));
+                resultMapping[key].series[0].value = parseFloat(currentValue.toFixed(2));
             } else {
-                const sem2Value = parseFloat((currentValue - resultMapping[row.name].series[0].value).toFixed(2));
-                resultMapping[row.name].series[1].value = sem2Value;
+                const sem2Value = parseFloat((currentValue - resultMapping[key].series[0].value).toFixed(2));
+                resultMapping[key].series[1].value = sem2Value;
             }
         }
-
+    
         return Object.values(resultMapping);
     }
+    
 
     async getYearlyMaterialWeights() {
         const conn = mysqlcon.getEtlConnection()!;

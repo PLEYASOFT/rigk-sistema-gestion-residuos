@@ -93,10 +93,10 @@ export class DashboardComponent implements OnInit {
 
   onYearChange(): void {
     if (this.selectedYear) {
-      // Aquí irá la lógica para filtrar los datos basado en el año seleccionado
+      this.getDataSemester();
       this.filterDataBasedOnYear();
     } else {
-      // Si no hay un año seleccionado, mostramos todos los datos
+      // Si no hay un año seleccionado, mostramos todos los datos.
       this.showAllData();
     }
   }
@@ -175,12 +175,38 @@ export class DashboardComponent implements OnInit {
   getDataSemester(): any {
     this.dashboardService.getSemesterDashboard().subscribe({
       next: r => {
-        this.multi = r.data
+        this.multi = this.transformToSemesterData(r.data);
       },
       error: error => {
         console.log(error);
       }
     });
+  }
+
+  transformToSemesterData(data: any[]): any[] {
+    const transformedData: any[] = [];
+    const materialGroup: { [key: string]: any } = {};
+
+    data.forEach(item => {
+      if (item.year && item.year >= this.selectedYear) {
+        if (!materialGroup[item.name]) {
+          materialGroup[item.name] = {
+            name: item.name,
+            series: []
+          };
+          transformedData.push(materialGroup[item.name]);
+        }
+
+        item.series.forEach((semester: any) => {
+          materialGroup[item.name].series.push({
+            name: `${semester.name} - ${item.year}`,
+            value: semester.value
+          });
+        });
+      }
+    });
+
+    return transformedData;
   }
 
   getYearlyMaterialWeights(): any {
@@ -210,29 +236,32 @@ export class DashboardComponent implements OnInit {
 
   transformDataForSelectedMonth(rawData: any[]): any[] {
     if (rawData.length === 0) return [];
+    const currentData = rawData.filter(data => data.ANIO === this.currentYear);
+    const currentMonthData = currentData[0];
 
-    const currentMonthData = rawData[0];
+    if (!currentMonthData) return [];
     const segments = Array(9).fill(0);
     let rawValue = Math.min(currentMonthData.percentage, 800);
+
     segments[Math.floor(rawValue / 100)] = rawValue % 100;
+
     for (let i = Math.floor(rawValue / 100) - 1; i >= 0; i--) {
       segments[i] = 100;
     }
-
     return segments.map((value, index) => {
       return {
         name: `${index * 100}-${(index + 1) * 100}`,
-        value: Number(value.toFixed(1)),
+        value: Number(value.toFixed(2)),
         toneladas: parseFloat(currentMonthData.value)
       }
     }).filter(segment => segment.value > 0);
   }
 
-
   selectMonth(selectedMonth: number) {
     const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     const currentMonthData = this.dashboardData.filter((data: any) => data.MESES_ABREV === months[selectedMonth]);
     this.currentMonth = selectedMonth + 1;
+
     this.graphCumGlobal = this.transformDataForSelectedMonth(currentMonthData.filter((data: any) => data.TYPE_MATERIAL === 'Global'));
     this.graphCumPapel = this.transformDataForSelectedMonth(currentMonthData.filter((data: any) => data.TYPE_MATERIAL === 'Papel/Carton'));
     this.graphCumMetal = this.transformDataForSelectedMonth(currentMonthData.filter((data: any) => data.TYPE_MATERIAL === 'Metal'));
@@ -261,5 +290,4 @@ export class DashboardComponent implements OnInit {
       }
     }
   }
-
 }

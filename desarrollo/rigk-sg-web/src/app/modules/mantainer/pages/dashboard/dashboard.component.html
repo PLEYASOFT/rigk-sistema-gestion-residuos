@@ -8,8 +8,7 @@
 
   <div class="gauge-container">
     <div class="circle-container">
-      <div *ngFor="let month of months; let idx = index" 
-        class="circle-with-line" [class.past-month]="month.isCurrent">
+      <div *ngFor="let month of months; let idx = index" class="circle-with-line" [class.past-month]="month.isCurrent">
         <div [class.selected-month]="currentMonth === month.num" (click)="!month.isDisabled && selectMonth(idx)">
           <div class="month-circle">
             {{month.num}}
@@ -102,12 +101,11 @@
     <option *ngFor="let year of years" [value]="year">{{ year }}</option>
   </select>
 
-
   <div class="chart-container">
     <div class="row">
       <div class="col-12 col-lg-6 mb-5">
         <div style="text-align: center;font-size: medium;"> TONELADAS VALORIZADAS POR MATERIAL</div>
-        <ngx-charts-bar-vertical-stacked [view]="view" [scheme]="colorScheme" [results]="multi" [gradient]="gradient"
+        <ngx-charts-bar-vertical-stacked [view]="view" [scheme]="colorBarras" [results]="multi" [gradient]="gradient"
           [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="showLegend" [legendTitle]="' '"
           [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="xAxisLabel"
           [yAxisLabel]="yAxisLabel" [showDataLabel]="true" [dataLabelFormatting]="setFormato">
