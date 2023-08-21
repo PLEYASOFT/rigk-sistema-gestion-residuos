@@ -15,23 +15,22 @@
 		</div>
 		<div class="box box-form mb-4">
 			<div class="row align-items-end">
-				<div class="col-12 col-xl-12 mb-3">
+				<div class="col-12 col-xl-12 ">
 					<div class="row">
 						<div class="col-6">
 							<button class="btn btn-primary col-12" (click)="downloadExcel()">
-								<i class="fas fa-download"></i> Descargar Plantilla
+								<i class="fas fa-download"></i> Descargar declaraciones pendientes por aprobar
 							</button>
 						</div>
 						<div class="col-6">
 							<input type="file" #fileInput id="file-input" (change)="onFileChange($event)" style="display:none;"
 								accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
 							<button class="btn btn-primary col-12" (click)="fileInput.click()">
-								<i class="fas fa-upload"></i> Cargar
+								<i class="fas fa-upload"></i> Cargar declaraciones
 							</button>
 						</div>
 					</div>
 				</div>
-        
 			</div>
 		</div>
 	</section>
