@@ -20,9 +20,11 @@ class EstablishmentDao {
         const conn = mysqlcon.getEtlConnection()!;
         const currentDate = new Date();
         const currentMonth = currentDate.getMonth() + 1;
-    
+
         let semester2Month = currentMonth > 6 ? currentMonth : 0;
-    
+
+        const currentYear = currentDate.getFullYear();
+
         const res: any = await conn.query(`
             SELECT 
                 COALESCE(tbm_materiales.TYPE_MATERIAL, 'Total') as name,
@@ -39,14 +41,14 @@ class EstablishmentDao {
             LEFT JOIN tbm_materiales ON tbd_cum_materiales.ID_MATERIAL = tbm_materiales.ID
             JOIN tbd_cum_meses ON tbh_porc_cump_ci.ID = tbd_cum_meses.ID_CUMP
             JOIN tbm_meses ON tbd_cum_meses.ID_MES = tbm_meses.ID
-            WHERE tbm_anios.ANIO >= 2022 AND tbm_anios.ANIO <= (SELECT MAX(ANIO) FROM tbm_anios) AND tbm_meses.ID IN (6, ?)
+            WHERE tbm_anios.ANIO >= 2022 AND tbm_anios.ANIO <= ? AND tbm_meses.ID IN (6, ?)
             ORDER BY tbm_anios.ANIO, tbm_materiales.TYPE_MATERIAL, tbm_meses.ID
-        `, [semester2Month, semester2Month]).then(res => res[0]).catch(error => undefined);
-    
+        `, [semester2Month, currentYear, semester2Month]).then(res => res[0]).catch(error => undefined);
+
         conn.end();
-    
+
         const resultMapping: any = {};
-    
+
         for (const row of res) {
             const key = `${row.name}-${row.year}`;
             if (!resultMapping[key]) {
@@ -64,10 +66,10 @@ class EstablishmentDao {
                 resultMapping[key].series[1].value = sem2Value;
             }
         }
-    
+
         return Object.values(resultMapping);
     }
-    
+
 
     async getYearlyMaterialWeights() {
         const conn = mysqlcon.getEtlConnection()!;
@@ -127,7 +129,7 @@ class EstablishmentDao {
                 value: parseFloat(parseFloat(row.value).toFixed(2))
             });
         }
-        
+
         resultMapping[currentYear] = {
             name: currentYear.toString(),
             series: currentYearData.map((row: any) => ({
@@ -151,7 +153,7 @@ class EstablishmentDao {
         conn?.end();
         return { statements };
     }
-    
+
 
     public async getCountBusiness() {
         const conn = mysqlcon.getConnection()!;
