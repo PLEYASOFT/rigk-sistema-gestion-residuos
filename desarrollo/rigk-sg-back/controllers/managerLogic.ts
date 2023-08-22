@@ -4,6 +4,7 @@ import { createLog } from "../helpers/createLog";
 import ExcelJS from 'exceljs';
 import establishmentDao from "../dao/establishmentDao";
 import { string } from "joi";
+import businessDao from "../dao/businessDao";
 class ManagerLogic {
     async addManager(req: Request|any, res: Response) {
         const type_material = req.body.type_material;
@@ -91,6 +92,8 @@ class ManagerLogic {
             const path = require('path');
             const outputPath = path.join(__dirname, `../../files/templates/_carga_masiva_z.xlsx`);
             const invoices = await establishmentDao.getDeclarationEstablishment(req.uid);
+            const businesses = await businessDao.getAllIndividualBusinessVAT();
+
             if(invoices == false ){
                 return res.status(500).json({
                     status: false,
@@ -102,6 +105,34 @@ class ManagerLogic {
              * DATA VALIDATION
              */
             const workbook = new ExcelJS.Workbook();
+            const worksheetInfo = workbook.addWorksheet("info");
+            const rowInfo = worksheetInfo.getRow(1);
+            rowInfo.getCell(1).value = "RUT RECICLADORES";
+
+            for (let i = 0; i < businesses.length; i++) {
+                const business = businesses[i];
+                const rowdata = worksheetInfo.getRow(i + 2);
+                rowdata.getCell(1).value = `${business.VAT}`;       
+                rowdata.commit();
+            }
+            
+            const VATS = [];
+            for (let i = 0; i < businesses.length; i++) {
+                const business = businesses[i];
+                VATS.push([`${business.VAT}`])
+            }
+
+            console.log(VATS);
+
+            worksheetInfo.addTable({
+                name: 'VAT',
+                ref: 'C1',
+                headerRow: true,
+                columns: [
+                    { name: 'VAT', filterButton: false },
+                ],
+                rows: VATS,
+            });
 
             // /**
             //  * WORKSHEET DATA
