@@ -114,7 +114,7 @@ export class DashboardComponent implements OnInit {
   }
 
   valueFormatting(c: any): string {
-    return `${c}%`;
+    return `${parseFloat(c).toFixed(2)}%`;
   }
 
   isLastMonth(month: any): boolean {
