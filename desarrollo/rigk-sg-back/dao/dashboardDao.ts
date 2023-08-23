@@ -19,10 +19,11 @@ class EstablishmentDao {
     async getSemesterDashboard() {
         const conn = mysqlcon.getEtlConnection()!;
         const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
         const currentMonth = currentDate.getMonth() + 1;
 
         let semester2Month = currentMonth > 6 ? currentMonth : 0;
+
+        const currentYear = currentDate.getFullYear();
 
         const res: any = await conn.query(`
             SELECT 
@@ -31,7 +32,8 @@ class EstablishmentDao {
                     WHEN tbm_meses.ID = 6 THEN 'Semestre 1'
                     WHEN tbm_meses.ID = ? THEN 'Semestre 2'
                 END AS semester,
-                tbh_porc_cump_ci.VALOR_TON_VAL as value 
+                tbh_porc_cump_ci.VALOR_TON_VAL as value,
+                tbm_anios.ANIO as year
             FROM tbh_porc_cump_ci
             JOIN tbd_cum_anio ON tbh_porc_cump_ci.ID = tbd_cum_anio.ID_CUMP
             JOIN tbd_cum_materiales ON tbh_porc_cump_ci.ID = tbd_cum_materiales.ID_CUMP
@@ -39,8 +41,8 @@ class EstablishmentDao {
             LEFT JOIN tbm_materiales ON tbd_cum_materiales.ID_MATERIAL = tbm_materiales.ID
             JOIN tbd_cum_meses ON tbh_porc_cump_ci.ID = tbd_cum_meses.ID_CUMP
             JOIN tbm_meses ON tbd_cum_meses.ID_MES = tbm_meses.ID
-            WHERE tbm_anios.ANIO = ? AND tbm_meses.ID IN (6, ?)
-            ORDER BY tbm_materiales.TYPE_MATERIAL, tbm_meses.ID
+            WHERE tbm_anios.ANIO >= 2022 AND tbm_anios.ANIO <= ? AND tbm_meses.ID IN (6, ?)
+            ORDER BY tbm_anios.ANIO, tbm_materiales.TYPE_MATERIAL, tbm_meses.ID
         `, [semester2Month, currentYear, semester2Month]).then(res => res[0]).catch(error => undefined);
 
         conn.end();
@@ -48,23 +50,26 @@ class EstablishmentDao {
         const resultMapping: any = {};
 
         for (const row of res) {
-            if (!resultMapping[row.name]) {
-                resultMapping[row.name] = {
+            const key = `${row.name}-${row.year}`;
+            if (!resultMapping[key]) {
+                resultMapping[key] = {
                     name: row.name,
+                    year: row.year,
                     series: [{ name: 'Semestre 1', value: 0.0 }, { name: 'Semestre 2', value: 0.0 }]
                 };
             }
             const currentValue = parseFloat(row.value);
             if (row.semester === 'Semestre 1') {
-                resultMapping[row.name].series[0].value = parseFloat(currentValue.toFixed(1));
+                resultMapping[key].series[0].value = parseFloat(currentValue.toFixed(2));
             } else {
-                const sem2Value = parseFloat((currentValue - resultMapping[row.name].series[0].value).toFixed(1));
-                resultMapping[row.name].series[1].value = sem2Value;
+                const sem2Value = parseFloat((currentValue - resultMapping[key].series[0].value).toFixed(2));
+                resultMapping[key].series[1].value = sem2Value;
             }
         }
 
         return Object.values(resultMapping);
     }
+
 
     async getYearlyMaterialWeights() {
         const conn = mysqlcon.getEtlConnection()!;
@@ -121,15 +126,15 @@ class EstablishmentDao {
             }
             resultMapping[row.year].series.push({
                 name: row.material,
-                value: parseFloat(parseFloat(row.value).toFixed(1))
+                value: parseFloat(parseFloat(row.value).toFixed(2))
             });
         }
-        
+
         resultMapping[currentYear] = {
             name: currentYear.toString(),
             series: currentYearData.map((row: any) => ({
                 name: row.material,
-                value: parseFloat(parseFloat(row.value).toFixed(1))
+                value: parseFloat(parseFloat(row.value).toFixed(2))
             }))
         };
 
@@ -139,14 +144,16 @@ class EstablishmentDao {
     public async getAllTonByYear(year: string) {
         const conn = mysqlcon.getConnection();
         const statements = await conn?.execute(`
-        SELECT SUM(ds.VALUE) as totalToneladas
-        FROM detail_statement_form ds
-        JOIN header_statement_form hs ON ds.ID_HEADER = hs.id
-        WHERE hs.YEAR_STATEMENT = ?
-    `, [year]).then((res) => res[0]).catch(error => { undefined });
+        SELECT  SUM(d.VALUE) as totalToneladas
+        FROM detail_statement_form AS d
+        INNER JOIN header_statement_form AS h
+        ON d.ID_HEADER = h.ID
+        WHERE h.YEAR_STATEMENT = ? AND (d.RECYCLABILITY = 1 OR d.RECYCLABILITY = 2) AND h.STATE = 1 and (d.TYPE_RESIDUE  = 1 OR d.TYPE_RESIDUE = 2 or d.TYPE_RESIDUE = 3)
+        `, [year]).then((res) => res[0]).catch(error => { return undefined });
         conn?.end();
         return { statements };
     }
+
 
     public async getCountBusiness() {
         const conn = mysqlcon.getConnection()!;
