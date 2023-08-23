@@ -4,6 +4,7 @@ import { createLog } from "../helpers/createLog";
 import ExcelJS from 'exceljs';
 import establishmentDao from "../dao/establishmentDao";
 import { string } from "joi";
+import businessDao from "../dao/businessDao";
 class ManagerLogic {
     async addManager(req: Request|any, res: Response) {
         const type_material = req.body.type_material;
@@ -85,12 +86,29 @@ class ManagerLogic {
             });
         }
     }
+
+    // function getColumnReference(columnNumber) {
+    //     const dividend = columnNumber;
+    //     let columnName = '';
+    //     let modulo;
+      
+    //     while (dividend > 0) {
+    //       modulo = (dividend - 1) % 26;
+    //       columnName = String.fromCharCode(65 + modulo) + columnName;
+    //       dividend = Math.floor((dividend - modulo) / 26);
+    //     }
+      
+    //     return columnName;
+    //   }
+
     public async downloadBulkUploadFileInvoice(req: any, res: Response) {
-        // const { id } = req.params;
+
         try {
             const path = require('path');
             const outputPath = path.join(__dirname, `../../files/templates/_carga_masiva_z.xlsx`);
             const invoices = await establishmentDao.getDeclarationEstablishment(req.uid);
+            const businesses = await businessDao.getAllIndividualBusinessVAT();
+
             if(invoices == false ){
                 return res.status(500).json({
                     status: false,
@@ -102,7 +120,58 @@ class ManagerLogic {
              * DATA VALIDATION
              */
             const workbook = new ExcelJS.Workbook();
+            const worksheetInfo = workbook.addWorksheet("info");
+            const rowInfo = worksheetInfo.getRow(1);
+            
+            const VATS = [];
+            for (let i = 0; i < businesses.length; i++) {
+                const business = businesses[i];
+                VATS.push([`${business.VAT}`])
+            }
 
+            worksheetInfo.addTable({
+                name: 'VAT',
+                ref: "A1",
+                headerRow: true,
+                columns: [
+                    { name: 'VAT', filterButton: false },
+                ],
+                rows: VATS,
+            });
+
+            for (let i = 0; i < businesses.length; i++) {
+                const business = await businesses[i];
+                let dividend = i+2;
+                let columnName = '';
+                let modulo;
+
+                while (dividend > 0) {
+                    modulo = (dividend - 1) % 26;
+                    columnName = String.fromCharCode(65 + modulo) + columnName;
+                    dividend = Math.floor((dividend - modulo) / 26);
+                }
+                
+                let reference = columnName + "1";
+                let nameVAT = business.VAT + "";
+
+                const emp = await businessDao.getBusinessByVAT(business.VAT);   
+
+                let empName = []
+                for (let i = 0; i < emp.length; i++) {
+                    const empresa = emp[i];
+                    empName.push([`${empresa.NAME}`])
+                }
+                
+                worksheetInfo.addTable({
+                    name: "test1",
+                    ref: reference,
+                    headerRow: true,
+                    columns: [
+                        { name: nameVAT, filterButton: false },
+                    ],
+                    rows: empName,
+                });
+            }
             // /**
             //  * WORKSHEET DATA
             //  */
