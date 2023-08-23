@@ -210,25 +210,25 @@ export class FormComponent implements OnInit {
     }
     for (let i = 0; i < this.newData.length; i++) {
       const reg = this.newData[i];
-      if( reg.value == 0 || reg.date == "" || reg.gestor == "-1" || reg.treatment == "-1" || reg.sub == "-1" ) {
-        if(reg.value == 0) {
-          error = "Falta ingresar peso en la tabla "+this.tables[reg.residue-1];
+      if (reg.value == 0 || reg.date == "" || reg.gestor == "-1" || reg.treatment == "-1" || reg.sub == "-1") {
+        if (reg.value == 0) {
+          error = "Falta ingresar peso en la tabla " + this.tables[reg.residue - 1];
           break;
         }
-        if(reg.date == "") {
-          error = "Falta ingresar fecha de retiro en la tabla "+this.tables[reg.residue-1];
+        if (reg.date == "") {
+          error = "Falta ingresar fecha de retiro en la tabla " + this.tables[reg.residue - 1];
           break;
         }
-        if(reg.gestor == "-1") {
-          error = "Falta seleccionar gestor en la tabla "+this.tables[reg.residue-1];
+        if (reg.gestor == "-1") {
+          error = "Falta seleccionar gestor en la tabla " + this.tables[reg.residue - 1];
           break;
         }
-        if(reg.treatment == "-1") {
-          error = "Falta seleccionar tipo de tratamiento en la tabla "+this.tables[reg.residue-1];
+        if (reg.treatment == "-1") {
+          error = "Falta seleccionar tipo de tratamiento en la tabla " + this.tables[reg.residue - 1];
           break;
         }
-        if(reg.sub == "-1") {
-          error = "Falta seleccionar subtipo en la tabla "+this.tables[reg.residue-1];
+        if (reg.sub == "-1") {
+          error = "Falta seleccionar subtipo en la tabla " + this.tables[reg.residue - 1];
           break;
         }
       }
@@ -253,7 +253,7 @@ export class FormComponent implements OnInit {
     for (let i = 0; i < this.newData.length; i++) {
       const e = this.newData[i];
       try {
-        const r:any = await this.consumerService.save({ header, detail: e }).toPromise();
+        const r: any = await this.consumerService.save({ header, detail: e }).toPromise();
         if (!r.status) {
           Swal.close();
           Swal.fire({
@@ -264,23 +264,23 @@ export class FormComponent implements OnInit {
         }
       } catch (error) {
         Swal.close();
-          Swal.fire({
-            icon: 'error',
-            text: 'Ocurrió un error mientras se enviaba el formulario.'
-          });
-          flag = true;
+        Swal.fire({
+          icon: 'error',
+          text: 'Ocurrió un error mientras se enviaba el formulario.'
+        });
+        flag = true;
       }
     }
-    if(!flag) {
+    if (!flag) {
       Swal.close();
       Swal.fire({
-              icon: 'success',
-              text: 'Declaración guardada satisfactoriamente'
-            }).then(btn => {
-              if (btn.isConfirmed) {
-                this.router.navigate(['/consumidor']);
-              }
-            });
+        icon: 'success',
+        text: 'Declaración guardada satisfactoriamente'
+      }).then(btn => {
+        if (btn.isConfirmed) {
+          this.router.navigate(['/consumidor']);
+        }
+      });
     }
   }
   goBack() {
@@ -318,6 +318,12 @@ export class FormComponent implements OnInit {
     }
     const html: string = `
     <tr id="tr">
+                        <td>
+                          <select class="form-select" id="inp_sub_${i + 1}_${n_row}">
+                            <option value="-1">Seleccione Subcategoría</option>
+                              ${tt}
+                          </select>
+                        </td>
                         <td style="padding-left: 20px;">
                             <select class="form-select" id="inp_treatment_${i + 1}_${n_row}">
                                 <option value="-1">Seleccione Tratamiento</option>
@@ -422,7 +428,7 @@ export class FormComponent implements OnInit {
     }
     const inp_sub = (document.getElementById(`inp_sub_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_sub.onchange = () => {
-      
+
       removeOptions(inp_gestor);
       let opt: any = document.createElement('option');
       opt.value = "-1";
@@ -616,7 +622,7 @@ export class FormComponent implements OnInit {
       let sum = 0;
       for (let y = 0; y < tmp.length; y++) {
         const u = tmp[y];
-        if(u.residue != (i+1)) continue;
+        if (u.residue != (i + 1)) continue;
         sum += parseFloat(u.value.toString().replace(",", "."));
       }
       document.getElementById(`table_td_${i + 1}`)!.innerHTML = sum.toFixed(2).toString().replace(".", ",");
@@ -662,14 +668,14 @@ export class FormComponent implements OnInit {
   filess: any[] = [];
   addFile() {
     let type = (document.getElementById('inp_select_mv') as HTMLInputElement).value;
-    if (!type || type=="0") {
+    if (!type || type == "0") {
       Swal.fire({
         icon: 'info',
         text: 'Es necesario seleccionar Tipo MV'
       });
       return;
     }
-    if(this.tmpFile.length==0) {
+    if (this.tmpFile.length == 0) {
       Swal.fire({
         icon: 'info',
         text: 'Es necesario seleccionar archivo'
@@ -724,7 +730,7 @@ export class FormComponent implements OnInit {
       return;
     }
     const tmp = target.files[0].type.split('/');
-    if(tmp.length == 2 && (tmp[1] != 'jpeg' && tmp[1] != 'jpg' && tmp[1] != 'pdf') ) {
+    if (tmp.length == 2 && (tmp[1] != 'jpeg' && tmp[1] != 'jpg' && tmp[1] != 'pdf')) {
       Swal.fire({
         icon: 'info',
         text: 'Tipo de archivo no permitido. Sólo se permiten extensiones jpg, jpeg o pdf'
