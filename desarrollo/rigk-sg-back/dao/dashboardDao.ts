@@ -86,7 +86,8 @@ class EstablishmentDao {
         JOIN tbd_cum_materiales ON tbh_porc_cump_ci.ID = tbd_cum_materiales.ID_CUMP
         JOIN tbm_anios ON tbd_cum_anio.ID_ANIO = tbm_anios.ID
         JOIN tbm_materiales ON tbd_cum_materiales.ID_MATERIAL = tbm_materiales.ID
-        WHERE tbm_anios.ANIO >= 2022 AND tbm_anios.ANIO < ? AND tbm_materiales.ID <> 0
+        JOIN tbd_cum_meses ON tbh_porc_cump_ci.ID = tbd_cum_meses.ID_CUMP
+        WHERE tbm_anios.ANIO >= 2022 AND tbm_anios.ANIO < ? AND tbm_materiales.ID <> 0 AND tbd_cum_meses.ID_MES = 12
         GROUP BY tbm_anios.ANIO, tbm_materiales.TYPE_MATERIAL
         ORDER BY tbm_anios.ANIO, tbm_materiales.TYPE_MATERIAL
     `, [currentYear]).catch(error => {
