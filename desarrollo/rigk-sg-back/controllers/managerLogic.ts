@@ -115,8 +115,11 @@ class ManagerLogic {
             const VATS = [];
             for (let i = 0; i < businesses.length; i++) {
                 const business = businesses[i];
-                VATS.push([`${business.VAT}`])
+                VATS.push([`${business.VAT}`]);
             }
+            const VATSF = [...VATS].map(v=>["_"+v.toString().replace("-","_")]);
+            
+            
 
             worksheetInfo.addTable({
                 name: 'VAT',
@@ -127,11 +130,20 @@ class ManagerLogic {
                 ],
                 rows: VATS,
             });
+            worksheetInfo.addTable({
+                name: 'VATF',
+                ref: "B1",
+                headerRow: true,
+                columns: [
+                    { name: 'VATF', filterButton: false },
+                ],
+                rows: VATSF,
+            });
 
             for (let i = 0; i < businesses.length; i++) {
                 const business = await businesses[i];
-                const reference = getReferenceExcel(i);
-                let nameVAT = business.VAT + "";
+                const reference = getReferenceExcel(i + 1);
+                let nameVAT = business.VAT;
 
                 const emp = await businessDao.getBusinessByVAT(business.VAT);   
 
@@ -224,7 +236,7 @@ class ManagerLogic {
             const VATdropdown = ["Info!$A$2:$A$"+VATS.length];
             
 
-            for (let i = 1; i <= maxRows; i++) {
+            for (let i = 1; i <= noaprovediv.length; i++) {
                 worksheetInfo.getRow(1).getCell(2);
 
                 worksheet.getCell(`J${i + 1}`).dataValidation = {
@@ -239,24 +251,36 @@ class ManagerLogic {
                 };
                 worksheet.getCell(`J${i + 1}`).numFmt = '@';;
 
+                // Specify Cell must be have be a date before 1st Jan 2016
+                // worksheet.getCell('A1').dataValidation = {
+                //     type: 'date',
+                //     operator: 'lessThan',
+                //     showErrorMessage: true,
+                //     allowBlank: true,
+                //     formulae: [new Date(2016,0,1)]
+                // };
+
                 worksheet.getCell(`H${i + 1}`).dataValidation = {
                     type: 'list',
                     allowBlank: false,
                     formulae: VATdropdown
                 };
-                ///METODO COPIADO DEL OTRO EXCEL
-                worksheet.getCell(`I${i + 1}`).dataValidation = {
-                    type: 'list',
-                    allowBlank: false,
-                    formulae: [`=INDIRECT(H${i + 1})`],
-                };
+
+                //METODO COPIADO DEL OTRO EXCEL
+                 worksheet.getCell(`I${i + 1}`).dataValidation = {
+                     type: 'list',
+                     allowBlank: false,
+                     formulae: [`=INDIRECT(H${i + 1})`],
+                 };
+                
                 ///METODO PROPIO
-                // worksheet.getCell(`I${i + 1}`).dataValidation = {
-                //     type: 'list',
-                //     allowBlank: false,
-                //     //formulae: [`=IF(H${i + 1} = "";"";INDIRECT(CONCAT("_";SUBSTITUTE(H${i + 1};"-";"_"))))`],
-                //     formulae: [`Info!$F$2:$F$19`],
-                // };
+                worksheet.getCell(`I${i + 1}`).dataValidation = {
+                      type: 'list',
+                      allowBlank: false,
+                   //formulae: [`=INDIRECT(INDIRECT(CONCAT("info!B",MATCH(H${i + 1},info!A:A,0))))`]
+                    formulae: [`=INDIRECT("_"&SUBSTITUTE(H${i + 1},"-","_"))`],
+                    //formulae: [`Info!$F$2:$F$19`]
+                  };
             }
 
             await workbook.xlsx.writeFile(outputPath);
