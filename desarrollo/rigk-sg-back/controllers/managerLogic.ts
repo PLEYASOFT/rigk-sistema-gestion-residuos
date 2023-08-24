@@ -5,6 +5,7 @@ import ExcelJS from 'exceljs';
 import establishmentDao from "../dao/establishmentDao";
 import { string } from "joi";
 import businessDao from "../dao/businessDao";
+import { getReferenceExcel } from '../helpers/getExcelRef';
 class ManagerLogic {
     async addManager(req: Request|any, res: Response) {
         const type_material = req.body.type_material;
@@ -86,40 +87,28 @@ class ManagerLogic {
             });
         }
     }
-
-    // function getColumnReference(columnNumber) {
-    //     const dividend = columnNumber;
-    //     let columnName = '';
-    //     let modulo;
-      
-    //     while (dividend > 0) {
-    //       modulo = (dividend - 1) % 26;
-    //       columnName = String.fromCharCode(65 + modulo) + columnName;
-    //       dividend = Math.floor((dividend - modulo) / 26);
-    //     }
-      
-    //     return columnName;
-    //   }
-
     public async downloadBulkUploadFileInvoice(req: any, res: Response) {
 
         try {
             const path = require('path');
             const outputPath = path.join(__dirname, `../../files/templates/_carga_masiva_z.xlsx`);
             const invoices = await establishmentDao.getDeclarationEstablishment(req.uid);
-            const businesses = await businessDao.getAllIndividualBusinessVAT();
-
             if(invoices == false ){
                 return res.status(500).json({
                     status: false,
                     message: "No existen facturas pendientes"
                 });
             }
+            const noaprovediv = [...invoices].filter(i=> i.STATE_GESTOR==0);
+            
+            const businesses = await businessDao.getAllIndividualBusinessVAT();
 
             /**
              * DATA VALIDATION
              */
+
             const workbook = new ExcelJS.Workbook();
+
             const worksheetInfo = workbook.addWorksheet("info");
             const rowInfo = worksheetInfo.getRow(1);
             
@@ -141,17 +130,7 @@ class ManagerLogic {
 
             for (let i = 0; i < businesses.length; i++) {
                 const business = await businesses[i];
-                let dividend = i+2;
-                let columnName = '';
-                let modulo;
-
-                while (dividend > 0) {
-                    modulo = (dividend - 1) % 26;
-                    columnName = String.fromCharCode(65 + modulo) + columnName;
-                    dividend = Math.floor((dividend - modulo) / 26);
-                }
-                
-                let reference = columnName + "1";
+                const reference = getReferenceExcel(i);
                 let nameVAT = business.VAT + "";
 
                 const emp = await businessDao.getBusinessByVAT(business.VAT);   
@@ -163,7 +142,7 @@ class ManagerLogic {
                 }
                 
                 worksheetInfo.addTable({
-                    name: "test1",
+                    name: nameVAT,
                     ref: reference,
                     headerRow: true,
                     columns: [
@@ -172,9 +151,11 @@ class ManagerLogic {
                     rows: empName,
                 });
             }
+
             // /**
             //  * WORKSHEET DATA
             //  */
+            
             const worksheet = workbook.addWorksheet('Carga Masiva');
             const row = worksheet.getRow(1);
             row.getCell(1).value = "EMPRESA CI";
@@ -208,9 +189,9 @@ class ManagerLogic {
             col[11].width = 17;    //L
             col[12].width = 17;    //M
 
-            for (let i = 0; i < invoices.length; i++) {
-                const invoice = invoices[i];
-                // if (establishment.VALUE === 0) {
+            for (let i = 0; i < noaprovediv.length; i++) {
+                const invoice = noaprovediv[i];
+                if (invoice.STATE_GESTOR == 0) {
                     const dateFormat = new Date(invoice.FechaRetiro);
                     
                     let day = dateFormat.getDate();
@@ -236,15 +217,16 @@ class ManagerLogic {
                     rowdata.getCell(12).value = `${invoice.VALUE}`;
                     rowdata.getCell(13).value = "";
                     rowdata.commit();
-                // }
+                }
             }
             
             const maxRows = invoices.length; 
-            for (let i = 1; i <= maxRows; i++) {
+            const VATdropdown = ["Info!$A$2:$A$"+VATS.length];
+            
 
-                
-                //if (worksheet.getCell(`J${i + 1}`).value != "") {
-                
+            for (let i = 1; i <= maxRows; i++) {
+                worksheetInfo.getRow(1).getCell(2);
+
                 worksheet.getCell(`J${i + 1}`).dataValidation = {
                     type: 'textLength',
                     allowBlank: false,
@@ -256,7 +238,25 @@ class ManagerLogic {
                     formulae: [10, 10]
                 };
                 worksheet.getCell(`J${i + 1}`).numFmt = '@';;
-            //}
+
+                worksheet.getCell(`H${i + 1}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: false,
+                    formulae: VATdropdown
+                };
+                ///METODO COPIADO DEL OTRO EXCEL
+                worksheet.getCell(`I${i + 1}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: false,
+                    formulae: [`=INDIRECT(H${i + 1})`],
+                };
+                ///METODO PROPIO
+                // worksheet.getCell(`I${i + 1}`).dataValidation = {
+                //     type: 'list',
+                //     allowBlank: false,
+                //     //formulae: [`=IF(H${i + 1} = "";"";INDIRECT(CONCAT("_";SUBSTITUTE(H${i + 1};"-";"_"))))`],
+                //     formulae: [`Info!$F$2:$F$19`],
+                // };
             }
 
             await workbook.xlsx.writeFile(outputPath);
