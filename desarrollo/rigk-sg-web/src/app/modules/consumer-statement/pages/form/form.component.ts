@@ -340,10 +340,6 @@ export class FormComponent implements OnInit {
                             </select>
                         </td>
                         <td>
-                            <input type="text" class="form-control" placeholder="LER" id="inp_ler_${i + 1}_${n_row}">
-                        </td>
-                        <!-- <td>Papel</td> -->
-                        <td>
                             <input [disabled]="disableAll" class="form-control form-control-sm text-end w-50px"
                                 id="inp_value_${i + 1}_${n_row}" type="text" value="0"
                                 >
