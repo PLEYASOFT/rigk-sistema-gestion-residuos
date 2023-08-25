@@ -96,11 +96,11 @@ export class SidebarComponent implements OnInit {
               const id_business = ((document.getElementById('inp_id_business') as HTMLInputElement).value);
               const year = parseInt((document.getElementById('inp_year') as HTMLInputElement).value);
               const actual = new Date().getFullYear();
-              /*if (!(year < actual && id_business != '')) {
+              if (!(year < actual && id_business != '')) {
                 Swal.showValidationMessage(`Solo se aceptan antes del año ${actual}`);
                 return;
-              }*/
-              if ((year >= 1000 && year <= 9999) /*&& year < actual*/ && id_business != '') {
+              }
+              if ((year >= 1000 && year <= 9999) && year < actual && id_business != '') {
                 await this.businessService.verifyBusiness(id_business).subscribe({
                   next: r => {
                     if (r.status) {
@@ -154,11 +154,11 @@ export class SidebarComponent implements OnInit {
         const id_business = ((document.getElementById('inp_id_business') as HTMLInputElement).value);
         const year = parseInt((document.getElementById('inp_year_modal') as HTMLInputElement).value);
         const actual = new Date().getFullYear();
-        /*if (!(year <= actual && id_business != '')) {
+        if (!(year <= actual && id_business != '')) {
           Swal.showValidationMessage(`Solo se aceptan antes del año ${actual + 1}`);
           return;
-        }*/
-        if ((year >= 1000 && year <= 9999) /*&& year <= actual*/ && id_business != '') {
+        }
+        if ((year >= 1000 && year <= 9999) && year <= actual && id_business != '') {
           await this.businessService.verifyBusiness(id_business).subscribe({
             next: r => {
               if (r.status) {
