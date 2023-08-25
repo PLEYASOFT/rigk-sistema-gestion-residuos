@@ -7,7 +7,7 @@ import { string } from "joi";
 import businessDao from "../dao/businessDao";
 import { getReferenceExcel } from '../helpers/getExcelRef';
 class ManagerLogic {
-    async addManager(req: Request|any, res: Response) {
+    async addManager(req: Request | any, res: Response) {
         const type_material = req.body.type_material;
         const region = req.body.region;
         const id_business = req.body.id_business
@@ -16,7 +16,7 @@ class ManagerLogic {
             await createLog('AGREGA_TIPO_MATERIAL', req.uid, null);
             res.status(200).json({ status: true, msg: 'Has creado un gestor', data: {} })
         }
-        catch (err:any) {
+        catch (err: any) {
             console.log(err);
             await createLog('AGREGA_TIPO_MATERIAL', req.uid, err.message);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
@@ -53,7 +53,7 @@ class ManagerLogic {
             const manager = await managerDao.deleteManager(id);
             await createLog('ELIMINA_TIPO_MATERIAL', req.uid, null);
             res.status(200).json({ status: manager, data: {}, msg: '' });
-        } catch (err:any) {
+        } catch (err: any) {
             console.log(err);
             await createLog('ELIMINA_TIPO_MATERIAL', req.uid, err.message);
             res.status(500).json({
@@ -75,9 +75,9 @@ class ManagerLogic {
         }
     }
     async getManagersByMaterial(req: any, res: Response) {
-        const {type_material,region} = req.params;
+        const { type_material, region } = req.params;
         try {
-            const material = await managerDao.getManagersByMaterial(type_material,region);
+            const material = await managerDao.getManagersByMaterial(type_material, region);
             res.status(200).json({ status: material, data: {}, msg: '' });
         } catch (err) {
             console.log(err);
@@ -93,14 +93,14 @@ class ManagerLogic {
             const path = require('path');
             const outputPath = path.join(__dirname, `../../files/templates/_carga_masiva_z.xlsx`);
             const invoices = await establishmentDao.getDeclarationEstablishment(req.uid);
-            if(invoices == false ){
+            if (invoices == false) {
                 return res.status(500).json({
                     status: false,
                     message: "No existen facturas pendientes"
                 });
             }
-            const noaprovediv = [...invoices].filter(i=> i.STATE_GESTOR==0);
-            
+            const noaprovediv = [...invoices].filter(i => i.STATE_GESTOR == 0);
+
             const businesses = await businessDao.getAllIndividualBusinessVAT();
 
             /**
@@ -111,15 +111,12 @@ class ManagerLogic {
 
             const worksheetInfo = workbook.addWorksheet("info");
             const rowInfo = worksheetInfo.getRow(1);
-            
+
             const VATS = [];
             for (let i = 0; i < businesses.length; i++) {
                 const business = businesses[i];
                 VATS.push([`${business.VAT}`]);
             }
-            const VATSF = [...VATS].map(v=>["_"+v.toString().replace("-","_")]);
-            
-            
 
             worksheetInfo.addTable({
                 name: 'VAT',
@@ -130,29 +127,20 @@ class ManagerLogic {
                 ],
                 rows: VATS,
             });
-            worksheetInfo.addTable({
-                name: 'VATF',
-                ref: "B1",
-                headerRow: true,
-                columns: [
-                    { name: 'VATF', filterButton: false },
-                ],
-                rows: VATSF,
-            });
 
             for (let i = 0; i < businesses.length; i++) {
                 const business = await businesses[i];
-                const reference = getReferenceExcel(i + 1);
+                const reference = getReferenceExcel(i);
                 let nameVAT = business.VAT;
 
-                const emp = await businessDao.getBusinessByVAT(business.VAT);   
+                const emp = await businessDao.getBusinessByVAT(business.VAT);
 
                 let empName = []
                 for (let i = 0; i < emp.length; i++) {
                     const empresa = emp[i];
                     empName.push([`${empresa.NAME}`])
                 }
-                
+
                 worksheetInfo.addTable({
                     name: nameVAT,
                     ref: reference,
@@ -167,7 +155,7 @@ class ManagerLogic {
             // /**
             //  * WORKSHEET DATA
             //  */
-            
+
             const worksheet = workbook.addWorksheet('Carga Masiva');
             const row = worksheet.getRow(1);
             row.getCell(1).value = "EMPRESA CI";
@@ -185,19 +173,18 @@ class ManagerLogic {
             row.getCell(13).value = "PESO VALORIZADO";
             row.commit();
 
-
             const col = worksheet.columns;
-            col[0].width = 23,43;  //A
+            col[0].width = 23, 43;  //A
             col[1].width = 36;     //B
-            col[2].width = 21,14;  //C
+            col[2].width = 21, 14;  //C
             col[3].width = 12;  //D
-            col[4].width = 33,71;  //E
-            col[5].width = 12,71;  //F
-            col[6].width = 25,71;  //G
-            col[7].width = 15,14;  //H
-            col[8].width = 22,86;  //I
-            col[9].width = 17,14;  //J
-            col[10].width = 10,86; //K
+            col[4].width = 33, 71;  //E
+            col[5].width = 12, 71;  //F
+            col[6].width = 25, 71;  //G
+            col[7].width = 15, 14;  //H
+            col[8].width = 22, 86;  //I
+            col[9].width = 17, 14;  //J
+            col[10].width = 10, 86; //K
             col[11].width = 17;    //L
             col[12].width = 17;    //M
 
@@ -205,7 +192,7 @@ class ManagerLogic {
                 const invoice = noaprovediv[i];
                 if (invoice.STATE_GESTOR == 0) {
                     const dateFormat = new Date(invoice.FechaRetiro);
-                    
+
                     let day = dateFormat.getDate();
                     let month = dateFormat.getMonth();
                     let year = dateFormat.getFullYear();
@@ -213,7 +200,7 @@ class ManagerLogic {
                     let monthWithTwoDigits = month.toString().padStart(2, '0');
                     let dayWithTwoDigits = day.toString().padStart(2, '0');
                     let format1 = dayWithTwoDigits + "/" + monthWithTwoDigits + "/" + year;
-              
+
                     const rowdata = worksheet.getRow(i + 2);
                     rowdata.getCell(1).value = `${invoice.NAME_BUSINESS}`;
                     rowdata.getCell(2).value = `${invoice.NAME_ESTABLISHMENT_REGION}`;
@@ -231,10 +218,9 @@ class ManagerLogic {
                     rowdata.commit();
                 }
             }
-            
-            const maxRows = invoices.length; 
-            const VATdropdown = ["Info!$A$2:$A$"+VATS.length];
-            
+
+            const maxRows = invoices.length;
+            const VATdropdown = ["Info!$A$2:$A$" + VATS.length];
 
             for (let i = 1; i <= noaprovediv.length; i++) {
                 worksheetInfo.getRow(1).getCell(2);
@@ -250,37 +236,20 @@ class ManagerLogic {
                     formulae: [10, 10]
                 };
                 worksheet.getCell(`J${i + 1}`).numFmt = '@';;
-
-                // Specify Cell must be have be a date before 1st Jan 2016
-                // worksheet.getCell('A1').dataValidation = {
-                //     type: 'date',
-                //     operator: 'lessThan',
-                //     showErrorMessage: true,
-                //     allowBlank: true,
-                //     formulae: [new Date(2016,0,1)]
-                // };
-
                 worksheet.getCell(`H${i + 1}`).dataValidation = {
                     type: 'list',
                     allowBlank: false,
                     formulae: VATdropdown
                 };
-
-                //METODO COPIADO DEL OTRO EXCEL
-                 worksheet.getCell(`I${i + 1}`).dataValidation = {
-                     type: 'list',
-                     allowBlank: false,
-                     formulae: [`=INDIRECT(H${i + 1})`],
-                 };
-                
                 ///METODO PROPIO
                 worksheet.getCell(`I${i + 1}`).dataValidation = {
-                      type: 'list',
-                      allowBlank: false,
-                   //formulae: [`=INDIRECT(INDIRECT(CONCAT("info!B",MATCH(H${i + 1},info!A:A,0))))`]
+                    type: 'list',
+                    allowBlank: false,
                     formulae: [`=INDIRECT("_"&SUBSTITUTE(H${i + 1},"-","_"))`],
-                    //formulae: [`Info!$F$2:$F$19`]
-                  };
+                };
+                worksheet.getCell(`K${i + 1}`).numFmt = '@';
+                worksheet.getCell(`L${i + 1}`).numFmt = '@';
+                worksheet.getCell(`M${i + 1}`).numFmt = '@';
             }
 
             await workbook.xlsx.writeFile(outputPath);

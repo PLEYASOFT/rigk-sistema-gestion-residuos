@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import { ManagerService } from '../../../../core/services/manager.service';
 //import { ConsumerService } from '../../../../core/services/consumer.service';
 import * as XLSX from 'xlsx';
+import { EstablishmentService } from 'src/app/core/services/establishment.service';
 @Component({
   selector: 'app-bulk-upload',
   templateUrl: './bulk-upload.component.html',
@@ -13,6 +14,8 @@ export class BulkUploadComponent implements OnInit {
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef;
   dbBusiness: any[] = [];
   userData: any;
+  example: any[] = [];
+  index: number = 0;
 
   wasteTypes: any = {
     'PapelCartón': ['Papel', 'Papel Compuesto (cemento)', 'Caja Cartón', 'Papel/Cartón Otro'],
@@ -20,7 +23,8 @@ export class BulkUploadComponent implements OnInit {
     'Plástico': ['Plástico Film Embalaje', 'Plástico Envases Rígidos (Incl. Tapas)', 'Plástico Sacos o Maxisacos', 'Plástico EPS (Poliestireno Expandido)', 'Plástico Zuncho', 'Plástico Otro'],
     'Madera': ['Caja de Madera', 'Pallet de Madera']
   };
-  constructor(public manager: ManagerService,
+  constructor(public establishmentService: EstablishmentService,
+    public managerService: ManagerService,
     public businessService: BusinessService) { }
 
   ngOnInit(): void {
@@ -38,7 +42,7 @@ export class BulkUploadComponent implements OnInit {
     //   });
     //   return;
     // }
-    this.manager.downloadExcelTemplateInvoice().subscribe({
+    this.managerService.downloadExcelTemplateInvoice().subscribe({
       next: r => {
         if (r) {
           const file = new Blob([r], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
@@ -79,354 +83,360 @@ export class BulkUploadComponent implements OnInit {
   }
 
   onFileChange(event: any) {
-  //   const allowedMimeTypes = [
-  //     'application/vnd.ms-excel',
-  //     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  //   ];
+    const allowedMimeTypes = [
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ];
 
-  //   const target: DataTransfer = <DataTransfer>(event.target);
-  //   if (target.files.length !== 1) {
-  //     Swal.fire({
-  //       icon: 'error',
-  //       text: 'Solo puede cargar un archivo a la vez'
-  //     });
-  //     return;
-  //   }
+    const target: DataTransfer = <DataTransfer>(event.target);
+    if (target.files.length !== 1) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Solo puede cargar un archivo a la vez'
+      });
+      return;
+    }
 
-  //   const file = target.files[0];
-  //   if (!allowedMimeTypes.includes(file.type)) {
-  //     Swal.fire({
-  //       icon: 'error',
-  //       text: 'Tipo de archivo incorrecto. Por favor, cargue un archivo Excel (.xls o .xlsx)'
-  //     });
-  //     return;
-  //   }
+    const file = target.files[0];
+    if (!allowedMimeTypes.includes(file.type)) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Tipo de archivo incorrecto. Por favor, cargue un archivo Excel (.xls o .xlsx)'
+      });
+      return;
+    }
 
-  //   const reader: FileReader = new FileReader();
-  //   reader.onload = (e: any) => {
-  //     const bstr: string = e.target.result;
-  //     const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
-  //     if (!wb.SheetNames.includes('Carga Masiva')) {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: 'No se encontró la hoja "Carga Masiva" en el archivo'
-  //       });
-  //       return;
-  //     }
-  //     const ws: XLSX.WorkSheet = wb.Sheets['Carga Masiva'];
-  //     const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
-  //     this.processData(data);
-  //   };
-  //   reader.readAsBinaryString(file);
+    const reader: FileReader = new FileReader();
+    reader.onload = (e: any) => {
+      const bstr: string = e.target.result;
+      const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
+      if (!wb.SheetNames.includes('Carga Masiva')) {
+        Swal.fire({
+          icon: 'error',
+          text: 'No se encontró la hoja "Carga Masiva" en el archivo'
+        });
+        return;
+      }
+      const ws: XLSX.WorkSheet = wb.Sheets['Carga Masiva'];
+      const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      this.processData(data);
+    };
+    reader.readAsBinaryString(file);
 
-  //   this.resetFileInput();
+    this.resetFileInput();
   }
 
   resetFileInput() {
     this.fileInput.nativeElement.value = '';
   }
+  onFileChange2(event: any) {
+      const allowedMimeTypes = [
+        "application/pdf", 
+        "image/jpeg",
+      ];
+  
+      const target: DataTransfer = <DataTransfer>(event.target);
+      if (target.files.length > 1) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Solo puede cargar un archivo a la vez'
+        });
+        return;
+      }
+  
+      const file = target.files[0];
+      if (!allowedMimeTypes.includes(file.type)) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Tipo de archivo incorrecto. Por favor, cargue un archivo válido (.pdf, .jpeg o .jpg)'
+        });
+        return;
+      }
+  
+      const reader: FileReader = new FileReader();
+      // reader.onload = (e: any) => {
+      //   const bstr: string = e.target.result;
+      //   const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
+      //   if (!wb.SheetNames.includes('Carga Masiva')) {
+      //     Swal.fire({
+      //       icon: 'error',
+      //       text: 'No se encontró la hoja "Carga Masiva" en el archivo'
+      //     });
+      //     return;
+      //   }
+      //   const ws: XLSX.WorkSheet = wb.Sheets['Carga Masiva'];
+      //   const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      //   this.processData(data);
+      // };
+      //reader.readAsBinaryString(file);
+  
+       this.resetFileInput();
+    }
+  
+    resetFileInput2() {
+      this.fileInput.nativeElement.value = '';
+    }
 
-  // async processData(data: any[]) {
-  //   if (data.length == 0) {
-  //     Swal.fire({
-  //       icon: 'error',
-  //       text: 'Archivo inválido. No tiene todas las columnas necesarias'
-  //     });
-  //     return;
-  //   }
-  //   const rows = data.slice(1).filter(row => row.length > 0 && row.some((item: any) => item));
-  //   const rowsData = [];
-  //   let businessId: any;
-  //   if (data[0].length != 12) {
-  //     Swal.fire({
-  //       icon: 'error',
-  //       text: 'Archivo inválido. No tiene todas las columnas necesarias'
-  //     });
-  //     return;
-  //   }
-  //   if (rows.length == 0) {
-  //     Swal.fire({
-  //       icon: 'info',
-  //       text: 'Archivo está vacío (faltan campos por rellenar).'
-  //     });
-  //     return;
-  //   }
-  //   for (let i = 0; i < rows.length; i++) {
-  //     const row = rows[i];
-  //     const excelRowNumber = i + 2; // Se agrega 2 para considerar el encabezado y el índice base 1 de Excel
-
-  //     if (row.length == 0 && i == 0) {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: 'Archivo vacío'
-  //       });
-  //       return;
-  //     }
-
-  //     for (let j = i + 1; j < rows.length; j++) {
-  //       const w = rows[j];
-  //       if (w[0] === row[0] && w[3] === row[3] && w[4] === row[4] && w[5] === row[5] && w[1] === row[1]) {
-  //         Swal.fire({
-  //           icon: 'info',
-  //           text: 'Mismo establecimiento, tratamiento, material, subtipo y gestor para esta fecha'
-  //         });
-  //         return;
-  //       }
-  //     }
-
-  //     // Código de establecimiento
-  //     const establishmentCode = row[0];
-  //     if (!establishmentCode || establishmentCode.trim() === '') {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: `Código de establecimiento no proporcionado en la fila ${excelRowNumber}`
-  //       });
-  //       return;
-  //     }
-  //     const establishmentId = establishmentCode.split(" - ")[0];
-  //     // Fecha
-
-  //     const date = row[1];
-
-  //     const validationResult = this.isValidDate(date);
-  //     if (!validationResult.valid) {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: `Error en la fila ${excelRowNumber}. ${validationResult.message}`
-  //       });
-  //       return;
-  //     }
-
-  //     // Número de guía de despacho
-  //     const dispatchGuideNumber = row[2];
-  //     if (!dispatchGuideNumber) {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: `Número de guía de despacho no proporcionado en la fila ${excelRowNumber}`
-  //       });
-  //       return;
-  //     }
-  //     // Tipo de tratamiento
-  //     const treatmentType = row[3];
-  //     if (!treatmentType) {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: `Tipo de tratamiento no proporcionado en la fila ${excelRowNumber}`
-  //       });
-  //       return;
-  //     }
-  //     // Tipo de residuo
-  //     const wasteType = row[4];
-  //     if (!wasteType) {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: `Tipo de residuo no proporcionado en la fila ${excelRowNumber}`
-  //       });
-  //       return;
-  //     }
-  //     // Tipo específico
-  //     const specificType = row[5];
-  //     if (!specificType) {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: `Tipo específico no proporcionado en la fila ${excelRowNumber}`
-  //       });
-  //       return;
-  //     }
-
-  //     // Buscar el tipo específico en los valores de wasteTypes
-  //     const materialType = Object.keys(this.wasteTypes).find((key: any) => this.wasteTypes[key].includes(specificType));
-
-  //     if (!materialType) {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: `El tipo específico '${specificType}' no coincide con ningún material en la fila ${excelRowNumber}`
-  //       });
-  //       return;
-  //     }
-
-  //     if (materialType !== wasteType) {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: `El tipo de residuo '${wasteType}' no corresponde con el material '${specificType}' en la fila ${excelRowNumber}`
-  //       });
-  //       return;
-  //     }
-  //     // LER
-  //     const LER = row[6];
-  //     // Gestor
-  //     const managerName = row[7];
-  //     if (!managerName) {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: `Nombre del gestor no proporcionado en la fila ${excelRowNumber}`
-  //       });
-  //       return;
-  //     }
-  //     // RUT Gestor
-  //     const managerRUT = row[8];
-  //     if (!managerRUT) {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: `RUT de gestor no proporcionado en la fila ${excelRowNumber}`
-  //       });
-  //       return;
-  //     }
-  //     const tmp = (managerRUT.toString().split("-"));
-  //     if (tmp.length != 2 || tmp[1] == '') {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: `RUT no válido en la fila ${excelRowNumber}, el formato correcto es sin puntos y con guion`
-  //       });
-  //       return;
-  //     }
-  //     const businessResponse = await this.businessService.getBusinessByVAT(managerRUT).toPromise();
-  //     if (!businessResponse.status) {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: `RUT de gestor no encontrado en la fila ${excelRowNumber}`
-  //       });
-  //       return;
-  //     }
-  //     const businesses = businessResponse.status;
-  //     if (!Array.isArray(businesses)) {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: `Error inesperado al buscar gestor en la fila ${excelRowNumber}`
-  //       });
-  //       return;
-  //     }
-  //     let isValidEstablishmentBusinessRelation = false;
-  //     for (const business of businesses) {
-  //       const checkRelationResponse = await this.businessService.checkEstablishmentBusinessRelation(establishmentId, business.ID, specificType).toPromise();
-  //       if (checkRelationResponse.status) {
-  //         businessId = business.ID;
-  //         isValidEstablishmentBusinessRelation = true;
-  //         break;
-  //       }
-  //     }
-  //     if (!isValidEstablishmentBusinessRelation) {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: `No se encontró un gestor con el material y región requeridos en la fila ${excelRowNumber}`
-  //       });
-  //       return;
-  //     }
-  //     // Código de establecimiento receptor
-  //     const receivingEstablishmentCode = row[9];
-  //     // Código de tratamiento receptor
-  //     const receivingTreatmentCode = row[10];
-  //     // Cantidad
-  //     const sanitizedQuantity = row[11].replace(',', '.');
-  //     const quantity = parseFloat(sanitizedQuantity);
-  //     if (isNaN(quantity)) {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: `Cantidad no válida o no proporcionada en la fila ${excelRowNumber}. Asegúrese de usar una coma como separador de decimales`
-  //       });
-  //       return;
-  //     }
-  //     const precedenceNumber = this.convertPrecedence(row[4]);
-  //     if (precedenceNumber == -1) {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: `Tipo de Material no válido en fila: ${excelRowNumber}`
-  //       });
-  //       return;
-  //     }
-  //     const typeResidueNumber = this.convertTypeResidue(row[5]);
-  //     if (typeResidueNumber == -1) {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: `Tipo de residuo no válido en fila: ${excelRowNumber}`
-  //       });
-  //       return;
-  //     }
-  //     const treatmentTypeNumber = this.convertTreatmentType(row[3]);
-  //     if (treatmentTypeNumber == -1) {
-  //       Swal.fire({
-  //         icon: 'error',
-  //         text: `Tipo de tratamiento no válido en fila: ${excelRowNumber}`
-  //       });
-  //       return;
-  //     }
-
-  //     const dateFormateada = this.convertDate(date);
-  //     const r: any = await this.consumer.checkRow({ treatment: treatmentTypeNumber, sub: typeResidueNumber, gestor: businessId, date: dateFormateada }).toPromise();
-  //     if (!r.status) {
-  //       Swal.fire({
-  //         icon: 'info',
-  //         text: `La declaración de la fila ${excelRowNumber} ya ha sido declarada, Mismo tratamiento, material, subtipo y gestor para esta fecha`
-  //       });
-  //       return;
-  //     }
-  //     const rowData = {
-  //       establishmentId,
-  //       date,
-  //       precedence: precedenceNumber,
-  //       typeResidue: typeResidueNumber,
-  //       quantity,
-  //       LER,
-  //       treatmentType: treatmentTypeNumber,
-  //       businessId: businessId
-  //     };
-  //     rowsData.push(rowData);
-  //   }
-
-  //   // Obten el ID del usuario de la variable de sesión
-  //   const userId = this.userData.ID;
-
-  //   // Obten la fecha actual
-  //   const currentDate = new Date().toISOString().replace('T', ' ').replace('Z', '');
-
-  //   for (const rowData of rowsData) {
-  //     // Obten el año de la fecha proporcionada en el Excel
-  //     const year = rowData.date.split('/')[2];
-
-  //     const headerFormData = {
-  //       establishmentId: rowData.establishmentId,
-  //       createdBy: userId,
-  //       createdAt: currentDate,
-  //       updatedAt: currentDate,
-  //       yearStatement: year
-  //     };
-  //     this.consumer.saveHeaderFromExcel(headerFormData).subscribe((headerResponse: any) => {
-  //       if (headerResponse.status) {
-  //         const headerId = headerResponse.data.header.insertId;
-  //         // Ahora crea la información de detalle del formulario y guarda los datos en la tabla detail_industrial_consumer_form
-  //         const detailFormData = {
-  //           ID_HEADER: headerId,
-  //           PRECEDENCE: rowData.precedence,
-  //           TYPE_RESIDUE: rowData.typeResidue,
-  //           VALUE: parseFloat(rowData.quantity.toFixed(2).replace(",", ".")),
-  //           DATE_WITHDRAW: this.convertDate(rowData.date),
-  //           ID_GESTOR: rowData.businessId,
-  //           LER: rowData.LER,
-  //           TREATMENT_TYPE: rowData.treatmentType,
-  //         };
-  //         this.consumer.saveDetailFromExcel(detailFormData).subscribe((detailResponse: any) => {
-  //           if (!detailResponse.status) {
-  //             Swal.fire({
-  //               icon: 'error',
-  //               text: 'Hubo un problema al guardar los datos en la tabla detail_industrial_consumer_form'
-  //             });
-  //             return;
-  //           }
-  //         });
-  //       } else {
-  //         Swal.fire({
-  //           icon: 'error',
-  //           text: 'Hubo un problema al guardar los datos en la tabla header_industrial_consumer_form'
-  //         });
-  //         return;
-  //       }
-  //       Swal.fire({
-  //         icon: 'success',
-  //         text: 'Se ha subido el archivo Excel correctamente y los datos se han guardado en la base de datos'
-  //       });
-  //     });
-  //   }
-  // }
+    async processData(data: any[]) {
+      if (data.length == 0) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Archivo inválido. No tiene todas las columnas necesarias'
+        });
+        return;
+      }
+  
+      const rows = data.slice(1).filter(row => row.length > 0 && row.some((item: any) => item));
+      const rowsData = [];
+      let businessId: any;
+      if (rows.length == 0) {
+        Swal.fire({
+          icon: 'info',
+          text: 'Archivo inválido, verifique que no esté vacío.'
+        });
+        return;
+      }
+  
+      if (data[0].length != 13) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Archivo inválido, no tiene todas las columnas necesarias.'
+        });
+        return;
+      }
+  
+      // Recorrer cada fila del excel
+      const invoices: any = await this.establishmentService.getDeclarationEstablishment().toPromise();
+      const noAprovedInvoices = [...invoices.status].filter(i=> i.STATE_GESTOR==0);
+  
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const excelRowNumber = i + 2; // Se agrega 2 para considerar el encabezado y el índice base 1 de Excel
+        if (row.length == 0 && i == 0) {
+          Swal.fire({
+            icon: 'error',
+            text: 'Archivo vacío'
+          });
+          return;
+        }
+  
+        // EMPRESA CI [0]
+        const nameBusiness = row[0];
+        if (!nameBusiness) {
+          Swal.fire({
+            icon: 'error',
+            text: `Empresa CI no ingresado en la fila ${excelRowNumber}`
+          });
+          return;
+        }
+        
+        // ESTABLECIMIENTO [1]
+        const establishment = row[1];
+        if (!establishment) {
+          Swal.fire({
+            icon: 'error',
+            text: `Establecimiento no ingresado en la fila ${excelRowNumber}`
+          });
+          return;
+        }
+  
+        // TIPO TRATAMIENTO [2]
+        const treatmentType = row[2];
+        if (!treatmentType) {
+          Swal.fire({
+            icon: 'error',
+            text: `Tipo de tratamiento no ingresado en la fila ${excelRowNumber}`
+          });
+          return;
+        }
+  
+        // MATERIAL [3]
+        const material = row[3];
+        if (!material) {
+          Swal.fire({
+            icon: 'error',
+            text: `Material no ingresado en la fila ${excelRowNumber}`
+          });
+          return;
+        }
+  
+        // SUBTIPO [4]
+        const subMaterial = row[4];
+        if (!subMaterial) {
+          Swal.fire({
+            icon: 'error',
+            text: `Subtipo no ingresado en la fila ${excelRowNumber}`
+          });
+          return;
+        }
+  
+        // FECHA RETIRO [5]
+        const withdrawalDate = row[5];
+        if (!withdrawalDate) {
+          Swal.fire({
+            icon: 'error',
+            text: `Fecha retiro no ingresado en la fila ${excelRowNumber}`
+          });
+          return;
+        }
+        
+        // NÚM. FACTURA RECICLADOR [6] -> validar
+        const numberInvoice = row[6];
+        if (!numberInvoice) {
+          Swal.fire({
+            icon: 'error',
+            text: `Numero factura no ingresado en la fila ${excelRowNumber}`
+          });
+          return;
+        }
+  
+        // RUT RECICLADOR [7] -> validar
+        const vat = row[7];
+        if (!vat) {
+          Swal.fire({
+            icon: 'error',
+            text: `RUT no ingresado en la fila ${excelRowNumber}`
+          });
+          return;
+        }
+        const verifyVat: any = await this.businessService.getBusinessByVAT(vat).toPromise();
+        if (!verifyVat.status) {
+          Swal.fire({
+            icon: 'error',
+            text: `RUT ingresado en la fila ${excelRowNumber} no se encuentra registrado en el sistema.`
+          });
+          return;
+        }
+        console.log();
+        
+        const idBusiness = verifyVat.status
+        // const regex = /^\d{7,8}-[\dK]$/;
+        // if (!regex.test(vat.toUpperCase())) {
+        //   Swal.fire({
+        //     icon: 'error',
+        //     text: `RUT no válido en la fila ${excelRowNumber}, el formato correcto es sin puntos y con guion.`
+        //   });
+        //   return;
+        // }
+  
+        // RECICLADOR [8] -> validar
+        const vatCompanyName = row[8];
+        if (!vatCompanyName) {
+          Swal.fire({
+            icon: 'error',
+            text: `Reciclador no ingresado en la fila ${excelRowNumber}`
+          });
+          return;
+        }
+  
+        // FECHA INGRESO PR [9] -> validar
+        const admissionDate = row[9];
+        if (!admissionDate) {
+          Swal.fire({
+            icon: 'error',
+            text: `Fecha ingreso PR no ingresado en la fila ${excelRowNumber}`
+          });
+          return;
+        }
+  
+        const validationResult = this.isValidDate(admissionDate);
+        if (!validationResult.valid) {
+          Swal.fire({
+            icon: 'error',
+            text: `Error en la fila ${excelRowNumber}. ${validationResult.message}`
+          });
+          return;
+        }
+  
+        // PESO TOTAL [10] -> validar
+        const totalWeight = row[10];
+        if (!totalWeight) {
+          Swal.fire({
+            icon: 'error',
+            text: `Peso total no ingresado en la fila ${excelRowNumber}`
+          });
+          return;
+        }
+        const sanitizedtotalWeight = totalWeight.replace(',', '.');
+        const totalWeightS = parseFloat(sanitizedtotalWeight);
+        if (isNaN(totalWeightS)) {
+          Swal.fire({
+            icon: 'error',
+            text: `El PESO TOTAL ingresado en la fila ${excelRowNumber} no es válido, debe ser solo números y con comas.`
+          });
+          return;
+        }
+        if (totalWeightS <= 0) {
+          Swal.fire({
+            icon: 'error',
+            text: `El PESO TOTAL ingresado en la fila ${excelRowNumber} debe ser mayor que cero.`
+          });
+          return;
+        }
+  
+        // PESO DECLARADO [11]
+        const declaratedWeight = row[11];
+        if (!declaratedWeight) {
+          Swal.fire({
+            icon: 'error',
+            text: `Peso declarado no ingresado en la fila ${excelRowNumber}`
+          });
+          return;
+        }
+  
+        // PESO VALORIZADO [12] -> validar
+        const valuedWeight = row[12];
+        if (!valuedWeight) {
+          Swal.fire({
+            icon: 'error',
+            text: `Peso valorizado no ingresado en la fila ${excelRowNumber}`
+          });
+          return;
+        }
+        const sanitizedValuedWeight = valuedWeight.replace(',', '.');
+        const valuedWeightS = parseFloat(sanitizedValuedWeight);
+        if (isNaN(valuedWeightS)) {
+          Swal.fire({
+            icon: 'error',
+            text: `El PESO VALORIZADO ingresado en la fila ${excelRowNumber} no es válido, debe ser solo números y con comas.`
+          });
+          return;
+        }
+        if (valuedWeightS <= 0) {
+          Swal.fire({
+            icon: 'error',
+            text: `El PESO VALORIZADO ingresado en la fila ${excelRowNumber} debe ser mayor que cero.`
+          });
+          return;
+        }
+        // const businessResponse = await this.establishmentService.getInovice(numberInvoice, vat, treatmentType, material, id_business).toPromise();
+        // if (businessResponse <= 0) {
+        //   Swal.fire({
+        //     icon: 'error',
+        //     text: businessResponse.msg
+        //   });
+        //   return;
+        // }
+  
+        const rowData = {
+          nameBusiness,
+          establishment,
+          treatmentType,
+          material,
+          subMaterial,
+          withdrawalDate,
+          numberInvoice,
+          vat,
+          vatCompanyName,
+          admissionDate,
+          totalWeight,
+          declaratedWeight,
+          valuedWeight
+        };
+        rowsData.push(rowData);
+      }
+      this.example = rowsData;
+    }
 
   isValidDate(dateString: string): { valid: boolean; message: string } {
     if (typeof dateString === 'undefined' || dateString.trim() === '') {

@@ -33,5 +33,50 @@
 				</div>
 			</div>
 		</div>
+		<div class="box box-form mb-12" *ngIf="example.length > 0">
+			<table class="table table-even table-section table-borderless table-radius">
+				<thead >
+					<tr>
+						<th>Empresa CI</th>
+						<th>Establecimiento</th>
+						<th>Tipo Tratamiento</th>
+						<th>Material</th>
+						<th>Subtipo</th>
+						<th>Fecha Retiro</th>
+						<th>Núm. Factura Reciclador</th>
+						<th>Rut Reciclador</th>
+						<th>Reciclador</th>
+						<th>Fecha ingreso PR</th>
+						<th>Peso Total</th>
+						<th>Peso Declarado</th>
+						<th>Peso Valorizado</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let s of example; let x = index">
+						<td>{{s.nameBusiness}}</td>
+						<td>{{s.establishment}}</td>
+						<td>{{s.treatmentType}}</td>
+						<td>{{s.material}}</td>
+						<td>{{s.subMaterial}}</td>
+						<td>{{s.withdrawalDate}}</td>
+						<td>{{s.numberInvoice}}</td>
+						<td>{{s.vat}}</td>
+						<td>{{s.vatCompanyName}}</td>
+						<td>{{s.admissionDate}}</td>
+						<td>{{s.totalWeight}}</td>
+						<td>{{s.declaratedWeight}}</td>
+						<td>{{s.valuedWeight}}</td>
+						<td>
+							<input type="file" #fileInput id="file-input" (change)="onFileChange2($event)" style="display:none;"
+								accept=".pdf,.jpeg,.jpg">
+							<button class="btn btn-primary col-12" (click)="fileInput.click()">
+							<i class="fas fa-upload"></i> Cargar Factura
+						</button></td>
+						
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</section>
 </div>
