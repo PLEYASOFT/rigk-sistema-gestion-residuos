@@ -13,7 +13,8 @@ import { BusinessService } from 'src/app/core/services/business.service';
   styleUrls: ['./form.component.css']
 })
 export class FormComponent implements OnInit {
-  tables = ["Papel/Cartón", "Metal", "Plástico", "Madera"];
+  selectedCategoryId: any = '';
+  tables = [""];
   e = 1;
   materials = [
     {
@@ -23,33 +24,36 @@ export class FormComponent implements OnInit {
         { id: 2, name: "Papel Compuesto (cemento)" },
         { id: 3, name: "Caja Cartón" },
         { id: 4, name: "Otro" },
+        { id: 5, name: "Esquineros Conos" },
+        { id: 6, name: "Cartón RH" },
       ]
     },
     {
       _id: 2,
       child: [
-        { id: 5, name: "Envase Aluminio" },
-        { id: 6, name: "Malla o Reja (IBC)" },
-        { id: 7, name: "Envase Hojalata" },
-        { id: 8, name: "Otro" },
+        { id: 7, name: "Envase Aluminio" },
+        { id: 8, name: "Malla o Reja (IBC)" },
+        { id: 9, name: "Envase Hojalata" },
+        { id: 10, name: "Otro" },
+        { id: 11, name: "Esquineros Metal" },
       ]
     },
     {
       _id: 3,
       child: [
-        { id: 9, name: "Plástico Film Embalaje" },
-        { id: 10, name: "Plástico Envases Rígidos (Incl. Tapas)" },
-        { id: 11, name: "Plástico Sacos o Maxisacos" },
-        { id: 12, name: "Plástico EPS (Poliestireno Expandido)" },
-        { id: 13, name: "Plástico Zuncho" },
-        { id: 14, name: "Otro" },
+        { id: 12, name: "Plástico Film Embalaje" },
+        { id: 13, name: "Plástico Envases Rígidos (Incl. Tapas)" },
+        { id: 14, name: "Plástico Sacos o Maxisacos" },
+        { id: 15, name: "Plástico EPS (Poliestireno Expandido)" },
+        { id: 16, name: "Plástico Zuncho" },
+        { id: 17, name: "Otro" },
       ]
     },
     {
       _id: 4,
       child: [
-        { id: 15, name: "Caja de Madera" },
-        { id: 16, name: "Pallet de Madera" }
+        { id: 18, name: "Caja de Madera" },
+        { id: 19, name: "Pallet de Madera" }
       ]
     },
   ];
@@ -59,18 +63,21 @@ export class FormComponent implements OnInit {
     { id: 2, name: "Papel Compuesto (cemento)" },
     { id: 3, name: "Caja Cartón" },
     { id: 4, name: "Otro" },
-    { id: 5, name: "Envase Aluminio" },
-    { id: 6, name: "Malla o Reja (IBC)" },
-    { id: 7, name: "Envase Hojalata" },
-    { id: 8, name: "Otro" },
-    { id: 9, name: "Plástico Film Embalaje" },
-    { id: 10, name: "Plástico Envases Rígidos (Incl. Tapas)" },
-    { id: 11, name: "Plástico Sacos o Maxisacos" },
-    { id: 12, name: "Plástico EPS (Poliestireno Expandido)" },
-    { id: 13, name: "Plástico Zuncho" },
-    { id: 14, name: "Otro" },
-    { id: 15, name: "Caja de Madera" },
-    { id: 16, name: "Pallet de Madera" }
+    { id: 5, name: "Esquineros Conos" },
+    { id: 6, name: "Cartón RH" },
+    { id: 7, name: "Envase Aluminio" },
+    { id: 8, name: "Malla o Reja (IBC)" },
+    { id: 9, name: "Envase Hojalata" },
+    { id: 10, name: "Otro" },
+    { id: 11, name: "Esquineros Metal" },
+    { id: 12, name: "Plástico Film Embalaje" },
+    { id: 13, name: "Plástico Envases Rígidos (Incl. Tapas)" },
+    { id: 14, name: "Plástico Sacos o Maxisacos" },
+    { id: 15, name: "Plástico EPS (Poliestireno Expandido)" },
+    { id: 16, name: "Plástico Zuncho" },
+    { id: 17, name: "Otro" },
+    { id: 18, name: "Caja de Madera" },
+    { id: 19, name: "Pallet de Madera" }
   ];
   disableAll = false;
   treatment_type = [
@@ -93,6 +100,7 @@ export class FormComponent implements OnInit {
   lable_type = ['Guia de Despacho', 'Factura Gestor', 'Registro de peso', 'Fotografía Retiro', 'Otro'];
   business_name = "";
   business_code = "";
+  userData: any;
   constructor(public establishmentService: EstablishmentService,
     public consumerService: ConsumerService,
     public business: BusinessService,
@@ -118,6 +126,7 @@ export class FormComponent implements OnInit {
   }
   ngOnInit(): void {
     localStorage.removeItem('statementsState');
+    this.userData = JSON.parse(sessionStorage.getItem('user')!);
   }
   reset() {
     this.id_establishment = -1;
@@ -210,25 +219,29 @@ export class FormComponent implements OnInit {
     }
     for (let i = 0; i < this.newData.length; i++) {
       const reg = this.newData[i];
-      if (reg.value == 0 || reg.date == "" || reg.gestor == "-1" || reg.treatment == "-1" || reg.sub == "-1") {
-        if (reg.value == 0) {
-          error = "Falta ingresar peso en la tabla " + this.tables[reg.residue - 1];
-          break;
-        }
-        if (reg.date == "") {
-          error = "Falta ingresar fecha de retiro en la tabla " + this.tables[reg.residue - 1];
-          break;
-        }
-        if (reg.gestor == "-1") {
-          error = "Falta seleccionar gestor en la tabla " + this.tables[reg.residue - 1];
+      if (reg.value == 0 || reg.date == "" || reg.gestor == "-1" || reg.treatment == "-1" || reg.sub == "-1" || reg.precedence == "-1" ) {
+        if (reg.precedence == "-1") {
+          error = "Debe seleccionar una Subcategoria";
           break;
         }
         if (reg.treatment == "-1") {
-          error = "Falta seleccionar tipo de tratamiento en la tabla " + this.tables[reg.residue - 1];
+          error = "Debe seleccionar un Tipo Tratamiento";
           break;
         }
         if (reg.sub == "-1") {
-          error = "Falta seleccionar subtipo en la tabla " + this.tables[reg.residue - 1];
+          error = "Debe seleccionar un SubTipo";
+          break;
+        }
+        if (reg.value == 0) {
+          error = "Debe ingresar un peso correcto";
+          break;
+        }
+        if (reg.date == "") {
+          error = "Debe ingresar una fecha de retiro";
+          break;
+        }
+        if (reg.gestor == "-1") {
+          error = "Debe seleccionar un gestor";
           break;
         }
       }
@@ -252,6 +265,7 @@ export class FormComponent implements OnInit {
     let flag = false;
     for (let i = 0; i < this.newData.length; i++) {
       const e = this.newData[i];
+      e.residue = e.precedence
       try {
         const r: any = await this.consumerService.save({ header, detail: e }).toPromise();
         if (!r.status) {
@@ -309,7 +323,9 @@ export class FormComponent implements OnInit {
   }
   addRow(i: number) {
     const tb_ref = document.getElementById(`table_${i + 1}`)?.getElementsByTagName('tbody')[0];
-    const n_row = tb_ref!.rows.length;
+    let n_row: any = tb_ref!.rows.length;
+
+
     const mat: any = this.materials.find(r => r._id == i + 1);
     let tt = "";
     for (let q = 0; q < mat.child.length; q++) {
@@ -319,9 +335,12 @@ export class FormComponent implements OnInit {
     const html: string = `
     <tr id="tr">
                         <td>
-                          <select class="form-select" id="inp_sub_${i + 1}_${n_row}">
+                          <select class="form-select" id="inp_subcat_${i + 1}_${n_row}">
                             <option value="-1">Seleccione Subcategoría</option>
-                              ${tt}
+                            <option value="1">Papel/Cartón</option>
+                            <option value="2">Metal</option>
+                            <option value="3">Plástico</option>
+                            <option value="4">Madera</option>
                           </select>
                         </td>
                         <td style="padding-left: 20px;">
@@ -330,6 +349,10 @@ export class FormComponent implements OnInit {
                                 <option value="1">Reciclaje Mecánico</option>
                                 <option value="2">Valorización Energética</option>
                                 <option value="3">Disposición Final en RS</option>
+                                <option value="4">Reciclaje Interno</option>
+                                <option value="5">Preparación Reutilización</option>
+                                <option value="6">DF en Relleno Sanitario </option>
+                                <option value="7">DF en Relleno Seguridad</option>
                                 
                             </select>
                         </td>
@@ -401,6 +424,7 @@ export class FormComponent implements OnInit {
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
         const e = {
+          precedence: "-1",
           row: n_row,
           residue: (i + 1),
           sub: "-1",
@@ -422,9 +446,57 @@ export class FormComponent implements OnInit {
         selectElement.remove(i);
       }
     }
+
+
+    const inp_subcat = (document.getElementById(`inp_subcat_${i + 1}_${n_row}`) as HTMLInputElement);
+    inp_subcat.onchange = () => {
+      // 1. Obtener el valor seleccionado en inp_subcat.
+      this.selectedCategoryId = parseInt(inp_subcat.value);
+      //n_row = this.selectedCategoryId
+      // 2. Buscar ese valor en la lista materials para obtener los subtipos asociados.
+      const selectedCategory = this.materials.find(mat => mat._id === this.selectedCategoryId);
+      const subMaterials = selectedCategory ? selectedCategory.child : [];
+
+      // 3. Limpiar el desplegable inp_sub.
+      removeOptions(inp_sub);
+
+      // Añadir opción por defecto.
+      let defaultOption = document.createElement('option');
+      defaultOption.value = "-1";
+      defaultOption.innerHTML = "Seleccione Subtipo";
+      inp_sub.appendChild(defaultOption);
+      // Rellenar el desplegable inp_sub con los nuevos valores.
+      subMaterials.forEach(material => {
+        let opt = document.createElement('option');
+        opt.value = material.id.toString();
+        opt.innerHTML = material.name;
+        inp_sub.appendChild(opt);
+      });
+      const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
+      if (w == -1) {
+        const e = {
+          precedence: this.selectedCategoryId,
+          row: n_row,
+          residue: (i + 1),
+          sub: "-1",
+          treatment: "-1",
+          ler: "",
+          value: 0,
+          date: "",
+          gestor: "-1",
+          files: []
+        };
+        tmp.push(e);
+      } else {
+        tmp[w].precedence = this.selectedCategoryId;
+        tmp[w].sub = "-1";
+        tmp[w].gestor = "-1";
+      }
+    };
+
+
     const inp_sub = (document.getElementById(`inp_sub_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_sub.onchange = () => {
-
       removeOptions(inp_gestor);
       let opt: any = document.createElement('option');
       opt.value = "-1";
@@ -464,6 +536,7 @@ export class FormComponent implements OnInit {
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
         const e = {
+          precedence: "-1",
           row: n_row,
           residue: (i + 1),
           sub: inp_sub.value,
@@ -480,26 +553,6 @@ export class FormComponent implements OnInit {
         tmp[w].gestor = "-1";
       }
     }
-    const inp_ler = (document.getElementById(`inp_ler_${i + 1}_${n_row}`) as HTMLInputElement)
-    inp_ler.onchange = function () {
-      const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
-      if (w == -1) {
-        const e = {
-          row: n_row,
-          residue: (i + 1),
-          sub: "-1",
-          treatment: "-1",
-          ler: inp_ler.value,
-          value: 0,
-          date: "",
-          gestor: "-1",
-          files: []
-        };
-        tmp.push(e);
-      } else {
-        tmp[w].ler = inp_ler.value;
-      }
-    }
     const inp_value = (document.getElementById(`inp_value_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_value.onchange = () => {
       inp_value.value = inp_value.value.replace(".", ",");
@@ -514,6 +567,7 @@ export class FormComponent implements OnInit {
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
         const e = {
+          precedence: "-1",
           row: n_row,
           residue: (i + 1),
           sub: "-1",
@@ -559,6 +613,7 @@ export class FormComponent implements OnInit {
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
         const e = {
+          precedence: "-1",
           row: n_row,
           residue: (i + 1),
           sub: "-1",
@@ -597,6 +652,7 @@ export class FormComponent implements OnInit {
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
         const e = {
+          precedence: "-1",
           row: n_row,
           residue: (i + 1),
           sub: "-1",
@@ -642,6 +698,7 @@ export class FormComponent implements OnInit {
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
         const e = {
+          precedence: "-1",
           row: n_row,
           residue: (i + 1),
           sub: "-1",
