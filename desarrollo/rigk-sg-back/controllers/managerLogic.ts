@@ -152,6 +152,8 @@ class ManagerLogic {
                 });
             }
 
+            worksheetInfo.state = "veryHidden";
+
             // /**
             //  * WORKSHEET DATA
             //  */
@@ -209,12 +211,18 @@ class ManagerLogic {
                     rowdata.getCell(5).value = `${invoice.TYPE_RESIDUE}`;
                     rowdata.getCell(6).value = `${format1}`;
                     rowdata.getCell(7).value = "";
+                    rowdata.getCell(7).protection = {locked:false};
                     rowdata.getCell(8).value = "";
+                    rowdata.getCell(8).protection = {locked:false};
                     rowdata.getCell(9).value = "";
+                    rowdata.getCell(9).protection = {locked:false};
                     rowdata.getCell(10).value = "";
+                    rowdata.getCell(10).protection = {locked:false};
                     rowdata.getCell(11).value = "";
+                    rowdata.getCell(11).protection = {locked:false};
                     rowdata.getCell(12).value = `${invoice.VALUE}`;
                     rowdata.getCell(13).value = "";
+                    rowdata.getCell(13).protection = {locked:false};
                     rowdata.commit();
                 }
             }
@@ -252,6 +260,11 @@ class ManagerLogic {
                 worksheet.getCell(`M${i + 1}`).numFmt = '@';
             }
 
+            worksheet.protect('', {
+                selectLockedCells: false,  // evita seleccionar celdas protegidas
+                selectUnlockedCells: true,  // permite seleccionar celdas no protegidas
+            });
+            
             await workbook.xlsx.writeFile(outputPath);
             return res.download(outputPath);
         } catch (error) {

@@ -130,313 +130,338 @@ export class BulkUploadComponent implements OnInit {
     this.fileInput.nativeElement.value = '';
   }
   onFileChange2(event: any) {
-      const allowedMimeTypes = [
-        "application/pdf", 
-        "image/jpeg",
-      ];
-  
-      const target: DataTransfer = <DataTransfer>(event.target);
-      if (target.files.length > 1) {
-        Swal.fire({
-          icon: 'error',
-          text: 'Solo puede cargar un archivo a la vez'
-        });
-        return;
-      }
-  
-      const file = target.files[0];
-      if (!allowedMimeTypes.includes(file.type)) {
-        Swal.fire({
-          icon: 'error',
-          text: 'Tipo de archivo incorrecto. Por favor, cargue un archivo válido (.pdf, .jpeg o .jpg)'
-        });
-        return;
-      }
-  
-      const reader: FileReader = new FileReader();
-      // reader.onload = (e: any) => {
-      //   const bstr: string = e.target.result;
-      //   const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
-      //   if (!wb.SheetNames.includes('Carga Masiva')) {
-      //     Swal.fire({
-      //       icon: 'error',
-      //       text: 'No se encontró la hoja "Carga Masiva" en el archivo'
-      //     });
-      //     return;
-      //   }
-      //   const ws: XLSX.WorkSheet = wb.Sheets['Carga Masiva'];
-      //   const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
-      //   this.processData(data);
-      // };
-      //reader.readAsBinaryString(file);
-  
-       this.resetFileInput();
-    }
-  
-    resetFileInput2() {
-      this.fileInput.nativeElement.value = '';
+    const allowedMimeTypes = [
+      "application/pdf",
+      "image/jpeg",
+    ];
+
+    const target: DataTransfer = <DataTransfer>(event.target);
+    if (target.files.length > 1) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Solo puede cargar un archivo a la vez'
+      });
+      return;
     }
 
-    async processData(data: any[]) {
-      if (data.length == 0) {
-        Swal.fire({
-          icon: 'error',
-          text: 'Archivo inválido. No tiene todas las columnas necesarias'
-        });
-        return;
-      }
-  
-      const rows = data.slice(1).filter(row => row.length > 0 && row.some((item: any) => item));
-      const rowsData = [];
-      let businessId: any;
-      if (rows.length == 0) {
-        Swal.fire({
-          icon: 'info',
-          text: 'Archivo inválido, verifique que no esté vacío.'
-        });
-        return;
-      }
-  
-      if (data[0].length != 13) {
-        Swal.fire({
-          icon: 'error',
-          text: 'Archivo inválido, no tiene todas las columnas necesarias.'
-        });
-        return;
-      }
-  
-      // Recorrer cada fila del excel
-      const invoices: any = await this.establishmentService.getDeclarationEstablishment().toPromise();
-      const noAprovedInvoices = [...invoices.status].filter(i=> i.STATE_GESTOR==0);
-  
-      for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        const excelRowNumber = i + 2; // Se agrega 2 para considerar el encabezado y el índice base 1 de Excel
-        if (row.length == 0 && i == 0) {
-          Swal.fire({
-            icon: 'error',
-            text: 'Archivo vacío'
-          });
-          return;
-        }
-  
-        // EMPRESA CI [0]
-        const nameBusiness = row[0];
-        if (!nameBusiness) {
-          Swal.fire({
-            icon: 'error',
-            text: `Empresa CI no ingresado en la fila ${excelRowNumber}`
-          });
-          return;
-        }
-        
-        // ESTABLECIMIENTO [1]
-        const establishment = row[1];
-        if (!establishment) {
-          Swal.fire({
-            icon: 'error',
-            text: `Establecimiento no ingresado en la fila ${excelRowNumber}`
-          });
-          return;
-        }
-  
-        // TIPO TRATAMIENTO [2]
-        const treatmentType = row[2];
-        if (!treatmentType) {
-          Swal.fire({
-            icon: 'error',
-            text: `Tipo de tratamiento no ingresado en la fila ${excelRowNumber}`
-          });
-          return;
-        }
-  
-        // MATERIAL [3]
-        const material = row[3];
-        if (!material) {
-          Swal.fire({
-            icon: 'error',
-            text: `Material no ingresado en la fila ${excelRowNumber}`
-          });
-          return;
-        }
-  
-        // SUBTIPO [4]
-        const subMaterial = row[4];
-        if (!subMaterial) {
-          Swal.fire({
-            icon: 'error',
-            text: `Subtipo no ingresado en la fila ${excelRowNumber}`
-          });
-          return;
-        }
-  
-        // FECHA RETIRO [5]
-        const withdrawalDate = row[5];
-        if (!withdrawalDate) {
-          Swal.fire({
-            icon: 'error',
-            text: `Fecha retiro no ingresado en la fila ${excelRowNumber}`
-          });
-          return;
-        }
-        
-        // NÚM. FACTURA RECICLADOR [6] -> validar
-        const numberInvoice = row[6];
-        if (!numberInvoice) {
-          Swal.fire({
-            icon: 'error',
-            text: `Numero factura no ingresado en la fila ${excelRowNumber}`
-          });
-          return;
-        }
-  
-        // RUT RECICLADOR [7] -> validar
-        const vat = row[7];
-        if (!vat) {
-          Swal.fire({
-            icon: 'error',
-            text: `RUT no ingresado en la fila ${excelRowNumber}`
-          });
-          return;
-        }
-        const verifyVat: any = await this.businessService.getBusinessByVAT(vat).toPromise();
-        if (!verifyVat.status) {
-          Swal.fire({
-            icon: 'error',
-            text: `RUT ingresado en la fila ${excelRowNumber} no se encuentra registrado en el sistema.`
-          });
-          return;
-        }
-        console.log();
-        
-        const idBusiness = verifyVat.status
-        // const regex = /^\d{7,8}-[\dK]$/;
-        // if (!regex.test(vat.toUpperCase())) {
-        //   Swal.fire({
-        //     icon: 'error',
-        //     text: `RUT no válido en la fila ${excelRowNumber}, el formato correcto es sin puntos y con guion.`
-        //   });
-        //   return;
-        // }
-  
-        // RECICLADOR [8] -> validar
-        const vatCompanyName = row[8];
-        if (!vatCompanyName) {
-          Swal.fire({
-            icon: 'error',
-            text: `Reciclador no ingresado en la fila ${excelRowNumber}`
-          });
-          return;
-        }
-  
-        // FECHA INGRESO PR [9] -> validar
-        const admissionDate = row[9];
-        if (!admissionDate) {
-          Swal.fire({
-            icon: 'error',
-            text: `Fecha ingreso PR no ingresado en la fila ${excelRowNumber}`
-          });
-          return;
-        }
-  
-        const validationResult = this.isValidDate(admissionDate);
-        if (!validationResult.valid) {
-          Swal.fire({
-            icon: 'error',
-            text: `Error en la fila ${excelRowNumber}. ${validationResult.message}`
-          });
-          return;
-        }
-  
-        // PESO TOTAL [10] -> validar
-        const totalWeight = row[10];
-        if (!totalWeight) {
-          Swal.fire({
-            icon: 'error',
-            text: `Peso total no ingresado en la fila ${excelRowNumber}`
-          });
-          return;
-        }
-        const sanitizedtotalWeight = totalWeight.replace(',', '.');
-        const totalWeightS = parseFloat(sanitizedtotalWeight);
-        if (isNaN(totalWeightS)) {
-          Swal.fire({
-            icon: 'error',
-            text: `El PESO TOTAL ingresado en la fila ${excelRowNumber} no es válido, debe ser solo números y con comas.`
-          });
-          return;
-        }
-        if (totalWeightS <= 0) {
-          Swal.fire({
-            icon: 'error',
-            text: `El PESO TOTAL ingresado en la fila ${excelRowNumber} debe ser mayor que cero.`
-          });
-          return;
-        }
-  
-        // PESO DECLARADO [11]
-        const declaratedWeight = row[11];
-        if (!declaratedWeight) {
-          Swal.fire({
-            icon: 'error',
-            text: `Peso declarado no ingresado en la fila ${excelRowNumber}`
-          });
-          return;
-        }
-  
-        // PESO VALORIZADO [12] -> validar
-        const valuedWeight = row[12];
-        if (!valuedWeight) {
-          Swal.fire({
-            icon: 'error',
-            text: `Peso valorizado no ingresado en la fila ${excelRowNumber}`
-          });
-          return;
-        }
-        const sanitizedValuedWeight = valuedWeight.replace(',', '.');
-        const valuedWeightS = parseFloat(sanitizedValuedWeight);
-        if (isNaN(valuedWeightS)) {
-          Swal.fire({
-            icon: 'error',
-            text: `El PESO VALORIZADO ingresado en la fila ${excelRowNumber} no es válido, debe ser solo números y con comas.`
-          });
-          return;
-        }
-        if (valuedWeightS <= 0) {
-          Swal.fire({
-            icon: 'error',
-            text: `El PESO VALORIZADO ingresado en la fila ${excelRowNumber} debe ser mayor que cero.`
-          });
-          return;
-        }
-        // const businessResponse = await this.establishmentService.getInovice(numberInvoice, vat, treatmentType, material, id_business).toPromise();
-        // if (businessResponse <= 0) {
-        //   Swal.fire({
-        //     icon: 'error',
-        //     text: businessResponse.msg
-        //   });
-        //   return;
-        // }
-  
-        const rowData = {
-          nameBusiness,
-          establishment,
-          treatmentType,
-          material,
-          subMaterial,
-          withdrawalDate,
-          numberInvoice,
-          vat,
-          vatCompanyName,
-          admissionDate,
-          totalWeight,
-          declaratedWeight,
-          valuedWeight
-        };
-        rowsData.push(rowData);
-      }
-      this.example = rowsData;
+    const file = target.files[0];
+    if (!allowedMimeTypes.includes(file.type)) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Tipo de archivo incorrecto. Por favor, cargue un archivo válido (.pdf, .jpeg o .jpg)'
+      });
+      return;
     }
+
+    const reader: FileReader = new FileReader();
+    // reader.onload = (e: any) => {
+    //   const bstr: string = e.target.result;
+    //   const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
+    //   if (!wb.SheetNames.includes('Carga Masiva')) {
+    //     Swal.fire({
+    //       icon: 'error',
+    //       text: 'No se encontró la hoja "Carga Masiva" en el archivo'
+    //     });
+    //     return;
+    //   }
+    //   const ws: XLSX.WorkSheet = wb.Sheets['Carga Masiva'];
+    //   const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+    //   this.processData(data);
+    // };
+    //reader.readAsBinaryString(file);
+
+    this.resetFileInput();
+  }
+
+  resetFileInput2() {
+    this.fileInput.nativeElement.value = '';
+  }
+
+  async processData(data: any[]) {
+    if (data.length == 0) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Archivo inválido. No tiene todas las columnas necesarias'
+      });
+      return;
+    }
+
+    const rows = data.slice(1).filter(row => row.length > 0 && row.some((item: any) => item));
+    const rowsData = [];
+    let businessId: any;
+    if (rows.length == 0) {
+      Swal.fire({
+        icon: 'info',
+        text: 'Archivo inválido, verifique que no esté vacío.'
+      });
+      return;
+    }
+
+    if (data[0].length != 13) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Archivo inválido, no tiene todas las columnas necesarias.'
+      });
+      return;
+    }
+
+    // Recorrer cada fila del excel
+    const invoices: any = await this.establishmentService.getDeclarationEstablishment().toPromise();
+    const noAprovedInvoices = [...invoices.status].filter(i=> i.STATE_GESTOR==0);
+
+    for (let i = 0; i < rows.length; i++) {
+      let asoc = 0;
+      const row = rows[i];
+      const excelRowNumber = i + 2; // Se agrega 2 para considerar el encabezado y el índice base 1 de Excel
+      if (row.length == 0 && i == 0) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Archivo vacío'
+        });
+        return;
+      }
+
+      // EMPRESA CI [0]
+      const nameBusiness = row[0];
+      if (!nameBusiness) {
+        Swal.fire({
+          icon: 'error',
+          text: `Empresa CI no ingresado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+      
+      // ESTABLECIMIENTO [1]
+      const establishment = row[1];
+      if (!establishment) {
+        Swal.fire({
+          icon: 'error',
+          text: `Establecimiento no ingresado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+
+      // TIPO TRATAMIENTO [2]
+      const treatmentType = row[2];
+      if (!treatmentType) {
+        Swal.fire({
+          icon: 'error',
+          text: `Tipo de tratamiento no ingresado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+
+      // MATERIAL [3]
+      const material = row[3];
+      if (!material) {
+        Swal.fire({
+          icon: 'error',
+          text: `Material no ingresado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+
+      // SUBTIPO [4]
+      const subMaterial = row[4];
+      if (!subMaterial) {
+        Swal.fire({
+          icon: 'error',
+          text: `Subtipo no ingresado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+
+      // FECHA RETIRO [5]
+      const withdrawalDate = row[5];
+      if (!withdrawalDate) {
+        Swal.fire({
+          icon: 'error',
+          text: `Fecha retiro no ingresado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+      
+      // NÚM. FACTURA RECICLADOR [6] -> validar
+      const numberInvoice = row[6];
+      if (!numberInvoice) {
+        Swal.fire({
+          icon: 'error',
+          text: `Numero factura no ingresado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+
+      // RUT RECICLADOR [7] -> validar
+      const vat = row[7];
+      if (!vat) {
+        Swal.fire({
+          icon: 'error',
+          text: `RUT no ingresado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+      const verifyVat: any = await this.businessService.getBusinessByVAT(vat).toPromise();
+      if (!verifyVat.status) {
+        Swal.fire({
+          icon: 'error',
+          text: `RUT ingresado en la fila ${excelRowNumber} no se encuentra registrado en el sistema.`
+        });
+        return;
+      }
+      
+      const idBusiness = verifyVat.status[0].ID;
+      const materialTypeNum = this.convertPrecedence(material);
+      const treatmentTypeNum = this.convertTreatmentType(treatmentType);
+
+      // RECICLADOR [8] -> validar
+      const vatCompanyName = row[8];
+      if (!vatCompanyName) {
+        Swal.fire({
+          icon: 'error',
+          text: `Reciclador no ingresado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+
+      // FECHA INGRESO PR [9] -> validar
+      const admissionDate = row[9];
+      if (!admissionDate) {
+        Swal.fire({
+          icon: 'error',
+          text: `Fecha ingreso PR no ingresado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+
+      const validationResult = this.isValidDate(admissionDate);
+      if (!validationResult.valid) {
+        Swal.fire({
+          icon: 'error',
+          text: `Error en la fila ${excelRowNumber}. ${validationResult.message}`
+        });
+        return;
+      }
+
+      // PESO TOTAL [10] -> validar
+      let totalWeight;
+      // PESO DECLARADO [11] -> validar
+      let declaratedWeight;
+      const businessResponse = await this.establishmentService.getInovice(numberInvoice, vat, treatmentTypeNum, materialTypeNum, idBusiness).toPromise();
+      if (businessResponse.status) {
+        totalWeight = (this.formatNumber(businessResponse.data[0]?.invoice_value));
+        declaratedWeight = (this.formatNumber(businessResponse.data[0].value_declarated));
+        const asoc = (businessResponse.data[0].num_asoc + 1);
+      }
+      else {
+        Swal.fire({
+          icon: 'error',
+          text: `La fila ${excelRowNumber} tiene el siguiente error: `+businessResponse.msg
+        });
+        return;
+      }
+      if (totalWeight == 0 && !row[10]) {
+        Swal.fire({
+          icon: 'error',
+          text: `Peso TOTAL no ingresado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+      if (totalWeight == "" ||totalWeight == 0) {
+        totalWeight = row[10];
+      }
+      const sanitizedtotalWeight = totalWeight.replace(',', '.');
+      const totalWeightS = parseFloat(sanitizedtotalWeight);
+      if (isNaN(totalWeightS)) {
+        Swal.fire({
+          icon: 'error',
+          text: `El PESO TOTAL ingresado en la fila ${excelRowNumber} no es válido, debe ser solo números y con comas.`
+        });
+        return;
+      }
+      if (totalWeightS <= 0) {
+        Swal.fire({
+          icon: 'error',
+          text: `El PESO TOTAL ingresado en la fila ${excelRowNumber} debe ser mayor que cero.`
+        });
+        return;
+      }
+
+      // PESO DECLARADO [11]
+      if (declaratedWeight == 0 && !row[11]) {
+        Swal.fire({
+          icon: 'error',
+          text: `Peso declarado no ingresado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+      if (declaratedWeight == "" || declaratedWeight == 0) {
+        declaratedWeight = row[11];
+      }
+      // PESO VALORIZADO [12] -> validar
+      const valuedWeight = row[12];
+      if (!valuedWeight) {
+        Swal.fire({
+          icon: 'error',
+          text: `Peso valorizado no ingresado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+      const sanitizedValuedWeight = valuedWeight.replace(',', '.');
+      const valuedWeightS = parseFloat(sanitizedValuedWeight);
+      if (isNaN(valuedWeightS)) {
+        Swal.fire({
+          icon: 'error',
+          text: `El PESO VALORIZADO ingresado en la fila ${excelRowNumber} no es válido, debe ser solo números y con comas.`
+        });
+        return;
+      }
+      if (valuedWeightS <= 0) {
+        Swal.fire({
+          icon: 'error',
+          text: `El PESO VALORIZADO ingresado en la fila ${excelRowNumber} debe ser mayor que cero.`
+        });
+        return;
+      }
+      const remainingWeight = totalWeight.toString().replace(",", ".") - valuedWeight.toString().replace(",", ".") - declaratedWeight.toString().replace(",", ".");
+      const fixedRemainingWeight = remainingWeight.toFixed(2).replace(".", ",");
+      if (remainingWeight < 0) {
+        Swal.fire({
+          icon: 'error',
+          text: `El peso remanente calculado en la fila ${excelRowNumber} no puede ser menor que cero.\n ${totalWeight} - ${valuedWeight} - ${declaratedWeight} = ${fixedRemainingWeight}`
+        });
+        return;
+      }
+
+      const rowData = {
+        nameBusiness,
+        establishment,
+        treatmentType,
+        material,
+        subMaterial,
+        withdrawalDate,
+        numberInvoice,
+        vat,
+        vatCompanyName,
+        admissionDate,
+        totalWeight,
+        declaratedWeight,
+        valuedWeight,
+        fixedRemainingWeight
+      };
+      rowsData.push(rowData);
+    }
+    this.example = rowsData;
+  }
+
+  formatNumber(value: any) {
+    if (value === null || value === undefined) {
+      return '';
+    } else if (Number.isInteger(value)) {
+      return value.toString();
+    } else {
+      return value.toLocaleString('es');
+    }
+  }
 
   isValidDate(dateString: string): { valid: boolean; message: string } {
     if (typeof dateString === 'undefined' || dateString.trim() === '') {

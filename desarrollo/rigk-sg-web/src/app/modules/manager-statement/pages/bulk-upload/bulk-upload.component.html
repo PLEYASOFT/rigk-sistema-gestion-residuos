@@ -23,7 +23,8 @@
 							</button>
 						</div>
 						<div class="col-6">
-							<input type="file" #fileInput id="file-input" (change)="onFileChange($event)" style="display:none;"
+							<input type="file" #fileInput id="file-input" (change)="onFileChange($event)"
+								style="display:none;"
 								accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
 							<button class="btn btn-primary col-12" (click)="fileInput.click()">
 								<i class="fas fa-upload"></i> Cargar declaraciones
@@ -35,7 +36,7 @@
 		</div>
 		<div class="box box-form mb-12" *ngIf="example.length > 0">
 			<table class="table table-even table-section table-borderless table-radius">
-				<thead >
+				<thead>
 					<tr>
 						<th>Empresa CI</th>
 						<th>Establecimiento</th>
@@ -50,6 +51,7 @@
 						<th>Peso Total</th>
 						<th>Peso Declarado</th>
 						<th>Peso Valorizado</th>
+						<th>Peso Remanente</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -67,13 +69,45 @@
 						<td>{{s.totalWeight}}</td>
 						<td>{{s.declaratedWeight}}</td>
 						<td>{{s.valuedWeight}}</td>
+						<td>{{s.fixedRemainingWeight}}</td>
 						<td>
-							<input type="file" #fileInput id="file-input" (change)="onFileChange2($event)" style="display:none;"
-								accept=".pdf,.jpeg,.jpg">
+							<input type="file" #fileInput id="file-input" (change)="onFileChange2($event)"
+								style="display:none;" accept=".pdf,.jpeg,.jpg">
 							<button class="btn btn-primary col-12" (click)="fileInput.click()">
-							<i class="fas fa-upload"></i> Cargar Factura
+								<i class="fas fa-upload"></i> Cargar Factura
+							</button>
+						</td>
+						<td>
+							<i class="fa fa-check fa-lg fa-fw"
+								[ngClass]="s.STATE_GESTOR == 1 ? 'color-verde-opaco' : 'color-verde'"
+								aria-hidden="true" id="submit">
+							</i>
+							
+						</td>
+
+					</tr>
+				</tbody>
+				<tbody>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td><input type="file" #fileInput id="file-input" (change)="onFileChange2($event)"
+							style="display:none;" accept=".pdf,.jpeg,.jpg">
+						<button class="btn btn-primary col-12" (click)="fileInput.click()">
+							<i class="fas fa-upload"></i> Finalizar
 						</button></td>
-						
 					</tr>
 				</tbody>
 			</table>
