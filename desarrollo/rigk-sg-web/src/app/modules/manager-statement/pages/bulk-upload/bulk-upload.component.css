@@ -4,6 +4,14 @@
     padding: 1%;
 }
 
+.color-verde {
+    color: green;
+}
+
+.color-verde-opaco {
+    color: rgba(0, 128, 0, 0.3);
+}
+
 .circle {
     width: 10px;
     height: 10px;

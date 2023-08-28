@@ -223,6 +223,7 @@ class ManagerLogic {
                     rowdata.getCell(12).value = `${invoice.VALUE}`;
                     rowdata.getCell(13).value = "";
                     rowdata.getCell(13).protection = {locked:false};
+                    rowdata.getCell(14).value = `${invoice.ID_DETAIL}`;
                     rowdata.commit();
                 }
             }
@@ -260,11 +261,14 @@ class ManagerLogic {
                 worksheet.getCell(`M${i + 1}`).numFmt = '@';
             }
 
+            const nameCol = worksheet.getColumn('N');
+            nameCol.hidden = true;
+            
             worksheet.protect('', {
                 selectLockedCells: false,  // evita seleccionar celdas protegidas
                 selectUnlockedCells: true,  // permite seleccionar celdas no protegidas
             });
-            
+
             await workbook.xlsx.writeFile(outputPath);
             return res.download(outputPath);
         } catch (error) {

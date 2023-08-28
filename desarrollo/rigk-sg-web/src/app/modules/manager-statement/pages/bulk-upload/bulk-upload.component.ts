@@ -5,6 +5,7 @@ import { ManagerService } from '../../../../core/services/manager.service';
 //import { ConsumerService } from '../../../../core/services/consumer.service';
 import * as XLSX from 'xlsx';
 import { EstablishmentService } from 'src/app/core/services/establishment.service';
+import { select } from 'd3-selection';
 @Component({
   selector: 'app-bulk-upload',
   templateUrl: './bulk-upload.component.html',
@@ -16,6 +17,9 @@ export class BulkUploadComponent implements OnInit {
   userData: any;
   example: any[] = [];
   index: number = 0;
+  fileNames: any = {};
+  verification: number = 0
+  fileToUpload: any = {};
 
   wasteTypes: any = {
     'PapelCartón': ['Papel', 'Papel Compuesto (cemento)', 'Caja Cartón', 'Papel/Cartón Otro'],
@@ -29,19 +33,11 @@ export class BulkUploadComponent implements OnInit {
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
-    this.loadStatements();
+    // this.loadStatements();
     localStorage.removeItem('statementsState');
   }
 
   downloadExcel() {
-    // const id = (document.getElementById('f_name') as HTMLInputElement).value
-    // if (id == "-1") {
-    //   Swal.fire({
-    //     icon: 'error',
-    //     text: 'Debe seleccionar empresa'
-    //   });
-    //   return;
-    // }
     this.managerService.downloadExcelTemplateInvoice().subscribe({
       next: r => {
         if (r) {
@@ -58,29 +54,29 @@ export class BulkUploadComponent implements OnInit {
       error: r => {
         Swal.fire({
           icon: 'error',
-          text: 'Revise establecimientos de la empresa. En caso de ser necesario, contacte al administrador del sistema.'
+          text: 'Documento para carga masiva no disponible.'
         })
       }
     });
   }
-  loadStatements() {
-    Swal.fire({
-      title: 'Cargando Datos',
-      text: 'Se está recuperando datos',
-      timerProgressBar: true,
-      showConfirmButton: false,
-      allowEscapeKey: false,
-      allowOutsideClick: false
-    });
-    Swal.showLoading();
-    this.businessService.getBusinessByUser.subscribe(r => {
+  // loadStatements() {
+  //   Swal.fire({
+  //     title: 'Cargando Datos',
+  //     text: 'Se está recuperando datos',
+  //     timerProgressBar: true,
+  //     showConfirmButton: false,
+  //     allowEscapeKey: false,
+  //     allowOutsideClick: false
+  //   });
+  //   Swal.showLoading();
+  //   this.businessService.getBusinessByUser.subscribe(r => {
 
-      if (r.status) {
-        this.dbBusiness = r.data;
-        Swal.close();
-      }
-    });
-  }
+  //     if (r.status) {
+  //       this.dbBusiness = r.data;
+  //       Swal.close();
+  //     }
+  //   });
+  // }
 
   onFileChange(event: any) {
     const allowedMimeTypes = [
@@ -129,7 +125,8 @@ export class BulkUploadComponent implements OnInit {
   resetFileInput() {
     this.fileInput.nativeElement.value = '';
   }
-  onFileChange2(event: any) {
+  
+  onInvoiceChange(event: any, index: number) {
     const allowedMimeTypes = [
       "application/pdf",
       "image/jpeg",
@@ -153,28 +150,14 @@ export class BulkUploadComponent implements OnInit {
       return;
     }
 
-    const reader: FileReader = new FileReader();
-    // reader.onload = (e: any) => {
-    //   const bstr: string = e.target.result;
-    //   const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
-    //   if (!wb.SheetNames.includes('Carga Masiva')) {
-    //     Swal.fire({
-    //       icon: 'error',
-    //       text: 'No se encontró la hoja "Carga Masiva" en el archivo'
-    //     });
-    //     return;
-    //   }
-    //   const ws: XLSX.WorkSheet = wb.Sheets['Carga Masiva'];
-    //   const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
-    //   this.processData(data);
-    // };
-    //reader.readAsBinaryString(file);
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      this.fileNames[index] = selectedFile.name;
+      this.fileToUpload[index] = selectedFile;
+      this.verification = Object.keys(this.fileNames).length;
+    }
 
     this.resetFileInput();
-  }
-
-  resetFileInput2() {
-    this.fileInput.nativeElement.value = '';
   }
 
   async processData(data: any[]) {
@@ -206,8 +189,8 @@ export class BulkUploadComponent implements OnInit {
     }
 
     // Recorrer cada fila del excel
-    const invoices: any = await this.establishmentService.getDeclarationEstablishment().toPromise();
-    const noAprovedInvoices = [...invoices.status].filter(i=> i.STATE_GESTOR==0);
+    // const invoices: any = await this.establishmentService.getDeclarationEstablishment().toPromise();
+    // const noAprovedInvoices = [...invoices.status].filter(i=> i.STATE_GESTOR==0);
 
     for (let i = 0; i < rows.length; i++) {
       let asoc = 0;
@@ -432,6 +415,8 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
 
+      const idDetail = row[13];
+
       const rowData = {
         nameBusiness,
         establishment,
@@ -446,11 +431,42 @@ export class BulkUploadComponent implements OnInit {
         totalWeight,
         declaratedWeight,
         valuedWeight,
-        fixedRemainingWeight
+        fixedRemainingWeight,
+        idDetail
       };
       rowsData.push(rowData);
     }
     this.example = rowsData;
+  }
+
+  async saveAllInvoices(): Promise<void> {
+    for (let i = 0; i < this.example.length; i++) {
+      const element = this.example[i];
+      if (this.example.length == Object.keys(this.fileNames).length && this.fileNames[i]) {
+        console.log(element.vat, element.vatCompanyName, element.numberInvoice, element.idDetail, element.admissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), element.treatmentType, element.material, this.fileToUpload[i]);
+        // try {
+        //   const response = await this.establishmentService.saveInvoice(element.vat, element.vatCompanyName, element.numberInvoice, element.idDetail, element.admissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), element.treatmentType, element.material, this.fileToUpload[i]).toPromise();
+        //   if (response.status) {
+        //     setTimeout(async () => {
+        //       await Swal.fire({
+        //         title: "La factura fue guardada exitosamente",
+        //         text: "",
+        //         icon: "success",
+        //         showConfirmButton: true, // Muestra el botón de confirmación.
+        //       });
+        //     }, 1500);
+        //   }
+        // } catch (error) {
+        //   console.error('Error:', error);
+        // }
+      } else {
+        Swal.fire({
+          icon: 'error',
+          text: `No ha ingresado todas las facturas`
+        });
+        return;
+      }
+    }
   }
 
   formatNumber(value: any) {
