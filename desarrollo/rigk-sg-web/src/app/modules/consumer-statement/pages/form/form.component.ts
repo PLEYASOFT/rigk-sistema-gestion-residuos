@@ -131,31 +131,13 @@ export class FormComponent implements OnInit {
   reset() {
     this.id_establishment = -1;
     const tb_ref_1 = document.getElementById(`table_1`)?.getElementsByTagName('tbody')[0];
-    const tb_ref_2 = document.getElementById(`table_2`)?.getElementsByTagName('tbody')[0];
-    const tb_ref_3 = document.getElementById(`table_3`)?.getElementsByTagName('tbody')[0];
-    const tb_ref_4 = document.getElementById(`table_4`)?.getElementsByTagName('tbody')[0];
 
     const all: any = tb_ref_1?.rows;
-    const all2: any = tb_ref_2?.rows;
-    const all3: any = tb_ref_3?.rows;
-    const all4: any = tb_ref_4?.rows;
     while (all.length != 0) {
       tb_ref_1?.deleteRow(0);
     }
-    while (all2.length != 0) {
-      tb_ref_2?.deleteRow(0);
-    }
-    while (all3.length != 0) {
-      tb_ref_3?.deleteRow(0);
-    }
-    while (all4.length != 0) {
-      tb_ref_4?.deleteRow(0);
-    }
     this.selectedEstablishment = null;
     document.getElementById(`table_td_1`)!.innerHTML = "0";
-    document.getElementById(`table_td_2`)!.innerHTML = "0";
-    document.getElementById(`table_td_3`)!.innerHTML = "0";
-    document.getElementById(`table_td_4`)!.innerHTML = "0";
     this.newData = [];
   }
   getManagersForMaterial(materialId: number): any[] {
@@ -324,14 +306,7 @@ export class FormComponent implements OnInit {
   addRow(i: number) {
     const tb_ref = document.getElementById(`table_${i + 1}`)?.getElementsByTagName('tbody')[0];
     let n_row: any = tb_ref!.rows.length;
-
-
-    const mat: any = this.materials.find(r => r._id == i + 1);
-    let tt = "";
-    for (let q = 0; q < mat.child.length; q++) {
-      const r = mat.child[q];
-      tt += `<option value="${r.id}">${r.name}</option>`;
-    }
+    
     const html: string = `
     <tr id="tr">
                         <td>
@@ -359,7 +334,6 @@ export class FormComponent implements OnInit {
                         <td>
                             <select class="form-select" id="inp_sub_${i + 1}_${n_row}">
                                 <option value="-1">Seleccione Subtipo</option>
-                                ${tt}
                             </select>
                         </td>
                         <td>
@@ -396,7 +370,7 @@ export class FormComponent implements OnInit {
     const btn = document.getElementById(`btn_${i + 1}_${n_row}`);
     const btn_modal = document.getElementById(`btn_${i + 1}_${n_row}_modal`);
     const tmp: any[] = this.newData;
-
+    
     const analize = (treatment: any, sub: any, gestor: any, date: any, row: any) => {
       this.verifyRow({ treatment, sub, gestor, date }, row);
     }
@@ -450,22 +424,16 @@ export class FormComponent implements OnInit {
 
     const inp_subcat = (document.getElementById(`inp_subcat_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_subcat.onchange = () => {
-      // 1. Obtener el valor seleccionado en inp_subcat.
       this.selectedCategoryId = parseInt(inp_subcat.value);
-      //n_row = this.selectedCategoryId
-      // 2. Buscar ese valor en la lista materials para obtener los subtipos asociados.
       const selectedCategory = this.materials.find(mat => mat._id === this.selectedCategoryId);
       const subMaterials = selectedCategory ? selectedCategory.child : [];
 
-      // 3. Limpiar el desplegable inp_sub.
       removeOptions(inp_sub);
 
-      // Añadir opción por defecto.
       let defaultOption = document.createElement('option');
       defaultOption.value = "-1";
       defaultOption.innerHTML = "Seleccione Subtipo";
       inp_sub.appendChild(defaultOption);
-      // Rellenar el desplegable inp_sub con los nuevos valores.
       subMaterials.forEach(material => {
         let opt = document.createElement('option');
         opt.value = material.id.toString();
@@ -553,6 +521,7 @@ export class FormComponent implements OnInit {
         tmp[w].gestor = "-1";
       }
     }
+    
     const inp_value = (document.getElementById(`inp_value_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_value.onchange = () => {
       inp_value.value = inp_value.value.replace(".", ",");
