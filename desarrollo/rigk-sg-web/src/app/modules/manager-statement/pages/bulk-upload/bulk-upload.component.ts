@@ -36,6 +36,15 @@ export class BulkUploadComponent implements OnInit {
   }
 
   downloadExcel() {
+    Swal.fire({
+      title: 'Generando Excel',
+      text: 'Esto puede tardar varios minutos',
+      timerProgressBar: true,
+      showConfirmButton: false,
+      allowEscapeKey: false,
+      allowOutsideClick: false
+    });
+    Swal.showLoading();
     this.managerService.downloadExcelTemplateInvoice().subscribe({
       next: r => {
         if (r) {
@@ -47,6 +56,7 @@ export class BulkUploadComponent implements OnInit {
           link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
           link.remove();
           window.URL.revokeObjectURL(link.href);
+          Swal.close();
         }
       },
       error: r => {
@@ -190,9 +200,18 @@ export class BulkUploadComponent implements OnInit {
       return;
     }
 
-    // Validacion de filas excel == facturas pendientes... posible implementacion
-    // const invoices: any = await this.establishmentService.getDeclarationEstablishment().toPromise();
-    // const noAprovedInvoices = [...invoices.status].filter(i=> i.STATE_GESTOR==0);
+    const invoices: any = await this.establishmentService.getDeclarationEstablishment().toPromise();
+    const noAprovedInvoices = [...invoices.status].filter(i=> i.STATE_GESTOR==0);
+    // console.log(noAprovedInvoices.length);
+    // console.log(rows.length);
+
+    if (noAprovedInvoices.length != rows.length) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Archivo inválido, las filas del documento no coinciden con las declaraciones pendientes'
+      });
+      return;
+    }
 
     // Recorrer cada fila del excel
     for (let i = 0; i < rows.length; i++) {
@@ -322,7 +341,7 @@ export class BulkUploadComponent implements OnInit {
           text: `No se encontró ningun reciclador con el nombre "${vatCompanyName}" asociado al rut "${vat}" en la fila ${excelRowNumber}`
         });
         return;
-      } 
+      }
 
       // FECHA INGRESO PR [9] -> validar
       const admissionDate = row[9];
@@ -346,11 +365,12 @@ export class BulkUploadComponent implements OnInit {
       // PESO TOTAL [10] -> validar
       let totalWeight;
       // PESO DECLARADO [11] -> validar
-      let declaratedWeight;
+      //let declaratedWeight;
+      let valuedWeight;
       const businessResponse = await this.establishmentService.getInovice(numberInvoice, vat, treatmentTypeNum, materialTypeNum, idBusiness).toPromise();
       if (businessResponse.status) {
         totalWeight = (this.formatNumber(businessResponse.data[0]?.invoice_value));
-        declaratedWeight = (this.formatNumber(businessResponse.data[0].value_declarated));
+        valuedWeight = (this.formatNumber(businessResponse.data[0].value_declarated));
         const asoc = (businessResponse.data[0].num_asoc + 1);
       }
       else {
@@ -388,25 +408,27 @@ export class BulkUploadComponent implements OnInit {
       }
 
       // PESO DECLARADO [11]
-      if (declaratedWeight == 0 && !row[11]) {
+      const declaratedWeight = row[11];
+      if (!declaratedWeight) {
         Swal.fire({
           icon: 'error',
           text: `Peso declarado no ingresado en la fila ${excelRowNumber}`
         });
         return;
       }
-      if (declaratedWeight == "" || declaratedWeight == 0) {
-        declaratedWeight = row[11];
-      }
-      // PESO VALORIZADO [12] -> validar
-      const valuedWeight = row[12];
-      if (!valuedWeight) {
+
+      if (valuedWeight == 0 && !row[12]) {
         Swal.fire({
           icon: 'error',
           text: `Peso valorizado no ingresado en la fila ${excelRowNumber}`
         });
         return;
       }
+
+      if (valuedWeight == "" || valuedWeight == 0) {
+        valuedWeight = row[11];
+      }
+      
       const sanitizedValuedWeight = valuedWeight.replace(',', '.');
       const valuedWeightS = parseFloat(sanitizedValuedWeight);
       if (isNaN(valuedWeightS)) {
@@ -431,6 +453,17 @@ export class BulkUploadComponent implements OnInit {
           text: `Peso remanente calculado en la fila ${excelRowNumber} no puede ser menor que cero.\n ${totalWeight} - ${valuedWeight} - ${declaratedWeight} = ${fixedRemainingWeight}`
         });
         return;
+      }
+      
+      for (let j = i + 1; j < rows.length; j++) {
+        const w = rows[j];
+        if (w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
+          Swal.fire({
+            icon: 'info',
+            text: `Mismo Núm de factura reciclador, rut reciclador y reciclador en la fila ${excelRowNumber}`
+          });
+          return;
+        }
       }
 
       const idDetail = row[13];
@@ -464,6 +497,16 @@ export class BulkUploadComponent implements OnInit {
   }
 
   async saveAllInvoices(): Promise<void> {
+    Swal.fire({
+      title: 'Ingresando datos',
+      text: 'Se estan cargando los datos',
+      timerProgressBar: true,
+      showConfirmButton: false,
+      allowEscapeKey: false,
+      allowOutsideClick: false
+    });
+    Swal.showLoading();
+
     for (let i = 0; i < this.example.length; i++) {
       const element = this.example[i];
       if (this.example.length == Object.keys(this.fileNames).length && this.fileNames[i]) {
@@ -483,6 +526,12 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
     }
+    this.example = [];
+    Swal.close();
+    Swal.fire({
+      icon: 'success',
+      text: `Sus facturas han sido ingresadas correctamente`
+    });
   }
 
   formatNumber(value: any) {
