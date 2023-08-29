@@ -102,6 +102,17 @@ export class BulkUploadComponent implements OnInit {
       return;
     }
 
+    const size = target.files[0].size
+    const maxSizeInBytes = 1 * 1024 * 1024; // 1 MB
+
+    if (size > maxSizeInBytes) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Tamaño del archivo excede el límite (1MB máximo).'
+      });
+      return;
+    }
+
     const reader: FileReader = new FileReader();
     reader.onload = (e: any) => {
       const bstr: string = e.target.result;
@@ -109,7 +120,7 @@ export class BulkUploadComponent implements OnInit {
       if (!wb.SheetNames.includes('Carga Masiva')) {
         Swal.fire({
           icon: 'error',
-          text: 'No se encontró la hoja "Carga Masiva" en el archivo'
+          text: 'No se encontró la hoja "Carga Masiva" en el archivo.'
         });
         return;
       }
@@ -146,6 +157,17 @@ export class BulkUploadComponent implements OnInit {
       Swal.fire({
         icon: 'error',
         text: 'Tipo de archivo incorrecto. Por favor, cargue un archivo válido (.pdf, .jpeg o .jpg)'
+      });
+      return;
+    }
+
+    const size = target.files[0].size
+    const maxSizeInBytes = 1 * 1024 * 1024; // 1 MB
+
+    if (size > maxSizeInBytes) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Tamaño del archivo excede el límite (1MB máximo).'
       });
       return;
     }
@@ -345,7 +367,7 @@ export class BulkUploadComponent implements OnInit {
       if (totalWeight == 0 && !row[10]) {
         Swal.fire({
           icon: 'error',
-          text: `Peso TOTAL no ingresado en la fila ${excelRowNumber}`
+          text: `Peso total no ingresado en la fila ${excelRowNumber}`
         });
         return;
       }
@@ -357,14 +379,14 @@ export class BulkUploadComponent implements OnInit {
       if (isNaN(totalWeightS)) {
         Swal.fire({
           icon: 'error',
-          text: `El PESO TOTAL ingresado en la fila ${excelRowNumber} no es válido, debe ser solo números y con comas.`
+          text: `Peso total ingresado en la fila ${excelRowNumber} no es válido, debe ser solo números y con comas.`
         });
         return;
       }
       if (totalWeightS <= 0) {
         Swal.fire({
           icon: 'error',
-          text: `El PESO TOTAL ingresado en la fila ${excelRowNumber} debe ser mayor que cero.`
+          text: `Peso total ingresado en la fila ${excelRowNumber} debe ser mayor que cero.`
         });
         return;
       }
@@ -394,14 +416,14 @@ export class BulkUploadComponent implements OnInit {
       if (isNaN(valuedWeightS)) {
         Swal.fire({
           icon: 'error',
-          text: `El PESO VALORIZADO ingresado en la fila ${excelRowNumber} no es válido, debe ser solo números y con comas.`
+          text: `Peso valorizado ingresado en la fila ${excelRowNumber} no es válido, debe ser solo números y con comas.`
         });
         return;
       }
       if (valuedWeightS <= 0) {
         Swal.fire({
           icon: 'error',
-          text: `El PESO VALORIZADO ingresado en la fila ${excelRowNumber} debe ser mayor que cero.`
+          text: `Peso valorizado ingresado en la fila ${excelRowNumber} debe ser mayor que cero.`
         });
         return;
       }
@@ -410,7 +432,7 @@ export class BulkUploadComponent implements OnInit {
       if (remainingWeight < 0) {
         Swal.fire({
           icon: 'error',
-          text: `El peso remanente calculado en la fila ${excelRowNumber} no puede ser menor que cero.\n ${totalWeight} - ${valuedWeight} - ${declaratedWeight} = ${fixedRemainingWeight}`
+          text: `Peso remanente calculado en la fila ${excelRowNumber} no puede ser menor que cero.\n ${totalWeight} - ${valuedWeight} - ${declaratedWeight} = ${fixedRemainingWeight}`
         });
         return;
       }
@@ -481,13 +503,13 @@ export class BulkUploadComponent implements OnInit {
 
   isValidDate(dateString: string): { valid: boolean; message: string } {
     if (typeof dateString === 'undefined' || dateString.trim() === '') {
-      return { valid: false, message: "La fecha no puede estar vacía." };
+      return { valid: false, message: "Fecha no puede estar vacía." };
     }
 
     const dateParts = dateString.split("/");
 
     if (dateParts.length !== 3 || isNaN(+dateParts[0]) || isNaN(+dateParts[1]) || isNaN(+dateParts[2])) {
-      return { valid: false, message: "El formato de la fecha es incorrecto. Formato requerido: DD/MM/AAAA" };
+      return { valid: false, message: "Formato de la fecha es incorrecto. Formato requerido: DD/MM/AAAA" };
     }
 
     const dateObject = new Date(+dateParts[2], +dateParts[1] - 1, +dateParts[0]);
@@ -497,11 +519,11 @@ export class BulkUploadComponent implements OnInit {
     now.setHours(0, 0, 0, 0);
 
     if (dateObject > now) {
-      return { valid: false, message: "La fecha no debe ser futura." };
+      return { valid: false, message: "Fecha no debe ser futura." };
     }
 
     if (dateObject.getDate() !== +dateParts[0] || dateObject.getMonth() !== +dateParts[1] - 1 || dateObject.getFullYear() !== +dateParts[2]) {
-      return { valid: false, message: "La fecha proporcionada no es válida." };
+      return { valid: false, message: "Fecha proporcionada no es válida." };
     }
 
     return { valid: true, message: "" };
