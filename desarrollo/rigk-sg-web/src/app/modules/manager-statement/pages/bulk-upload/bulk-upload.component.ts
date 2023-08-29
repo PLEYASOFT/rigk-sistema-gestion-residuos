@@ -202,16 +202,17 @@ export class BulkUploadComponent implements OnInit {
 
     const invoices: any = await this.establishmentService.getDeclarationEstablishment().toPromise();
     const noAprovedInvoices = [...invoices.status].filter(i=> i.STATE_GESTOR==0);
-    // console.log(noAprovedInvoices.length);
-    // console.log(rows.length);
 
-    if (noAprovedInvoices.length != rows.length) {
-      Swal.fire({
-        icon: 'error',
-        text: 'Archivo inválido, las filas del documento no coinciden con las declaraciones pendientes'
-      });
-      return;
-    }
+    const allBusiness = await this.businessService.getAllBusiness().toPromise();
+    
+    // if (noAprovedInvoices.length != rows.length) {
+    //   Swal.fire({
+    //     icon: 'error',
+    //     text: 'Archivo inválido, las filas del documento no coinciden con las declaraciones pendientes'
+    //   });
+    //   return;
+    // }
+
 
     // Recorrer cada fila del excel
     for (let i = 0; i < rows.length; i++) {
@@ -312,16 +313,7 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-      const verifyVat: any = await this.businessService.getBusinessByVAT(vat).toPromise();
-      if (!verifyVat.status) {
-        Swal.fire({
-          icon: 'error',
-          text: `RUT ingresado en la fila ${excelRowNumber} no se encuentra registrado en el sistema.`
-        });
-        return;
-      }
       
-      const idBusiness = verifyVat.status[0].ID;
       const materialTypeNum = this.convertPrecedence(material);
       const treatmentTypeNum = this.convertTreatmentType(treatmentType);
 
@@ -334,13 +326,19 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-      const foundObject = verifyVat.status.find((item: { NAME: string; }) => item.NAME === vatCompanyName);
-      if (!foundObject) {
+
+      let idBusiness;
+      const foundCompany = allBusiness.status.find((item: { NAME: string; VAT: string; ID: number;}) => item.NAME === vatCompanyName && item.VAT === vat);
+      
+      if (!foundCompany) {
         Swal.fire({
           icon: 'error',
           text: `No se encontró ningun reciclador con el nombre "${vatCompanyName}" asociado al rut "${vat}" en la fila ${excelRowNumber}`
         });
         return;
+      }
+      if (foundCompany) {
+        idBusiness = foundCompany.ID;
       }
 
       // FECHA INGRESO PR [9] -> validar
@@ -365,7 +363,6 @@ export class BulkUploadComponent implements OnInit {
       // PESO TOTAL [10] -> validar
       let totalWeight;
       // PESO DECLARADO [11] -> validar
-      //let declaratedWeight;
       let valuedWeight;
       const businessResponse = await this.establishmentService.getInovice(numberInvoice, vat, treatmentTypeNum, materialTypeNum, idBusiness).toPromise();
       if (businessResponse.status) {
