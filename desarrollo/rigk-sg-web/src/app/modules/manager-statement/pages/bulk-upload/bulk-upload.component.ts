@@ -2,10 +2,8 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { BusinessService } from 'src/app/core/services/business.service';
 import Swal from 'sweetalert2';
 import { ManagerService } from '../../../../core/services/manager.service';
-//import { ConsumerService } from '../../../../core/services/consumer.service';
 import * as XLSX from 'xlsx';
 import { EstablishmentService } from 'src/app/core/services/establishment.service';
-import { select } from 'd3-selection';
 @Component({
   selector: 'app-bulk-upload',
   templateUrl: './bulk-upload.component.html',
@@ -59,24 +57,6 @@ export class BulkUploadComponent implements OnInit {
       }
     });
   }
-  // loadStatements() {
-  //   Swal.fire({
-  //     title: 'Cargando Datos',
-  //     text: 'Se está recuperando datos',
-  //     timerProgressBar: true,
-  //     showConfirmButton: false,
-  //     allowEscapeKey: false,
-  //     allowOutsideClick: false
-  //   });
-  //   Swal.showLoading();
-  //   this.businessService.getBusinessByUser.subscribe(r => {
-
-  //     if (r.status) {
-  //       this.dbBusiness = r.data;
-  //       Swal.close();
-  //     }
-  //   });
-  // }
 
   onFileChange(event: any) {
     const allowedMimeTypes = [
@@ -210,10 +190,11 @@ export class BulkUploadComponent implements OnInit {
       return;
     }
 
-    // Recorrer cada fila del excel
+    // Validacion de filas excel == facturas pendientes... posible implementacion
     // const invoices: any = await this.establishmentService.getDeclarationEstablishment().toPromise();
     // const noAprovedInvoices = [...invoices.status].filter(i=> i.STATE_GESTOR==0);
 
+    // Recorrer cada fila del excel
     for (let i = 0; i < rows.length; i++) {
       let asoc = 0;
       const row = rows[i];
@@ -295,6 +276,13 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
+      if (numberInvoice <= 0) {
+        Swal.fire({
+          icon: 'error',
+          text: `Numero factura ingresado en la fila ${excelRowNumber} debe ser mayor que cero`
+        });
+        return;
+      }
 
       // RUT RECICLADOR [7] -> validar
       const vat = row[7];
@@ -327,6 +315,14 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
+      const foundObject = verifyVat.status.find((item: { NAME: string; }) => item.NAME === vatCompanyName);
+      if (!foundObject) {
+        Swal.fire({
+          icon: 'error',
+          text: `No se encontró ningun reciclador con el nombre "${vatCompanyName}" asociado al rut "${vat}" en la fila ${excelRowNumber}`
+        });
+        return;
+      } 
 
       // FECHA INGRESO PR [9] -> validar
       const admissionDate = row[9];
@@ -439,8 +435,14 @@ export class BulkUploadComponent implements OnInit {
 
       const idDetail = row[13];
 
+      const dateParts = admissionDate.split('/');
+      const formatedDateString = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+      const temp = new Date(formatedDateString);
+      const formatedAdmissionDate = temp.toISOString().split('T')[0];
+
       const rowData = {
         nameBusiness,
+        idBusiness,
         establishment,
         treatmentType,
         material,
@@ -449,7 +451,7 @@ export class BulkUploadComponent implements OnInit {
         numberInvoice,
         vat,
         vatCompanyName,
-        admissionDate,
+        formatedAdmissionDate,
         totalWeight,
         declaratedWeight,
         valuedWeight,
@@ -465,22 +467,14 @@ export class BulkUploadComponent implements OnInit {
     for (let i = 0; i < this.example.length; i++) {
       const element = this.example[i];
       if (this.example.length == Object.keys(this.fileNames).length && this.fileNames[i]) {
-        console.log(element.vat, element.vatCompanyName, element.numberInvoice, element.idDetail, element.admissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), element.treatmentType, element.material, this.fileToUpload[i]);
-        // try {
-        //   const response = await this.establishmentService.saveInvoice(element.vat, element.vatCompanyName, element.numberInvoice, element.idDetail, element.admissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), element.treatmentType, element.material, this.fileToUpload[i]).toPromise();
-        //   if (response.status) {
-        //     setTimeout(async () => {
-        //       await Swal.fire({
-        //         title: "La factura fue guardada exitosamente",
-        //         text: "",
-        //         icon: "success",
-        //         showConfirmButton: true, // Muestra el botón de confirmación.
-        //       });
-        //     }, 1500);
-        //   }
-        // } catch (error) {
-        //   console.error('Error:', error);
-        // }
+        try {
+          const response = await this.establishmentService.saveInvoice(element.vat, element.idBusiness, element.numberInvoice, element.idDetail, element.formatedAdmissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), this.convertTreatmentType(element.treatmentType), this.convertPrecedence(element.material), this.fileToUpload[i]).toPromise();
+          if (response.status) {
+            console.log(response.status); 
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
       } else {
         Swal.fire({
           icon: 'error',
@@ -531,7 +525,7 @@ export class BulkUploadComponent implements OnInit {
 
   convertPrecedence(precedence: any): number {
     switch (precedence) {
-      case 'PapelCartón':
+      case 'Papel/Cartón':
         return 1;
       case 'Metal':
         return 2;
@@ -594,10 +588,5 @@ export class BulkUploadComponent implements OnInit {
       default:
         return -1;
     }
-  }
-
-  convertDate(dateString: any) {
-    const dateParts = dateString.split('/');
-    return `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}`;
   }
 }
