@@ -4,8 +4,6 @@ import { EstablishmentService } from '../../../../core/services/establishment.se
 import { ConsumerService } from '../../../../core/services/consumer.service';
 import Swal from 'sweetalert2';
 import { ManagerService } from 'src/app/core/services/manager.service';
-import { forkJoin, from } from 'rxjs';
-import { map, mergeMap, toArray } from 'rxjs/operators';
 import { BusinessService } from 'src/app/core/services/business.service';
 @Component({
   selector: 'app-form',
