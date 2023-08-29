@@ -45,16 +45,18 @@ class ManagerDao {
         return material;
     }
 
-    public async getManagersByMaterial(TYPE_MATERIAL: string, REGION: string) {
+    public async getManagersByMaterials(materials: string[], REGION: string) {
         const conn = mysqlcon.getConnection()!;
+        const placeholders = materials.map(() => '?').join(',');
         const query = `
-            SELECT manager.ID AS ID_MANAGER, manager_business.ID_BUSINESS, business.NAME AS BUSINESS_NAME
+            SELECT manager.ID AS ID_MANAGER, manager_business.ID_BUSINESS, business.NAME AS BUSINESS_NAME, manager.COD_MATERIAL
             FROM manager
             INNER JOIN manager_business ON manager.ID = manager_business.ID_MANAGER
             INNER JOIN business ON manager_business.ID_BUSINESS = business.ID
-            WHERE manager.COD_MATERIAL = ? AND manager.REGION = ?
+            WHERE manager.COD_MATERIAL IN (${placeholders}) AND manager.REGION = ?
         `;
-        const managerList: any = await conn.query(query, [TYPE_MATERIAL, REGION]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const params = [...materials, REGION];
+        const managerList: any = await conn.query(query, params).then((res) => res[0]).catch(error => [{ undefined }]);
         if (managerList == null || managerList.length == 0) {
             return false;
         }
