@@ -12,6 +12,7 @@ import { BusinessService } from 'src/app/core/services/business.service';
 })
 export class FormComponent implements OnInit {
   selectedCategoryId: any = '';
+  lastRowNumber: number = 0;
   tables = [""];
   e = 1;
   materials = [
@@ -161,7 +162,7 @@ export class FormComponent implements OnInit {
       .filter(material => material.id !== undefined)
       .map(material => material.id);
     this.managerService.getManagersByMaterials(materialIds, region).subscribe(results => {
-      this.managers = results.status.map((item:any) => ({
+      this.managers = results.status.map((item: any) => ({
         material: item.COD_MATERIAL,
         managers: item
       }));
@@ -298,8 +299,9 @@ export class FormComponent implements OnInit {
     });
   }
   addRow(i: number) {
+    this.lastRowNumber++;
     const tb_ref = document.getElementById(`table_${i + 1}`)?.getElementsByTagName('tbody')[0];
-    let n_row: any = tb_ref!.rows.length;
+    let n_row: any = this.lastRowNumber;
 
     const html: string = `
     <tr id="tr">
@@ -359,12 +361,23 @@ export class FormComponent implements OnInit {
                     </tr>
     `;
     const newRow = tb_ref?.insertRow(tb_ref.rows.length);
-
     newRow!.innerHTML = html;
     const btn = document.getElementById(`btn_${i + 1}_${n_row}`);
     const btn_modal = document.getElementById(`btn_${i + 1}_${n_row}_modal`);
     const tmp: any[] = this.newData;
-
+    const e = {
+      precedence: -1,
+      row: n_row,
+      residue: 1,
+      sub: "-1",
+      treatment: "-1",
+      ler: "",
+      value: 0,
+      date: "",
+      gestor: "-1",
+      files: []
+    };
+    tmp.push(e);
     const analize = (treatment: any, sub: any, gestor: any, date: any, row: any) => {
       this.verifyRow({ treatment, sub, gestor, date }, row);
     }
@@ -643,13 +656,14 @@ export class FormComponent implements OnInit {
       document.getElementById(`table_td_${i + 1}`)!.innerHTML = sum.toFixed(2).toString().replace(".", ",");
 
       const all: any = tb_ref?.rows;
-      for (let i = 0; i < all.length; i++) {
-        const e = all[i];
-        if (e == newRow) {
-          tb_ref?.deleteRow(i);
+      for (let j = 0; j < all.length; j++) {
+        const e = all[j];
+        if (e === newRow) {
+          tb_ref?.deleteRow(j);
           break;
         }
       }
+      
     }
     btn_modal!.onclick = () => {
       this.tableSelected = (i + 1);
