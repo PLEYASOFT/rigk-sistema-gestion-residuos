@@ -110,7 +110,6 @@ class ManagerLogic {
             const workbook = new ExcelJS.Workbook();
 
             const worksheetInfo = workbook.addWorksheet("info");
-            const rowInfo = worksheetInfo.getRow(1);
 
             const VATS = [];
             for (let i = 0; i < businesses.length; i++) {
@@ -176,20 +175,20 @@ class ManagerLogic {
             row.commit();
 
             const col = worksheet.columns;
-            col[0].width = 23, 43;  //A
-            col[1].width = 36;     //B
-            col[2].width = 21, 14;  //C
-            col[3].width = 12;  //D
-            col[4].width = 33, 71;  //E
-            col[5].width = 12, 71;  //F
-            col[6].width = 25, 71;  //G
-            col[7].width = 15, 14;  //H
-            col[8].width = 22, 86;  //I
-            col[9].width = 17, 14;  //J
-            col[10].width = 10, 86; //K
-            col[11].width = 17;    //L
-            col[12].width = 17;    //M
-
+            col[0].width = 23, 43;      //A
+            col[1].width = 36;          //B
+            col[2].width = 21, 14;      //C
+            col[3].width = 12;          //D
+            col[4].width = 33, 71;      //E
+            col[5].width = 12, 71;      //F
+            col[6].width = 25, 71;      //G
+            col[7].width = 15, 14;      //H
+            col[8].width = 22, 86;      //I
+            col[9].width = 17, 14;      //J
+            col[10].width = 10, 86;     //K
+            col[11].width = 17;         //L
+            col[12].width = 17;         //M
+            
             for (let i = 0; i < noaprovediv.length; i++) {
                 const invoice = noaprovediv[i];
                 if (invoice.STATE_GESTOR == 0) {
@@ -211,24 +210,17 @@ class ManagerLogic {
                     rowdata.getCell(5).value = `${invoice.TYPE_RESIDUE}`;
                     rowdata.getCell(6).value = `${format1}`;
                     rowdata.getCell(7).value = "";
-                    rowdata.getCell(7).protection = {locked:false};
                     rowdata.getCell(8).value = "";
-                    rowdata.getCell(8).protection = {locked:false};
                     rowdata.getCell(9).value = "";
-                    rowdata.getCell(9).protection = {locked:false};
                     rowdata.getCell(10).value = "";
-                    rowdata.getCell(10).protection = {locked:false};
                     rowdata.getCell(11).value = "";
-                    rowdata.getCell(11).protection = {locked:false};
                     rowdata.getCell(12).value = `${invoice.VALUE}`;
                     rowdata.getCell(13).value = "";
-                    rowdata.getCell(13).protection = {locked:false};
                     rowdata.getCell(14).value = `${invoice.ID_DETAIL}`;
                     rowdata.commit();
                 }
             }
 
-            const maxRows = invoices.length;
             const VATdropdown = ["Info!$A$2:$A$" + VATS.length];
 
             for (let i = 1; i <= noaprovediv.length; i++) {
@@ -263,11 +255,6 @@ class ManagerLogic {
 
             const nameCol = worksheet.getColumn('N');
             nameCol.hidden = true;
-            
-            worksheet.protect('', {
-                selectLockedCells: false,  // evita seleccionar celdas protegidas
-                selectUnlockedCells: true,  // permite seleccionar celdas no protegidas
-            });
 
             await workbook.xlsx.writeFile(outputPath);
             return res.download(outputPath);
