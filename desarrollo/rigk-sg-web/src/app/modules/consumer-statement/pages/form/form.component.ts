@@ -4,8 +4,6 @@ import { EstablishmentService } from '../../../../core/services/establishment.se
 import { ConsumerService } from '../../../../core/services/consumer.service';
 import Swal from 'sweetalert2';
 import { ManagerService } from 'src/app/core/services/manager.service';
-import { forkJoin } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { BusinessService } from 'src/app/core/services/business.service';
 @Component({
   selector: 'app-form',
@@ -14,6 +12,7 @@ import { BusinessService } from 'src/app/core/services/business.service';
 })
 export class FormComponent implements OnInit {
   selectedCategoryId: any = '';
+  lastRowNumber: number = 0;
   tables = [""];
   e = 1;
   materials = [
@@ -157,23 +156,19 @@ export class FormComponent implements OnInit {
       }
     });
   }
+
   fetchManagersForAllMaterials(region: any) {
-    // Crear un array de observables
-    const observables = this.materials_2
-      .filter(material => material.id !== undefined) // Filtrar los materiales con id definido
-      .map(material => {
-        return this.managerService.getManagersByMaterial(material.id, region).pipe(
-          map(managers => ({
-            material: material.id,
-            managers: managers.status
-          }))
-        );
-      });
-    // Ejecutar todas las consultas y obtener los resultados una vez que se completen
-    forkJoin(observables).subscribe(results => {
-      this.managers = results;
+    const materialIds = this.materials_2
+      .filter(material => material.id !== undefined)
+      .map(material => material.id);
+    this.managerService.getManagersByMaterials(materialIds, region).subscribe(results => {
+      this.managers = results.status.map((item: any) => ({
+        material: item.COD_MATERIAL,
+        managers: item
+      }));
     });
   }
+
   loadEstablishments() {
     if (this.id_business == "0") return;
     this.establishmentService.getEstablishment(this.id_business.toString()).subscribe({
@@ -201,7 +196,7 @@ export class FormComponent implements OnInit {
     }
     for (let i = 0; i < this.newData.length; i++) {
       const reg = this.newData[i];
-      if (reg.value == 0 || reg.date == "" || reg.gestor == "-1" || reg.treatment == "-1" || reg.sub == "-1" || reg.precedence == "-1" ) {
+      if (reg.value == 0 || reg.date == "" || reg.gestor == "-1" || reg.treatment == "-1" || reg.sub == "-1" || reg.precedence == "-1") {
         if (reg.precedence == "-1") {
           error = "Debe seleccionar una Subcategoria";
           break;
@@ -304,9 +299,10 @@ export class FormComponent implements OnInit {
     });
   }
   addRow(i: number) {
+    this.lastRowNumber++;
     const tb_ref = document.getElementById(`table_${i + 1}`)?.getElementsByTagName('tbody')[0];
-    let n_row: any = tb_ref!.rows.length;
-    
+    let n_row: any = this.lastRowNumber;
+
     const html: string = `
     <tr id="tr">
                         <td>
@@ -365,12 +361,23 @@ export class FormComponent implements OnInit {
                     </tr>
     `;
     const newRow = tb_ref?.insertRow(tb_ref.rows.length);
-
     newRow!.innerHTML = html;
     const btn = document.getElementById(`btn_${i + 1}_${n_row}`);
     const btn_modal = document.getElementById(`btn_${i + 1}_${n_row}_modal`);
     const tmp: any[] = this.newData;
-    
+    const e = {
+      precedence: -1,
+      row: n_row,
+      residue: 1,
+      sub: "-1",
+      treatment: "-1",
+      ler: "",
+      value: 0,
+      date: "",
+      gestor: "-1",
+      files: []
+    };
+    tmp.push(e);
     const analize = (treatment: any, sub: any, gestor: any, date: any, row: any) => {
       this.verifyRow({ treatment, sub, gestor, date }, row);
     }
@@ -381,7 +388,7 @@ export class FormComponent implements OnInit {
       for (let j = 0; j < tmp.length; j++) {
         const i = tmp[j];
         if (i.row == n_row) continue;
-        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value) {
+        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.precedence == inp_subcat.value) {
           tmp_filter++;
         }
       }
@@ -486,7 +493,7 @@ export class FormComponent implements OnInit {
       for (let j = 0; j < tmp.length; j++) {
         const i = tmp[j];
         if (i.row == n_row) continue;
-        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value) {
+        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value && i.precedence == inp_subcat.value) {
           tmp_filter++;
         }
       }
@@ -521,7 +528,7 @@ export class FormComponent implements OnInit {
         tmp[w].gestor = "-1";
       }
     }
-    
+
     const inp_value = (document.getElementById(`inp_value_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_value.onchange = () => {
       inp_value.value = inp_value.value.replace(".", ",");
@@ -565,7 +572,7 @@ export class FormComponent implements OnInit {
       for (let j = 0; j < tmp.length; j++) {
         const i = tmp[j];
         if (i.row == n_row) continue;
-        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value) {
+        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value && i.precedence == inp_subcat.value) {
           tmp_filter++;
         }
       }
@@ -604,7 +611,7 @@ export class FormComponent implements OnInit {
       for (let j = 0; j < tmp.length; j++) {
         const i = tmp[j];
         if (i.row == n_row) continue;
-        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value) {
+        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value && i.precedence == inp_subcat.value) {
           tmp_filter++;
         }
       }
@@ -649,13 +656,14 @@ export class FormComponent implements OnInit {
       document.getElementById(`table_td_${i + 1}`)!.innerHTML = sum.toFixed(2).toString().replace(".", ",");
 
       const all: any = tb_ref?.rows;
-      for (let i = 0; i < all.length; i++) {
-        const e = all[i];
-        if (e == newRow) {
-          tb_ref?.deleteRow(i);
+      for (let j = 0; j < all.length; j++) {
+        const e = all[j];
+        if (e === newRow) {
+          tb_ref?.deleteRow(j);
           break;
         }
       }
+      
     }
     btn_modal!.onclick = () => {
       this.tableSelected = (i + 1);
