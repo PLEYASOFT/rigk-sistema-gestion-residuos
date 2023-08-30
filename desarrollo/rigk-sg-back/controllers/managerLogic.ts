@@ -75,10 +75,11 @@ class ManagerLogic {
         }
     }
     async getManagersByMaterial(req: any, res: Response) {
-        const { type_material, region } = req.params;
+        const { materials, region } = req.params;
+        const materialsArray = materials.split(',');
         try {
-            const material = await managerDao.getManagersByMaterial(type_material, region);
-            res.status(200).json({ status: material, data: {}, msg: '' });
+            const result = await managerDao.getManagersByMaterials(materialsArray, region);
+            res.status(200).json({ status: result, data: {}, msg: '' });
         } catch (err) {
             console.log(err);
             res.status(500).json({
