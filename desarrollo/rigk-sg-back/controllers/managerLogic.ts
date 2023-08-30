@@ -198,7 +198,8 @@ class ManagerLogic {
                     let month = dateFormat.getMonth();
                     let year = dateFormat.getFullYear();
 
-                    let monthWithTwoDigits = month.toString().padStart(2, '0');
+                    let correctMonth = month+1;
+                    let monthWithTwoDigits = correctMonth.toString().padStart(2, '0');
                     let dayWithTwoDigits = day.toString().padStart(2, '0');
                     let format1 = dayWithTwoDigits + "/" + monthWithTwoDigits + "/" + year;
 

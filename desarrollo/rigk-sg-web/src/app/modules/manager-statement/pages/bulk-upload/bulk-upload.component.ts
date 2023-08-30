@@ -352,11 +352,11 @@ export class BulkUploadComponent implements OnInit {
       // PESO TOTAL [10] -> validar
       let totalWeight;
       // PESO DECLARADO [11] -> validar
-      let valuedWeight;
+      let declaratedWeight: string | number;
       const businessResponse = await this.establishmentService.getInovice(numberInvoice, vat, treatmentTypeNum, materialTypeNum, idBusiness).toPromise();
       if (businessResponse.status) {
         totalWeight = (this.formatNumber(businessResponse.data[0]?.invoice_value));
-        valuedWeight = (this.formatNumber(businessResponse.data[0].value_declarated));
+        declaratedWeight = (this.formatNumber(businessResponse.data[0].value_declarated));
       }
       else {
         Swal.fire({
@@ -372,7 +372,7 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-      if (totalWeight == "" ||totalWeight == 0) {
+      if (totalWeight == 0) {
         totalWeight = row[10];
       }
       const sanitizedtotalWeight = totalWeight.replace(',', '.');
@@ -391,29 +391,26 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-
       // PESO DECLARADO [11]
-      const declaratedWeight = row[11];
-      if (!declaratedWeight) {
+      if (declaratedWeight == 0 && !row[11]) {
         Swal.fire({
           icon: 'error',
           text: `Peso declarado no ingresado en la fila ${excelRowNumber}`
         });
         return;
       }
-
-      if (valuedWeight == 0 && !row[12]) {
+      if (declaratedWeight == 0) {
+        declaratedWeight = row[11];
+      }
+      // PESO VALORIZADO [12] -> validar
+      const valuedWeight = row[12];
+      if (!valuedWeight) {
         Swal.fire({
           icon: 'error',
           text: `Peso valorizado no ingresado en la fila ${excelRowNumber}`
         });
         return;
       }
-
-      if (valuedWeight == "" || valuedWeight == 0) {
-        valuedWeight = row[11];
-      }
-      
       const sanitizedValuedWeight = valuedWeight.replace(',', '.');
       const valuedWeightS = parseFloat(sanitizedValuedWeight);
       if (isNaN(valuedWeightS)) {
@@ -430,7 +427,11 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-      const remainingWeight = totalWeight.toString().replace(",", ".") - valuedWeight.toString().replace(",", ".") - declaratedWeight.toString().replace(",", ".");
+      const numericTotalWeight = parseFloat(totalWeight.toString().replace(",", "."));
+      const numericValuedWeight = parseFloat(valuedWeight.toString().replace(",", "."));
+      const numericDeclaratedWeight = typeof declaratedWeight === 'string' ? parseFloat(declaratedWeight.toString().replace(",", ".")) : declaratedWeight;
+      
+      const remainingWeight = numericTotalWeight - numericValuedWeight - numericDeclaratedWeight;
       const fixedRemainingWeight = remainingWeight.toFixed(2).replace(".", ",");
       if (remainingWeight < 0) {
         Swal.fire({
@@ -438,17 +439,6 @@ export class BulkUploadComponent implements OnInit {
           text: `Peso remanente calculado en la fila ${excelRowNumber} no puede ser menor que cero.\n ${totalWeight} - ${valuedWeight} - ${declaratedWeight} = ${fixedRemainingWeight}`
         });
         return;
-      }
-      
-      for (let j = i + 1; j < rows.length; j++) {
-        const w = rows[j];
-        if (w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
-          Swal.fire({
-            icon: 'info',
-            text: `Mismo Núm de factura reciclador, rut reciclador y reciclador en la fila ${excelRowNumber}`
-          });
-          return;
-        }
       }
 
       const idDetail = row[13];
@@ -458,7 +448,7 @@ export class BulkUploadComponent implements OnInit {
       const tempAdmissionDate = new Date(formatedDateString);
       const formatedAdmissionDate = tempAdmissionDate.toISOString().split('T')[0];
 
-      const foundInvoice = noAprovedInvoices.find((item: { NAME_BUSINESS: string; NAME_ESTABLISHMENT_REGION: string; TipoTratamiento: string; PRECEDENCE:string; TYPE_RESIDUE:string; VALUE: number; ID_DETAIL: number;}) => item.NAME_BUSINESS === nameBusiness && item.NAME_ESTABLISHMENT_REGION === establishment && item.TipoTratamiento === treatmentType && item.PRECEDENCE === material && item.TYPE_RESIDUE === subMaterial && item.VALUE === parseFloat(declaratedWeight) && item.ID_DETAIL == parseInt(idDetail));
+      const foundInvoice = noAprovedInvoices.find((item: { NAME_BUSINESS: string; NAME_ESTABLISHMENT_REGION: string; TipoTratamiento: string; PRECEDENCE:string; TYPE_RESIDUE:string; VALUE: number; ID_DETAIL: number;}) => item.NAME_BUSINESS === nameBusiness && item.NAME_ESTABLISHMENT_REGION === establishment && item.TipoTratamiento === treatmentType && item.PRECEDENCE === material && item.TYPE_RESIDUE === subMaterial && item.VALUE === (typeof declaratedWeight === 'string' ? parseFloat(declaratedWeight) : declaratedWeight) && item.ID_DETAIL == parseInt(idDetail));
       
       if (!foundInvoice) {
         Swal.fire({
