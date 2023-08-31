@@ -59,11 +59,38 @@ export class BulkUploadComponent implements OnInit {
           Swal.close();
         }
       },
-      error: r => {
-        Swal.fire({
-          icon: 'error',
-          text: 'Documento para carga masiva no disponible.'
-        })
+      error: error => {
+        if (error instanceof Blob) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const responseText = reader.result as string; // Convertir a string
+            try {
+              const responseObject = JSON.parse(responseText);
+              if (responseObject.status === false && responseObject.message) {
+                Swal.fire({
+                  icon: 'error',
+                  text: responseObject.message
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  text: 'Documento para carga masiva no disponible.'
+                });
+              }
+            } catch (jsonError) {
+              Swal.fire({
+                icon: 'error',
+                text: 'Error desconocido al procesar la respuesta.'
+              });
+            }
+          };
+          reader.readAsText(error);
+        } else {
+          Swal.fire({
+            icon: 'error',
+            text: 'Error desconocido al procesar la respuesta.'
+          });
+        }
       }
     });
   }
@@ -206,6 +233,7 @@ export class BulkUploadComponent implements OnInit {
 
     // Recorrer cada fila del excel
     for (let i = 0; i < rows.length; i++) {
+      
       const row = rows[i];
       const excelRowNumber = i + 2; // Se agrega 2 para considerar el encabezado y el índice base 1 de Excel
       if (row.length == 0 && i == 0) {
@@ -214,6 +242,17 @@ export class BulkUploadComponent implements OnInit {
           text: 'Archivo vacío'
         });
         return;
+      }
+
+      for (let j = i + 1; j < rows.length; j++) {
+        const w = rows[j];
+        if (w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
+          Swal.fire({
+            icon: 'info',
+            text: `Mismo Núm de factura reciclador, rut reciclador y reciclador en la fila ${excelRowNumber}`
+          });
+          return;
+        }
       }
 
       // EMPRESA CI [0]
