@@ -446,7 +446,10 @@ export class BulkUploadComponent implements OnInit {
       const dateParts = admissionDate.split('/');
       const formatedDateString = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
       const tempAdmissionDate = new Date(formatedDateString);
-      const formatedAdmissionDate = tempAdmissionDate.toISOString().split('T')[0];
+      const backAdmissionDate = tempAdmissionDate.toISOString().split('T')[0];
+
+      const tempFrontAdmissionDate = backAdmissionDate.split('-');
+      const frontAdmissionDate = `${tempFrontAdmissionDate[2]}-${tempFrontAdmissionDate[1]}-${tempFrontAdmissionDate[0]}`;
 
       const foundInvoice = noAprovedInvoices.find((item: { NAME_BUSINESS: string; NAME_ESTABLISHMENT_REGION: string; TipoTratamiento: string; PRECEDENCE:string; TYPE_RESIDUE:string; VALUE: number; ID_DETAIL: number;}) => item.NAME_BUSINESS === nameBusiness && item.NAME_ESTABLISHMENT_REGION === establishment && item.TipoTratamiento === treatmentType && item.PRECEDENCE === material && item.TYPE_RESIDUE === subMaterial && item.VALUE === (typeof declaratedWeight === 'string' ? parseFloat(declaratedWeight) : declaratedWeight) && item.ID_DETAIL == parseInt(idDetail));
       
@@ -454,14 +457,6 @@ export class BulkUploadComponent implements OnInit {
         Swal.fire({
           icon: 'error',
           text: `No se encontró ninguna factura pendiente en la base de datos con los registros de la fila ${excelRowNumber}`
-        });
-        return;
-      }
-      
-      if (!foundCompany) {
-        Swal.fire({
-          icon: 'error',
-          text: `No se encontró ningun reciclador con el nombre "${vatCompanyName}" asociado al rut "${vat}" en la fila ${excelRowNumber}`
         });
         return;
       }
@@ -477,12 +472,13 @@ export class BulkUploadComponent implements OnInit {
         numberInvoice,          //Nº de factura
         vat,                    //Rut
         vatCompanyName,         //Nombre de reciclador
-        formatedAdmissionDate,  //Fecha ingreso PR
+        backAdmissionDate,      //Fecha ingreso PR
         totalWeight,            //Peso total
         declaratedWeight,       //Peso declarado
         valuedWeight,           //Peso valorizado
         fixedRemainingWeight,   //Peso remanente
-        idDetail                //ID detalle
+        idDetail,               //ID detalle
+        frontAdmissionDate
       };
       rowsData.push(rowData);
     }
@@ -504,7 +500,7 @@ export class BulkUploadComponent implements OnInit {
       const element = this.example[i];
       if (this.example.length == Object.keys(this.fileNames).length && this.fileNames[i]) {
         try {
-          const response = await this.establishmentService.saveInvoice(element.vat, element.idBusiness, element.numberInvoice, element.idDetail, element.formatedAdmissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), this.convertTreatmentType(element.treatmentType), this.convertPrecedence(element.material), this.fileToUpload[i]).toPromise();
+          const response = await this.establishmentService.saveInvoice(element.vat, element.idBusiness, element.numberInvoice, element.idDetail, element.backAdmissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), this.convertTreatmentType(element.treatmentType), this.convertPrecedence(element.material), this.fileToUpload[i]).toPromise();
           if (response.status) {
           }
         } catch (error) {
