@@ -4,6 +4,7 @@ import { LayoutComponent } from '../productor-statement/pages/layout/layout.comp
 import { HomeComponent } from './pages/home/home.component';
 import { StatementsComponent } from './pages/statements/statements.component';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { BulkUploadComponent } from './pages/bulk-upload/bulk-upload.component';
 import { FaqComponent } from 'src/app/shared/components/faq/faq.component';
 
 const routes: Routes = [{
@@ -15,6 +16,7 @@ const routes: Routes = [{
     { path: 'statements', component: StatementsComponent },
     { path: 'profile', component: ProfileComponent },
     { path: 'faq', component: FaqComponent },
+    { path: 'bulk-upload-invoice', component: BulkUploadComponent },
     { path: '**', redirectTo: 'home', pathMatch: 'full' }
   ]
 }

@@ -56,6 +56,7 @@ export class SidebarComponent implements OnInit {
     { title: "Mi Perfil", path: "#/gestor/profile", icon: "fa-user" },
     { title: "Preguntas frecuentes", path: "#/gestor/faq", icon: "fa-search" },
     { title: "Consulta de declaración", path: "#/gestor/statements", icon: "fa-file-text" },
+    { title: "Carga Masiva Factura Reciclador", path: "#/gestor/bulk-upload-invoice", icon: "fa-upload" },
   ];
 
   constructor(private router: Router,

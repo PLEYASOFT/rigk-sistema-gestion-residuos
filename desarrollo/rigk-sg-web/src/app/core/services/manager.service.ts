@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +34,12 @@ export class ManagerService {
   getManagersByMaterials(materials: any[], region: string) {
     const materialsParam = materials.join(',');
     return this.http.get<any>(`${this.url}/materials/${materialsParam}/region/${region}`);
+  }
+
+  downloadExcelTemplateInvoice() {
+    let headers = new HttpHeaders();
+    headers = headers.set('Accept', 'application/vnd.ms-excel');
+    return this.http.get<any>(`${this.url}/excel`, { headers: headers, responseType: 'blob' as 'json' });
   }
 
 }
