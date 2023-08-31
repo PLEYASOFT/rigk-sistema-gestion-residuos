@@ -244,17 +244,6 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
 
-      for (let j = i + 1; j < rows.length; j++) {
-        const w = rows[j];
-        if (w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
-          Swal.fire({
-            icon: 'info',
-            text: `Mismo Núm de factura reciclador, rut reciclador y reciclador en la fila ${excelRowNumber}`
-          });
-          return;
-        }
-      }
-
       // EMPRESA CI [0]
       const nameBusiness = row[0];
       if (!nameBusiness) {
@@ -470,14 +459,34 @@ export class BulkUploadComponent implements OnInit {
       const numericValuedWeight = parseFloat(valuedWeight.toString().replace(",", "."));
       const numericDeclaratedWeight = typeof declaratedWeight === 'string' ? parseFloat(declaratedWeight.toString().replace(",", ".")) : declaratedWeight;
       
-      const remainingWeight = numericTotalWeight - numericValuedWeight - numericDeclaratedWeight;
+      const remainingWeight = numericTotalWeight - numericValuedWeight;
       const fixedRemainingWeight = remainingWeight.toFixed(2).replace(".", ",");
       if (remainingWeight < 0) {
         Swal.fire({
           icon: 'error',
-          text: `Peso remanente calculado en la fila ${excelRowNumber} no puede ser menor que cero.\n ${totalWeight} - ${valuedWeight} - ${declaratedWeight} = ${fixedRemainingWeight}`
+          text: `Peso remanente calculado en la fila ${excelRowNumber} no puede ser menor que cero.\n ${totalWeight} - ${valuedWeight}  = ${fixedRemainingWeight}`
         });
         return;
+      }
+
+      for (let j = i + 1; j < rows.length; j++) {
+        const w = rows[j];
+
+        if (w[2] !== row[2] && w[3] !== row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
+          Swal.fire({
+            icon: 'info',
+            text: `Distintos tipos de tratamiento y material con el mismo Núm de factura reciclador, rut reciclador y reciclador en las filas ${j} y ${excelRowNumber}`
+          });
+          return;
+        }
+        // LOGICA DE SUMAR TODOS LOS PESOS... VER COMO MANEJAR 
+        if (w[2] === row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
+          Swal.fire({
+            icon: 'info',
+            text: `Favor de aprobar individualmente facturas iguales de las filas ${j} y ${excelRowNumber}`
+          });
+          return;
+        }
       }
 
       const idDetail = row[13];
@@ -543,7 +552,12 @@ export class BulkUploadComponent implements OnInit {
           if (response.status) {
           }
         } catch (error) {
-          console.error('Error:', error);
+          Swal.close();
+          Swal.fire({
+            icon: 'error',
+            text: `Ha habido un error y el proceso se ha detenido, consulte más tarde el estado de sus declaraciones para ver cuales fueron exitosamente aprobadas y cuales no`
+          });
+          return;
         }
       } else {
         Swal.fire({
