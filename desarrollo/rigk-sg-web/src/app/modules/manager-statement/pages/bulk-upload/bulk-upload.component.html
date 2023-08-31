@@ -63,15 +63,15 @@
 						<td>{{s.treatmentType}}</td>
 						<td>{{s.material}}</td>
 						<td>{{s.subMaterial}}</td>
-						<td>{{s.withdrawalDate}}</td>
+						<td>{{s.withdrawalDate.replaceAll("/", "-")}}</td>
 						<td>{{s.numberInvoice}}</td>
 						<td>{{s.vat}}</td>
 						<td>{{s.vatCompanyName}}</td>
-						<td>{{s.formatedAdmissionDate}}</td>
-						<td>{{s.totalWeight}}</td>
-						<td>{{s.declaratedWeight}}</td>
-						<td>{{s.valuedWeight}}</td>
-						<td>{{s.fixedRemainingWeight}}</td>
+						<td>{{s.frontAdmissionDate}}</td>
+						<td>{{s.totalWeight.replace(".", ",")}}</td>
+						<td>{{s.declaratedWeight.replace(".", ",")}}</td>
+						<td>{{s.valuedWeight.replace(".", ",")}}</td>
+						<td>{{s.fixedRemainingWeight.replace(".", ",")}}</td>
 						<td style="width: 1000px;">
 							<input type="file" #fileInput id="file-input" (change)="onInvoiceChange($event, x)"
 								style="display:none;" accept=".pdf,.jpeg,.jpg">
