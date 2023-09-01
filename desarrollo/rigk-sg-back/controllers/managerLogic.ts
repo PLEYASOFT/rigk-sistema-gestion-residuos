@@ -97,10 +97,16 @@ class ManagerLogic {
             if (invoices == false) {
                 return res.status(500).json({
                     status: false,
-                    message: "No existen facturas pendientes"
+                    message: "Error obteniendo lista de facturas"
                 });
             }
             const noaprovediv = [...invoices].filter(i => i.STATE_GESTOR == 0);
+            if (noaprovediv.length == 0) {
+                return res.status(417).json({
+                    status: false,
+                    message: "No existen facturas pendientes"
+                });
+            }
 
             const businesses = await businessDao.getAllIndividualBusinessVAT();
 

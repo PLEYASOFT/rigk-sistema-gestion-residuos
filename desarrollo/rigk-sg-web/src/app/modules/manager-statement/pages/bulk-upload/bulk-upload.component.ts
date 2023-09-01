@@ -59,11 +59,38 @@ export class BulkUploadComponent implements OnInit {
           Swal.close();
         }
       },
-      error: r => {
-        Swal.fire({
-          icon: 'error',
-          text: 'Documento para carga masiva no disponible.'
-        })
+      error: error => {
+        if (error instanceof Blob) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const responseText = reader.result as string; // Convertir a string
+            try {
+              const responseObject = JSON.parse(responseText);
+              if (responseObject.status === false && responseObject.message) {
+                Swal.fire({
+                  icon: 'error',
+                  text: responseObject.message
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  text: 'Documento para carga masiva no disponible.'
+                });
+              }
+            } catch (jsonError) {
+              Swal.fire({
+                icon: 'error',
+                text: 'Error desconocido al procesar la respuesta.'
+              });
+            }
+          };
+          reader.readAsText(error);
+        } else {
+          Swal.fire({
+            icon: 'error',
+            text: 'Error desconocido al procesar la respuesta.'
+          });
+        }
       }
     });
   }
@@ -206,6 +233,7 @@ export class BulkUploadComponent implements OnInit {
 
     // Recorrer cada fila del excel
     for (let i = 0; i < rows.length; i++) {
+      
       const row = rows[i];
       const excelRowNumber = i + 2; // Se agrega 2 para considerar el encabezado y el índice base 1 de Excel
       if (row.length == 0 && i == 0) {
@@ -431,14 +459,34 @@ export class BulkUploadComponent implements OnInit {
       const numericValuedWeight = parseFloat(valuedWeight.toString().replace(",", "."));
       const numericDeclaratedWeight = typeof declaratedWeight === 'string' ? parseFloat(declaratedWeight.toString().replace(",", ".")) : declaratedWeight;
       
-      const remainingWeight = numericTotalWeight - numericValuedWeight - numericDeclaratedWeight;
+      const remainingWeight = numericTotalWeight - numericValuedWeight;
       const fixedRemainingWeight = remainingWeight.toFixed(2).replace(".", ",");
       if (remainingWeight < 0) {
         Swal.fire({
           icon: 'error',
-          text: `Peso remanente calculado en la fila ${excelRowNumber} no puede ser menor que cero.\n ${totalWeight} - ${valuedWeight} - ${declaratedWeight} = ${fixedRemainingWeight}`
+          text: `Peso remanente calculado en la fila ${excelRowNumber} no puede ser menor que cero.\n ${totalWeight} - ${valuedWeight}  = ${fixedRemainingWeight}`
         });
         return;
+      }
+
+      for (let j = i + 1; j < rows.length; j++) {
+        const w = rows[j];
+
+        if (w[2] !== row[2] && w[3] !== row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
+          Swal.fire({
+            icon: 'info',
+            text: `Distintos tipos de tratamiento y material con el mismo Núm de factura reciclador, rut reciclador y reciclador en las filas ${j} y ${excelRowNumber}`
+          });
+          return;
+        }
+        // LOGICA DE SUMAR TODOS LOS PESOS... VER COMO MANEJAR 
+        if (w[2] === row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
+          Swal.fire({
+            icon: 'info',
+            text: `Favor de aprobar individualmente facturas iguales de las filas ${j} y ${excelRowNumber}`
+          });
+          return;
+        }
       }
 
       const idDetail = row[13];
@@ -446,7 +494,10 @@ export class BulkUploadComponent implements OnInit {
       const dateParts = admissionDate.split('/');
       const formatedDateString = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
       const tempAdmissionDate = new Date(formatedDateString);
-      const formatedAdmissionDate = tempAdmissionDate.toISOString().split('T')[0];
+      const backAdmissionDate = tempAdmissionDate.toISOString().split('T')[0];
+
+      const tempFrontAdmissionDate = backAdmissionDate.split('-');
+      const frontAdmissionDate = `${tempFrontAdmissionDate[2]}-${tempFrontAdmissionDate[1]}-${tempFrontAdmissionDate[0]}`;
 
       const foundInvoice = noAprovedInvoices.find((item: { NAME_BUSINESS: string; NAME_ESTABLISHMENT_REGION: string; TipoTratamiento: string; PRECEDENCE:string; TYPE_RESIDUE:string; VALUE: number; ID_DETAIL: number;}) => item.NAME_BUSINESS === nameBusiness && item.NAME_ESTABLISHMENT_REGION === establishment && item.TipoTratamiento === treatmentType && item.PRECEDENCE === material && item.TYPE_RESIDUE === subMaterial && item.VALUE === (typeof declaratedWeight === 'string' ? parseFloat(declaratedWeight) : declaratedWeight) && item.ID_DETAIL == parseInt(idDetail));
       
@@ -454,14 +505,6 @@ export class BulkUploadComponent implements OnInit {
         Swal.fire({
           icon: 'error',
           text: `No se encontró ninguna factura pendiente en la base de datos con los registros de la fila ${excelRowNumber}`
-        });
-        return;
-      }
-      
-      if (!foundCompany) {
-        Swal.fire({
-          icon: 'error',
-          text: `No se encontró ningun reciclador con el nombre "${vatCompanyName}" asociado al rut "${vat}" en la fila ${excelRowNumber}`
         });
         return;
       }
@@ -477,12 +520,13 @@ export class BulkUploadComponent implements OnInit {
         numberInvoice,          //Nº de factura
         vat,                    //Rut
         vatCompanyName,         //Nombre de reciclador
-        formatedAdmissionDate,  //Fecha ingreso PR
+        backAdmissionDate,      //Fecha ingreso PR
         totalWeight,            //Peso total
         declaratedWeight,       //Peso declarado
         valuedWeight,           //Peso valorizado
         fixedRemainingWeight,   //Peso remanente
-        idDetail                //ID detalle
+        idDetail,               //ID detalle
+        frontAdmissionDate
       };
       rowsData.push(rowData);
     }
@@ -504,11 +548,16 @@ export class BulkUploadComponent implements OnInit {
       const element = this.example[i];
       if (this.example.length == Object.keys(this.fileNames).length && this.fileNames[i]) {
         try {
-          const response = await this.establishmentService.saveInvoice(element.vat, element.idBusiness, element.numberInvoice, element.idDetail, element.formatedAdmissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), this.convertTreatmentType(element.treatmentType), this.convertPrecedence(element.material), this.fileToUpload[i]).toPromise();
+          const response = await this.establishmentService.saveInvoice(element.vat, element.idBusiness, element.numberInvoice, element.idDetail, element.backAdmissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), this.convertTreatmentType(element.treatmentType), this.convertPrecedence(element.material), this.fileToUpload[i]).toPromise();
           if (response.status) {
           }
         } catch (error) {
-          console.error('Error:', error);
+          Swal.close();
+          Swal.fire({
+            icon: 'error',
+            text: `Ha habido un error y el proceso se ha detenido, consulte más tarde el estado de sus declaraciones para ver cuales fueron exitosamente aprobadas y cuales no`
+          });
+          return;
         }
       } else {
         Swal.fire({
