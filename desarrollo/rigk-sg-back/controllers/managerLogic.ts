@@ -137,7 +137,7 @@ class ManagerLogic {
             for (let i = 0; i < businesses.length; i++) {
                 const business = await businesses[i];
                 const reference = getReferenceExcel(i);
-                let nameVAT = business.VAT;
+                let nameVAT = "_"+business.VAT.replace(/-/g, "_");
 
                 const emp = await businessDao.getBusinessByVAT(business.VAT);
 
