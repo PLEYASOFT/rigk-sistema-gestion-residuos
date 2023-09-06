@@ -472,6 +472,20 @@ export class BulkUploadComponent implements OnInit {
       for (let j = i + 1; j < rows.length; j++) {
         const w = rows[j];
 
+        if (w[2] !== row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
+          Swal.fire({
+            icon: 'info',
+            text: `Distintos Tipos de tratamiento y/o material en las filas ${j} y ${excelRowNumber}`
+          });
+          return;
+        }
+        if (w[2] === row[2] && w[3] !== row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
+          Swal.fire({
+            icon: 'info',
+            text: `Distintos Tipos de tratamiento y/o material en las filas ${j} y ${excelRowNumber}`
+          });
+          return;
+        }
         if (w[2] !== row[2] && w[3] !== row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
           Swal.fire({
             icon: 'info',
