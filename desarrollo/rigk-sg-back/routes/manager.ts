@@ -3,7 +3,9 @@ import managerLogic from "../controllers/managerLogic";
 import { validarJWT } from "../middleware/validar-jwt";
 const router = Router();
 
+
 router.post('/add', [validarJWT], managerLogic.addManager);
+router.get('/regiones', [validarJWT], managerLogic.getAllRegions);
 router.get('/all', [validarJWT], managerLogic.getAllManager);
 router.get('/allMaterials', [validarJWT], managerLogic.getAllMaterials);
 router.get('/materials/:materials/region/:region', [validarJWT], managerLogic.getManagersByMaterial);

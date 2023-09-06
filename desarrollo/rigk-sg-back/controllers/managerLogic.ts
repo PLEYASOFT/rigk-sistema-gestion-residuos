@@ -274,6 +274,19 @@ class ManagerLogic {
             });
         }
     }
+
+    async getAllRegions(req: any, res: Response) {
+        try {
+            const result = await managerDao.getAllRegions();
+            res.status(200).json({ status: true, data: result, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
 }
 const managerLogic = new ManagerLogic();
 export default managerLogic;

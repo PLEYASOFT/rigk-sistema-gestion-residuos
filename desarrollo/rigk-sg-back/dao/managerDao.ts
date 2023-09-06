@@ -63,6 +63,13 @@ class ManagerDao {
         conn.end();
         return managerList;
     }
+
+    public async getAllRegions() {
+        const conn = mysqlcon.getConnection()!;
+        const query = await conn.query("SELECT NAME FROM regions").then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        return query;
+    }
 }
 const managerDao = new ManagerDao();
 export default managerDao;
