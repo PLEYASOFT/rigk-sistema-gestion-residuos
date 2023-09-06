@@ -507,8 +507,15 @@ export class BulkUploadComponent implements OnInit {
           });
           return;
         }
+        if (w[2] === row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8] && w[10] !== row[10]) {
+          Swal.fire({
+            icon: 'info',
+            text: `Ingresar el mismo peso total para todas las facturas iguales con numero ${row[6]}`
+          });
+          return;
+        }
         // LOGICA DE SUMAR TODOS LOS PESOS... VER COMO MANEJAR 
-        if (w[2] === row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
+        if (w[2] === row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8] && w[10] === row[10]) {
           sameRowsVerf.add(row);
           sameRowsVerf.add(w);
         }
@@ -592,9 +599,6 @@ export class BulkUploadComponent implements OnInit {
       if (facturaInicial != parseInt(value.numberInvoice)) {
         facturaInicial = parseInt(value.numberInvoice);
         valorTotal = parseInt(value.totalWeight);
-      }
-      if (valorTotal != parseInt(value.totalWeight)) {
-        value.totalWeight = valorTotal!.toString();
       }
       const valorizadoSuma = parseInt(value.valuedWeight);
       valorTotal! -= valorizadoSuma;
