@@ -594,20 +594,13 @@ export class BulkUploadComponent implements OnInit {
         valorTotal = parseInt(value.totalWeight);
       }
       if (valorTotal != parseInt(value.totalWeight)) {
-        value.totalWeight = valorTotal;
+        value.totalWeight = valorTotal!.toString();
       }
       const valorizadoSuma = parseInt(value.valuedWeight);
       valorTotal! -= valorizadoSuma;
       value.fixedRemainingWeight = valorTotal!.toString();
       groupedData[key].remanente_total = valorTotal!;
     }
-
-    // console.log(groupedData);
-    // console.log("//////");
-    // console.log(rowsData);
-    // console.log(rowsDataDuplicated);
-    // console.log("//////");
-    // console.log(sameRowsVerf);
 
     for (const key in groupedData) {
       if (groupedData.hasOwnProperty(key)) {
@@ -639,9 +632,9 @@ export class BulkUploadComponent implements OnInit {
     });
     Swal.showLoading();
 
-    for (let i = 0; i < this.invoices.length; i++) {
-      const element = this.invoices[i];
-      if (this.invoices.length == Object.keys(this.fileNames).length && this.fileNames[i]) {
+    for (let i = 0; i < this.allInvoices.length; i++) {
+      const element = this.allInvoices[i];
+      if (this.allInvoices.length == Object.keys(this.fileNames).length && this.fileNames[i]) {
         try {
           const response = await this.establishmentService.saveInvoice(element.vat, element.idBusiness, element.numberInvoice, element.idDetail, element.backAdmissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), this.convertTreatmentType(element.treatmentType), this.convertPrecedence(element.material), this.fileToUpload[i]).toPromise();
           if (response.status) {
@@ -662,7 +655,7 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
     }
-    this.invoices = [];
+    this.allInvoices = [];
     Swal.close();
     Swal.fire({
       icon: 'success',
