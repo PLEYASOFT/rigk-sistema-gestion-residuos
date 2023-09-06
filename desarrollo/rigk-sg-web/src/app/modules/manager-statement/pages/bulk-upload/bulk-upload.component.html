@@ -34,7 +34,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="box box-form mb-12" *ngIf="example.length > 0">
+		<div class="box box-form mb-12" *ngIf="allInvoices.length > 0">
 			<table class="table table-even table-section table-borderless table-radius">
 				<thead>
 					<tr align="center">
@@ -57,7 +57,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr *ngFor="let s of example; let x = index">
+					<tr *ngFor="let s of allInvoices; let x = index">
 						<td>{{s.nameBusiness}}</td>
 						<td>{{s.establishment}}</td>
 						<td>{{s.treatmentType}}</td>
@@ -68,7 +68,7 @@
 						<td>{{s.vat}}</td>
 						<td>{{s.vatCompanyName}}</td>
 						<td>{{s.frontAdmissionDate}}</td>
-						<td>{{s.totalWeight.replace(".", ",")}}</td>
+						<td>{{s.totalWeight}}</td>
 						<td>{{s.declaratedWeight.replace(".", ",")}}</td>
 						<td>{{s.valuedWeight.replace(".", ",")}}</td>
 						<td>{{s.fixedRemainingWeight.replace(".", ",")}}</td>
@@ -107,7 +107,7 @@
 						<td></td>
 						<td colspan="2">
 							<button class="btn btn-primary col-12" (click) = "saveAllInvoices()"
-								[ngClass]="verification==example.length ? '' : 'disabled'">
+								[ngClass]="verification==allInvoices.length ? '' : 'disabled'">
 								Finalizar
 							</button>
 						</td>

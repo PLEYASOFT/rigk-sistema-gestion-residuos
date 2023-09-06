@@ -70,6 +70,18 @@ class ManagerDao {
         conn.end();
         return query;
     }
+    public async getAllCommunes() {
+        const conn = mysqlcon.getConnection()!;
+        const query = await conn.query("SELECT NAME FROM communes").then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        return query;
+    }
+    public async getAllSubmaterial() {
+        const conn = mysqlcon.getConnection()!;
+        const query = await conn.query("SELECT SUBMATERIAL FROM submaterial").then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        return query;
+    }
 }
 const managerDao = new ManagerDao();
 export default managerDao;

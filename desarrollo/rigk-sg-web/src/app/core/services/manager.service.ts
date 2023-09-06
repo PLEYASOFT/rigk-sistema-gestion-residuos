@@ -31,6 +31,18 @@ export class ManagerService {
     return this.http.get<any>(`${this.url}/allMaterials/`);
   }
 
+  getAllRegions(){
+    return this.http.get<any>(`${this.url}/regiones/`)
+  }
+
+  getAllCommunes(){
+    return this.http.get<any>(`${this.url}/comunas/`)
+  }
+
+  getAllSubmaterial(){
+    return this.http.get<any>(`${this.url}/submaterial/`)
+  }
+
   getManagersByMaterials(materials: any[], region: string) {
     const materialsParam = materials.join(',');
     return this.http.get<any>(`${this.url}/materials/${materialsParam}/region/${region}`);

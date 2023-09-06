@@ -137,7 +137,7 @@ class ManagerLogic {
             for (let i = 0; i < businesses.length; i++) {
                 const business = await businesses[i];
                 const reference = getReferenceExcel(i);
-                let nameVAT = business.VAT;
+                let nameVAT = "_"+business.VAT.replace(/-/g, "_");
 
                 const emp = await businessDao.getBusinessByVAT(business.VAT);
 
@@ -278,6 +278,31 @@ class ManagerLogic {
     async getAllRegions(req: any, res: Response) {
         try {
             const result = await managerDao.getAllRegions();
+            res.status(200).json({ status: true, data: result, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+    async getAllCommunes(req: any, res: Response) {
+        try {
+            const result = await managerDao.getAllCommunes();
+            res.status(200).json({ status: true, data: result, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+
+    async getAllSubmaterial(req: any, res: Response) {
+        try {
+            const result = await managerDao.getAllSubmaterial();
             res.status(200).json({ status: true, data: result, msg: '' });
         } catch (err) {
             console.log(err);

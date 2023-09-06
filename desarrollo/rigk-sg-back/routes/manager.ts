@@ -6,6 +6,8 @@ const router = Router();
 
 router.post('/add', [validarJWT], managerLogic.addManager);
 router.get('/regiones', [validarJWT], managerLogic.getAllRegions);
+router.get('/comunas', [validarJWT], managerLogic.getAllCommunes);
+router.get('/submaterial', [validarJWT], managerLogic.getAllSubmaterial);
 router.get('/all', [validarJWT], managerLogic.getAllManager);
 router.get('/allMaterials', [validarJWT], managerLogic.getAllMaterials);
 router.get('/materials/:materials/region/:region', [validarJWT], managerLogic.getManagersByMaterial);
