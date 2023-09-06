@@ -287,6 +287,31 @@ class ManagerLogic {
             });
         }
     }
+    async getAllCommunes(req: any, res: Response) {
+        try {
+            const result = await managerDao.getAllCommunes();
+            res.status(200).json({ status: true, data: result, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+
+    async getAllSubmaterial(req: any, res: Response) {
+        try {
+            const result = await managerDao.getAllSubmaterial();
+            res.status(200).json({ status: true, data: result, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
 }
 const managerLogic = new ManagerLogic();
 export default managerLogic;
