@@ -28,12 +28,18 @@ class IndustrialConsumerDao {
         conn.end();
         return { attached };
     }
-    public async verifyRow(treatment:any, sub:any,gestor:any,date:any) {
+    public async verifyRow(treatment: any, sub: any, gestor: any, date: any, idEstablishment: any) {
         const conn = mysqlcon.getConnection()!;
-        const data: any = await conn.execute("SELECT * FROM detail_industrial_consumer_form WHERE TREATMENT_TYPE=? AND TYPE_RESIDUE=? AND ID_GESTOR=? AND DATE_WITHDRAW=?", [treatment, sub,gestor,date]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
+        const data: any = await conn.execute(
+            `SELECT detail.* FROM detail_industrial_consumer_form as detail
+            JOIN header_industrial_consumer_form as header ON detail.ID_HEADER = header.ID
+            WHERE detail.TREATMENT_TYPE=? AND detail.TYPE_RESIDUE=? AND detail.ID_GESTOR=? AND detail.DATE_WITHDRAW=? AND header.ID_ESTABLISHMENT=?`, 
+            [treatment, sub, gestor, date, idEstablishment]
+        ).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
+        
         conn.end();
         return data;
-    }
+    }    
     public async saveHeaderData(establishmentId: any, createdBy: any, createdAt: Date, yearStatement: any) {
         const conn = mysqlcon.getConnection()!;
         const header: any = await conn.execute("INSERT INTO header_industrial_consumer_form(ID_ESTABLISHMENT, CREATED_BY, CREATED_AT, UPDATED_AT, YEAR_STATEMENT) VALUES (?,?,?,?,?)", [establishmentId, createdBy, createdAt, createdAt, yearStatement])
@@ -77,7 +83,8 @@ class IndustrialConsumerDao {
                     WHEN 2 THEN 'Factura gestor'
                     WHEN 3 THEN 'Registro de peso'
                     WHEN 4 THEN 'Fotografía Retiro'
-                    WHEN 5 THEN 'Otro'
+                    WHEN 5 THEN 'Balance de masas'
+                    WHEN 6 THEN 'Otro'
                     ELSE 'Desconocido'
                 END AS TYPE_FILE_TIPEADO
             FROM

@@ -31,6 +31,10 @@ export class ManagerService {
     return this.http.get<any>(`${this.url}/allMaterials/`);
   }
 
+  getAllTreatments() {
+    return this.http.get<any>(`${this.url}/allTreatments/`);
+  }
+
   getAllRegions(){
     return this.http.get<any>(`${this.url}/regiones/`)
   }
@@ -41,6 +45,10 @@ export class ManagerService {
 
   getAllSubmaterial(){
     return this.http.get<any>(`${this.url}/submaterial/`)
+  }
+
+  getAllSubmaterialFormatted(){
+    return this.http.get<any>(`${this.url}/submaterialFormatted/`)
   }
 
   getManagersByMaterials(materials: any[], region: string) {

@@ -113,13 +113,21 @@ class EstablishmentDao {
 
     public async getEstablishmentByID(ID: any) {
         const conn = mysqlcon.getConnection()!;
-        const establishment: any = await conn.query("SELECT * FROM establishment WHERE establishment.ID = ?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const establishment: any = await conn.query(
+            "SELECT establishment.*, communes.NAME AS COMUNA_NAME FROM establishment " +
+            "LEFT JOIN communes ON establishment.ID_COMUNA = communes.ID " +
+            "WHERE establishment.ID = ?", 
+            [ID]
+        ).then((res) => res[0]).catch(error => [{ undefined }]);
+        
         if (establishment == null || establishment.length == 0) {
             return false;
         }
+        
         conn.end();
         return establishment;
     }
+    
     public async getInvoice(number: any, rut: any, treatment_type: number, material_type: number, id_business: number) {
         const conn = mysqlcon.getConnection()!;
         const business: any = await conn.execute("SELECT ID, NAME FROM business WHERE VAT = ?", [rut]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });

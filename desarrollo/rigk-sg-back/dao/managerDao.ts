@@ -45,6 +45,15 @@ class ManagerDao {
         return material;
     }
 
+    public async getAllTreatments() {
+        const conn = mysqlcon.getConnection()!;
+        const material: any = await conn.query("SELECT * FROM type_treatment").then(res => res[0]).catch(erro => undefined);
+        if (material == null || material.length == 0) {
+            return false;
+        }
+        conn.end();
+        return material;
+    }
     public async getManagersByMaterials(materials: string[], REGION: string) {
         const conn = mysqlcon.getConnection()!;
         const placeholders = materials.map(() => '?').join(',');
@@ -76,12 +85,60 @@ class ManagerDao {
         conn.end();
         return query;
     }
+
     public async getAllSubmaterial() {
         const conn = mysqlcon.getConnection()!;
-        const query = await conn.query("SELECT SUBMATERIAL FROM submaterial").then((res) => res[0]).catch(error => [{ undefined }]);
+        const query = await conn.query("SELECT ID, SUBMATERIAL FROM submaterial")
+            .then((res) => {
+                if (Array.isArray(res[0])) {
+                    return res[0].map((row: any) => {
+                        return {
+                            id: row.ID,
+                            name: row.SUBMATERIAL
+                        };
+                    });
+                } else {
+                    return [];
+                }
+            })
+            .catch(error => [{ undefined }]);
+        
         conn.end();
         return query;
     }
+    
+    public async getMaterialsFormatted() {
+        const conn = mysqlcon.getConnection()!;
+        const rawResults = await conn.query(`SELECT type_material.ID AS type_id, type_material.MATERIAL AS material_name, submaterial.ID AS submaterial_id,
+        submaterial.SUBMATERIAL AS submaterial_name FROM type_material JOIN typematerial_submaterial ON type_material.ID = typematerial_submaterial.ID_TYPE_MATERIAL
+        JOIN submaterial ON typematerial_submaterial.ID_SUBMATERIAL = submaterial.ID ORDER BY type_material.ID, submaterial.ID`).then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        
+        let materials: any = [];
+        let currentMaterial: any = null;
+        
+        if (Array.isArray(rawResults)) {
+            rawResults.forEach((row: any) => {
+                if (!currentMaterial || currentMaterial._id !== row.type_id) {
+                    if (currentMaterial) {
+                        materials.push(currentMaterial);
+                    }
+                    currentMaterial = {
+                        _id: row.type_id,
+                        child: []
+                    };
+                }
+                currentMaterial.child.push({ id: row.submaterial_id, name: row.submaterial_name });
+            });
+        }        
+        
+        if (currentMaterial) {
+            materials.push(currentMaterial);
+        }
+    
+        return materials;
+    }
+    
 }
 const managerDao = new ManagerDao();
 export default managerDao;

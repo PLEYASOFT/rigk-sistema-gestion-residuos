@@ -15,78 +15,24 @@ export class FormComponent implements OnInit {
   lastRowNumber: number = 0;
   tables = [""];
   e = 1;
-  materials = [
-    {
-      _id: 1,
-      child: [
-        { id: 1, name: "Papel" },
-        { id: 2, name: "Papel Compuesto (cemento)" },
-        { id: 3, name: "Caja Cartón" },
-        { id: 4, name: "Otro" },
-        { id: 5, name: "Esquineros Conos" },
-        { id: 6, name: "Cartón RH" },
-      ]
-    },
-    {
-      _id: 2,
-      child: [
-        { id: 7, name: "Envase Aluminio" },
-        { id: 8, name: "Malla o Reja (IBC)" },
-        { id: 9, name: "Envase Hojalata" },
-        { id: 10, name: "Otro" },
-        { id: 11, name: "Esquineros Metal" },
-      ]
-    },
-    {
-      _id: 3,
-      child: [
-        { id: 12, name: "Plástico Film Embalaje" },
-        { id: 13, name: "Plástico Envases Rígidos (Incl. Tapas)" },
-        { id: 14, name: "Plástico Sacos o Maxisacos" },
-        { id: 15, name: "Plástico EPS (Poliestireno Expandido)" },
-        { id: 16, name: "Plástico Zuncho" },
-        { id: 17, name: "Otro" },
-      ]
-    },
-    {
-      _id: 4,
-      child: [
-        { id: 18, name: "Caja de Madera" },
-        { id: 19, name: "Pallet de Madera" }
-      ]
-    },
-  ];
-
-  materials_2 = [
-    { id: 1, name: "Papel" },
-    { id: 2, name: "Papel Compuesto (cemento)" },
-    { id: 3, name: "Caja Cartón" },
-    { id: 4, name: "Otro" },
-    { id: 5, name: "Esquineros Conos" },
-    { id: 6, name: "Cartón RH" },
-    { id: 7, name: "Envase Aluminio" },
-    { id: 8, name: "Malla o Reja (IBC)" },
-    { id: 9, name: "Envase Hojalata" },
-    { id: 10, name: "Otro" },
-    { id: 11, name: "Esquineros Metal" },
-    { id: 12, name: "Plástico Film Embalaje" },
-    { id: 13, name: "Plástico Envases Rígidos (Incl. Tapas)" },
-    { id: 14, name: "Plástico Sacos o Maxisacos" },
-    { id: 15, name: "Plástico EPS (Poliestireno Expandido)" },
-    { id: 16, name: "Plástico Zuncho" },
-    { id: 17, name: "Otro" },
-    { id: 18, name: "Caja de Madera" },
-    { id: 19, name: "Pallet de Madera" }
-  ];
+  materials: any = [];
+  materials_2 = [];
+  categories = [];
+  treatments = [];
   disableAll = false;
   treatment_type = [
     "Reciclaje Mecánico",
     "Valorización Energética",
-    "Disposición Final en RS"
+    "Disposición Final en RS",
+    "Reciclaje Interno",
+    "Preparación Reutilización",
+    "DF en Relleno Sanitario",
+    "DF en Relleno Seguridad"
   ];
   total_tables = [0, 0, 0];
   id_establishment = -1;
   region = "";
+  comuna = "";
   establishments: any[] = [];
   selectedEstablishment: any = [];
   attached: any[] = [];
@@ -96,10 +42,11 @@ export class FormComponent implements OnInit {
   establishment = "";
   goTo = '/consumidor/';
   data: { table: number, residue: number, val: number, date_withdraw: string, id_gestor: number, ler: string, treatment_type: number }[] = [];
-  lable_type = ['Guia de Despacho', 'Factura Gestor', 'Registro de peso', 'Fotografía Retiro', 'Otro'];
+  lable_type = ['Guia de Despacho', 'Factura Gestor', 'Registro de peso', 'Fotografía Retiro', 'Balance de masas','Otro'];
   business_name = "";
   business_code = "";
   userData: any;
+  id_compare: any;
   constructor(public establishmentService: EstablishmentService,
     public consumerService: ConsumerService,
     public business: BusinessService,
@@ -126,6 +73,41 @@ export class FormComponent implements OnInit {
   ngOnInit(): void {
     localStorage.removeItem('statementsState');
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
+    this.getAllSubmaterialFormatted();
+    this.getAllSubmaterial();
+    this.getAllMaterials();
+    this.getAllTreatments();
+  }
+  getAllSubmaterialFormatted() {
+    this.managerService.getAllSubmaterialFormatted().subscribe(r => {
+      if (r.status) {
+        this.materials = r.data;
+      }
+    });
+  }
+
+  getAllSubmaterial() {
+    this.managerService.getAllSubmaterial().subscribe(r => {
+      if (r.status) {
+        this.materials_2 = r.data;
+      }
+    });
+  }
+
+  getAllMaterials() {
+    this.managerService.getAllMaterials().subscribe(r => {
+      if (r.status) {
+        this.categories = r.status;
+      }
+    });
+  }
+
+  getAllTreatments() {
+    this.managerService.getAllTreatments().subscribe(r => {
+      if (r.status) {
+        this.treatments = r.status;
+      }
+    });
   }
   reset() {
     this.id_establishment = -1;
@@ -147,8 +129,10 @@ export class FormComponent implements OnInit {
   onEstablishmentChange(event: any) {
     this.establishmentService.getEstablishmentByID(this.selectedEstablishment[0]).subscribe(r => {
       if (r.status) {
+        this.id_compare = r.status[0].ID;
         this.region = r.status[0].REGION;
-        this.id_establishment = r.status[0].ID;
+        this.comuna = r.status[0].COMUNA_NAME;
+        this.id_establishment = r.status[0].ID_VU ? r.status[0].ID_VU : '-';
         this.fetchManagersForAllMaterials(r.status[0].REGION);
       }
       else {
@@ -159,13 +143,19 @@ export class FormComponent implements OnInit {
 
   fetchManagersForAllMaterials(region: any) {
     const materialIds = this.materials_2
-      .filter(material => material.id !== undefined)
-      .map(material => material.id);
+      .filter((material: any) => material.id !== undefined)
+      .map((material: any) => material.id);
+
     this.managerService.getManagersByMaterials(materialIds, region).subscribe(results => {
-      this.managers = results.status.map((item: any) => ({
-        material: item.COD_MATERIAL,
-        managers: item
-      }));
+      if (Array.isArray(results.status)) {
+        this.managers = results.status.map((item: any) => ({
+          material: item.COD_MATERIAL,
+          managers: item.BUSINESS_NAME,
+          id_gestor: item.ID_BUSINESS
+        }));
+      } else {
+        console.error('results.status no es un array');
+      }
     });
   }
 
@@ -290,7 +280,7 @@ export class FormComponent implements OnInit {
         if (!r.status) {
           Swal.fire({
             icon: 'info',
-            text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
+            text: 'Misma empresa, establecimiento, tratamiento, material, subtipo y gestor para esta fecha'
           });
           input.value = "-1";
           return;
@@ -303,28 +293,25 @@ export class FormComponent implements OnInit {
     const tb_ref = document.getElementById(`table_${i + 1}`)?.getElementsByTagName('tbody')[0];
     let n_row: any = this.lastRowNumber;
 
-    const html: string = `
+    let html: string = `
     <tr id="tr">
                         <td>
                           <select class="form-select" id="inp_subcat_${i + 1}_${n_row}">
-                            <option value="-1">Seleccione Subcategoría</option>
-                            <option value="1">Papel/Cartón</option>
-                            <option value="2">Metal</option>
-                            <option value="3">Plástico</option>
-                            <option value="4">Madera</option>
+                            <option value="-1">Seleccione Subcategoría</option>`;
+
+    this.categories.forEach((category: any) => {
+      html += `<option value="${category.ID}">${category.MATERIAL}</option>`;
+    });
+    html += `
                           </select>
                         </td>
                         <td style="padding-left: 20px;">
                             <select class="form-select" id="inp_treatment_${i + 1}_${n_row}">
-                                <option value="-1">Seleccione Tratamiento</option>
-                                <option value="1">Reciclaje Mecánico</option>
-                                <option value="2">Valorización Energética</option>
-                                <option value="3">Disposición Final en RS</option>
-                                <option value="4">Reciclaje Interno</option>
-                                <option value="5">Preparación Reutilización</option>
-                                <option value="6">DF en Relleno Sanitario </option>
-                                <option value="7">DF en Relleno Seguridad</option>
-                                
+                                <option value="-1">Seleccione Tratamiento</option>`;
+    this.treatments.forEach((category: any) => {
+      html += `<option value="${category.ID}">${category.NAME}</option>`;
+    });
+    html += `   
                             </select>
                         </td>
                         <td>
@@ -378,8 +365,8 @@ export class FormComponent implements OnInit {
       files: []
     };
     tmp.push(e);
-    const analize = (treatment: any, sub: any, gestor: any, date: any, row: any) => {
-      this.verifyRow({ treatment, sub, gestor, date }, row);
+    const analize = (treatment: any, sub: any, gestor: any, date: any, row: any, idEstablishment: any) => {
+      this.verifyRow({ treatment, sub, gestor, date, idEstablishment }, row);
     }
 
     const inp_treatment = (document.getElementById(`inp_treatment_${i + 1}_${n_row}`) as HTMLInputElement);
@@ -400,7 +387,7 @@ export class FormComponent implements OnInit {
         inp_treatment.value = "0";
         return;
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_treatment);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_treatment, this.id_compare);
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -432,7 +419,7 @@ export class FormComponent implements OnInit {
     const inp_subcat = (document.getElementById(`inp_subcat_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_subcat.onchange = () => {
       this.selectedCategoryId = parseInt(inp_subcat.value);
-      const selectedCategory = this.materials.find(mat => mat._id === this.selectedCategoryId);
+      const selectedCategory = this.materials.find((mat: any) => mat._id === this.selectedCategoryId);
       const subMaterials = selectedCategory ? selectedCategory.child : [];
 
       removeOptions(inp_sub);
@@ -441,7 +428,7 @@ export class FormComponent implements OnInit {
       defaultOption.value = "-1";
       defaultOption.innerHTML = "Seleccione Subtipo";
       inp_sub.appendChild(defaultOption);
-      subMaterials.forEach(material => {
+      subMaterials.forEach((material: any) => {
         let opt = document.createElement('option');
         opt.value = material.id.toString();
         opt.innerHTML = material.name;
@@ -506,7 +493,7 @@ export class FormComponent implements OnInit {
         inp_sub.value = "0";
         return;
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_sub);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_sub, this.id_compare);
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -527,7 +514,46 @@ export class FormComponent implements OnInit {
         tmp[w].sub = inp_sub.value;
         tmp[w].gestor = "-1";
       }
+
+      updateGestorOptions();
     }
+
+
+    function updateGestorOptions() {
+      removeOptions(inp_gestor);
+
+      let defaultOption = document.createElement('option');
+      defaultOption.value = "-1";
+      defaultOption.innerHTML = "Seleccione";
+      inp_gestor.appendChild(defaultOption);
+
+      let internalRecycleOption = document.createElement('option');
+      internalRecycleOption.value = "0";
+      internalRecycleOption.innerHTML = "Reciclaje Interno";
+      inp_gestor.appendChild(internalRecycleOption);
+
+      const gestorsForCategory = getGestorsForCategory(inp_sub.value);
+      gestorsForCategory.forEach(gestor => {
+        let opt = document.createElement('option');
+        opt.value = gestor.id_gestor;
+        opt.innerHTML = gestor.name;
+        inp_gestor.appendChild(opt);
+      });
+    }
+
+    const getGestorsForCategory = (categoryId: string): any[] => {
+      const filteredManagers = this.managers.filter(m => m.material === categoryId);
+      const gestors = filteredManagers.map(m => {
+        return {
+          id: m.material,
+          name: m.managers,
+          id_gestor: m.id_gestor
+        };
+      });
+
+      return gestors;
+    }
+
 
     const inp_value = (document.getElementById(`inp_value_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_value.onchange = () => {
@@ -584,7 +610,7 @@ export class FormComponent implements OnInit {
         inp_date.value = "";
         return;
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_date);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_date, this.id_compare);
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -623,7 +649,7 @@ export class FormComponent implements OnInit {
         inp_gestor.value = "-1";
         return;
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_gestor);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_gestor, this.id_compare);
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -641,9 +667,10 @@ export class FormComponent implements OnInit {
         };
         tmp.push(e);
       } else {
-        tmp[w].gestor = inp_gestor.value;
+        tmp[w].gestor = inp_gestor.value; 
       }
     }
+
     btn!.onclick = () => {
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       tmp.splice(w, 1);
@@ -663,7 +690,7 @@ export class FormComponent implements OnInit {
           break;
         }
       }
-      
+
     }
     btn_modal!.onclick = () => {
       this.tableSelected = (i + 1);

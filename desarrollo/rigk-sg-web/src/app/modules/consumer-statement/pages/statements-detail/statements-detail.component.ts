@@ -33,7 +33,8 @@ export class StatementsDetailComponent implements OnInit {
     { name: "Factura gestor", value: 2 },
     { name: "Registro de peso", value: 3 },
     { name: "Fotografía retiro", value: 4 },
-    { name: "Otro", value: 5 },
+    { name: "Balance de masas", value: 5 },
+    { name: "Otro", value: 6 },
   ];
   attached: any[] = [];
   fileName = '';
