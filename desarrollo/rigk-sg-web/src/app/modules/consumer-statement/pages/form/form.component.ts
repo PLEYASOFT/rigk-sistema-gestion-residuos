@@ -42,7 +42,7 @@ export class FormComponent implements OnInit {
   establishment = "";
   goTo = '/consumidor/';
   data: { table: number, residue: number, val: number, date_withdraw: string, id_gestor: number, ler: string, treatment_type: number }[] = [];
-  lable_type = ['Guia de Despacho', 'Factura Gestor', 'Registro de peso', 'Fotografía Retiro', 'Balance de masas','Otro'];
+  lable_type = ['Guia de Despacho', 'Factura Gestor', 'Registro de peso', 'Fotografía Retiro', 'Balance de masas', 'Otro'];
   business_name = "";
   business_code = "";
   userData: any;
@@ -280,7 +280,7 @@ export class FormComponent implements OnInit {
         if (!r.status) {
           Swal.fire({
             icon: 'info',
-            text: 'Misma empresa, establecimiento, tratamiento, material, subtipo y gestor para esta fecha'
+            text: 'Ya existe la misma Empresa, Establecimiento, Material, Subtipo, y Gestor para esta Fecha'
           });
           input.value = "-1";
           return;
@@ -667,7 +667,7 @@ export class FormComponent implements OnInit {
         };
         tmp.push(e);
       } else {
-        tmp[w].gestor = inp_gestor.value; 
+        tmp[w].gestor = inp_gestor.value;
       }
     }
 
