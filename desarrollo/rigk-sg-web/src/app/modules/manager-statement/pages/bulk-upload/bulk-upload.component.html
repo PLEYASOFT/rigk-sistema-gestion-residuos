@@ -68,9 +68,9 @@
 						<td>{{s.vat}}</td>
 						<td>{{s.vatCompanyName}}</td>
 						<td>{{s.frontAdmissionDate}}</td>
-						<td>{{s.totalWeight}}</td>
-						<td>{{s.declaratedWeight.replace(".", ",")}}</td>
-						<td>{{s.valuedWeight.replace(".", ",")}}</td>
+						<td>{{s.totalWeightFormated}}</td>
+						<td>{{s.declaratedWeightFormated}}</td>
+						<td>{{s.valuedWeightFormated}}</td>
 						<td>{{s.fixedRemainingWeight.replace(".", ",")}}</td>
 						<td style="width: 1000px;">
 							<input type="file" #fileInput id="file-input" (change)="onInvoiceChange($event, x)"
