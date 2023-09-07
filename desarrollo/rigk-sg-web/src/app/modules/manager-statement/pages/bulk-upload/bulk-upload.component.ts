@@ -485,25 +485,25 @@ export class BulkUploadComponent implements OnInit {
 
       for (let j = i + 1; j < rows.length; j++) {
         const w = rows[j];
-
+        // cuando las facturas tienen valores iguales
         if (w[2] !== row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
           Swal.fire({
             icon: 'info',
-            text: `Distintos Tipos de tratamiento y/o material en las filas ${j} y ${excelRowNumber}`
+            text: `Distintos tipos de tratamiento con el mismo tipo de material, Núm de factura reciclador, rut reciclador y reciclador en las filas ${i+2} y ${j+2}`
           });
           return;
         }
         if (w[2] === row[2] && w[3] !== row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
           Swal.fire({
             icon: 'info',
-            text: `Distintos Tipos de tratamiento y/o material en las filas ${j} y ${excelRowNumber}`
+            text: `Distintos tipos de material con el mismo tipo de tratamiento, Núm de factura reciclador, rut reciclador y reciclador en las filas ${i+2} y ${j+2}`
           });
           return;
         }
         if (w[2] !== row[2] && w[3] !== row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
           Swal.fire({
             icon: 'info',
-            text: `Distintos tipos de tratamiento y material con el mismo Núm de factura reciclador, rut reciclador y reciclador en las filas ${j} y ${excelRowNumber}`
+            text: `Distintos tipos de tratamiento y material con el mismo Núm de factura reciclador, rut reciclador y reciclador en las filas ${i+2} y ${j+2}`
           });
           return;
         }
@@ -540,6 +540,19 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
+      
+      const totalWeightFormated = parseFloat(totalWeight.replace(",", ".")).toFixed(2).replace(".", ",").toString();
+      const valuedWeightFormated = parseFloat(valuedWeight.replace(",", ".")).toFixed(2).replace(".", ",").toString();
+      let declaratedWeightFormated;
+      // viene de la llamada api
+      if (typeof declaratedWeight === 'number') {
+        declaratedWeightFormated = parseFloat(declaratedWeight.toString().replace(",", ".")).toFixed(2).replace(".", ",").toString();
+      }
+      // viene del excel
+      if (typeof declaratedWeight === 'string') {
+        declaratedWeightFormated = parseFloat(declaratedWeight.replace(",", ".")).toFixed(2).replace(".", ",").toString();
+      }
+      
       const rowData = {
         nameBusiness,           //Empresa CI
         idBusiness,             //ID reciclador
@@ -557,7 +570,10 @@ export class BulkUploadComponent implements OnInit {
         valuedWeight,           //Peso valorizado
         fixedRemainingWeight,   //Peso remanente
         idDetail,               //ID detalle
-        frontAdmissionDate
+        frontAdmissionDate,     //SOLO VISUAL
+        totalWeightFormated,    //SOLO VISUAL
+        valuedWeightFormated,   //SOLO VISUAL
+        declaratedWeightFormated//SOLO VISUAL
       };
       let included = false;
       for (const arreglo of sameRowsVerf) {
@@ -593,16 +609,16 @@ export class BulkUploadComponent implements OnInit {
         };
       }
       if (valorTotal === null && facturaInicial === null) {
-        valorTotal = parseInt(value.totalWeight);
-        facturaInicial = parseInt(value.numberInvoice);
+        valorTotal = parseFloat(value.totalWeight.replace(",", "."));
+        facturaInicial = parseFloat(value.numberInvoice);
       }
-      if (facturaInicial != parseInt(value.numberInvoice)) {
-        facturaInicial = parseInt(value.numberInvoice);
-        valorTotal = parseInt(value.totalWeight);
+      if (facturaInicial != parseFloat(value.numberInvoice)) {
+        facturaInicial = parseFloat(value.numberInvoice);
+        valorTotal = parseFloat(value.totalWeight.replace(",", "."));
       }
-      const valorizadoSuma = parseInt(value.valuedWeight);
+      const valorizadoSuma = parseFloat(value.valuedWeight.replace(",", "."));
       valorTotal! -= valorizadoSuma;
-      value.fixedRemainingWeight = valorTotal!.toString();
+      value.fixedRemainingWeight = valorTotal!.toFixed(2).replace(".", ",").toString();
       groupedData[key].remanente_total = valorTotal!;
     }
 
@@ -641,22 +657,23 @@ export class BulkUploadComponent implements OnInit {
       if (this.allInvoices.length == Object.keys(this.fileNames).length && this.fileNames[i]) {
         try {
           const response = await this.establishmentService.saveInvoice(element.vat, element.idBusiness, element.numberInvoice, element.idDetail, element.backAdmissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), this.convertTreatmentType(element.treatmentType), this.convertPrecedence(element.material), this.fileToUpload[i]).toPromise();
-          if (response.status) {
+          if (!response.status) {
+            this.allInvoices = [];
+            Swal.fire({
+              icon: 'error',
+              text: `Ha habido un error y el proceso se ha detenido, consulte más tarde el estado de sus declaraciones para ver cuales fueron exitosamente aprobadas y cuales no.`
+            });
+            return;
           }
         } catch (error) {
           Swal.close();
+          this.allInvoices = [];
           Swal.fire({
             icon: 'error',
-            text: `Ha habido un error y el proceso se ha detenido, consulte más tarde el estado de sus declaraciones para ver cuales fueron exitosamente aprobadas y cuales no`
+            text: `Ha habido un error y el proceso se ha detenido, consulte más tarde el estado de sus declaraciones para ver cuales fueron exitosamente aprobadas y cuales no.`
           });
           return;
         }
-      } else {
-        Swal.fire({
-          icon: 'error',
-          text: `No ha ingresado todas las facturas`
-        });
-        return;
       }
     }
     this.allInvoices = [];
