@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -10,13 +10,13 @@ export class ManagerService {
 
   constructor(private http: HttpClient) { }
 
-  getAllManager(){
+  getAllManager() {
     return this.http.get<any>(`${this.url}/all/`);
   }
 
-  addManager(type_material:any, region:any, id_business:any){
+  addManager(type_material: any, region: any, id_business: any) {
     console.log(type_material, region, id_business)
-    return this.http.post<any>(`${this.url}/add/`, {type_material, region,id_business});
+    return this.http.post<any>(`${this.url}/add/`, { type_material, region, id_business });
   }
 
   deleteManager(id: any) {
@@ -27,11 +27,19 @@ export class ManagerService {
     return this.http.get<any>(`${this.url}/${id}`);
   }
 
-  getAllMaterials(){
+  getAllMaterials() {
     return this.http.get<any>(`${this.url}/allMaterials/`);
   }
 
-  getManagersByMaterial(type_material: any, region: string) {
-    return this.http.get<any>(`${this.url}/type_material/${type_material}/region/${region}`);
+  getManagersByMaterials(materials: any[], region: string) {
+    const materialsParam = materials.join(',');
+    return this.http.get<any>(`${this.url}/materials/${materialsParam}/region/${region}`);
   }
+
+  downloadExcelTemplateInvoice() {
+    let headers = new HttpHeaders();
+    headers = headers.set('Accept', 'application/vnd.ms-excel');
+    return this.http.get<any>(`${this.url}/excel`, { headers: headers, responseType: 'blob' as 'json' });
+  }
+
 }
