@@ -97,7 +97,7 @@ class ManagerLogic {
             if (invoices == false) {
                 return res.status(500).json({
                     status: false,
-                    message: "Error obteniendo lista de facturas"
+                    message: "No existen facturas pendientes"
                 });
             }
             const noaprovediv = [...invoices].filter(i => i.STATE_GESTOR == 0);
