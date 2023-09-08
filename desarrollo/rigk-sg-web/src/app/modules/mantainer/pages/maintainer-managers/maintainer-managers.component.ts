@@ -15,7 +15,7 @@ export class MaintainerManagersComponent implements OnInit {
   listRegiones: any[] = [];
   listComunas: any[] = [];
   listMateriales: any[] = [];
-  listSubtipo: any[] = [];
+  listCommunesFormated: any[] = [];
 
   filteredList: any[] = [];
   filteredForm: any[] = [];
@@ -35,7 +35,6 @@ export class MaintainerManagersComponent implements OnInit {
 
   MATERIAL: any = "";
   REGION: any = "";
-  SUBTIPO: any = "";
   COMUNA: any = "";
   userForm: any;
 
@@ -51,13 +50,13 @@ export class MaintainerManagersComponent implements OnInit {
     this.userForm = this.fb.group({
       MATERIAL: ["", [Validators.required]], // Campo requerido
       REGION: ["", [Validators.required]], // Campo requerido
-      SUBTIPO: ["", [Validators.required]], // Campo requerido
       COMUNA: ["", [Validators.required]], // Campo requerido
     });
     this.getRegions();
-    this.getCommunes();
-    this.getSubmaterial();
+    this.getCommunesFormatted();
   }
+
+  
 
   getAllBusiness() {
     this.businesService.getAllBusiness().subscribe({
@@ -76,6 +75,29 @@ export class MaintainerManagersComponent implements OnInit {
         });
       }
     });
+  }
+
+  getCommunesFormatted(){
+    this.managerService.getCommunesFormatted().subscribe({
+      next: resp => {
+        this.listCommunesFormated = resp.data;
+      },
+      error: r => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          text: r.msg,
+          title: '¡Ups!'
+        });
+      }
+    })
+  }
+
+  communesFilter(event: any) {
+    // Convierte el valor a número
+    const selectedRegionId = +event.target.value; 
+    // Filtrar la lista de comunas por regions_id
+    this.listComunas = this.listCommunesFormated.filter(item => item.regions_id === selectedRegionId);
   }
 
   getMaterials() {
@@ -98,7 +120,6 @@ export class MaintainerManagersComponent implements OnInit {
     this.managerService.getAllRegions().subscribe({
       next: resp => {
         this.listRegiones = resp.data;
-        
       },
       error: r => {
         Swal.close();
@@ -111,40 +132,21 @@ export class MaintainerManagersComponent implements OnInit {
     });
   }
 
-  getCommunes() {
-    this.managerService.getAllCommunes().subscribe({
-      next: resp => {
-        this.listComunas = resp.data;
-        
-      },
-      error: r => {
-        Swal.close();
-        Swal.fire({
-          icon: 'error',
-          text: r.msg,
-          title: '¡Ups!'
-        });
-      }
-    });
-  }
-
-  getSubmaterial() {
-    this.managerService.getAllSubmaterial().subscribe({
-      next: resp => {
-        this.listSubtipo = resp.data;
-        console.log(this.listSubtipo);
-        
-      },
-      error: r => {
-        Swal.close();
-        Swal.fire({
-          icon: 'error',
-          text: r.msg,
-          title: '¡Ups!'
-        });
-      }
-    });
-  }
+  // getCommunes() {
+  //   this.managerService.getAllCommunes().subscribe({
+  //     next: resp => {
+  //       this.listComunas = resp.data;
+  //     },
+  //     error: r => {
+  //       Swal.close();
+  //       Swal.fire({
+  //         icon: 'error',
+  //         text: r.msg,
+  //         title: '¡Ups!'
+  //       });
+  //     }
+  //   });
+  // }
 
   getManager(id_business: any) {
     this.managerService.getManager(id_business).subscribe({

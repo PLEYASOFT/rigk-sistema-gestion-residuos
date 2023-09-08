@@ -75,7 +75,7 @@ class ManagerDao {
 
     public async getAllRegions() {
         const conn = mysqlcon.getConnection()!;
-        const query = await conn.query("SELECT NAME FROM regions").then((res) => res[0]).catch(error => [{ undefined }]);
+        const query = await conn.query("SELECT * FROM regions").then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         return query;
     }
@@ -137,6 +137,16 @@ class ManagerDao {
         }
     
         return materials;
+    }
+
+    public async getCommunesFormatted() {
+        const conn = mysqlcon.getConnection()!;
+        const rawResults = await conn.query(`SELECT regions.ID AS regions_id, regions.NAME AS regions_name, communes.ID AS communes_id,
+        communes.NAME AS communes_name FROM regions JOIN regions_communes ON regions.ID = regions_communes.ID_REGION
+        JOIN communes ON regions_communes.ID_COMUNA = communes.ID ORDER BY regions.ID, communes.ID`).then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        
+        return rawResults;
     }
     
 }
