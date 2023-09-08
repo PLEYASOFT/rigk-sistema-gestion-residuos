@@ -395,10 +395,11 @@ export class BulkUploadComponent implements OnInit {
       let totalWeight;
       // PESO DECLARADO [11] -> validar
       let declaratedWeight: string | number;
+      let declaratedWeightResponse;
       const businessResponse = await this.establishmentService.getInovice(numberInvoice, vat, treatmentTypeNum, materialTypeNum, idBusiness).toPromise();
       if (businessResponse.status) {
         totalWeight = (this.formatNumber(businessResponse.data[0]?.invoice_value));
-        declaratedWeight = (this.formatNumber(businessResponse.data[0].value_declarated));
+        declaratedWeightResponse = (this.formatNumber(businessResponse.data[0].value_declarated));
       }
       else {
         Swal.fire({
@@ -417,6 +418,13 @@ export class BulkUploadComponent implements OnInit {
       if (totalWeight == 0) {
         totalWeight = row[10];
       }
+      if (totalWeight !== 0 && totalWeight !== row[10]) {
+        Swal.fire({
+          icon: 'info',
+          text: `La factura con numero ${numberInvoice} de la fila ${excelRowNumber} ya cuenta con datos existentes, favor de ingresar el peso total registrado previamente (${totalWeight})`
+        });
+        return;
+      }
       const sanitizedtotalWeight = totalWeight.replace(',', '.');
       const totalWeightS = parseFloat(sanitizedtotalWeight);
       if (isNaN(totalWeightS)) {
@@ -434,6 +442,7 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
       // PESO DECLARADO [11]
+      declaratedWeight = row[11];
       if (declaratedWeight == 0 && !row[11]) {
         Swal.fire({
           icon: 'error',
@@ -471,16 +480,30 @@ export class BulkUploadComponent implements OnInit {
       }
       const numericTotalWeight = parseFloat(totalWeight.toString().replace(",", "."));
       const numericValuedWeight = parseFloat(valuedWeight.toString().replace(",", "."));
-      // const numericDeclaratedWeight = typeof declaratedWeight === 'string' ? parseFloat(declaratedWeight.toString().replace(",", ".")) : declaratedWeight;
-
-      const remainingWeight = numericTotalWeight - numericValuedWeight;
-      const fixedRemainingWeight = remainingWeight.toFixed(2).replace(".", ",");
-      if (remainingWeight < 0) {
-        Swal.fire({
-          icon: 'error',
-          text: `Peso remanente calculado en la fila ${excelRowNumber} no puede ser menor que cero.\n ${totalWeight} - ${valuedWeight}  = ${fixedRemainingWeight}`
-        });
-        return;
+      let fixedRemainingWeight;
+      if (declaratedWeightResponse !== 0) {
+        const numericDeclaratedWeight = parseFloat(declaratedWeightResponse.toString().replace(",", "."));
+        const PrevRemainingWeight = numericTotalWeight - numericDeclaratedWeight;
+        const remainingWeight = PrevRemainingWeight - numericValuedWeight;
+        fixedRemainingWeight = remainingWeight.toFixed(2).replace(".", ",");
+        if (remainingWeight < 0) {
+          Swal.fire({
+            icon: 'error',
+            text: `Peso remanente calculado en la fila ${excelRowNumber} no puede ser menor que cero.\n ${PrevRemainingWeight} - ${valuedWeight}  = ${fixedRemainingWeight}`
+          });
+          return;
+        }
+      }
+      if (declaratedWeightResponse == 0) {
+        const remainingWeight = numericTotalWeight - numericValuedWeight;
+        fixedRemainingWeight = remainingWeight.toFixed(2).replace(".", ",");
+        if (remainingWeight < 0) {
+          Swal.fire({
+            icon: 'error',
+            text: `Peso remanente calculado en la fila ${excelRowNumber} no puede ser menor que cero.\n ${totalWeight} - ${valuedWeight}  = ${fixedRemainingWeight}`
+          });
+          return;
+        }
       }
 
       for (let j = i + 1; j < rows.length; j++) {
@@ -531,8 +554,8 @@ export class BulkUploadComponent implements OnInit {
       const tempFrontAdmissionDate = backAdmissionDate.split('-');
       const frontAdmissionDate = `${tempFrontAdmissionDate[2]}-${tempFrontAdmissionDate[1]}-${tempFrontAdmissionDate[0]}`;
 
-      const foundInvoice = noAprovedInvoices.find((item: { NAME_BUSINESS: string; NAME_ESTABLISHMENT_REGION: string; TipoTratamiento: string; PRECEDENCE: string; TYPE_RESIDUE: string; VALUE: number; ID_DETAIL: number; }) => item.NAME_BUSINESS === nameBusiness && item.NAME_ESTABLISHMENT_REGION === establishment && item.TipoTratamiento === treatmentType && item.PRECEDENCE === material && item.TYPE_RESIDUE === subMaterial && item.VALUE === (typeof declaratedWeight === 'string' ? parseFloat(declaratedWeight) : declaratedWeight) && item.ID_DETAIL == parseInt(idDetail));
-
+      const foundInvoice = noAprovedInvoices.find((item: { NAME_BUSINESS: string; NAME_ESTABLISHMENT_REGION: string; TipoTratamiento: string; PRECEDENCE: string; TYPE_RESIDUE: string; VALUE: number; ID_DETAIL: number; }) => item.NAME_BUSINESS === nameBusiness && item.NAME_ESTABLISHMENT_REGION === establishment && item.TipoTratamiento === treatmentType && item.PRECEDENCE === material && item.TYPE_RESIDUE === subMaterial && item.VALUE === parseFloat(row[11]) && item.ID_DETAIL == parseInt(idDetail));
+      
       if (!foundInvoice) {
         Swal.fire({
           icon: 'error',
@@ -554,26 +577,27 @@ export class BulkUploadComponent implements OnInit {
       }
       
       const rowData = {
-        nameBusiness,           //Empresa CI
-        idBusiness,             //ID reciclador
-        establishment,          //Establecimiento
-        treatmentType,          //Tipo de tratamiento
-        material,               //Tipo de material
-        subMaterial,            //Subtipo de material
-        withdrawalDate,         //Fecha de retiro
-        numberInvoice,          //Nº de factura
-        vat,                    //Rut
-        vatCompanyName,         //Nombre de reciclador
-        backAdmissionDate,      //Fecha ingreso PR
-        totalWeight,            //Peso total
-        declaratedWeight,       //Peso declarado
-        valuedWeight,           //Peso valorizado
-        fixedRemainingWeight,   //Peso remanente
-        idDetail,               //ID detalle
-        frontAdmissionDate,     //SOLO VISUAL
-        totalWeightFormated,    //SOLO VISUAL
-        valuedWeightFormated,   //SOLO VISUAL
-        declaratedWeightFormated//SOLO VISUAL
+        nameBusiness,             //Empresa CI
+        idBusiness,               //ID reciclador
+        establishment,            //Establecimiento
+        treatmentType,            //Tipo de tratamiento
+        material,                 //Tipo de material
+        subMaterial,              //Subtipo de material
+        withdrawalDate,           //Fecha de retiro
+        numberInvoice,            //Nº de factura
+        vat,                      //Rut
+        vatCompanyName,           //Nombre de reciclador
+        backAdmissionDate,        //Fecha ingreso PR
+        totalWeight,              //Peso total
+        declaratedWeight,         //Peso declarado
+        valuedWeight,             //Peso valorizado
+        fixedRemainingWeight,     //Peso remanente
+        idDetail,                 //ID detalle
+        frontAdmissionDate,       //SOLO VISUAL
+        totalWeightFormated,      //SOLO VISUAL
+        valuedWeightFormated,     //SOLO VISUAL
+        declaratedWeightFormated, //SOLO VISUAL
+        declaratedWeightResponse,
       };
       let included = false;
       for (const arreglo of sameRowsVerf) {
@@ -588,7 +612,6 @@ export class BulkUploadComponent implements OnInit {
       if (included == true) {
         rowsDataDuplicated.push(rowData);
       }
-
     }
 
     const groupedData: { [key: string]: { tipo_tratamiento: string, material: string, numero_factura: string, rut_reciclador: string, nombre_reciclador: string, remanente_total: number } } = {};
@@ -609,12 +632,24 @@ export class BulkUploadComponent implements OnInit {
         };
       }
       if (valorTotal === null && facturaInicial === null) {
-        valorTotal = parseFloat(value.totalWeight.replace(",", "."));
+        if (parseFloat(value.declaratedWeightResponse) !== 0) {
+          let numericTotalWeight = parseFloat(value.totalWeight.toString().replace(",", "."));
+          let numericDeclaratedWeight = parseFloat(value.declaratedWeightResponse.toString().replace(",", "."));
+          valorTotal = numericTotalWeight - numericDeclaratedWeight;
+        }else{
+          valorTotal = parseFloat(value.totalWeight.replace(",", "."));
+        }
         facturaInicial = parseFloat(value.numberInvoice);
-      }
+      }    
       if (facturaInicial != parseFloat(value.numberInvoice)) {
+        if (parseFloat(value.declaratedWeightResponse) !== 0) {
+          let numericTotalWeight = parseFloat(value.totalWeight.toString().replace(",", "."));
+          let numericDeclaratedWeight = parseFloat(value.declaratedWeightResponse.toString().replace(",", "."));
+          valorTotal = numericTotalWeight - numericDeclaratedWeight;
+        }else{
+          valorTotal = parseFloat(value.totalWeight.replace(",", "."));
+        }
         facturaInicial = parseFloat(value.numberInvoice);
-        valorTotal = parseFloat(value.totalWeight.replace(",", "."));
       }
       const valorizadoSuma = parseFloat(value.valuedWeight.replace(",", "."));
       valorTotal! -= valorizadoSuma;
@@ -651,14 +686,16 @@ export class BulkUploadComponent implements OnInit {
       allowOutsideClick: false
     });
     Swal.showLoading();
-
+    let errores = false
     for (let i = 0; i < this.allInvoices.length; i++) {
       const element = this.allInvoices[i];
       if (this.allInvoices.length == Object.keys(this.fileNames).length && this.fileNames[i]) {
         try {
           const response = await this.establishmentService.saveInvoice(element.vat, element.idBusiness, element.numberInvoice, element.idDetail, element.backAdmissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), this.convertTreatmentType(element.treatmentType), this.convertPrecedence(element.material), this.fileToUpload[i]).toPromise();
           if (!response.status) {
+            errores = true;
             this.allInvoices = [];
+            Swal.close();
             Swal.fire({
               icon: 'error',
               text: `Ha habido un error y el proceso se ha detenido, consulte más tarde el estado de sus declaraciones para ver cuales fueron exitosamente aprobadas y cuales no.`
@@ -666,22 +703,26 @@ export class BulkUploadComponent implements OnInit {
             return;
           }
         } catch (error) {
-          Swal.close();
-          this.allInvoices = [];
-          Swal.fire({
-            icon: 'error',
-            text: `Ha habido un error y el proceso se ha detenido, consulte más tarde el estado de sus declaraciones para ver cuales fueron exitosamente aprobadas y cuales no.`
-          });
-          return;
+            // Manejo de otros errores
+            errores = true; // Se establece la variable de errores en true
+            this.allInvoices = [];
+            Swal.close();
+            Swal.fire({
+              icon: 'error',
+              text: `Ha habido un error y el proceso se ha detenido, consulte más tarde el estado de sus declaraciones para ver cuales fueron exitosamente aprobadas y cuales no.`
+            });
+            return;
         }
       }
     }
     this.allInvoices = [];
-    Swal.close();
-    Swal.fire({
-      icon: 'success',
-      text: `Sus facturas han sido ingresadas correctamente`
-    });
+    if (!errores) {
+      Swal.close();
+      Swal.fire({
+        icon: 'success',
+        text: `Sus facturas han sido ingresadas correctamente`
+      });
+    }    
   }
 
   formatNumber(value: any) {
