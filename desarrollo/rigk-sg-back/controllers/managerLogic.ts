@@ -274,6 +274,70 @@ class ManagerLogic {
             });
         }
     }
+
+    async getAllRegions(req: any, res: Response) {
+        try {
+            const result = await managerDao.getAllRegions();
+            res.status(200).json({ status: true, data: result, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+    async getAllCommunes(req: any, res: Response) {
+        try {
+            const result = await managerDao.getAllCommunes();
+            res.status(200).json({ status: true, data: result, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+
+    async getAllSubmaterial(req: any, res: Response) {
+        try {
+            const result = await managerDao.getAllSubmaterial();
+            res.status(200).json({ status: true, data: result, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+
+    async getMaterialsFormatted(req: any, res: Response) {
+        try {
+            const result = await managerDao.getMaterialsFormatted();
+            res.status(200).json({ status: true, data: result, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+
+    async getAllTreatments(req: any, res: Response) {
+        try {
+            const material = await managerDao.getAllTreatments();
+            res.status(200).json({ status: material, data: {}, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
 }
 const managerLogic = new ManagerLogic();
 export default managerLogic;

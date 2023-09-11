@@ -12,26 +12,11 @@ import { ManagerService } from 'src/app/core/services/manager.service';
 })
 export class MaintainerManagersComponent implements OnInit {
 
-  listRegiones: any[] = [
-    'Región de Arica y Parinacota',
-    'Región de Tarapacá',
-    'Región de Antofagasta',
-    'Región de Atacama',
-    'Región de Coquimbo',
-    'Región de Valparaíso',
-    'Región Metropolitana',
-    'Región de O’Higgins',
-    'Región del Maule',
-    'Región del Ñuble',
-    'Región del Biobío',
-    'Región de La Araucanía',
-    'Región de Los Ríos',
-    'Región de Los Lagos',
-    'Región de Aysén',
-    'Región de Magallanes'
-  ];
-
+  listRegiones: any[] = [];
+  listComunas: any[] = [];
   listMateriales: any[] = [];
+  listSubtipo: any[] = [];
+
   filteredList: any[] = [];
   filteredForm: any[] = [];
   listBusiness: any[] = [];
@@ -50,6 +35,8 @@ export class MaintainerManagersComponent implements OnInit {
 
   MATERIAL: any = "";
   REGION: any = "";
+  SUBTIPO: any = "";
+  COMUNA: any = "";
   userForm: any;
 
   constructor(private businesService: BusinessService,
@@ -64,7 +51,12 @@ export class MaintainerManagersComponent implements OnInit {
     this.userForm = this.fb.group({
       MATERIAL: ["", [Validators.required]], // Campo requerido
       REGION: ["", [Validators.required]], // Campo requerido
+      SUBTIPO: ["", [Validators.required]], // Campo requerido
+      COMUNA: ["", [Validators.required]], // Campo requerido
     });
+    this.getRegions();
+    this.getCommunes();
+    this.getSubmaterial();
   }
 
   getAllBusiness() {
@@ -90,6 +82,58 @@ export class MaintainerManagersComponent implements OnInit {
     this.managerService.getAllMaterials().subscribe({
       next: resp => {
         this.listMateriales = resp.status.map((material: { MATERIAL: any; }) => material.MATERIAL);
+      },
+      error: r => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          text: r.msg,
+          title: '¡Ups!'
+        });
+      }
+    });
+  }
+  
+  getRegions() {
+    this.managerService.getAllRegions().subscribe({
+      next: resp => {
+        this.listRegiones = resp.data;
+        
+      },
+      error: r => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          text: r.msg,
+          title: '¡Ups!'
+        });
+      }
+    });
+  }
+
+  getCommunes() {
+    this.managerService.getAllCommunes().subscribe({
+      next: resp => {
+        this.listComunas = resp.data;
+        
+      },
+      error: r => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          text: r.msg,
+          title: '¡Ups!'
+        });
+      }
+    });
+  }
+
+  getSubmaterial() {
+    this.managerService.getAllSubmaterial().subscribe({
+      next: resp => {
+        this.listSubtipo = resp.data;
+        console.log(this.listSubtipo);
+        
       },
       error: r => {
         Swal.close();

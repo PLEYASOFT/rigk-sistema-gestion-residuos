@@ -28,12 +28,18 @@ class IndustrialConsumerDao {
         conn.end();
         return { attached };
     }
-    public async verifyRow(treatment:any, sub:any,gestor:any,date:any) {
+    public async verifyRow(treatment: any, sub: any, gestor: any, date: any, idEstablishment: any) {
         const conn = mysqlcon.getConnection()!;
-        const data: any = await conn.execute("SELECT * FROM detail_industrial_consumer_form WHERE TREATMENT_TYPE=? AND TYPE_RESIDUE=? AND ID_GESTOR=? AND DATE_WITHDRAW=?", [treatment, sub,gestor,date]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
+        const data: any = await conn.execute(
+            `SELECT detail.* FROM detail_industrial_consumer_form as detail
+            JOIN header_industrial_consumer_form as header ON detail.ID_HEADER = header.ID
+            WHERE detail.TREATMENT_TYPE=? AND detail.TYPE_RESIDUE=? AND detail.ID_GESTOR=? AND detail.DATE_WITHDRAW=? AND header.ID_ESTABLISHMENT=?`, 
+            [treatment, sub, gestor, date, idEstablishment]
+        ).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
+        
         conn.end();
         return data;
-    }
+    }    
     public async saveHeaderData(establishmentId: any, createdBy: any, createdAt: Date, yearStatement: any) {
         const conn = mysqlcon.getConnection()!;
         const header: any = await conn.execute("INSERT INTO header_industrial_consumer_form(ID_ESTABLISHMENT, CREATED_BY, CREATED_AT, UPDATED_AT, YEAR_STATEMENT) VALUES (?,?,?,?,?)", [establishmentId, createdBy, createdAt, createdAt, yearStatement])
@@ -77,7 +83,8 @@ class IndustrialConsumerDao {
                     WHEN 2 THEN 'Factura gestor'
                     WHEN 3 THEN 'Registro de peso'
                     WHEN 4 THEN 'Fotografía Retiro'
-                    WHEN 5 THEN 'Otro'
+                    WHEN 5 THEN 'Balance de masas'
+                    WHEN 6 THEN 'Otro'
                     ELSE 'Desconocido'
                 END AS TYPE_FILE_TIPEADO
             FROM
@@ -130,68 +137,42 @@ class IndustrialConsumerDao {
     public async getDeclarationByID(ID_HEADER: any, ID_DETAIL: any) {
         const conn = mysqlcon.getConnection()!;
         await conn.execute("SET lc_time_names = 'es_ES';");
-        const data: any = await conn.execute(`SELECT establishment.NAME_ESTABLISHMENT, header_industrial_consumer_form.CREATED_AT, header_industrial_consumer_form.CREATED_BY, header_industrial_consumer_form.YEAR_STATEMENT,
-        header_industrial_consumer_form.ID AS ID_HEADER, business.NAME as NAME_BUSINESS, detail_industrial_consumer_form.ID AS ID_DETAIL,
-        detail_industrial_consumer_form.PRECEDENCE AS PRECEDENCE,
-        CASE detail_industrial_consumer_form.PRECEDENCE
-            WHEN 1 THEN 'Papel/Cartón'
-            WHEN 2 THEN 'Metal'
-            WHEN 3 THEN 'Plástico'
-            WHEN 4 THEN 'Madera'
-            ELSE 'Desconocido'
-        END AS PRECEDENCETIPEADO,
-        detail_industrial_consumer_form.TYPE_RESIDUE AS TYPE_RESIDUE,
-        CASE detail_industrial_consumer_form.TYPE_RESIDUE
-            WHEN 1 THEN 'Papel'
-            WHEN 2 THEN 'Papel Compuesto (cemento)'
-            WHEN 3 THEN 'Caja Cartón'
-            WHEN 4 THEN 'Papel/Cartón Otro'
-            WHEN 5 THEN 'Esquineros Conos'
-            WHEN 6 THEN 'Cartón RH'
-            WHEN 7 THEN 'Envase Aluminio'
-            WHEN 8 THEN 'Malla o Reja (IBC)'
-            WHEN 9 THEN 'Envase Hojalata'
-            WHEN 10 THEN 'Metal Otro'
-            WHEN 11 THEN 'Esquineros Metal'
-            WHEN 12 THEN 'Plástico Film Embalaje'
-            WHEN 13 THEN 'Plástico Envases Rígidos (Incl. Tapas)'
-            WHEN 14 THEN 'Plástico Sacos o Maxisacos'
-            WHEN 15 THEN 'Plástico EPS (Poliestireno Expandido)'
-            WHEN 16 THEN 'Plástico Zuncho'
-            WHEN 17 THEN 'Plástico Otro'
-            WHEN 18 THEN 'Caja de Madera'
-            WHEN 19 THEN 'Pallet de Madera'
-            ELSE 'Desconocido'
-        END AS TYPE_RESIDUE_TIPEADO,
-        detail_industrial_consumer_form.VALUE,
-        detail_industrial_consumer_form.DATE_WITHDRAW AS FechaRetiro,
-        CONCAT(UPPER(SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 1, 1)), SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 2)) AS FechaRetiroTipeada,
-        detail_industrial_consumer_form.ID_GESTOR AS IdGestor,
-        IF(detail_industrial_consumer_form.ID_GESTOR = 0, 'Reciclaje interno', gestor.NAME) AS NombreGestor,
-        IFNULL(detail_industrial_consumer_form.LER, '-') AS LER,
-        detail_industrial_consumer_form.TREATMENT_TYPE AS TREATMENT_TYPE,
-        CASE detail_industrial_consumer_form.TREATMENT_TYPE
-            WHEN 1 THEN 'Reciclaje Mecánico'
-            WHEN 2 THEN 'Valorización Energética'
-            WHEN 3 THEN 'Disposición Final en RS'
-            WHEN 4 THEN 'Reciclaje Interno'
-            WHEN 5 THEN 'Preparación Reutilización'
-            WHEN 6 THEN 'DF en Relleno Sanitario '
-            WHEN 7 THEN 'DF en Relleno Seguridad'
-        ELSE 'Desconocido'
-        END AS TIPO_TRATAMIENTO_TIPEADO
-        FROM header_industrial_consumer_form
-        INNER JOIN establishment ON establishment.ID = header_industrial_consumer_form.ID_ESTABLISHMENT
-        INNER JOIN establishment_business ON establishment_business.ID_ESTABLISHMENT = establishment.ID
-        INNER JOIN business ON business.ID = establishment_business.ID_BUSINESS
-        INNER JOIN detail_industrial_consumer_form ON detail_industrial_consumer_form.ID_HEADER = header_industrial_consumer_form.ID
-        LEFT JOIN business AS gestor ON detail_industrial_consumer_form.ID_GESTOR = gestor.ID
-        WHERE header_industrial_consumer_form.ID = ? AND detail_industrial_consumer_form.ID = ?
+        const data: any = await conn.execute(`
+            SELECT 
+                establishment.NAME_ESTABLISHMENT, 
+                header_industrial_consumer_form.CREATED_AT, 
+                header_industrial_consumer_form.CREATED_BY, 
+                header_industrial_consumer_form.YEAR_STATEMENT,
+                header_industrial_consumer_form.ID AS ID_HEADER, 
+                business.NAME as NAME_BUSINESS, 
+                detail_industrial_consumer_form.ID AS ID_DETAIL,
+                detail_industrial_consumer_form.PRECEDENCE AS PRECEDENCE,
+                type_material.MATERIAL AS PRECEDENCETIPEADO,
+                detail_industrial_consumer_form.TYPE_RESIDUE AS TYPE_RESIDUE,
+                submaterial.SUBMATERIAL AS TYPE_RESIDUE_TIPEADO,
+                detail_industrial_consumer_form.VALUE,
+                detail_industrial_consumer_form.DATE_WITHDRAW AS FechaRetiro,
+                CONCAT(UPPER(SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 1, 1)), SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 2)) AS FechaRetiroTipeada,
+                detail_industrial_consumer_form.ID_GESTOR AS IdGestor,
+                IF(detail_industrial_consumer_form.ID_GESTOR = 0, 'Reciclaje interno', gestor.NAME) AS NombreGestor,
+                IFNULL(detail_industrial_consumer_form.LER, '-') AS LER,
+                detail_industrial_consumer_form.TREATMENT_TYPE AS TREATMENT_TYPE,
+                type_treatment.NAME AS TIPO_TRATAMIENTO_TIPEADO
+            FROM header_industrial_consumer_form
+            INNER JOIN establishment ON establishment.ID = header_industrial_consumer_form.ID_ESTABLISHMENT
+            INNER JOIN establishment_business ON establishment_business.ID_ESTABLISHMENT = establishment.ID
+            INNER JOIN business ON business.ID = establishment_business.ID_BUSINESS
+            INNER JOIN detail_industrial_consumer_form ON detail_industrial_consumer_form.ID_HEADER = header_industrial_consumer_form.ID
+            LEFT JOIN business AS gestor ON detail_industrial_consumer_form.ID_GESTOR = gestor.ID
+            LEFT JOIN type_material ON detail_industrial_consumer_form.PRECEDENCE = type_material.ID
+            LEFT JOIN submaterial ON detail_industrial_consumer_form.TYPE_RESIDUE = submaterial.ID
+            LEFT JOIN type_treatment ON detail_industrial_consumer_form.TREATMENT_TYPE = type_treatment.ID
+            WHERE header_industrial_consumer_form.ID = ? AND detail_industrial_consumer_form.ID = ?
         `, [ID_HEADER, ID_DETAIL]).then(res => res[0]).catch(erro => { console.log(erro); return undefined });
-
+    
         conn.end();
         return data;
-    }
+    }    
 
     public async downloadFile(id: any) {
         const conn = mysqlcon.getConnection()!;

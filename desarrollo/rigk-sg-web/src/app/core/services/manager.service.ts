@@ -31,6 +31,26 @@ export class ManagerService {
     return this.http.get<any>(`${this.url}/allMaterials/`);
   }
 
+  getAllTreatments() {
+    return this.http.get<any>(`${this.url}/allTreatments/`);
+  }
+
+  getAllRegions(){
+    return this.http.get<any>(`${this.url}/regiones/`)
+  }
+
+  getAllCommunes(){
+    return this.http.get<any>(`${this.url}/comunas/`)
+  }
+
+  getAllSubmaterial(){
+    return this.http.get<any>(`${this.url}/submaterial/`)
+  }
+
+  getAllSubmaterialFormatted(){
+    return this.http.get<any>(`${this.url}/submaterialFormatted/`)
+  }
+
   getManagersByMaterials(materials: any[], region: string) {
     const materialsParam = materials.join(',');
     return this.http.get<any>(`${this.url}/materials/${materialsParam}/region/${region}`);
