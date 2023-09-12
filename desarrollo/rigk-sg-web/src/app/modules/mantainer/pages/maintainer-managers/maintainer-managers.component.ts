@@ -104,8 +104,6 @@ export class MaintainerManagersComponent implements OnInit {
   getManager(id_business: any) {
     this.managerService.getManager(id_business).subscribe({
       next: resp => {
-        console.log(resp);
-        
         if (resp.status) {
           this.managerStatus = resp.status;
           this.filteredForm = resp.status;
@@ -265,10 +263,6 @@ export class MaintainerManagersComponent implements OnInit {
     
     
     for (let i = 0; i < this.managerStatus.length; i++) {
-      console.log(this.managerStatus[i].MATERIAL, nombreEstablecimiento);
-      console.log(this.managerStatus[i].ID_REGION, parseInt(REGION));
-      
-      
       if (this.managerStatus[i].MATERIAL.toLowerCase() === nombreEstablecimiento.toLowerCase() && this.managerStatus[i].ID_REGION === parseInt(REGION)) {
         existe = true;
         break;
