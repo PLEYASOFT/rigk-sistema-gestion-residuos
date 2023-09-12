@@ -133,7 +133,7 @@ export class FormComponent implements OnInit {
         this.region = r.status[0].REGION;
         this.comuna = r.status[0].COMUNA_NAME;
         this.id_establishment = r.status[0].ID_VU ? r.status[0].ID_VU : '-';
-        this.fetchManagersForAllMaterials(r.status[0].REGION);
+        this.fetchManagersForAllMaterials(r.status[0].REGION, r.status[0].ID_COMUNA);
       }
       else {
         this.managers = [];
@@ -141,12 +141,12 @@ export class FormComponent implements OnInit {
     });
   }
 
-  fetchManagersForAllMaterials(region: any) {
+  fetchManagersForAllMaterials(region: any, comuna:any) {
     const materialIds = this.materials_2
       .filter((material: any) => material.id !== undefined)
       .map((material: any) => material.id);
 
-    this.managerService.getManagersByMaterials(materialIds, region).subscribe(results => {
+    this.managerService.getManagersByMaterials(materialIds, region,comuna).subscribe(results => {
       if (Array.isArray(results.status)) {
         this.managers = results.status.map((item: any) => ({
           material: item.COD_MATERIAL,
@@ -454,28 +454,13 @@ export class FormComponent implements OnInit {
         tmp[w].sub = "-1";
         tmp[w].gestor = "-1";
       }
+
+      updateGestorOptions();
     };
 
 
     const inp_sub = (document.getElementById(`inp_sub_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_sub.onchange = () => {
-      removeOptions(inp_gestor);
-      let opt: any = document.createElement('option');
-      opt.value = "-1";
-      opt.innerHTML = "Seleccione";
-      inp_gestor.appendChild(opt);
-      let opt2: any = document.createElement('option');
-      opt2.value = "0";
-      opt2.innerHTML = "Reciclaje Interno";
-      inp_gestor.appendChild(opt2);
-      const tmp_tt2 = this.getManagersForMaterial(parseInt(inp_sub.value));
-      for (let i = 0; i < tmp_tt2.length; i++) {
-        const gestor = tmp_tt2[i];
-        let opt: any = document.createElement('option');
-        opt.value = gestor.id;
-        opt.innerHTML = gestor.name;
-        inp_gestor.appendChild(opt);
-      }
       let tmp_filter = 0;
       for (let j = 0; j < tmp.length; j++) {
         const i = tmp[j];
@@ -484,7 +469,6 @@ export class FormComponent implements OnInit {
           tmp_filter++;
         }
       }
-      inp_gestor.value = "-1";
       if (tmp_filter >= 1) {
         Swal.fire({
           icon: 'info',
@@ -512,10 +496,7 @@ export class FormComponent implements OnInit {
         tmp.push(e);
       } else {
         tmp[w].sub = inp_sub.value;
-        tmp[w].gestor = "-1";
       }
-
-      updateGestorOptions();
     }
 
 
@@ -532,7 +513,7 @@ export class FormComponent implements OnInit {
       internalRecycleOption.innerHTML = "Reciclaje Interno";
       inp_gestor.appendChild(internalRecycleOption);
 
-      const gestorsForCategory = getGestorsForCategory(inp_sub.value);
+      const gestorsForCategory = getGestorsForCategory(inp_subcat.value);
       gestorsForCategory.forEach(gestor => {
         let opt = document.createElement('option');
         opt.value = gestor.id_gestor;

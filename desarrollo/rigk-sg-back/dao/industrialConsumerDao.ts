@@ -108,15 +108,18 @@ class IndustrialConsumerDao {
         b.CODE_BUSINESS AS 'CodigoEmpresa',
         e.NAME_ESTABLISHMENT AS 'Establecimiento',
         e.ID AS 'IDEstablecimiento',
-        e.REGION AS 'Region'
+        IFNULL(e.ID_VU, '-') AS 'ID_VU',
+        e.REGION AS 'Region',
+        c.NAME AS 'Comuna'
     FROM
         header_industrial_consumer_form h
         JOIN establishment e ON h.ID_ESTABLISHMENT = e.ID
         JOIN establishment_business eb ON e.ID = eb.ID_ESTABLISHMENT
         JOIN business b ON eb.ID_BUSINESS = b.ID
+        JOIN communes c ON e.ID_COMUNA = c.ID
     WHERE
         h.ID = ?;
-        `, [id_header]).then((res) => res[0]).catch(error => [{ undefined }]);
+    `, [id_header]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         return { header: header };
     }
