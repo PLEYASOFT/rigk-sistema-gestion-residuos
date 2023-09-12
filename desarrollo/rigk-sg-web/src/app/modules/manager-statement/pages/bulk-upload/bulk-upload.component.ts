@@ -240,6 +240,8 @@ export class BulkUploadComponent implements OnInit {
 
     const invoices: any = await this.establishmentService.getDeclarationEstablishment().toPromise();
     const noAprovedInvoices = invoices.status.filter((item: { STATE_GESTOR: number; }) => item.STATE_GESTOR === 0);
+    const allMaterials = await this.managerService.getAllMaterials().toPromise();
+    const allTypeTreatment = await this.managerService.getAllTreatments().toPromise();
 
     const allBusiness = await this.businessService.getAllBusiness().toPromise();
 
@@ -345,8 +347,33 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
 
-      const materialTypeNum = this.convertPrecedence(material);
-      const treatmentTypeNum = this.convertTreatmentType(treatmentType);
+      let materialTypeNum;
+      const MT = allMaterials.status.find((item: { ID: number; MATERIAL: string; }) => item.MATERIAL === material);
+      if (!MT) {
+        Swal.fire({
+          icon: 'error',
+          text: `No se encontró ningun material con el nombre "${material}" en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+      if (MT) {
+        materialTypeNum = MT.ID;
+        console.log(materialTypeNum);
+      }
+
+      let treatmentTypeNum;
+      const TT = allTypeTreatment.status.find((item: { ID: number; NAME: string; }) => item.NAME === treatmentType);
+      if (!TT) {
+        Swal.fire({
+          icon: 'error',
+          text: `No se encontró ningun tipo de tratamiento con el nombre "${treatmentType}" en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+      if (TT) {
+        treatmentTypeNum = TT.ID;
+        console.log(treatmentTypeNum);
+      }
 
       // RECICLADOR [8] -> validar
       const vatCompanyName = row[8];
@@ -598,6 +625,8 @@ export class BulkUploadComponent implements OnInit {
         valuedWeightFormated,     //SOLO VISUAL
         declaratedWeightFormated, //SOLO VISUAL
         declaratedWeightResponse,
+        materialTypeNum,
+        treatmentTypeNum,
       };
       let included = false;
       for (const arreglo of sameRowsVerf) {
@@ -691,7 +720,7 @@ export class BulkUploadComponent implements OnInit {
       const element = this.allInvoices[i];
       if (this.allInvoices.length == Object.keys(this.fileNames).length && this.fileNames[i]) {
         try {
-          const response = await this.establishmentService.saveInvoice(element.vat, element.idBusiness, element.numberInvoice, element.idDetail, element.backAdmissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), this.convertTreatmentType(element.treatmentType), this.convertPrecedence(element.material), this.fileToUpload[i]).toPromise();
+          const response = await this.establishmentService.saveInvoice(element.vat, element.idBusiness, element.numberInvoice, element.idDetail, element.backAdmissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), element.treatmentTypeNum, element.materialTypeNum, this.fileToUpload[i]).toPromise();
           if (!response.status) {
             errores = true;
             this.allInvoices = [];
@@ -761,72 +790,5 @@ export class BulkUploadComponent implements OnInit {
     }
 
     return { valid: true, message: "" };
-  }
-
-  convertPrecedence(precedence: any): number {
-    switch (precedence) {
-      case 'Papel/Cartón':
-        return 1;
-      case 'Metal':
-        return 2;
-      case 'Plástico':
-        return 3;
-      case 'Madera':
-        return 4;
-      default:
-        return -1; // Retornar un valor no válido en caso de que no haya coincidencia
-    }
-  }
-
-  convertTypeResidue(typeResidue: any): number {
-    switch (typeResidue) {
-      case "Papel":
-        return 1;
-      case "Papel Compuesto (cemento)":
-        return 2;
-      case "Caja Cartón":
-        return 3;
-      case "Papel/Cartón Otro":
-        return 4;
-      case "Envase Aluminio":
-        return 5;
-      case "Malla o Reja (IBC)":
-        return 6;
-      case "Envase Hojalata":
-        return 7;
-      case "Metal Otro":
-        return 8;
-      case "Plástico Film Embalaje":
-        return 9;
-      case "Plástico Envases Rígidos (Incl. Tapas)":
-        return 10;
-      case "Plástico Sacos o Maxisacos":
-        return 11;
-      case "Plástico EPS (Poliestireno Expandido)":
-        return 12;
-      case "Plástico Zuncho":
-        return 13;
-      case "Plástico Otro":
-        return 14;
-      case "Caja de Madera":
-        return 15;
-      case "Pallet de Madera":
-        return 16;
-      default:
-        return -1;
-    }
-  }
-
-  convertTreatmentType(treatmentType: any): number {
-    switch (treatmentType) {
-      case "Reciclaje Mecánico":
-        return 1;
-      case "Valorización Energética":
-        return 2;
-      case "Disposición Final en RS":
-        return 3;
-      default:
-        return -1;
-    }
   }
 }
