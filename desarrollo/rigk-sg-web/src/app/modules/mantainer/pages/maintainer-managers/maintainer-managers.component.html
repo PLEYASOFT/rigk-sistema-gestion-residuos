@@ -88,11 +88,9 @@
                                     <p *ngIf="userForm.controls['MATERIAL'].errors['required']">Debe seleccionar algun material.</p>
                                 </div>
                             </div>
-                            <div class="col-md-6"></div>
-                            <p></p>
                             <div class="col-md-6">
                                 <label for="inp_region">REGIÓN</label>
-                                <select formControlName="REGION" id="inp_region" class="form-select" required (change)="communesFilter($event)">
+                                <select formControlName="REGION" id="inp_region" class="form-select" required>
                                     <option value="">Selecciona Región</option>
                                     <option *ngFor="let r of listRegiones" [value]="r.ID">{{r.NAME}}</option>
                                 </select>
@@ -101,19 +99,7 @@
                                     <p *ngIf="userForm.controls['REGION'].errors['required']">Debe seleccionar alguna
                                         región.</p>
                                 </div>
-                                <br>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="inp_comuna">COMUNA</label>
-                                <select formControlName="COMUNA" id="inp_comuna" class="form-select" required>
-                                    <option value="">Selecciona Comuna</option>
-                                    <option *ngFor="let r of listComunas" [value]="r.communes_id">{{r.communes_name}}</option>
-                                </select>
-                                <div *ngIf="userForm.controls['COMUNA'].errors && userForm.controls['COMUNA'].touched"
-                                    class="text-danger pl-0">
-                                    <p *ngIf="userForm.controls['COMUNA'].errors['required']">Debe seleccionar alguna
-                                        comuna.</p>
-                                </div>
+                                <br>    
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -139,7 +125,6 @@
                                     <tr class="text-center w-100">
                                         <th>Material</th>
                                         <th>Región</th>
-                                        <th>Comuna</th>
                                         <th>Eliminar</th>
                                     </tr>
                                 </thead>
@@ -147,7 +132,6 @@
                                     <tr class="text-center w-100" *ngFor="let r of db2; let x = index">
                                         <td>{{r.MATERIAL}}</td>
                                         <td>{{r.REGION}}</td>
-                                        <td>{{r.NAME}}</td>
                                         <td>
                                             <button type="button" class="btn btn-danger btn-sm rounded-pill"
                                                 (click)="deleteManager(r.ID_MANAGER)">

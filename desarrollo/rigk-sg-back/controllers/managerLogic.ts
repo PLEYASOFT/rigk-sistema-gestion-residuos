@@ -11,9 +11,8 @@ class ManagerLogic {
         const region = req.body.region;
         const id_business = req.body.id_business
         const id_region = req.body.id_region
-        const id_communes = req.body.id_communes
         try {
-            await managerDao.addManager(type_material, region, id_business, id_region, id_communes);
+            await managerDao.addManager(type_material, region, id_business, id_region);
             await createLog('AGREGA_TIPO_MATERIAL', req.uid, null);
             res.status(200).json({ status: true, msg: 'Has creado un gestor', data: {} })
         }

@@ -12,9 +12,7 @@ import { ManagerService } from 'src/app/core/services/manager.service';
 export class MaintainerManagersComponent implements OnInit {
 
   listRegiones: any[] = [];
-  listComunas: any[] = [];
   listMateriales: any[] = [];
-  listCommunesFormated: any[] = [];
 
   filteredList: any[] = [];
   filteredForm: any[] = [];
@@ -34,7 +32,6 @@ export class MaintainerManagersComponent implements OnInit {
 
   MATERIAL: any = "";
   REGION: any = "";
-  COMUNA: any = "";
   userForm: any;
 
   constructor(private businesService: BusinessService,
@@ -49,13 +46,9 @@ export class MaintainerManagersComponent implements OnInit {
     this.userForm = this.fb.group({
       MATERIAL: ["", [Validators.required]], // Campo requerido
       REGION: ["", [Validators.required]], // Campo requerido
-      COMUNA: ["", [Validators.required]], // Campo requerido
     });
     this.getRegions();
-    this.getCommunesFormatted();
   }
-
-  
 
   getAllBusiness() {
     this.businesService.getAllBusiness().subscribe({
@@ -74,29 +67,6 @@ export class MaintainerManagersComponent implements OnInit {
         });
       }
     });
-  }
-
-  getCommunesFormatted(){
-    this.managerService.getCommunesFormatted().subscribe({
-      next: resp => {
-        this.listCommunesFormated = resp.data;
-      },
-      error: r => {
-        Swal.close();
-        Swal.fire({
-          icon: 'error',
-          text: r.msg,
-          title: '¡Ups!'
-        });
-      }
-    })
-  }
-
-  communesFilter(event: any) {
-    // Convierte el valor a número
-    const selectedRegionId = +event.target.value; 
-    // Filtrar la lista de comunas por regions_id
-    this.listComunas = this.listCommunesFormated.filter(item => item.regions_id === selectedRegionId);
   }
 
   getMaterials() {
@@ -134,6 +104,8 @@ export class MaintainerManagersComponent implements OnInit {
   getManager(id_business: any) {
     this.managerService.getManager(id_business).subscribe({
       next: resp => {
+        console.log(resp);
+        
         if (resp.status) {
           this.managerStatus = resp.status;
           this.filteredForm = resp.status;
@@ -167,11 +139,11 @@ export class MaintainerManagersComponent implements OnInit {
   async addManager(id_business: any) {
     if (this.verificarEstablecimiento()) {
       const MATERIAL = this.getMaterialID(this.userForm.value.MATERIAL);
-      const { REGION, COMUNA } = this.userForm.value;
+      const { REGION } = this.userForm.value;
       const REGION_NAME = await this.managerService.getRegionFromID(REGION).toPromise();
       this.managerStatus.push(id_business);
       
-      this.managerService.addManager(MATERIAL, REGION_NAME.status[0].NAME, id_business, REGION, COMUNA).subscribe({
+      this.managerService.addManager(MATERIAL, REGION_NAME.status[0].NAME, id_business, REGION).subscribe({
         next: resp => {
           if (resp.status) {
             this.pagTo2(0);
@@ -195,7 +167,7 @@ export class MaintainerManagersComponent implements OnInit {
 
     else {
       Swal.fire({
-        title: 'Material, Región y Comuna ya se encuentran registrados',
+        title: 'Material y Región ya se encuentran registrados',
         text: '',
         icon: 'error'
       })
@@ -283,18 +255,21 @@ export class MaintainerManagersComponent implements OnInit {
     this.userForm.patchValue({
       MATERIAL: "",
       REGION: "",
-      COMUNA: ""
     });
-    this.listComunas=[];
   } 
 
   verificarEstablecimiento() {
-    const { MATERIAL, REGION, COMUNA } = this.userForm.value;
+    const { MATERIAL, REGION } = this.userForm.value;
     let existe = false;
     const nombreEstablecimiento = MATERIAL.trim(); // eliminando espacios en blanco adicionales al inicio y al final de la cadena de texto
     
+    
     for (let i = 0; i < this.managerStatus.length; i++) {
-      if (this.managerStatus[i].MATERIAL.toLowerCase() === nombreEstablecimiento.toLowerCase() && this.managerStatus[i].ID_REGION === parseInt(REGION) && this.managerStatus[i].ID_COMUNA === parseInt(COMUNA)) {
+      console.log(this.managerStatus[i].MATERIAL, nombreEstablecimiento);
+      console.log(this.managerStatus[i].ID_REGION, parseInt(REGION));
+      
+      
+      if (this.managerStatus[i].MATERIAL.toLowerCase() === nombreEstablecimiento.toLowerCase() && this.managerStatus[i].ID_REGION === parseInt(REGION)) {
         existe = true;
         break;
       }
@@ -335,7 +310,7 @@ export class MaintainerManagersComponent implements OnInit {
     if (target.value != '') {
       this.cant2 = 1;
       this.db2 = this.managerStatus.filter((r: any) => {
-        if (r.MATERIAL?.toLowerCase().indexOf(value) > -1 || r.REGION?.toLowerCase().indexOf(value) > -1 || r.NAME?.toLowerCase().indexOf(value) >-1) {
+        if (r.MATERIAL?.toLowerCase().indexOf(value) > -1 || r.REGION?.toLowerCase().indexOf(value) > -1) {
           listIndex.push(r);
         };
       });

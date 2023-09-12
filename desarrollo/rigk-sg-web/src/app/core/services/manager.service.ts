@@ -14,8 +14,8 @@ export class ManagerService {
     return this.http.get<any>(`${this.url}/all/`);
   }
 
-  addManager(type_material: any, region: any, id_business: any, id_region: any, id_communes: any) {
-    return this.http.post<any>(`${this.url}/add/`, { type_material, region, id_business, id_region, id_communes });
+  addManager(type_material: any, region: any, id_business: any, id_region: any) {
+    return this.http.post<any>(`${this.url}/add/`, { type_material, region, id_business, id_region });
   }
 
   deleteManager(id: any) {
