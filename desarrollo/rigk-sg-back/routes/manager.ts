@@ -12,7 +12,7 @@ router.get('/submaterialFormatted', [validarJWT], managerLogic.getMaterialsForma
 router.get('/all', [validarJWT], managerLogic.getAllManager);
 router.get('/allMaterials', [validarJWT], managerLogic.getAllMaterials);
 router.get('/allTreatments', [validarJWT], managerLogic.getAllTreatments);
-router.get('/materials/:materials/region/:region', [validarJWT], managerLogic.getManagersByMaterial);
+router.get('/materials/:materials/region/:region/comuna/:comuna', [validarJWT], managerLogic.getManagersByMaterial);
 router.get('/excel', [validarJWT], managerLogic.downloadBulkUploadFileInvoice);
 router.delete('/delete/:id', [validarJWT], managerLogic.deleteManager);
 router.get('/:id', [validarJWT], managerLogic.getManager);
