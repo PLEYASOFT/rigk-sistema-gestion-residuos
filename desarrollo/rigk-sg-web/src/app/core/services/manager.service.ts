@@ -51,9 +51,9 @@ export class ManagerService {
     return this.http.get<any>(`${this.url}/submaterialFormatted/`)
   }
 
-  getManagersByMaterials(materials: any[], region: string, comuna:any) {
+  getManagersByMaterials(materials: any[], region: string) {
     const materialsParam = materials.join(',');
-    return this.http.get<any>(`${this.url}/materials/${materialsParam}/region/${region}/comuna/${comuna}`);
+    return this.http.get<any>(`${this.url}/materials/${materialsParam}/region/${region}`);
   }
 
   downloadExcelTemplateInvoice() {
