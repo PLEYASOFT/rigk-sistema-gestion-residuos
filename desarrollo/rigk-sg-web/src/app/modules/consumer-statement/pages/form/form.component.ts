@@ -133,7 +133,7 @@ export class FormComponent implements OnInit {
         this.region = r.status[0].REGION;
         this.comuna = r.status[0].COMUNA_NAME;
         this.id_establishment = r.status[0].ID_VU ? r.status[0].ID_VU : '-';
-        this.fetchManagersForAllMaterials(r.status[0].REGION, r.status[0].ID_COMUNA);
+        this.fetchManagersForAllMaterials(r.status[0].REGION);
       }
       else {
         this.managers = [];
@@ -141,12 +141,12 @@ export class FormComponent implements OnInit {
     });
   }
 
-  fetchManagersForAllMaterials(region: any, comuna:any) {
+  fetchManagersForAllMaterials(region: any) {
     const materialIds = this.materials_2
       .filter((material: any) => material.id !== undefined)
       .map((material: any) => material.id);
 
-    this.managerService.getManagersByMaterials(materialIds, region,comuna).subscribe(results => {
+    this.managerService.getManagersByMaterials(materialIds, region).subscribe(results => {
       if (Array.isArray(results.status)) {
         this.managers = results.status.map((item: any) => ({
           material: item.COD_MATERIAL,
