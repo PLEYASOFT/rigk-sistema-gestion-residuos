@@ -20,13 +20,29 @@ class EstablishmentDao {
     }
     public async getEstablishment(ID: any) {
         const conn = mysqlcon.getConnection()!;
-        const establishment: any = await conn.query("SELECT establishment.NAME_ESTABLISHMENT, establishment.REGION, establishment_business.ID_BUSINESS,establishment_business.ID_ESTABLISHMENT FROM establishment_business INNER JOIN establishment ON establishment.ID = establishment_business.ID_ESTABLISHMENT WHERE establishment_business.ID_BUSINESS=?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const query = `
+            SELECT 
+                establishment.NAME_ESTABLISHMENT, 
+                establishment.REGION, 
+                establishment_business.ID_BUSINESS,
+                establishment_business.ID_ESTABLISHMENT,
+                communes.NAME AS COMUNE_NAME
+            FROM 
+                establishment_business 
+            INNER JOIN 
+                establishment ON establishment.ID = establishment_business.ID_ESTABLISHMENT
+            INNER JOIN
+                communes ON establishment.ID_COMUNA = communes.ID
+            WHERE 
+                establishment_business.ID_BUSINESS=?
+        `;
+        const establishment: any = await conn.query(query, [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         if (establishment == null || establishment.length == 0) {
             return false;
         }
         conn.end();
         return establishment;
-    }
+    }    
     public async deleteEstablishment(ID: any) {
         const conn = mysqlcon.getConnection()!;
         await conn.query("DELETE FROM establishment_business WHERE ID_ESTABLISHMENT = ?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);

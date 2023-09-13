@@ -165,7 +165,7 @@ export class FormComponent implements OnInit {
       next: r => {
         this.establishments = [];
         r.status.forEach((e: any) => {
-          e.name = `${e.NAME_ESTABLISHMENT} - ${e.REGION}`;
+          e.name = `${e.NAME_ESTABLISHMENT} - ${e.COMUNE_NAME} - ${e.REGION}`;
           this.establishments.push(e);
         });
       }
