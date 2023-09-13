@@ -358,7 +358,6 @@ export class BulkUploadComponent implements OnInit {
       }
       if (MT) {
         materialTypeNum = MT.ID;
-        console.log(materialTypeNum);
       }
 
       let treatmentTypeNum;
@@ -372,7 +371,6 @@ export class BulkUploadComponent implements OnInit {
       }
       if (TT) {
         treatmentTypeNum = TT.ID;
-        console.log(treatmentTypeNum);
       }
 
       // RECICLADOR [8] -> validar
