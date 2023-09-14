@@ -79,25 +79,61 @@
                             <div class="col-md-6">
                                 <label for="inp_nom">NOMBRE:</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" formControlName="FIRST_NAME" id="inp_nom"
+                                    <input type="text" class="form-control" formControlName="NAME" id="inp_nom"
                                         placeholder="Nombre" class="form-control">
                                 </div>
-                                <div *ngIf="userForm.controls['FIRST_NAME'].errors && userForm.controls['FIRST_NAME'].touched"
+                                <div *ngIf="userForm.controls['NAME'].errors && userForm.controls['NAME'].touched"
                                     class="text-danger pl-0">
-                                    <p *ngIf="userForm.controls['FIRST_NAME'].errors['required']">El nombre del
+                                    <p *ngIf="userForm.controls['NAME'].errors['required']">El nombre del
+                                        establecimiento es requerido.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inp_add">DIRECCIÓN:</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" formControlName="ADDRESS" id="inp_add"
+                                        placeholder="Direccion" class="form-control">
+                                </div>
+                                <div *ngIf="userForm.controls['ADDRESS'].errors && userForm.controls['ADDRESS'].touched"
+                                    class="text-danger pl-0">
+                                    <p *ngIf="userForm.controls['ADDRESS'].errors['required']">La dirección del
                                         establecimiento es requerido.</p>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <label for="inp_region">REGIÓN</label>
-                                <select formControlName="REGION" id="inp_region" class="form-select" required>
+                                <select formControlName="ID_REGION" id="inp_region" class="form-select" required (change)="communesFilter($event)">
                                     <option value="">Selecciona Región</option>
-                                    <option *ngFor="let r of listRegiones">{{r}}</option>
+                                    <option *ngFor="let r of listRegiones" [value]="r.ID" >{{r.NAME}}</option>
                                 </select>
-                                <div *ngIf="userForm.controls['REGION'].errors && userForm.controls['REGION'].touched"
+                                <div *ngIf="userForm.controls['ID_REGION'].errors && userForm.controls['ID_REGION'].touched"
                                     class="text-danger pl-0">
-                                    <p *ngIf="userForm.controls['REGION'].errors['required']">Debe seleccionar alguna
+                                    <p *ngIf="userForm.controls['ID_REGION'].errors['required']">Debe seleccionar alguna
                                         región.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inp_comuna">COMUNA</label>
+                                <select formControlName="ID_COMUNA" id="inp_comuna" class="form-select" required>
+                                    <option value="">Selecciona Comuna</option>
+                                    <option *ngFor="let r of listComunas" [value]="r.communes_id">{{r.communes_name}}</option>
+                                </select>
+                                <div *ngIf="userForm.controls['ID_COMUNA'].errors && userForm.controls['ID_COMUNA'].touched"
+                                    class="text-danger pl-0">
+                                    <p *ngIf="userForm.controls['ID_COMUNA'].errors['required']">Debe seleccionar alguna
+                                        comuna.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inp_vu">ID VENTANILLA ÚNICA:</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" formControlName="V_UNIQUE" id="inp_vu"
+                                        placeholder="ID Ventanilla única" class="form-control">
+                                </div>
+                                <div *ngIf="userForm.controls['V_UNIQUE'].errors && userForm.controls['V_UNIQUE'].touched"
+                                    class="text-danger pl-0">
+                                    <p *ngIf="userForm.controls['V_UNIQUE'].errors['required']">El ID de
+                                        ventanilla única es requerido.</p>
                                 </div>
                             </div>
                         </div>
@@ -123,14 +159,20 @@
                                 <thead>
                                     <tr class="text-center w-100">
                                         <th>Establecimiento</th>
+                                        <th>Dirección</th>
                                         <th>Región</th>
+                                        <th>Comuna</th>
+                                        <th>Id VU</th>
                                         <th>Eliminar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr class="text-center w-100" *ngFor="let r of db2; let x = index">
                                         <td>{{r.NAME_ESTABLISHMENT}}</td>
+                                        <td>{{r.ADDRESS}}</td>
                                         <td>{{r.REGION}}</td>
+                                        <td>{{r.NAME_COMMUNE}}</td>
+                                        <td>{{r.ID_VU}}</td>
                                         <td>
                                             <button type="button" class="btn btn-danger btn-sm rounded-pill"
                                                 (click)="deleteEstablishment(r.ID_ESTABLISHMENT)">
