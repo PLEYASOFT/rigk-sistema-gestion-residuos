@@ -92,38 +92,14 @@
                                 <label for="inp_region">REGIÓN</label>
                                 <select formControlName="REGION" id="inp_region" class="form-select" required>
                                     <option value="">Selecciona Región</option>
-                                    <option *ngFor="let r of listRegiones">{{r.NAME}}</option>
+                                    <option *ngFor="let r of listRegiones" [value]="r.ID">{{r.NAME}}</option>
                                 </select>
                                 <div *ngIf="userForm.controls['REGION'].errors && userForm.controls['REGION'].touched"
                                     class="text-danger pl-0">
                                     <p *ngIf="userForm.controls['REGION'].errors['required']">Debe seleccionar alguna
                                         región.</p>
                                 </div>
-                                <br>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="inp_subtipo">SUBTIPO</label>
-                                <select formControlName="SUBTIPO" id="inp_subtipo" class="form-select" required>
-                                    <option value="">Selecciona Subtipo</option>
-                                    <option *ngFor="let r of listSubtipo">{{r.SUBMATERIAL}}</option>
-                                </select>
-                                <div *ngIf="userForm.controls['SUBTIPO'].errors && userForm.controls['SUBTIPO'].touched"
-                                    class="text-danger pl-0">
-                                    <p *ngIf="userForm.controls['SUBTIPO'].errors['required']">Debe seleccionar algun
-                                        subtipo.</p>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="inp_comuna">COMUNA</label>
-                                <select formControlName="COMUNA" id="inp_comuna" class="form-select" required>
-                                    <option value="">Selecciona Comuna</option>
-                                    <option *ngFor="let r of listComunas">{{r.NAME}}</option>
-                                </select>
-                                <div *ngIf="userForm.controls['COMUNA'].errors && userForm.controls['COMUNA'].touched"
-                                    class="text-danger pl-0">
-                                    <p *ngIf="userForm.controls['COMUNA'].errors['required']">Debe seleccionar alguna
-                                        comuna.</p>
-                                </div>
+                                <br>    
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -148,18 +124,14 @@
                                 <thead>
                                     <tr class="text-center w-100">
                                         <th>Material</th>
-                                        <th>Subtipo</th>
                                         <th>Región</th>
-                                        <th>Comuna</th>
                                         <th>Eliminar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr class="text-center w-100" *ngFor="let r of db2; let x = index">
                                         <td>{{r.MATERIAL}}</td>
-                                        <td></td>
                                         <td>{{r.REGION}}</td>
-                                        <td></td>
                                         <td>
                                             <button type="button" class="btn btn-danger btn-sm rounded-pill"
                                                 (click)="deleteManager(r.ID_MANAGER)">
