@@ -45,8 +45,8 @@ export class ManagerService {
   getAllCommunes() {
     return this.http.get<any>(`${this.url}/comunas/`)
   }
-
-  getCommunesFormatted() {
+  
+  getCommunesFormatted(){
     return this.http.get<any>(`${this.url}/communesFormatted/`)
   }
 

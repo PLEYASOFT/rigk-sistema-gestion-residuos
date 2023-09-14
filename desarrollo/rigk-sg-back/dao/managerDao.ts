@@ -146,7 +146,6 @@ class ManagerDao {
     
         return materials;
     }
-
     public async getCommunesFormatted() {
         const conn = mysqlcon.getConnection()!;
         const rawResults = await conn.query(`SELECT regions.ID AS regions_id, regions.NAME AS regions_name, communes.ID AS communes_id,
