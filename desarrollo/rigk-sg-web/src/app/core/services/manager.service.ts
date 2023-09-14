@@ -50,10 +50,6 @@ export class ManagerService {
     return this.http.get<any>(`${this.url}/communesFormatted/`)
   }
 
-  getCommunesFormatted() {
-    return this.http.get<any>(`${this.url}/communesFormatted/`)
-  }
-
   getAllSubmaterial() {
     return this.http.get<any>(`${this.url}/submaterial/`)
   }
