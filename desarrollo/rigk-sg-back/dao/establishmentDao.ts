@@ -26,7 +26,7 @@ class EstablishmentDao {
         }
         conn.end();
         return establishment;
-    }
+    }    
     public async deleteEstablishment(ID: any) {
         const conn = mysqlcon.getConnection()!;
         await conn.query("DELETE FROM establishment_business WHERE ID_ESTABLISHMENT = ?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
