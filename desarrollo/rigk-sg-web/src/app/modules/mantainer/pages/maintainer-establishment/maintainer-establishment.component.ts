@@ -37,6 +37,7 @@ export class MaintainerEstablishmentComponent implements OnInit {
   NAME_REGION: string = "";
   ID_COMUNA: any = "";
   V_UNIQUE: any = [];
+  FILTER: string = '';
   userForm: any;
 
   direction = 'asc';
@@ -59,6 +60,7 @@ export class MaintainerEstablishmentComponent implements OnInit {
       ID_REGION: ["", [Validators.required]], // Campo requerido
       ID_COMUNA: ["", [Validators.required]], // Campo requerido
       V_UNIQUE: [[], [Validators.required]], // Campo requerido
+      FILTER: [[], []]
     });
   }
 
@@ -267,7 +269,8 @@ export class MaintainerEstablishmentComponent implements OnInit {
     this.pagTo2(0);
     this.userForm.reset();
     this.userForm.patchValue({
-      REGION: ""
+      REGION: "",
+      FILTER: ""
     });
   }
 
