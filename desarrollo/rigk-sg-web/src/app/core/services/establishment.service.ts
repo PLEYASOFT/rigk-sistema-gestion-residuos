@@ -34,8 +34,8 @@ export class EstablishmentService {
     return this.http.post<any>(`${this.url}/invoice/`, formData);
   }
 
-  addEstablishment(name: any, region: any, id_business: any) {
-    return this.http.post<any>(`${this.url}/add/`, { name, region, id_business });
+  addEstablishment(name: any, name_region: any, v_unica: any, id_region: any, id_comuna: any, address: any ,id_business: any) {
+    return this.http.post<any>(`${this.url}/add/`, { name, name_region, v_unica, id_region, id_comuna, address, id_business });
   }
 
   deleteEstablishment(id: any) {

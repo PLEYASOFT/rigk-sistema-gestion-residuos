@@ -1,8 +1,8 @@
 import mysqlcon from '../db';
 class EstablishmentDao {
-    async addEstablishment(NAME_ESTABLISHMENT: string, REGION: string, ID_BUSINESS: number) {
+    async addEstablishment(NAME_ESTABLISHMENT: string, REGION: string, ID_VU: string, ID_REGION: number, ID_COMUNA: number, ADDRESS: string, ID_BUSINESS: number) {
         const conn = mysqlcon.getConnection()!;
-        const res: any = await conn.query("INSERT INTO establishment(NAME_ESTABLISHMENT,REGION) VALUES (?,?)", [NAME_ESTABLISHMENT, REGION]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const res: any = await conn.query("INSERT INTO establishment(NAME_ESTABLISHMENT,REGION,ID_VU,ID_REGION,ID_COMUNA,ADDRESS) VALUES (?,?,?,?,?,?)", [NAME_ESTABLISHMENT, REGION, ID_VU, ID_REGION, ID_COMUNA, ADDRESS]).then((res) => res[0]).catch(error => [{ undefined }]);
         const establishmentId = res.insertId; // Obtener el ID del nuevo establecimiento insertado
         // Insertar una nueva fila en la tabla establishment_business
         await conn.query("INSERT INTO establishment_business(ID_ESTABLISHMENT, ID_BUSINESS ) VALUES (?,?)", [establishmentId, ID_BUSINESS]).then((res) => res[0]).catch(error => [{ undefined }]);
@@ -20,13 +20,13 @@ class EstablishmentDao {
     }
     public async getEstablishment(ID: any) {
         const conn = mysqlcon.getConnection()!;
-        const establishment: any = await conn.query("SELECT establishment.NAME_ESTABLISHMENT, establishment.REGION, establishment_business.ID_BUSINESS,establishment_business.ID_ESTABLISHMENT FROM establishment_business INNER JOIN establishment ON establishment.ID = establishment_business.ID_ESTABLISHMENT WHERE establishment_business.ID_BUSINESS=?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const establishment: any = await conn.query("SELECT communes.NAME as NAME_COMMUNE, establishment.NAME_ESTABLISHMENT, establishment.REGION, establishment.ADDRESS, establishment.ID_COMUNA, establishment.ID_VU, establishment_business.ID_BUSINESS,establishment_business.ID_ESTABLISHMENT FROM establishment_business INNER JOIN establishment ON establishment.ID = establishment_business.ID_ESTABLISHMENT JOIN communes ON establishment.ID_COMUNA = communes.ID WHERE establishment_business.ID_BUSINESS=?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         if (establishment == null || establishment.length == 0) {
             return false;
         }
         conn.end();
         return establishment;
-    }
+    }    
     public async deleteEstablishment(ID: any) {
         const conn = mysqlcon.getConnection()!;
         await conn.query("DELETE FROM establishment_business WHERE ID_ESTABLISHMENT = ?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);

@@ -4,10 +4,14 @@ import { createLog } from "../helpers/createLog";
 class EstablishmentLogic {
     async addEstablishment(req: Request|any, res: Response) {
         const name = req.body.name;
-        const region = req.body.region;
-        const id_business = req.body.id_business
+        const name_region = req.body.name_region;
+        const v_unica = req.body.v_unica;
+        const id_region = req.body.id_region;
+        const id_comuna =req.body.id_comuna;
+        const address =req.body.address;
+        const id_business = req.body.id_business;
         try {
-            await establishmentDao.addEstablishment(name, region, id_business);
+            await establishmentDao.addEstablishment(name, name_region, v_unica, id_region, id_comuna, address, id_business);
             await createLog('AGREGA_ESTABLECIMIENTO', req.uid, null);
             res.status(200).json({ status: true, msg: 'Has creado un establecimiento', data: {} })
         }
