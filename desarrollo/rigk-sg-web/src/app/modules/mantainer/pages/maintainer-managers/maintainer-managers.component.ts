@@ -17,6 +17,7 @@ export class MaintainerManagersComponent implements OnInit {
   filteredList: any[] = [];
   filteredForm: any[] = [];
   listBusiness: any[] = [];
+  
   pos = 1;
   db: any[] = [];
   cant = 0;
@@ -32,6 +33,7 @@ export class MaintainerManagersComponent implements OnInit {
 
   MATERIAL: any = "";
   REGION: any = "";
+  FILTER: string = "";
   userForm: any;
 
   constructor(private businesService: BusinessService,
@@ -46,6 +48,7 @@ export class MaintainerManagersComponent implements OnInit {
     this.userForm = this.fb.group({
       MATERIAL: ["", [Validators.required]], // Campo requerido
       REGION: ["", [Validators.required]], // Campo requerido
+      FILTER: [[],[]]
     });
     this.getRegions();
   }
@@ -253,7 +256,9 @@ export class MaintainerManagersComponent implements OnInit {
     this.userForm.patchValue({
       MATERIAL: "",
       REGION: "",
+      FILTER: ""
     });
+
   } 
 
   verificarEstablecimiento() {
@@ -296,7 +301,7 @@ export class MaintainerManagersComponent implements OnInit {
     this.cant = Math.ceil(this.listBusiness.length / 10);
     return this.db;
   }
-
+  
   filterForm(target: any) {
     const value = target.value?.toLowerCase();
     this.pos2 = 1;
