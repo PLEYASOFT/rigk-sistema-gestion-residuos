@@ -23,9 +23,9 @@ class IndustrialConsumer {
         }
     }
     public async verifyRow(req: any, res: Response) {
-        const {treatment, sub,gestor,date} = req.body;
+        const {treatment, sub,gestor,date,idEstablishment} = req.body;
         try {
-            const data: any = await industrialConsumerDao.verifyRow(treatment, sub,gestor,date);
+            const data: any = await industrialConsumerDao.verifyRow(treatment, sub,gestor,date,idEstablishment);
             if(data.length > 0) {
                 return res.json({
                     status: false

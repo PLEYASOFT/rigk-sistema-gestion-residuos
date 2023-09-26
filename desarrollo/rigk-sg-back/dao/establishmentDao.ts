@@ -1,8 +1,8 @@
 import mysqlcon from '../db';
 class EstablishmentDao {
-    async addEstablishment(NAME_ESTABLISHMENT: string, REGION: string, ID_BUSINESS: number) {
+    async addEstablishment(NAME_ESTABLISHMENT: string, REGION: string, ID_VU: string, ID_REGION: number, ID_COMUNA: number, ADDRESS: string, ID_BUSINESS: number) {
         const conn = mysqlcon.getConnection()!;
-        const res: any = await conn.query("INSERT INTO establishment(NAME_ESTABLISHMENT,REGION) VALUES (?,?)", [NAME_ESTABLISHMENT, REGION]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const res: any = await conn.query("INSERT INTO establishment(NAME_ESTABLISHMENT,REGION,ID_VU,ID_REGION,ID_COMUNA,ADDRESS) VALUES (?,?,?,?,?,?)", [NAME_ESTABLISHMENT, REGION, ID_VU, ID_REGION, ID_COMUNA, ADDRESS]).then((res) => res[0]).catch(error => [{ undefined }]);
         const establishmentId = res.insertId; // Obtener el ID del nuevo establecimiento insertado
         // Insertar una nueva fila en la tabla establishment_business
         await conn.query("INSERT INTO establishment_business(ID_ESTABLISHMENT, ID_BUSINESS ) VALUES (?,?)", [establishmentId, ID_BUSINESS]).then((res) => res[0]).catch(error => [{ undefined }]);
@@ -20,13 +20,13 @@ class EstablishmentDao {
     }
     public async getEstablishment(ID: any) {
         const conn = mysqlcon.getConnection()!;
-        const establishment: any = await conn.query("SELECT establishment.NAME_ESTABLISHMENT, establishment.REGION, establishment_business.ID_BUSINESS,establishment_business.ID_ESTABLISHMENT FROM establishment_business INNER JOIN establishment ON establishment.ID = establishment_business.ID_ESTABLISHMENT WHERE establishment_business.ID_BUSINESS=?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const establishment: any = await conn.query("SELECT communes.NAME as NAME_COMMUNE, establishment.NAME_ESTABLISHMENT, establishment.REGION, establishment.ADDRESS, establishment.ID_COMUNA, establishment.ID_VU, establishment_business.ID_BUSINESS,establishment_business.ID_ESTABLISHMENT FROM establishment_business INNER JOIN establishment ON establishment.ID = establishment_business.ID_ESTABLISHMENT JOIN communes ON establishment.ID_COMUNA = communes.ID WHERE establishment_business.ID_BUSINESS=?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         if (establishment == null || establishment.length == 0) {
             return false;
         }
         conn.end();
         return establishment;
-    }
+    }    
     public async deleteEstablishment(ID: any) {
         const conn = mysqlcon.getConnection()!;
         await conn.query("DELETE FROM establishment_business WHERE ID_ESTABLISHMENT = ?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
@@ -51,75 +51,50 @@ class EstablishmentDao {
                 ELSE 0
             END AS semaforo,
             detail_industrial_consumer_form.PRECEDENCE AS PRECEDENCE_NUMBER,
-                CASE detail_industrial_consumer_form.PRECEDENCE
-                    WHEN 1 THEN 'Papel/Cartón'
-                    WHEN 2 THEN 'Metal'
-                    WHEN 3 THEN 'Plástico'
-                    WHEN 4 THEN 'Madera'
-                    ELSE 'Desconocido'
-                END AS PRECEDENCE,
-                CASE detail_industrial_consumer_form.TYPE_RESIDUE
-                    WHEN 1 THEN 'Papel'
-                    WHEN 2 THEN 'Papel Compuesto (cemento)'
-                    WHEN 3 THEN 'Caja Cartón'
-                    WHEN 4 THEN 'Papel/Cartón Otro'
-                    WHEN 5 THEN 'Esquineros Conos'
-                    WHEN 6 THEN 'Cartón RH'
-                    WHEN 7 THEN 'Envase Aluminio'
-                    WHEN 8 THEN 'Malla o Reja (IBC)'
-                    WHEN 9 THEN 'Envase Hojalata'
-                    WHEN 10 THEN 'Metal Otro'
-                    WHEN 11 THEN 'Esquineros Metal'
-                    WHEN 12 THEN 'Plástico Film Embalaje'
-                    WHEN 13 THEN 'Plástico Envases Rígidos (Incl. Tapas)'
-                    WHEN 14 THEN 'Plástico Sacos o Maxisacos'
-                    WHEN 15 THEN 'Plástico EPS (Poliestireno Expandido)'
-                    WHEN 16 THEN 'Plástico Zuncho'
-                    WHEN 17 THEN 'Plástico Otro'
-                    WHEN 18 THEN 'Caja de Madera'
-                    WHEN 19 THEN 'Pallet de Madera'
-                    ELSE 'Desconocido'
-                END AS TYPE_RESIDUE,
-                detail_industrial_consumer_form.VALUE,
-                detail_industrial_consumer_form.STATE_GESTOR,
-                invoices_detail.VALUE AS VALUE_DECLARATE,
-                detail_industrial_consumer_form.DATE_WITHDRAW AS FechaRetiro,
-                CONCAT(UPPER(SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 1, 1)), SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 2)) AS FechaRetiroTipeada,
-                detail_industrial_consumer_form.ID_GESTOR AS IdGestor,
-                detail_industrial_consumer_form.LER,
-                detail_industrial_consumer_form.TREATMENT_TYPE AS TREATMENT_TYPE_NUMBER,
-                CASE detail_industrial_consumer_form.TREATMENT_TYPE
-                    WHEN 1 THEN 'Reciclaje Mecánico'
-                    WHEN 2 THEN 'Valorización Energética'
-                    WHEN 3 THEN 'Disposición Final en RS'
-                    WHEN 4 THEN 'Reciclaje Interno'
-                    WHEN 5 THEN 'Preparación Reutilización'
-                    WHEN 6 THEN 'DF en Relleno Sanitario '
-                    WHEN 7 THEN 'DF en Relleno Seguridad'
-                ELSE 'Desconocido'
-                END AS TipoTratamiento
+            type_material.MATERIAL AS PRECEDENCE,
+            submaterial.SUBMATERIAL AS TYPE_RESIDUE,
+            detail_industrial_consumer_form.VALUE,
+            detail_industrial_consumer_form.STATE_GESTOR,
+            invoices_detail.VALUE AS VALUE_DECLARATE,
+            detail_industrial_consumer_form.DATE_WITHDRAW AS FechaRetiro,
+            CONCAT(UPPER(SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 1, 1)), SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 2)) AS FechaRetiroTipeada,
+            detail_industrial_consumer_form.ID_GESTOR AS IdGestor,
+            detail_industrial_consumer_form.LER,
+            detail_industrial_consumer_form.TREATMENT_TYPE AS TREATMENT_TYPE_NUMBER,
+            type_treatment.NAME AS TipoTratamiento
         FROM header_industrial_consumer_form
         INNER JOIN establishment ON establishment.ID = header_industrial_consumer_form.ID_ESTABLISHMENT
         INNER JOIN establishment_business ON establishment_business.ID_ESTABLISHMENT = establishment.ID
         INNER JOIN business ON business.ID = establishment_business.ID_BUSINESS
         INNER JOIN detail_industrial_consumer_form ON detail_industrial_consumer_form.ID_HEADER = header_industrial_consumer_form.ID
         LEFT JOIN invoices_detail ON invoices_detail.ID_DETAIL = detail_industrial_consumer_form.ID
+        LEFT JOIN type_material ON type_material.ID = detail_industrial_consumer_form.PRECEDENCE
+        LEFT JOIN submaterial ON submaterial.ID = detail_industrial_consumer_form.TYPE_RESIDUE
+        LEFT JOIN type_treatment ON type_treatment.ID = detail_industrial_consumer_form.TREATMENT_TYPE
         WHERE establishment_business.ID_ESTABLISHMENT IN (SELECT ID_ESTABLISHMENT FROM establishment_business WHERE ID_BUSINESS IN (SELECT ID_BUSINESS FROM user_business WHERE ID_USER = ?))
- `, [ID]).then(res => res[0]).catch(erro => { console.log(erro); return undefined });
-
+     `, [ID]).then(res => res[0]).catch(erro => { console.log(erro); return undefined });
         conn.end();
         return data;
     }
+    
 
     public async getEstablishmentByID(ID: any) {
         const conn = mysqlcon.getConnection()!;
-        const establishment: any = await conn.query("SELECT * FROM establishment WHERE establishment.ID = ?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const establishment: any = await conn.query(
+            "SELECT establishment.*, communes.NAME AS COMUNA_NAME FROM establishment " +
+            "LEFT JOIN communes ON establishment.ID_COMUNA = communes.ID " +
+            "WHERE establishment.ID = ?", 
+            [ID]
+        ).then((res) => res[0]).catch(error => [{ undefined }]);
+        
         if (establishment == null || establishment.length == 0) {
             return false;
         }
+        
         conn.end();
         return establishment;
     }
+    
     public async getInvoice(number: any, rut: any, treatment_type: number, material_type: number, id_business: number) {
         const conn = mysqlcon.getConnection()!;
         const business: any = await conn.execute("SELECT ID, NAME FROM business WHERE VAT = ?", [rut]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });

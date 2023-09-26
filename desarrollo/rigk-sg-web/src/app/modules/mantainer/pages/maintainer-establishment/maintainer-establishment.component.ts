@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { BusinessService } from 'src/app/core/services/business.service';
 import Swal from 'sweetalert2';
 import { EstablishmentService } from 'src/app/core/services/establishment.service';
+import { ManagerService } from 'src/app/core/services/manager.service';
 
 @Component({
   selector: 'app-maintainer-establishment',
@@ -11,25 +12,9 @@ import { EstablishmentService } from 'src/app/core/services/establishment.servic
 })
 export class MaintainerEstablishmentComponent implements OnInit {
 
-  listRegiones: any[] = [
-    'Región de Arica y Parinacota',
-    'Región de Tarapacá',
-    'Región de Antofagasta',
-    'Región de Atacama',
-    'Región de Coquimbo',
-    'Región de Valparaíso',
-    'Región Metropolitana',
-    'Región de O’Higgins',
-    'Región del Maule',
-    'Región del Ñuble',
-    'Región del Biobío',
-    'Región de La Araucanía',
-    'Región de Los Ríos',
-    'Región de Los Lagos',
-    'Región de Aysén',
-    'Región de Magallanes'
-  ];
-
+  listRegiones: any[] = [];
+  listComunas: any[] = [];
+  listCommunesFormated: any[] = [];
   listBusiness: any[] = [];
   pos = 1;
   db: any[] = [];
@@ -46,13 +31,19 @@ export class MaintainerEstablishmentComponent implements OnInit {
 
   userData: any | null;
 
-  FIRST_NAME: any = [];
-  REGION: any = "";
+  NAME: any = [];
+  ADDRESS: any = [];
+  ID_REGION: any = "";
+  NAME_REGION: string = "";
+  ID_COMUNA: any = "";
+  V_UNIQUE: any = [];
+  FILTER: string = '';
   userForm: any;
 
   direction = 'asc';
   directionEstablishment = 'asc';
   constructor(private businesService: BusinessService,
+    private managerService: ManagerService,
     private establishmentService: EstablishmentService,
     private fb: FormBuilder) {
   }
@@ -60,11 +51,61 @@ export class MaintainerEstablishmentComponent implements OnInit {
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
     this.getAllBusiness();
+    this.getRegions();
+    this.getCommunesFormatted();
 
     this.userForm = this.fb.group({
-      FIRST_NAME: [[], [Validators.required]], // Campo requerido
-      REGION: ["", [Validators.required]], // Campo requerido
+      NAME: [[], [Validators.required]], // Campo requerido
+      ADDRESS: [[], [Validators.required]], // Campo requerido
+      ID_REGION: ["", [Validators.required]], // Campo requerido
+      ID_COMUNA: ["", [Validators.required]], // Campo requerido
+      V_UNIQUE: [[], [Validators.required]], // Campo requerido
+      FILTER: [[], []]
     });
+  }
+
+  getRegions() {
+    this.managerService.getAllRegions().subscribe({
+      next: resp => {
+        this.listRegiones = resp.data;
+      },
+      error: r => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          text: r.msg,
+          title: '¡Ups!'
+        });
+      }
+    });
+  }
+
+  getCommunesFormatted(){
+    this.managerService.getCommunesFormatted().subscribe({
+      next: resp => {
+        this.listCommunesFormated = resp.data;    
+      },
+      error: r => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          text: r.msg,
+          title: '¡Ups!'
+        });
+      }
+    })
+  }
+
+  communesFilter(event: any) {
+    // Convierte el valor a número
+    const selectedRegionId = +event.target.value;
+    const selectedIndex = event.target.selectedIndex;
+    if (selectedIndex > 0) {
+      this.NAME_REGION = this.listRegiones[selectedIndex -1].NAME; // Nombre de la región seleccionada
+    }
+    // Filtrar la lista de comunas por regions_id
+    this.listComunas = this.listCommunesFormated.filter(item => item.regions_id === selectedRegionId);
+    this.userForm.patchValue({ ID_COMUNA: '' });
   }
 
   getAllBusiness() {
@@ -115,10 +156,10 @@ export class MaintainerEstablishmentComponent implements OnInit {
   addEstablishment(id_business: any) {
 
     if (this.verificarEstablecimiento()) {
-      const { FIRST_NAME, REGION } = this.userForm.value;
+      const { NAME, ID_REGION, ID_COMUNA, V_UNIQUE, ADDRESS } = this.userForm.value;
       this.establishmentStatus.push(id_business);
 
-      this.establishmentService.addEstablishment(FIRST_NAME, REGION, id_business).subscribe({
+      this.establishmentService.addEstablishment(NAME, this.NAME_REGION, V_UNIQUE, ID_REGION, ID_COMUNA, ADDRESS, id_business).subscribe({
         next: resp => {
           if (resp.status) {
             this.pagTo2(0);
@@ -142,7 +183,7 @@ export class MaintainerEstablishmentComponent implements OnInit {
 
     else{
       Swal.fire({
-        title: 'Establecimiento y Región ya se encuentran registrados',
+        title: 'Establecimiento, Región y Comuna ya se encuentran registrados',
         text: '',
         icon: 'error'
       })
@@ -228,17 +269,18 @@ export class MaintainerEstablishmentComponent implements OnInit {
     this.pagTo2(0);
     this.userForm.reset();
     this.userForm.patchValue({
-      REGION: ""
+      REGION: "",
+      FILTER: ""
     });
   }
 
   verificarEstablecimiento() {
-    const { FIRST_NAME, REGION } = this.userForm.value;
+    const { NAME, ID_COMUNA } = this.userForm.value;
     let existe = false;
-    const nombreEstablecimiento = FIRST_NAME.trim(); // eliminando espacios en blanco adicionales al inicio y al final de la cadena de texto
+    const nombreEstablecimiento = NAME.trim(); // eliminando espacios en blanco adicionales al inicio y al final de la cadena de texto
 
     for (let i = 0; i < this.establishmentStatus.length; i++) {
-      if (this.establishmentStatus[i].NAME_ESTABLISHMENT.toLowerCase() === nombreEstablecimiento.toLowerCase() && this.establishmentStatus[i].REGION === REGION) {
+      if (this.establishmentStatus[i].NAME_ESTABLISHMENT.toLowerCase() === nombreEstablecimiento.toLowerCase() && this.establishmentStatus[i].REGION === this.NAME_REGION && this.establishmentStatus[i].ID_COMUNA === parseInt(ID_COMUNA)) {
         existe = true;
         break;
       }
@@ -293,7 +335,7 @@ export class MaintainerEstablishmentComponent implements OnInit {
     if(target.value != ''){
       this.cant2 = 1;
       this.db2 = this.establishmentStatus.filter((r: any)=>{
-        if(r.NAME_ESTABLISHMENT?.toLowerCase().indexOf(value) > -1 || r.REGION?.toLowerCase().indexOf(value) > -1) {
+        if(r.NAME_ESTABLISHMENT?.toLowerCase().indexOf(value) > -1 || r.ADDRESS?.toLowerCase().indexOf(value) > -1 || r.REGION?.toLowerCase().indexOf(value) > -1 || r.NAME_COMMUNE?.toLowerCase().indexOf(value) > -1 || r.ID_VU?.toLowerCase().indexOf(value) > -1 ) {
           listIndex.push(r);
         };
       });

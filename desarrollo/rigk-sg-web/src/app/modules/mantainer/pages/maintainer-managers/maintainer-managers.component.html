@@ -30,7 +30,7 @@
                                 <th>CÓDIGO EMPRESA </th>
                                 <th>NOMBRE </th>
                                 <th>DIRECCIÓN </th>
-                                <th>MATERIALES/REGIÓN </th>
+                                <th>MATERIALES</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -42,7 +42,7 @@
                                     <div class="btn-group">
                                         <button class="btn btn-success btn-sm rounded-pill" data-bs-toggle="modal"
                                             data-bs-target="#exampleModal"
-                                            (click)="this.getManager(r.ID); index =r.ID;">Materiales/Región</button>
+                                            (click)="this.getManager(r.ID); index =r.ID;">Materiales</button>
                                     </div>
                                 </td>
                             </tr>
@@ -92,13 +92,14 @@
                                 <label for="inp_region">REGIÓN</label>
                                 <select formControlName="REGION" id="inp_region" class="form-select" required>
                                     <option value="">Selecciona Región</option>
-                                    <option *ngFor="let r of listRegiones">{{r}}</option>
+                                    <option *ngFor="let r of listRegiones" [value]="r.ID">{{r.NAME}}</option>
                                 </select>
                                 <div *ngIf="userForm.controls['REGION'].errors && userForm.controls['REGION'].touched"
                                     class="text-danger pl-0">
                                     <p *ngIf="userForm.controls['REGION'].errors['required']">Debe seleccionar alguna
                                         región.</p>
                                 </div>
+                                <br>    
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -115,7 +116,7 @@
                                 <div class="col-md-12">
                                     <label>Filtro:</label>
                                     <input type="text" class="form-control" placeholder="Filtro de búsqueda"
-                                        (keyup)="filterForm($event.target)">
+                                        (keyup)="filterForm($event.target)" formControlName="FILTER">
                                 </div>
                             </div>
                             <table

@@ -14,9 +14,8 @@ export class ManagerService {
     return this.http.get<any>(`${this.url}/all/`);
   }
 
-  addManager(type_material: any, region: any, id_business: any) {
-    console.log(type_material, region, id_business)
-    return this.http.post<any>(`${this.url}/add/`, { type_material, region, id_business });
+  addManager(type_material: any, region: any, id_business: any, id_region: any) {
+    return this.http.post<any>(`${this.url}/add/`, { type_material, region, id_business, id_region });
   }
 
   deleteManager(id: any) {
@@ -29,6 +28,34 @@ export class ManagerService {
 
   getAllMaterials() {
     return this.http.get<any>(`${this.url}/allMaterials/`);
+  }
+
+  getAllTreatments() {
+    return this.http.get<any>(`${this.url}/allTreatments/`);
+  }
+
+  getAllRegions() {
+    return this.http.get<any>(`${this.url}/regiones/`)
+  }
+
+  getRegionFromID(id: number) {
+    return this.http.get<any>(`${this.url}/regiones/${id}/`)
+  }
+
+  getAllCommunes() {
+    return this.http.get<any>(`${this.url}/comunas/`)
+  }
+  
+  getCommunesFormatted(){
+    return this.http.get<any>(`${this.url}/communesFormatted/`)
+  }
+
+  getAllSubmaterial() {
+    return this.http.get<any>(`${this.url}/submaterial/`)
+  }
+
+  getAllSubmaterialFormatted() {
+    return this.http.get<any>(`${this.url}/submaterialFormatted/`)
   }
 
   getManagersByMaterials(materials: any[], region: string) {

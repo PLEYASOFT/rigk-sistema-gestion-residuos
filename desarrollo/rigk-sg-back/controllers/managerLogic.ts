@@ -3,7 +3,6 @@ import managerDao from '../dao/managerDao';
 import { createLog } from "../helpers/createLog";
 import ExcelJS from 'exceljs';
 import establishmentDao from "../dao/establishmentDao";
-import { string } from "joi";
 import businessDao from "../dao/businessDao";
 import { getReferenceExcel } from '../helpers/getExcelRef';
 class ManagerLogic {
@@ -11,8 +10,9 @@ class ManagerLogic {
         const type_material = req.body.type_material;
         const region = req.body.region;
         const id_business = req.body.id_business
+        const id_region = req.body.id_region
         try {
-            await managerDao.addManager(type_material, region, id_business);
+            await managerDao.addManager(type_material, region, id_business, id_region);
             await createLog('AGREGA_TIPO_MATERIAL', req.uid, null);
             res.status(200).json({ status: true, msg: 'Has creado un gestor', data: {} })
         }
@@ -22,6 +22,21 @@ class ManagerLogic {
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
+
+    async getRegionFromID(req: any, res: Response) {
+        const {id} = req.params
+        try {
+            const manager = await managerDao.getRegionFromID(id);
+            res.status(200).json({ status: manager, data: {}, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+
     async getAllManager(req: any, res: Response) {
         try {
             const manager = await managerDao.getAllManager();
@@ -75,7 +90,7 @@ class ManagerLogic {
         }
     }
     async getManagersByMaterial(req: any, res: Response) {
-        const { materials, region } = req.params;
+        const { materials, region} = req.params;
         const materialsArray = materials.split(',');
         try {
             const result = await managerDao.getManagersByMaterials(materialsArray, region);
@@ -274,6 +289,84 @@ class ManagerLogic {
             });
         }
     }
+
+    async getAllRegions(req: any, res: Response) {
+        try {
+            const result = await managerDao.getAllRegions();
+            res.status(200).json({ status: true, data: result, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+    async getAllCommunes(req: any, res: Response) {
+        try {
+            const result = await managerDao.getAllCommunes();
+            res.status(200).json({ status: true, data: result, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+
+    async getAllSubmaterial(req: any, res: Response) {
+        try {
+            const result = await managerDao.getAllSubmaterial();
+            res.status(200).json({ status: true, data: result, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+
+    async getMaterialsFormatted(req: any, res: Response) {
+        try {
+            const result = await managerDao.getMaterialsFormatted();
+            res.status(200).json({ status: true, data: result, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+
+    async getAllTreatments(req: any, res: Response) {
+        try {
+            const material = await managerDao.getAllTreatments();
+            res.status(200).json({ status: material, data: {}, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+
+    async getCommunesFormatted(req: any, res: Response) {
+        try {
+            const result = await managerDao.getCommunesFormatted();
+            res.status(200).json({ status: true, data: result, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+
 }
 const managerLogic = new ManagerLogic();
 export default managerLogic;
