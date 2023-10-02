@@ -394,7 +394,7 @@ export class StatementsComponent implements OnInit {
     const id_business = this.userForm.value.reciclador;
     if (rut) {
       try {
-        const businessResponse = await this.establishmentService.getInovice(invoiceNumber, rut, treatmentType, material, id_business).toPromise();
+        const businessResponse = await this.establishmentService.getInovice(invoiceNumber, rut, treatmentType, material/*, id_business*/).toPromise();
         if (businessResponse.status) {
           
           this.userForm.controls['totalWeight'].setValue(
@@ -405,6 +405,7 @@ export class StatementsComponent implements OnInit {
           );
           this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + 1);
           const asoc = this.userForm.controls['asoc'].value || "0";
+
           if (parseInt(asoc) > 1) {
             if (invoiceNumber) {
               this.userForm.controls['valuedWeight'].enable();

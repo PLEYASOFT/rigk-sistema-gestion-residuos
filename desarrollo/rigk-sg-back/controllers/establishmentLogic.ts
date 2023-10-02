@@ -111,9 +111,9 @@ class EstablishmentLogic {
         }
     }
     public async getInovice(req: any, res: Response) {
-        const { invoice_number, vat, treatment_type, material_type, id_business } = req.body;
+    const { invoice_number, vat, treatment_type, material_type/*, id_business */} = req.body;
         try {
-            const data: any = await establishmentDao.getInvoice(invoice_number, vat, treatment_type, material_type, id_business);
+            const data: any = await establishmentDao.getInvoice(invoice_number, vat, treatment_type, material_type/*, id_business*/);
             if (data[0] == null) {
                 return res.status(200).json({ status: false, data, msg: 'Factura ingresada para otro material y/o tratamiento' });
             }
