@@ -39,7 +39,7 @@ class EstablishmentDao {
         const conn = mysqlcon.getConnection()!;
         await conn.execute("SET lc_time_names = 'es_ES';");
         const data: any = await conn.execute(`
-            SELECT CONCAT(establishment.NAME_ESTABLISHMENT, ' - ', establishment.REGION) AS NAME_ESTABLISHMENT_REGION,
+            SELECT CONCAT(establishment.NAME_ESTABLISHMENT, ' - ', communes.NAME, ' - ', establishment.REGION ) AS NAME_ESTABLISHMENT_REGION,
                 header_industrial_consumer_form.CREATED_AT, header_industrial_consumer_form.YEAR_STATEMENT,
                 header_industrial_consumer_form.ID AS ID_HEADER, business.NAME as NAME_BUSINESS, detail_industrial_consumer_form.ID AS ID_DETAIL,
                 CASE
@@ -67,6 +67,7 @@ class EstablishmentDao {
         INNER JOIN establishment_business ON establishment_business.ID_ESTABLISHMENT = establishment.ID
         INNER JOIN business ON business.ID = establishment_business.ID_BUSINESS
         INNER JOIN detail_industrial_consumer_form ON detail_industrial_consumer_form.ID_HEADER = header_industrial_consumer_form.ID
+        INNER JOIN communes ON communes.ID = establishment.ID_COMUNA
         LEFT JOIN invoices_detail ON invoices_detail.ID_DETAIL = detail_industrial_consumer_form.ID
         LEFT JOIN type_material ON type_material.ID = detail_industrial_consumer_form.PRECEDENCE
         LEFT JOIN submaterial ON submaterial.ID = detail_industrial_consumer_form.TYPE_RESIDUE
