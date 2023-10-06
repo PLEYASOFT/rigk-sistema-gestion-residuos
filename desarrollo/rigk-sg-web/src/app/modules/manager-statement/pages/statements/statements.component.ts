@@ -394,7 +394,7 @@ export class StatementsComponent implements OnInit {
     const id_business = this.userForm.value.reciclador;
     if (rut) {
       try {
-        const businessResponse = await this.establishmentService.getInovice(invoiceNumber, rut, treatmentType, material/*, id_business*/).toPromise();
+        const businessResponse = await this.establishmentService.getInovice(invoiceNumber, rut, treatmentType, material).toPromise();
         if (businessResponse.status) {
           
           this.userForm.controls['totalWeight'].setValue(

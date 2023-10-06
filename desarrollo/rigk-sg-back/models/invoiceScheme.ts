@@ -4,7 +4,6 @@ export const getScheme = Joi.object({
     vat: Joi.string().required(),
     treatment_type: Joi.number().required(),
     material_type: Joi.number().required(),
-    // id_business: Joi.number().required(),
 });
 export const saveScheme = Joi.object({
     invoice_number: Joi.number().required(),
