@@ -39,7 +39,7 @@ class EstablishmentDao {
         const conn = mysqlcon.getConnection()!;
         await conn.execute("SET lc_time_names = 'es_ES';");
         const data: any = await conn.execute(`
-            SELECT CONCAT(establishment.NAME_ESTABLISHMENT, ' - ' , communes.NAME, ' - ', establishment.REGION) AS NAME_ESTABLISHMENT_REGION,
+            SELECT CONCAT(establishment.NAME_ESTABLISHMENT, ' - ', communes.NAME, ' - ', establishment.REGION ) AS NAME_ESTABLISHMENT_REGION,
                 header_industrial_consumer_form.CREATED_AT, header_industrial_consumer_form.YEAR_STATEMENT,
                 header_industrial_consumer_form.ID AS ID_HEADER, business.NAME as NAME_BUSINESS, detail_industrial_consumer_form.ID AS ID_DETAIL,
                 CASE
