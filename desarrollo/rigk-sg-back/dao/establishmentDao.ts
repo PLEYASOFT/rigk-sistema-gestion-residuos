@@ -112,6 +112,7 @@ class EstablishmentDao {
                 NAME: business
             }];
         }
+        
         //verify constraint
         if(data0[0]['MATERIAL_TYPE'] != material_type || data0[0]['TREATMENT_TYPE'] != treatment_type) {
             return [];

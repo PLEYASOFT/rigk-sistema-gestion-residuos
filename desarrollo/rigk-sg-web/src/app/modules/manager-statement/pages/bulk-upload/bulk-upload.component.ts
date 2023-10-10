@@ -421,7 +421,7 @@ export class BulkUploadComponent implements OnInit {
       // PESO DECLARADO [11] -> validar
       let declaratedWeight: string | number;
       let declaratedWeightResponse;
-      const businessResponse = await this.establishmentService.getInovice(numberInvoice, vat, treatmentTypeNum, materialTypeNum).toPromise();
+      const businessResponse = await this.establishmentService.getInovice(numberInvoice, vat, treatmentTypeNum, materialTypeNum/*, idBusiness*/).toPromise();
       if (businessResponse.status) {
         totalWeight = (this.formatNumber(businessResponse.data[0]?.invoice_value));
         declaratedWeightResponse = (this.formatNumber(businessResponse.data[0].value_declarated));

@@ -111,7 +111,7 @@ class EstablishmentLogic {
         }
     }
     public async getInovice(req: any, res: Response) {
-        const { invoice_number, vat, treatment_type, material_type} = req.body;
+    const { invoice_number, vat, treatment_type, material_type} = req.body;
         try {
             const data: any = await establishmentDao.getInvoice(invoice_number, vat, treatment_type, material_type);
             if (data[0] == null) {
