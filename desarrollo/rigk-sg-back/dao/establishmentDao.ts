@@ -96,13 +96,13 @@ class EstablishmentDao {
         return establishment;
     }
     
-    public async getInvoice(number: any, rut: any, treatment_type: number, material_type: number, id_business: number) {
+    public async getInvoice(number: any, rut: any, treatment_type: number, material_type: number) {
         const conn = mysqlcon.getConnection()!;
         const business: any = await conn.execute("SELECT ID, NAME FROM business WHERE VAT = ?", [rut]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
         if (business == null || business.length == 0) {
             return []
         }
-        const data0:any = await conn.execute("SELECT ID, VALUED_TOTAL AS invoice_value,TREATMENT_TYPE,MATERIAL_TYPE FROM invoices WHERE INVOICE_NUMBER=? AND VAT=? AND ID_BUSINESS=?", [number, rut, id_business]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const data0:any = await conn.execute("SELECT ID, VALUED_TOTAL AS invoice_value,TREATMENT_TYPE,MATERIAL_TYPE FROM invoices WHERE INVOICE_NUMBER=? AND VAT=?", [number, rut]).then((res) => res[0]).catch(error => [{ undefined }]);
         // first invoice
         if (data0 == null || data0.length == 0) {
             return [{
@@ -112,6 +112,7 @@ class EstablishmentDao {
                 NAME: business
             }];
         }
+        
         //verify constraint
         if(data0[0]['MATERIAL_TYPE'] != material_type || data0[0]['TREATMENT_TYPE'] != treatment_type) {
             return [];
