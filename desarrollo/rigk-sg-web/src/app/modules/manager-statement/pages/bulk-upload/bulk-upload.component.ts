@@ -534,28 +534,28 @@ export class BulkUploadComponent implements OnInit {
       for (let j = i + 1; j < rows.length; j++) {
         const w = rows[j];
         // cuando las facturas tienen valores iguales
-        if (w[2] !== row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
+        if (w[2] !== row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7]) {
           Swal.fire({
             icon: 'info',
-            text: `Distintos tipos de tratamiento con el mismo tipo de material, Núm de factura reciclador, rut reciclador y reciclador en las filas ${i+2} y ${j+2}`
+            text: `Distintos tipos de tratamiento con el mismo tipo de material, Núm de factura reciclador y rut reciclador en las filas ${i+2} y ${j+2}`
           });
           return;
         }
-        if (w[2] === row[2] && w[3] !== row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
+        if (w[2] === row[2] && w[3] !== row[3] && w[6] === row[6] && w[7] === row[7]) {
           Swal.fire({
             icon: 'info',
-            text: `Distintos tipos de material con el mismo tipo de tratamiento, Núm de factura reciclador, rut reciclador y reciclador en las filas ${i+2} y ${j+2}`
+            text: `Distintos tipos de material con el mismo tipo de tratamiento, Núm de factura reciclador y rut reciclador en las filas ${i+2} y ${j+2}`
           });
           return;
         }
-        if (w[2] !== row[2] && w[3] !== row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
+        if (w[2] !== row[2] && w[3] !== row[3] && w[6] === row[6] && w[7] === row[7]) {
           Swal.fire({
             icon: 'info',
-            text: `Distintos tipos de tratamiento y material con el mismo Núm de factura reciclador, rut reciclador y reciclador en las filas ${i+2} y ${j+2}`
+            text: `Distintos tipos de tratamiento y material con el mismo Núm de factura reciclador y rut reciclador en las filas ${i+2} y ${j+2}`
           });
           return;
         }
-        if (w[2] === row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8] && w[10] !== row[10]) {
+        if (w[2] === row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7] && w[10] !== row[10]) {
           Swal.fire({
             icon: 'info',
             text: `Ingresar el mismo peso total para todas las facturas iguales con numero ${row[6]}`
