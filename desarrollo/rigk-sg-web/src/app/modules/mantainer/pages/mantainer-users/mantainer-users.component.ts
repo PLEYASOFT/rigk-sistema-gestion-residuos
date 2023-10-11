@@ -3,6 +3,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import Swal from 'sweetalert2';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { BusinessService } from '../../../../core/services/business.service';
+import { AnyCatcher } from 'rxjs/internal/AnyCatcher';
 @Component({
   selector: 'app-mantainer-users',
   templateUrl: './mantainer-users.component.html',
@@ -41,7 +42,7 @@ export class MantainerUsersComponent implements OnInit {
     FIRST_NAME: ['', [Validators.required]],
     LAST_NAME: ['', [Validators.required]],
     EMAIL: ['', [Validators.required, Validators.email, this.verifyEmailMW]],
-    ROL: [0, [Validators.required, Validators.min(1)]],
+    ROL: [[], [Validators.required, Validators.min(1)]],
     PHONE: ['', [Validators.required, Validators.pattern('^[0-9]{7,12}$')]],
     PHONE_OFFICE: ['', [Validators.required, Validators.pattern('^[0-9]{7,12}$')]],
     POSITION: ['', [Validators.required, Validators.min(1)]],
@@ -99,6 +100,9 @@ export class MantainerUsersComponent implements OnInit {
     this.authService.getRoles.subscribe(r => {
       if (r.status) {
         this.listRoles = r.data;
+        this.listRoles.map(r => {
+          r.view_name = `${r.NAME}`;
+        });
       }
     });
   }
@@ -126,7 +130,7 @@ export class MantainerUsersComponent implements OnInit {
     });
   }
   clearFrom() {
-    this.userForm.reset({ ROL: 0, EMAIL: '' });
+    this.userForm.reset({ ROL: null, EMAIL: '' });
   }
   showBusiness(e: any) {
     let tmp: any = [];

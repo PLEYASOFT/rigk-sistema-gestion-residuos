@@ -4,7 +4,7 @@ export const userScheme = Joi.object({
     FIRST_NAME: Joi.string(),
     LAST_NAME: Joi.string(),
     EMAIL: Joi.string().required(),
-    ROL: Joi.number().required(),
+    ROL: Joi.array().required(),
     PASSWORD: Joi.string().allow(null),
     PHONE: Joi.string(),
     PHONE_OFFICE: Joi.string(),
