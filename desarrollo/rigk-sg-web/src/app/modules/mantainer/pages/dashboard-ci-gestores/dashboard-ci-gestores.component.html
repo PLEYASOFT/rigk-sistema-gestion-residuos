@@ -15,14 +15,14 @@
 
     <div class="select-container">
         <label>Empresa:</label>
-        <select class="select-btn" [(ngModel)]="selectedCompany">
-            <option *ngFor="let company of companies" [value]="company">{{company}}</option>
+        <select class="select-btn" [(ngModel)]="selectedCompany" (change)="onCompanyChange()">
+            <option *ngFor="let company of companies" [value]="company.ID">{{company.NAME}}</option>
         </select>
-    </div>
+    </div>    
 
     <div class="gauge-container">
         <ngx-charts-line-chart [view]="view" [scheme]="colorScheme" [results]="lineChartData" [gradient]="gradient"
-            [xAxis]="true" [yAxis]="true" [legend]="true" [showXAxisLabel]="true" [showYAxisLabel]="true"
+            [xAxis]="true" [yAxis]="true" [legend]="true"  [legendTitle]="' '" [showXAxisLabel]="true" [showYAxisLabel]="true"
             [xAxisLabel]="'Mes'" [yAxisLabel]="'Pesos'"></ngx-charts-line-chart>
     </div>
 
@@ -31,14 +31,14 @@
             <div class="col-12 col-lg-6 mb-5">
                 <!-- Cambiado a ngx-charts-bar-vertical -->
                 <ngx-charts-bar-vertical [view]="view_barras" [scheme]="colorScheme" [results]="barChartData"
-                    [gradient]="gradient" [xAxis]="true" [yAxis]="true" [legend]="true" [showXAxisLabel]="true"
+                    [gradient]="gradient" [xAxis]="true" [yAxis]="true" [legend]="true"  [legendTitle]="' '" [showXAxisLabel]="true"
                     [showYAxisLabel]="true" [xAxisLabel]="'Mes'" [yAxisLabel]="'Pesos'"></ngx-charts-bar-vertical>
             </div>
             <div class="col-12 col-lg-6 mb-5">
                 <!-- Cambiado a ngx-charts-bar-vertical-normalized -->
-                <ngx-charts-bar-vertical-normalized [view]="view_barras" [scheme]="colorScheme" [results]="normalizedBarChartData"
-                    [gradient]="gradient" [xAxis]="true" [yAxis]="true" [legend]="true" [showXAxisLabel]="true"
-                    [showYAxisLabel]="true" [xAxisLabel]="'Mes'" [yAxisLabel]="'Pesos'"></ngx-charts-bar-vertical-normalized>
+                <ngx-charts-bar-vertical-stacked [view]="view_barras" [scheme]="colorScheme" [results]="normalizedBarChartData"
+                    [gradient]="gradient" [xAxis]="true" [yAxis]="true" [legend]="true"  [legendTitle]="' '" [showXAxisLabel]="true"
+                    [showYAxisLabel]="true" [xAxisLabel]="'Mes'" [yAxisLabel]="'Pesos'"></ngx-charts-bar-vertical-stacked>
             </div>
         </div>
     </div>

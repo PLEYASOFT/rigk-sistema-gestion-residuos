@@ -34,8 +34,16 @@ export class DashboardService {
     return this.http.get<any>(`${this.url}/getAllLinearDashboard/${year}`);
   }
 
+  getLinearDashboard(year:any, business:any) {
+    return this.http.get<any>(`${this.url}/getLinearDashboard/${year}/${business}`);
+  }
+  
   getAllBarChartData(year:any) {
     return this.http.get<any>(`${this.url}/getAllBarChartData/${year}`);
+  }
+
+  getAllStackedBarChartData(year:any) {
+    return this.http.get<any>(`${this.url}/getAllStackedBarChartData/${year}`);
   }
   
 }

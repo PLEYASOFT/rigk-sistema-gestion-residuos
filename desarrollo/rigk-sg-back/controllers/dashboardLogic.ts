@@ -72,6 +72,20 @@ class DashboardLogic {
         }
     }
 
+    async getLinearDashboard(req: Request | any, res: Response) {
+        const { year, business } = req.params;
+        try {
+
+            console.log(year)
+            const data = await dashboardDao.getLinearDashboard(year, business);
+            res.status(200).json({ status: true, data })
+        }
+        catch (err: any) {
+            console.log(err);
+            res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
+        }
+    }
+
     async getAllBarChartData(req: Request | any, res: Response) {
         const { year } = req.params;
         try {
