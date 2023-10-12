@@ -29,4 +29,13 @@ export class DashboardService {
   getCountBusiness() {
     return this.http.get<any>(`${this.url}/getBusiness`);
   }
+
+  getAllLinearDashboard(year:any) {
+    return this.http.get<any>(`${this.url}/getAllLinearDashboard/${year}`);
+  }
+
+  getAllBarChartData(year:any) {
+    return this.http.get<any>(`${this.url}/getAllBarChartData/${year}`);
+  }
+  
 }

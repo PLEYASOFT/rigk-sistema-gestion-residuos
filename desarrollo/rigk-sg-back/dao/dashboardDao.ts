@@ -162,6 +162,123 @@ class EstablishmentDao {
         conn.end();
         return res;
     }
+
+    async getAllLinearDashboard(year: number) {
+        const conn = mysqlcon.getEtlConnection()!;
+    
+        const query = `
+            SELECT 
+                tbm_anios.ANIO, 
+                tbm_meses.MESES AS Mes,
+                COALESCE(SUM(tbh_pesos_ci.PESO_DECLARADO), 0) AS 'Pesos Declarados',
+                COALESCE(SUM(tbh_pesos_ci.PESO_VALORIZADO), 0) AS 'Pesos Valorizados'
+            FROM tbm_meses
+            LEFT JOIN tbd_pesos_mes ON tbm_meses.ID = tbd_pesos_mes.ID_MES
+            LEFT JOIN tbh_pesos_ci ON tbd_pesos_mes.ID_PESOS = tbh_pesos_ci.ID
+            LEFT JOIN tbd_pesos_anio ON tbh_pesos_ci.ID = tbd_pesos_anio.ID_PESOS
+            LEFT JOIN tbm_anios ON tbd_pesos_anio.ID_ANIO = tbm_anios.ID
+            WHERE tbm_anios.ANIO = ?
+            GROUP BY tbm_anios.ANIO, tbm_meses.MESES
+            ORDER BY tbm_anios.ANIO, tbm_meses.ID;
+        `;
+    
+        const res: any = await conn.query(query, [year]).then(res => res[0]).catch(erro => undefined);
+        conn.end();
+    
+        const defaultMonths = [
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+    
+        const seriesPesosValorizados = defaultMonths.map(month => {
+            const found = res.find((item: any) => item.Mes === month);
+            return {
+                name: month,
+                value: found ? found['Pesos Valorizados'] : 0
+            };
+        });
+    
+        const seriesPesosDeclarados = defaultMonths.map(month => {
+            const found = res.find((item: any) => item.Mes === month);
+            return {
+                name: month,
+                value: found ? found['Pesos Declarados'] : 0
+            };
+        });
+    
+        const lineChartData = [
+            { name: 'Pesos Valorizados', series: seriesPesosValorizados },
+            { name: 'Pesos Declarados', series: seriesPesosDeclarados }
+        ];
+    
+        return lineChartData;
+    }
+    
+    async getAllBarChartData(year: number) {
+        const conn = mysqlcon.getEtlConnection()!;
+    
+        const query = `
+            SELECT 
+                COALESCE(SUM(tbh_pesos_ci.PESO_DECLARADO), 0) AS 'Pesos Declarados',
+                COALESCE(SUM(tbh_pesos_ci.PESO_VALORIZADO), 0) AS 'Pesos Valorizados'
+            FROM tbh_pesos_ci
+            JOIN tbd_pesos_anio ON tbh_pesos_ci.ID = tbd_pesos_anio.ID_PESOS
+            JOIN tbm_anios ON tbd_pesos_anio.ID_ANIO = tbm_anios.ID
+            WHERE tbm_anios.ANIO = ?;
+        `;
+    
+        const res: any = await conn.query(query, [year]).then(res => res[0]).catch(erro => undefined);
+        conn.end();
+    
+        const barChartData = [
+            { name: "Pesos Valorizados", value: res[0]['Pesos Valorizados'] },
+            { name: "Pesos Declarados", value: res[0]['Pesos Declarados'] }
+        ];
+    
+        return barChartData;
+    }
+    
+    async getAllStackedBarChartData(year: number) {
+        const conn = mysqlcon.getEtlConnection()!;
+    
+        const query = `
+            SELECT 
+                tbm_materiales.TYPE_MATERIAL AS 'Material',
+                tbm_treatments.NAME AS 'Tratamiento',
+                COALESCE(SUM(tbh_pesos_ci.PESO_VALORIZADO), 0) AS 'Pesos Valorizados'
+            FROM tbh_pesos_ci
+            JOIN tbd_pesos_anio ON tbh_pesos_ci.ID = tbd_pesos_anio.ID_PESOS
+            JOIN tbm_anios ON tbd_pesos_anio.ID_ANIO = tbm_anios.ID
+            JOIN tbd_pesos_materiales ON tbh_pesos_ci.ID = tbd_pesos_materiales.ID_PESOS
+            JOIN tbm_materiales ON tbd_pesos_materiales.ID_MATERIALES = tbm_materiales.ID
+            JOIN tbd_pesos_treatments ON tbh_pesos_ci.ID = tbd_pesos_treatments.ID_PESOS
+            JOIN tbm_treatments ON tbd_pesos_treatments.ID_TREATMENT = tbm_treatments.ID
+            WHERE tbm_anios.ANIO = ?
+            GROUP BY tbm_materiales.TYPE_MATERIAL, tbm_treatments.NAME;
+        `;
+    
+        const res: any = await conn.query(query, [year]).then(res => res).catch(error => []);
+        conn.end();
+    
+        let normalizedData:any = {};
+    
+        for (let row of res) {
+            if (!normalizedData[row['Material']]) {
+                normalizedData[row['Material']] = {
+                    name: row['Material'],
+                    series: []
+                };
+            }
+            normalizedData[row['Material']].series.push({
+                name: row['Tratamiento'],
+                value: row['Pesos Valorizados']
+            });
+        }
+    
+        const normalizedBarChartData = Object.values(normalizedData);
+        return normalizedBarChartData;
+    }
+    
 }
 const establishmentDao = new EstablishmentDao();
 export default establishmentDao;
