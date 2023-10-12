@@ -43,7 +43,7 @@
                         <tbody>
                             <tr class="text-end w-100" *ngFor="let r of db; let x = index">
                                 <td>{{r.FIRST_NAME}} {{r.LAST_NAME}}</td>
-                                <td>{{r.ROL_NAME || 'No Asignado'}}</td>
+                                <td>{{showRoles(r) || 'No Asignado'}}</td>
                                 <td>{{r.PHONE}}</td>
                                 <td>{{r.EMAIL}}</td>
                                 <td>{{r.PHONE_OFFICE}}</td>
@@ -168,10 +168,10 @@
                                     <option *ngFor="let r of listRoles" [ngValue]="r.ID">{{r.NAME}}</option>
                                 </select> -->
                                 
-                                <!-- <div *ngIf="userForm.controls['ROL'].errors && userForm.controls['ROL'].touched" class="text-danger pl-0">
+                                <div *ngIf="userForm.controls['ROL'].errors && userForm.controls['ROL'].touched" class="text-danger pl-0">
                                     <p *ngIf="userForm.controls['ROL'].errors['required']">Rol(es) del usuario es requerido.</p>
                                     <p *ngIf="userForm.controls['ROL'].errors['min']">Rol(es) del usuario es requerido.</p>
-                                </div> -->
+                                </div>
                             </div>
 
                             <div class="col-md-6">
