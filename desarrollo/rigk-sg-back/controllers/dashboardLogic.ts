@@ -61,8 +61,6 @@ class DashboardLogic {
     async getAllLinearDashboard(req: Request | any, res: Response) {
         const { year } = req.params;
         try {
-
-            console.log(year)
             const data = await dashboardDao.getAllLinearDashboard(year);
             res.status(200).json({ status: true, data })
         }
@@ -75,8 +73,6 @@ class DashboardLogic {
     async getLinearDashboard(req: Request | any, res: Response) {
         const { year, business } = req.params;
         try {
-
-            console.log(year)
             const data = await dashboardDao.getLinearDashboard(year, business);
             res.status(200).json({ status: true, data })
         }
@@ -89,9 +85,19 @@ class DashboardLogic {
     async getAllBarChartData(req: Request | any, res: Response) {
         const { year } = req.params;
         try {
-
-            console.log(year)
             const data = await dashboardDao.getAllBarChartData(year);
+            res.status(200).json({ status: true, data })
+        }
+        catch (err: any) {
+            console.log(err);
+            res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
+        }
+    }
+
+    async getBarChartDataByCompanyId(req: Request | any, res: Response) {
+        const { year, business } = req.params;
+        try {
+            const data = await dashboardDao.getBarChartDataByCompanyId(year,business);
             res.status(200).json({ status: true, data })
         }
         catch (err: any) {
@@ -103,9 +109,19 @@ class DashboardLogic {
     async getAllStackedBarChartData(req: Request | any, res: Response) {
         const { year } = req.params;
         try {
-
-            console.log(year)
             const data = await dashboardDao.getAllStackedBarChartData(year);
+            res.status(200).json({ status: true, data })
+        }
+        catch (err: any) {
+            console.log(err);
+            res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
+        }
+    }
+
+    async getStackedBarChartDataByCompanyId(req: Request | any, res: Response) {
+        const { year, business } = req.params;
+        try {
+            const data = await dashboardDao.getStackedBarChartDataByCompanyId(year,business);
             res.status(200).json({ status: true, data })
         }
         catch (err: any) {

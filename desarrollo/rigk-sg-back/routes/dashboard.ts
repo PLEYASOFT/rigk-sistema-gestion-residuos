@@ -12,6 +12,8 @@ router.get('/getBusiness', [], dashboardLogic.getCountBusiness);
 router.get('/getAllLinearDashboard/:year', [], dashboardLogic.getAllLinearDashboard);
 router.get('/getLinearDashboard/:year/:business', [], dashboardLogic.getLinearDashboard);
 router.get('/getAllBarChartData/:year', [], dashboardLogic.getAllBarChartData);
+router.get('/getBarChartDataByCompanyId/:year/:business', [], dashboardLogic.getBarChartDataByCompanyId);
 router.get('/getAllStackedBarChartData/:year', [], dashboardLogic.getAllStackedBarChartData);
+router.get('/getStackedBarChartDataByCompanyId/:year/:business', [], dashboardLogic.getStackedBarChartDataByCompanyId);
 
 export default router;

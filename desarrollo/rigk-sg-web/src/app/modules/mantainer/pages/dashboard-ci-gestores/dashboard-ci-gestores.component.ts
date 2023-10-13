@@ -13,20 +13,17 @@ export class DashboardCiGestoresComponent implements OnInit {
   currentYear: number = new Date().getFullYear();
   selectedYear: number = this.currentYear;
 
-  view: any = [1200, 400]; // Dimensiones del gráfico. Puedes cambiarlas según tus necesidades.
-  view_barras: any = [600, 400]; // Dimensiones del gráfico. Puedes cambiarlas según tus necesidades.
+  view: any = [1200, 400]; 
+  view_barras: any = [600, 400]; 
 
   gradient: boolean = false;
 
   colorScheme: any = {
-    domain: ['#5AA454', '#A10A28', '#4073B4', '#FFA726', '#D62D20', '#8F3985', '#009688']
+    domain: ['#08a47c', '#FCB241', '#d32f2f', '#1976D2', '#388E3C', '#8E24AA', '#FBC02D']
   };
 
-  // Datos del gráfico. Modifica esto según tus necesidades.
   lineChartData = [];
-
   barChartData = [];
-
   normalizedBarChartData = [];
 
   companies: { ID: string, NAME: string }[] = [];
@@ -46,14 +43,11 @@ export class DashboardCiGestoresComponent implements OnInit {
 
   loadCompanies(): void {
     this.businessService.getAllBusiness().subscribe(data => {
-      // Agregar 'Todas' al inicio y luego agregar todas las empresas al arreglo
       this.companies = [{ ID: 'Todas', NAME: 'Todas' }, ...data.status];
     });
   }
 
   loadData() {
-    // Comprobamos que la empresa seleccionada sea 'Todas'
-    console.log(this.selectedCompany)
     if (this.selectedCompany === 'Todas') {
       this.dashboardService.getAllLinearDashboard(this.selectedYear).subscribe(data => {
         this.lineChartData = data.data;
@@ -68,29 +62,35 @@ export class DashboardCiGestoresComponent implements OnInit {
 
   onYearChange() {
     this.loadData();
+    this.loadBarChartData();
+    this.loadAllStackedChartData();
   }
 
   loadBarChartData(): void {
-    this.dashboardService.getAllBarChartData(this.selectedYear).subscribe(
-      data => {
+    
+    if (this.selectedCompany === 'Todas') {
+      this.dashboardService.getAllBarChartData(this.selectedYear).subscribe(data => {
         this.barChartData = data.data;
-      },
-      error => {
-        console.error('Error al obtener los datos para el gráfico de barras:', error);
-      }
-    );
+      });
+    }
+    else {
+      this.dashboardService.getBarChartDataByCompanyId(this.selectedYear, this.selectedCompany).subscribe(data => {
+        this.barChartData = data.data;
+      });
+    }
   }
 
   loadAllStackedChartData(): void {
-    this.dashboardService.getAllStackedBarChartData(this.selectedYear).subscribe(
-      data => {
-        console.log(data)
+    if (this.selectedCompany === 'Todas') {
+      this.dashboardService.getAllStackedBarChartData(this.selectedYear).subscribe(data => {
         this.normalizedBarChartData = data.data;
-      },
-      error => {
-        console.error('Error al obtener los datos para el gráfico de barras:', error);
-      }
-    );
+      });
+    }
+    else {
+      this.dashboardService.getStackedBarChartDataByCompanyId(this.selectedYear, this.selectedCompany).subscribe(data => {
+        this.normalizedBarChartData = data.data;
+      });
+    }
   }
 
   onCompanyChange() {

@@ -42,8 +42,16 @@ export class DashboardService {
     return this.http.get<any>(`${this.url}/getAllBarChartData/${year}`);
   }
 
+  getBarChartDataByCompanyId(year:any, business:any) {
+    return this.http.get<any>(`${this.url}/getBarChartDataByCompanyId/${year}/${business}`);
+  }
+
   getAllStackedBarChartData(year:any) {
     return this.http.get<any>(`${this.url}/getAllStackedBarChartData/${year}`);
+  }
+
+  getStackedBarChartDataByCompanyId(year:any,business:any) {
+    return this.http.get<any>(`${this.url}/getStackedBarChartDataByCompanyId/${year}/${business}`);
   }
   
 }

@@ -290,6 +290,31 @@ class EstablishmentDao {
         return barChartData;
     }
 
+    async getBarChartDataByCompanyId(year: number, companyId: string) {
+        const conn = mysqlcon.getEtlConnection()!;
+    
+        const query = `
+            SELECT 
+                COALESCE(SUM(tbh_pesos_ci.PESO_DECLARADO), 0) AS 'Pesos Declarados',
+                COALESCE(SUM(tbh_pesos_ci.PESO_VALORIZADO), 0) AS 'Pesos Valorizados'
+            FROM tbh_pesos_ci
+            JOIN tbd_pesos_anio ON tbh_pesos_ci.ID = tbd_pesos_anio.ID_PESOS
+            JOIN tbm_anios ON tbd_pesos_anio.ID_ANIO = tbm_anios.ID
+            JOIN tbd_pesos_business ON tbh_pesos_ci.ID = tbd_pesos_business.ID_PESOS   
+            WHERE tbm_anios.ANIO = ? AND tbd_pesos_business.ID_BUSINESS = ?;  
+        `;
+    
+        const res: any = await conn.query(query, [year, companyId]).then(res => res[0]).catch(error => undefined);
+        conn.end();
+    
+        const barChartData = [
+            { name: "Pesos Valorizados", value: res[0]['Pesos Valorizados'] },
+            { name: "Pesos Declarados", value: res[0]['Pesos Declarados'] }
+        ];
+    
+        return barChartData;
+    }
+    
     async getAllStackedBarChartData(year: number) {
         const conn = mysqlcon.getEtlConnection()!;
 
@@ -311,8 +336,7 @@ class EstablishmentDao {
 
         const res: any = await conn.query(query, [year]).then(res => res).catch(error => []);
         conn.end();
-        const dataRows = res[0]; // Asegurarte de trabajar con el primer elemento de res
-        console.log(dataRows);
+        const dataRows = res[0]; 
         let normalizedData: any = {};
 
         for (let row of dataRows) {
@@ -331,6 +355,49 @@ class EstablishmentDao {
         const normalizedBarChartData = Object.values(normalizedData);
         return normalizedBarChartData;
     }
+
+    async getStackedBarChartDataByCompanyId(year: number, companyId: string) {
+        const conn = mysqlcon.getEtlConnection()!;
+    
+        const query = `
+            SELECT 
+                tbm_materiales.TYPE_MATERIAL AS 'Material',
+                tbm_treatments.NAME AS 'Tratamiento',
+                COALESCE(SUM(tbh_pesos_ci.PESO_VALORIZADO), 0) AS 'Pesos Valorizados'
+            FROM tbh_pesos_ci
+            JOIN tbd_pesos_anio ON tbh_pesos_ci.ID = tbd_pesos_anio.ID_PESOS
+            JOIN tbm_anios ON tbd_pesos_anio.ID_ANIO = tbm_anios.ID
+            JOIN tbd_pesos_materiales ON tbh_pesos_ci.ID = tbd_pesos_materiales.ID_PESOS
+            JOIN tbm_materiales ON tbd_pesos_materiales.ID_MATERIALES = tbm_materiales.ID
+            JOIN tbd_pesos_treatments ON tbh_pesos_ci.ID = tbd_pesos_treatments.ID_PESOS
+            JOIN tbm_treatments ON tbd_pesos_treatments.ID_TREATMENT = tbm_treatments.ID
+            JOIN tbd_pesos_business ON tbh_pesos_ci.ID = tbd_pesos_business.ID_PESOS
+            WHERE tbm_anios.ANIO = ? AND tbd_pesos_business.ID_BUSINESS = ?
+            GROUP BY tbm_materiales.TYPE_MATERIAL, tbm_treatments.NAME;
+        `;
+    
+        const res: any = await conn.query(query, [year, companyId]).then(res => res).catch(error => []);
+        conn.end();
+        const dataRows = res[0];
+        let normalizedData: any = {};
+    
+        for (let row of dataRows) {
+            if (!normalizedData[row['Material']]) {
+                normalizedData[row['Material']] = {
+                    name: row['Material'],
+                    series: []
+                };
+            }
+            normalizedData[row['Material']].series.push({
+                name: row['Tratamiento'],
+                value: row['Pesos Valorizados']
+            });
+        }
+    
+        const normalizedBarChartData = Object.values(normalizedData);
+        return normalizedBarChartData;
+    }
+    
 
 }
 const establishmentDao = new EstablishmentDao();
