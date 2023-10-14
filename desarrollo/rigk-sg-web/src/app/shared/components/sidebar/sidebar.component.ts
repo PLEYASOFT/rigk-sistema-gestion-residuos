@@ -34,6 +34,7 @@ export class SidebarComponent implements OnInit {
     { title: "Registro de declaración", path: "#/consumidor/form", icon: "fa-file-text" },
     { title: "Carga Masiva", path: "#/consumidor/bulk-upload", icon: "fa-upload" },
     { title: "Consulta de declaración", path: "#/consumidor/statements", icon: "fa-search" },
+    { title: "Dashboard CI / Gestor", path: "#/consumidor/dashboard-ci-gestor", icon: "fa-chart-pie" },
   ];
 
   menuAdmin = [

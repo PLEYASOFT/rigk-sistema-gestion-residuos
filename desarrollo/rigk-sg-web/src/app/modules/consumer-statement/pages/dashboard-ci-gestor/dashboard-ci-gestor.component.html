@@ -1,0 +1,48 @@
+<div class="container mt-4">
+  <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Dashboard CI - Gestores</li>
+    </ol>
+  </nav>
+
+  <div class="select-container">
+    <label>Año:</label>
+    <select class="select-btn" [(ngModel)]="selectedYear" (change)="onYearChange()">
+      <option *ngFor="let year of years" [value]="year">{{year}}</option>
+    </select>
+  </div>
+
+  <div class="select-container">
+    <label>Empresa:</label>
+    <select class="select-btn" [(ngModel)]="selectedCompany" (change)="onCompanyChange()">
+      <option *ngFor="let company of companies" [value]="company.ID">{{company.NAME}}</option>
+    </select>
+  </div>
+
+  <div class="gauge-container">
+    <div style="text-align: center;font-size: medium;"> TONELADAS VALORIZADAS VS DECLARADAS POR MES</div>
+    <ngx-charts-line-chart [view]="view" [scheme]="colorScheme" [results]="lineChartData" [gradient]="gradient"
+      [xAxis]="true" [yAxis]="true" [legend]="true" [legendTitle]="' '" [showXAxisLabel]="true" [showYAxisLabel]="true"
+      [xAxisLabel]="'Mes'" [yAxisLabel]="'Pesos'" [yAxisTickFormatting]="setFormato"></ngx-charts-line-chart>
+  </div>
+
+  <div class="gauge-container">
+    <div class="row">
+      <div class="col-12 col-lg-6 mb-5">
+        <div style="text-align: center;font-size: medium;"> TONELADAS VALORIZADAS VS DECLARADAS ANUAL</div>
+        <ngx-charts-bar-vertical [view]="view_barras" [scheme]="colorScheme" [results]="barChartData"
+          [gradient]="gradient" [xAxis]="true" [yAxis]="true" [legend]="true" [legendTitle]="' '"
+          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxisLabel]="''" [yAxisLabel]="'Toneladas'"
+          [dataLabelFormatting]="setFormato" [yAxisTickFormatting]="setFormato"></ngx-charts-bar-vertical>
+      </div>
+      <div class="col-12 col-lg-6 mb-5">
+        <div style="text-align: center;font-size: medium;"> TONELADAS VALORIZADAS POR MATERIAL Y TRATAMIENTO</div>
+        <ngx-charts-bar-vertical-stacked [view]="view_barras" [scheme]="colorScheme" [results]="normalizedBarChartData"
+          [gradient]="gradient" [xAxis]="true" [yAxis]="true" [legend]="true" [legendTitle]="' '"
+          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxisLabel]="'Material'" [yAxisLabel]="'Toneladas'"
+          [dataLabelFormatting]="setFormato" [yAxisTickFormatting]="setFormato"></ngx-charts-bar-vertical-stacked>
+      </div>
+    </div>
+  </div>
+</div>

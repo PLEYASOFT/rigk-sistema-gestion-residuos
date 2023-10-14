@@ -3,18 +3,19 @@ import { BusinessService } from 'src/app/core/services/business.service';
 import { DashboardService } from 'src/app/core/services/dashboard.service';
 
 @Component({
-  selector: 'app-dashboard-ci-gestores',
-  templateUrl: './dashboard-ci-gestores.component.html',
-  styleUrls: ['./dashboard-ci-gestores.component.css']
+  selector: 'app-dashboard-ci-gestor',
+  templateUrl: './dashboard-ci-gestor.component.html',
+  styleUrls: ['./dashboard-ci-gestor.component.css']
 })
-export class DashboardCiGestoresComponent implements OnInit {
+export class DashboardCiGestorComponent implements OnInit {
+
 
   years: number[] = [];
   currentYear: number = new Date().getFullYear();
   selectedYear: number = this.currentYear;
 
-  view: any = [1200, 400]; 
-  view_barras: any = [600, 400]; 
+  view: any = [1200, 400];
+  view_barras: any = [600, 400];
 
   gradient: boolean = false;
 
@@ -28,6 +29,7 @@ export class DashboardCiGestoresComponent implements OnInit {
 
   companies: { ID: string, NAME: string }[] = [];
   selectedCompany: string = 'Todas';
+  userId: any;
 
   constructor(private dashboardService: DashboardService, private businessService: BusinessService) { }
 
@@ -35,22 +37,28 @@ export class DashboardCiGestoresComponent implements OnInit {
     for (let i = 2023; i <= this.currentYear; i++) {
       this.years.push(i);
     }
-    this.loadData();
-    this.loadBarChartData();
-    this.loadAllStackedChartData();
+    const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+    this.userId = user.ID;
     this.loadCompanies();
   }
 
   loadCompanies(): void {
-    this.businessService.getAllBusiness().subscribe(data => {
-      this.companies = [{ ID: 'Todas', NAME: 'Todas' }, ...data.status];
+    this.businessService.getBusinessByUserId(this.userId).subscribe(data => {
+      this.companies = [{ ID: 'Todas', NAME: 'Todas' }, ...data.data];
+      this.loadData();
+      this.loadBarChartData();
+      this.loadAllStackedChartData();
     });
   }
 
   loadData() {
+    let businessIds: any;
     if (this.selectedCompany === 'Todas') {
-      this.dashboardService.getAllLinearDashboard(this.selectedYear).subscribe(data => {
+      businessIds = this.companies.filter(c => c.ID !== 'Todas').map(c => c.ID);
+      const businessIdString = businessIds.join(',');
+      this.dashboardService.getLinearDashboardArray(this.selectedYear, businessIdString).subscribe(data => {
         this.lineChartData = data.data;
+        console.log(this.lineChartData)
       });
     }
     else {
@@ -67,9 +75,11 @@ export class DashboardCiGestoresComponent implements OnInit {
   }
 
   loadBarChartData(): void {
-    
+    let businessIds: any;
     if (this.selectedCompany === 'Todas') {
-      this.dashboardService.getAllBarChartData(this.selectedYear).subscribe(data => {
+      businessIds = this.companies.filter(c => c.ID !== 'Todas').map(c => c.ID);
+      const businessIdString = businessIds.join(',');
+      this.dashboardService.getBarChartDataByCompanyIdArray(this.selectedYear, businessIdString).subscribe(data => {
         this.barChartData = data.data;
       });
     }
@@ -81,8 +91,11 @@ export class DashboardCiGestoresComponent implements OnInit {
   }
 
   loadAllStackedChartData(): void {
+    let businessIds: any;
     if (this.selectedCompany === 'Todas') {
-      this.dashboardService.getAllStackedBarChartData(this.selectedYear).subscribe(data => {
+      businessIds = this.companies.filter(c => c.ID !== 'Todas').map(c => c.ID);
+      const businessIdString = businessIds.join(',');
+      this.dashboardService.getStackedBarChartDataByCompanyIdArray(this.selectedYear,businessIdString).subscribe(data => {
         this.normalizedBarChartData = data.data;
       });
     }

@@ -98,6 +98,26 @@ class BusinessDao {
         conn.end();
         return {business, statements};
     }
+
+    public async getBusinessByUserId(userId: number) {
+        const conn = mysqlcon.getConnection()!;
+    
+        const query = `
+            SELECT business.*
+            FROM business
+            JOIN user_business ON business.ID = user_business.ID_BUSINESS
+            WHERE user_business.ID_USER = ?;
+        `;
+    
+        const businessList: any = await conn.query(query, [userId]).then(res => res[0]).catch(error => undefined);
+        conn.end();
+    
+        if (businessList == null || businessList.length == 0) {
+            return false;
+        }
+        return businessList;
+    }
+    
 }
 const businessDao = new BusinessDao();
 export default businessDao;

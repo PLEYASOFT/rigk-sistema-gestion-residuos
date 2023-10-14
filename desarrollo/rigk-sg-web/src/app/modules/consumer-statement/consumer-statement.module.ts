@@ -11,6 +11,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { BulkUploadComponent } from './pages/bulk-upload/bulk-upload.component';
 import { StatementsDetailComponent } from './pages/statements-detail/statements-detail.component';
 import { NgxChartsModule }from '@swimlane/ngx-charts';
+import { DashboardCiGestorComponent } from './pages/dashboard-ci-gestor/dashboard-ci-gestor.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { NgxChartsModule }from '@swimlane/ngx-charts';
     StatementsComponent,
     FormComponent,
     BulkUploadComponent,
-    StatementsDetailComponent
+    StatementsDetailComponent,
+    DashboardCiGestorComponent
   ],
   imports: [
     CommonModule,
