@@ -128,11 +128,12 @@ class EstablishmentDao {
             NAME: business
         }];
     }
+    
     public async saveInvoice(vat: any, id_business: any, invoice_number: any, id_detail: any, date_pr: any, value: any, file: any, valued_total: any, id_user: any, treatment: any, material: any) {
         const file_name = file.name;
         const _file = file.data;
         const conn = mysqlcon.getConnection()!;
-        const invoice: any = await conn.execute("SELECT ID FROM invoices WHERE INVOICE_NUMBER=? AND VAT=? AND ID_BUSINESS=?", [invoice_number, vat, id_business]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const invoice: any = await conn.execute("SELECT ID FROM invoices WHERE INVOICE_NUMBER=? AND VAT=?", [invoice_number, vat]).then((res) => res[0]).catch(error => [{ undefined }]);
         let ID;
         if (invoice.length == 0) {
             const _ID: any = await conn.execute("INSERT INTO invoices(INVOICE_NUMBER,VAT,VALUED_TOTAL,ID_USER,TREATMENT_TYPE,MATERIAL_TYPE,ID_BUSINESS) VALUES(?,?,?,?,?,?,?)", [invoice_number, vat, valued_total, id_user, treatment, material, id_business]).then((res) => res[0]).catch(error => [{ undefined }]);
