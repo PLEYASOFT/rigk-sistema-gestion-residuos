@@ -563,7 +563,7 @@ export class BulkUploadComponent implements OnInit {
           return;
         }
         // LOGICA DE SUMAR TODOS LOS PESOS... VER COMO MANEJAR 
-        if (w[2] === row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8] && w[10] === row[10]) {
+        if (w[2] === row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7] && w[10] === row[10]) {
           sameRowsVerf.add(row);
           sameRowsVerf.add(w);
         }
@@ -626,10 +626,10 @@ export class BulkUploadComponent implements OnInit {
         materialTypeNum,
         treatmentTypeNum,
       };
-      let included = false;
+      let included = false;     
       for (const arreglo of sameRowsVerf) {
         const arregloD = arreglo as any[];
-        if (arregloD.includes(numberInvoice)) {
+        if (arregloD.includes(vat)) {
           included = true;
         }
       }
@@ -641,20 +641,18 @@ export class BulkUploadComponent implements OnInit {
       }
     }
 
-    const groupedData: { [key: string]: { tipo_tratamiento: string, material: string, numero_factura: string, rut_reciclador: string, nombre_reciclador: string, remanente_total: number } } = {};
-
+    const groupedData: { [key: string]: { tipo_tratamiento: string, material: string, numero_factura: string, rut_reciclador: string, remanente_total: number } } = {};
     let valorTotal = null;
     let facturaInicial = null;
 
     for (const value of rowsDataDuplicated) {
-      const key = `${value.numberInvoice}`;
+      const key = `${value.vat}`;
       if (!groupedData[key]) {
         groupedData[key] = {
           tipo_tratamiento: value.treatmentType,
           material: value.material,
           numero_factura: value.numberInvoice,
           rut_reciclador: value.vat,
-          nombre_reciclador: value.vatCompanyName,
           remanente_total: 0
         };
       }
@@ -666,9 +664,9 @@ export class BulkUploadComponent implements OnInit {
         }else{
           valorTotal = parseFloat(value.totalWeight.replace(",", "."));
         }
-        facturaInicial = parseFloat(value.numberInvoice);
+        facturaInicial = value.vat;
       }    
-      if (facturaInicial != parseFloat(value.numberInvoice)) {
+      if (facturaInicial != value.vat) {
         if (parseFloat(value.declaratedWeightResponse) !== 0) {
           let numericTotalWeight = parseFloat(value.totalWeight.toString().replace(",", "."));
           let numericDeclaratedWeight = parseFloat(value.declaratedWeightResponse.toString().replace(",", "."));
@@ -676,7 +674,7 @@ export class BulkUploadComponent implements OnInit {
         }else{
           valorTotal = parseFloat(value.totalWeight.replace(",", "."));
         }
-        facturaInicial = parseFloat(value.numberInvoice);
+        facturaInicial = value.vat;
       }
       const valorizadoSuma = parseFloat(value.valuedWeight.replace(",", "."));
       valorTotal! -= valorizadoSuma;
