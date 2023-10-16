@@ -6,7 +6,7 @@ import { MailOptions } from 'nodemailer/lib/sendmail-transport';
 export const sendOC = async ( id: any, file: any ) => {
     const transporter = nodemailer.createTransport({
         pool: true,
-        host: "mail.prorep.cl",
+        host: "smtp.gmail.com",
         port: 465,
         secure:true,
         auth: {
