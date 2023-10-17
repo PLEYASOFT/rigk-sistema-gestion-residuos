@@ -113,12 +113,17 @@ class AuthDao {
         conn.end();
         return res;
     }
-    public async updateUser(ID: any, FIRST_NAME: any, LAST_NAME: any, EMAIL: any, ROL: any, PHONE: any, PHONE_OFFICE: any, POSITION: any) {
+    public async addUserRoles(id_user: any, id_rol: any) {
+        const conn = mysqlcon.getConnection()!;
+        const res: any = await conn.query("INSERT INTO user_rol VALUES(?,?)", [id_user, id_rol]).then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        return res;
+    }
+    public async updateUser(ID: any, FIRST_NAME: any, LAST_NAME: any, EMAIL: any, PHONE: any, PHONE_OFFICE: any, POSITION: any) {
         const conn = mysqlcon.getConnection()!;
         const res: any = await conn.query("UPDATE user SET FIRST_NAME=?, LAST_NAME=?, EMAIL=?, PHONE=?, PHONE_OFFICE=?, POSITION=? WHERE ID = ?", [FIRST_NAME, LAST_NAME, EMAIL, PHONE, PHONE_OFFICE, POSITION, ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         await conn.query("DELETE FROM user_business WHERE ID_USER=?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         await conn.query("DELETE FROM user_rol WHERE USER_ID=?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
-        await conn.query("INSERT INTO user_rol VALUES (?,?)", [ID, ROL]).then((res) => res[0]).catch(error => [{ undefined }]);;
         conn.end();
         return res;
     }

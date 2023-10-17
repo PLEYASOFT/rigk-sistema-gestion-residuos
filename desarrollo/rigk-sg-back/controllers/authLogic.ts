@@ -190,18 +190,24 @@ class AuthLogic {
         try {
             const users = await authDao.users();
             const tmp: any[] = [];
-            for (let i = 0; i < users.length; i++) {
-                const u = users[i];
+    
+            for (let u of users) {
                 const indx = tmp.findIndex(r => r.ID == u.ID);
                 if (indx == -1) {
                     u.BUSINESS = [{ ID_BUSINESS: u.ID_BUSINESS, NAME: u.BUSINESS_NAME }];
+                    u.ROLES = [{ ID_ROL: u.ID_ROL, ROL_NAME: u.ROL_NAME }];
                     tmp.push(u);
-                    continue;
                 } else {
-                    tmp[indx].BUSINESS.push({ ID_BUSINESS: u.ID_BUSINESS, NAME: u.BUSINESS_NAME });
-                    continue;
+                    if (!tmp[indx].BUSINESS.some((b:any) => b.ID_BUSINESS == u.ID_BUSINESS)) {
+                        tmp[indx].BUSINESS.push({ ID_BUSINESS: u.ID_BUSINESS, NAME: u.BUSINESS_NAME });
+                    }
+    
+                    if (!tmp[indx].ROLES.some((r:any) => r.ID_ROL == u.ID_ROL)) {
+                        tmp[indx].ROLES.push({ ID_ROL: u.ID_ROL, ROL_NAME: u.ROL_NAME });
+                    }
                 }
             }
+    
             res.status(200).json({ status: true, msg: '', data: tmp });
         } catch (error) {
             console.log(error);
@@ -232,10 +238,14 @@ class AuthLogic {
     public async updateUser(req: Request | any, res: Response) {
         const { ID, FIRST_NAME, LAST_NAME, EMAIL, ROL, PHONE, PHONE_OFFICE, POSITION, BUSINESS } = req.body;
         try {
-            await authDao.updateUser(ID, FIRST_NAME, LAST_NAME, EMAIL, ROL, PHONE, PHONE_OFFICE, POSITION);
+            await authDao.updateUser(ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE, PHONE_OFFICE, POSITION);
             for (let i = 0; i < BUSINESS.length; i++) {
                 const b = BUSINESS[i];
                 await authDao.addUserBusiness(ID, b);
+            }
+            for (let i = 0; i < ROL.length; i++) {
+                const b = ROL[i];
+                await authDao.addUserRoles(ID, b);
             }
             await createLog('MODIFICA_USUARIO', req.uid, null);
             res.status(200).json({ status: true, msg: 'Usuario actualizado satisfactoriamente', data: [] });

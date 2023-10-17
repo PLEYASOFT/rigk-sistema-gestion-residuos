@@ -142,9 +142,8 @@ export class MantainerUsersComponent implements OnInit {
   }
 
   showRoles(e: any) {
-    console.log(e);
-    let tmp: any = [];
-    e.ID_ROL.forEach((b: any) => {
+      let tmp: any = [];
+    e.ROLES.forEach((b: any) => {
       tmp.push(b.ROL_NAME.trim());
     });
     return tmp.join(', ');
@@ -154,6 +153,12 @@ export class MantainerUsersComponent implements OnInit {
     const b = this.business.find(r => r.ID == id);
     return `${b.CODE_BUSINESS} | ${b.NAME}`;
   }
+
+  showRol(id: any) {
+    const b = this.listRoles.find(r => r.ID == id);
+    return `${b.NAME}`;
+  }
+
   selectUser(id: number) {
     this.isEdit = true;
     const user = this.db.find(r => r.ID == id);
@@ -164,7 +169,7 @@ export class MantainerUsersComponent implements OnInit {
     this.userForm.controls['PHONE'].setValue(user.PHONE);
     this.userForm.controls['PHONE_OFFICE'].setValue(user.PHONE_OFFICE);
     this.userForm.controls['POSITION'].setValue(user.POSITION);
-    const tmpo = user.ROL?.map((r: any) => r.ROL_ID);
+    const tmpo = user.ROLES?.map((r: any) => r.ID_ROL);
     this.userForm.controls['ROL'].setValue(tmpo);
     const tmp = user.BUSINESS?.map((r: any) => r.ID_BUSINESS);
     this.userForm.controls['BUSINESS'].setValue(tmp);

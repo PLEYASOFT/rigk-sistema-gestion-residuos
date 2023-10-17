@@ -160,14 +160,9 @@
 
                             <div class="col-md-6">
                                 <label for="inp_rol">ROLES</label>
-                                <!-- <select formControlName="ROL" id="inp_rol" class="form-select"> -->
                                     <p-multiSelect [options]="listRoles" formControlName="ROL" optionLabel="view_name" optionValue="ID" 
                                     defaultLabel="Seleccione Roles"
                                     [selectedItemsLabel]="'{0} Roles seleccionados'"></p-multiSelect>
-                                    <!-- <option value="0">Seleccione Roles</option>
-                                    <option *ngFor="let r of listRoles" [ngValue]="r.ID">{{r.NAME}}</option>
-                                </select> -->
-                                
                                 <div *ngIf="userForm.controls['ROL'].errors && userForm.controls['ROL'].touched" class="text-danger pl-0">
                                     <p *ngIf="userForm.controls['ROL'].errors['required']">Rol(es) del usuario es requerido.</p>
                                     <p *ngIf="userForm.controls['ROL'].errors['min']">Rol(es) del usuario es requerido.</p>
@@ -175,13 +170,16 @@
                             </div>
 
                             <div class="col-md-6">
-                                <span *ngFor="let e of userForm.value.BUSINESS"
-                                    class="badge bg-primary m-1">{{showName(e)}}</span>
-                                </div>
+                                <span *ngFor="let e of userForm.value.BUSINESS" class="badge bg-primary m-1">{{showName(e)}}</span>
                             </div>
-                        </form>
-                    </div>
-            </div>
+                            
+                            <div class="col-md-6">
+                                <span *ngFor="let e of userForm.value.ROL" class="badge bg-primary m-1">{{showRol(e)}}</span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+        </div>
             <div class="modal-footer">
                 <button type="button" id="btnCloseModal" class="btn btn-secondary"
                     data-bs-dismiss="modal">Cerrar</button>
