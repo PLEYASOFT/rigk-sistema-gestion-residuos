@@ -19,13 +19,19 @@ class AuthDao {
         let user: any = {}
         let name_business = [];
         let id_business = [];
+        let roles = [];
         for (let i = 0; i < res.length; i++) {
             name_business.push(res[i].BUSINESS);
             id_business.push(res[i].ID_BUSINESS);
+            roles.push(res[i].ROL);
         }
+        let name_business_unique = Array.from(new Set(name_business))
+        let id_business_unique = Array.from(new Set(id_business))
+        let roles_unique = Array.from(new Set(roles))
         user = { ...res[0] };
-        user.BUSINESS = name_business;
-        user.ID_BUSINESS = id_business;
+        user.BUSINESS = name_business_unique;
+        user.ID_BUSINESS = id_business_unique;
+        user.ROLES = roles_unique;
         let login = false;
         if (res != null && res != undefined && res.length > 0) {
             login = true;

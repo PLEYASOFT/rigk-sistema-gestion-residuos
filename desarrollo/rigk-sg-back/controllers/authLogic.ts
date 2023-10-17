@@ -50,6 +50,8 @@ class AuthLogic {
                         delete output.STATE;
                         delete output.DATE_CODE;
                         delete output.CODE
+                        delete output.ROL
+                        delete output.ROL_NAME
                         res.header('x-token', token!.toString());
                         res.header("Access-Control-Expose-Headers", "*");
                         await createLog('AUTENTICACION', output.ID, null);

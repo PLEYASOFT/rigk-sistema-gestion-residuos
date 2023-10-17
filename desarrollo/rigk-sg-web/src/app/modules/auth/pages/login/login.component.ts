@@ -13,7 +13,7 @@ export class LoginComponent implements OnInit {
   error = false;
   msg = '';
   rol:any = '';
-
+  multiRol: boolean = false;
   formData: FormGroup = this.fb.group({
     user: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]]
@@ -47,19 +47,43 @@ export class LoginComponent implements OnInit {
           const horaIngreso = new Date();
           sessionStorage.setItem('user', JSON.stringify(resp.body.data.user));
           sessionStorage.setItem('horaIngreso',horaIngreso.toString());
-          this.rol = JSON.parse(sessionStorage.getItem('user')!);
-          if(this.rol.ROL_NAME == 'Productor'){
-            this.router.navigate(['/productor']);
+          if (resp.body.data.user.ROLES.length == 1) {
+
+            const rol = resp.body.data.user.ROLES[0];
+            const userObj = JSON.parse(sessionStorage.getItem('user')!);
+            userObj.ROL = rol;
+            sessionStorage.setItem('user', JSON.stringify(userObj));
+            
+            if(rol == 9){
+              this.router.navigate(['/productor']);
+            }
+            else if(rol == 10){
+              this.router.navigate(['/mantenedor']);
+            }
+            else if(rol == 11){
+              this.router.navigate(['/consumidor']);
+            }
+            else if(rol == 12){
+              this.router.navigate(['/gestor']);
+            }
+          }else{
+            console.log(this.multiRol);
+            this.multiRol = true;
+            console.log(this.multiRol);
           }
-          else if(this.rol.ROL_NAME == 'Admin'){
-            this.router.navigate(['/mantenedor']);
-          }
-          else if(this.rol.ROL_NAME == 'Consumidor'){
-            this.router.navigate(['/consumidor']);
-          }
-          else if(this.rol.ROL_NAME == 'Gestor'){
-            this.router.navigate(['/gestor']);
-          }
+          // this.rol = JSON.parse(sessionStorage.getItem('user')!);
+          // if(this.rol.ROL_NAME == 'Productor'){
+          //   this.router.navigate(['/productor']);
+          // }
+          // else if(this.rol.ROL_NAME == 'Admin'){
+          //   this.router.navigate(['/mantenedor']);
+          // }
+          // else if(this.rol.ROL_NAME == 'Consumidor'){
+          //   this.router.navigate(['/consumidor']);
+          // }
+          // else if(this.rol.ROL_NAME == 'Gestor'){
+          //   this.router.navigate(['/gestor']);
+          // }
         }
       },
       error: err => {
