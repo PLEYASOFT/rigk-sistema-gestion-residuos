@@ -41,7 +41,7 @@ export class MantainerUsersComponent implements OnInit {
     FIRST_NAME: ['', [Validators.required]],
     LAST_NAME: ['', [Validators.required]],
     EMAIL: ['', [Validators.required, Validators.email, this.verifyEmailMW]],
-    ROL: [0, [Validators.required, Validators.min(1)]],
+    ROL: [[], [Validators.required, Validators.min(1)]],
     PHONE: ['', [Validators.required, Validators.pattern('^[0-9]{7,12}$')]],
     PHONE_OFFICE: ['', [Validators.required, Validators.pattern('^[0-9]{7,12}$')]],
     POSITION: ['', [Validators.required, Validators.min(1)]],
@@ -99,6 +99,9 @@ export class MantainerUsersComponent implements OnInit {
     this.authService.getRoles.subscribe(r => {
       if (r.status) {
         this.listRoles = r.data;
+        this.listRoles.map(r => {
+          r.view_name = `${r.NAME}`;
+        });
       }
     });
   }
@@ -126,8 +129,9 @@ export class MantainerUsersComponent implements OnInit {
     });
   }
   clearFrom() {
-    this.userForm.reset({ ROL: 0, EMAIL: '' });
+    this.userForm.reset({ ROL: null, EMAIL: '' });
   }
+
   showBusiness(e: any) {
     let tmp: any = [];
     e.BUSINESS.forEach((b: any) => {
@@ -135,10 +139,25 @@ export class MantainerUsersComponent implements OnInit {
     });
     return tmp.join(', ');
   }
+
+  showRoles(e: any) {
+      let tmp: any = [];
+    e.ROLES.forEach((b: any) => {
+      tmp.push(b.ROL_NAME.trim());
+    });
+    return tmp.join(', ');
+  }
+
   showName(id: any) {
     const b = this.business.find(r => r.ID == id);
     return `${b.CODE_BUSINESS} | ${b.NAME}`;
   }
+
+  showRol(id: any) {
+    const b = this.listRoles.find(r => r.ID == id);
+    return `${b.NAME}`;
+  }
+
   selectUser(id: number) {
     this.isEdit = true;
     const user = this.db.find(r => r.ID == id);
@@ -149,7 +168,8 @@ export class MantainerUsersComponent implements OnInit {
     this.userForm.controls['PHONE'].setValue(user.PHONE);
     this.userForm.controls['PHONE_OFFICE'].setValue(user.PHONE_OFFICE);
     this.userForm.controls['POSITION'].setValue(user.POSITION);
-    this.userForm.controls['ROL'].setValue(user.ID_ROL);
+    const tmpo = user.ROLES?.map((r: any) => r.ID_ROL);
+    this.userForm.controls['ROL'].setValue(tmpo);
     const tmp = user.BUSINESS?.map((r: any) => r.ID_BUSINESS);
     this.userForm.controls['BUSINESS'].setValue(tmp);
   }
