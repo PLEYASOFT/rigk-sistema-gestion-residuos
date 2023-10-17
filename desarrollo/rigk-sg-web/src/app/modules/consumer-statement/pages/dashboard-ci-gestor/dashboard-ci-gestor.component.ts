@@ -34,7 +34,7 @@ export class DashboardCiGestorComponent implements OnInit {
   constructor(private dashboardService: DashboardService, private businessService: BusinessService) { }
 
   ngOnInit(): void {
-    for (let i = 2023; i <= this.currentYear; i++) {
+    for (let i = 2023; i <= 2024; i++) {
       this.years.push(i);
     }
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
