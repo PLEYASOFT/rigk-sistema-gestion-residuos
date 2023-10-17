@@ -47,6 +47,7 @@ export class LoginComponent implements OnInit {
           const horaIngreso = new Date();
           sessionStorage.setItem('user', JSON.stringify(resp.body.data.user));
           sessionStorage.setItem('horaIngreso',horaIngreso.toString());
+          console.log(resp.body.data.user)
           if (resp.body.data.user.ROLES.length == 1) {
 
             const rol = resp.body.data.user.ROLES[0];
