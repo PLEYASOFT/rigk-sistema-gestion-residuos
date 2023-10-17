@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -12,22 +13,24 @@ export class LoginComponent implements OnInit {
 
   error = false;
   msg = '';
-  rol:any = '';
+  rol: any = '';
   multiRol: boolean = false;
+  userRoles: any[] = [];
+
   formData: FormGroup = this.fb.group({
     user: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]]
   });
 
   constructor(private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router,
-    private actived: ActivatedRoute) {
+              private authService: AuthService,
+              private router: Router,
+              private actived: ActivatedRoute) {
     this.actived.queryParams.subscribe(r => {
       if (r['logout']) {
         sessionStorage.clear();
       }
-    })
+    });
   }
 
   ngOnInit(): void {
@@ -47,14 +50,11 @@ export class LoginComponent implements OnInit {
           const horaIngreso = new Date();
           sessionStorage.setItem('user', JSON.stringify(resp.body.data.user));
           sessionStorage.setItem('horaIngreso',horaIngreso.toString());
-          console.log(resp.body.data.user)
           if (resp.body.data.user.ROLES.length == 1) {
-
             const rol = resp.body.data.user.ROLES[0];
             const userObj = JSON.parse(sessionStorage.getItem('user')!);
             userObj.ROL = rol;
             sessionStorage.setItem('user', JSON.stringify(userObj));
-            
             if(rol == 9){
               this.router.navigate(['/productor']);
             }
@@ -68,23 +68,9 @@ export class LoginComponent implements OnInit {
               this.router.navigate(['/gestor']);
             }
           }else{
-            console.log(this.multiRol);
             this.multiRol = true;
-            console.log(this.multiRol);
+            this.userRoles = resp.body.data.user.ROLES;
           }
-          // this.rol = JSON.parse(sessionStorage.getItem('user')!);
-          // if(this.rol.ROL_NAME == 'Productor'){
-          //   this.router.navigate(['/productor']);
-          // }
-          // else if(this.rol.ROL_NAME == 'Admin'){
-          //   this.router.navigate(['/mantenedor']);
-          // }
-          // else if(this.rol.ROL_NAME == 'Consumidor'){
-          //   this.router.navigate(['/consumidor']);
-          // }
-          // else if(this.rol.ROL_NAME == 'Gestor'){
-          //   this.router.navigate(['/gestor']);
-          // }
         }
       },
       error: err => {
@@ -92,5 +78,26 @@ export class LoginComponent implements OnInit {
         this.msg = err.msg;
       }
     });
+  }
+
+  selectRoleAndLogin() {
+    if (this.rol) {
+      this.navigateToRole(this.rol);
+      this.multiRol = false;
+    } else {
+      alert("Por favor, seleccione un rol.");
+    }
+  }
+
+  navigateToRole(rol: string) {
+    if (rol === 'Admin') {
+      this.router.navigate(['/admin']);
+    } else if (rol === 'Gestor') {
+      this.router.navigate(['/gestor']);
+    } else if (rol === 'Consumidor') {
+      this.router.navigate(['/consumidor']);
+    } else if (rol === 'Productor') {
+      this.router.navigate(['/productor']);
+    }
   }
 }
