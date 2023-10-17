@@ -156,8 +156,6 @@ class AuthLogic {
         }
     }
     async register(req: Request | any, res: Response) {
-        console.log(req.body);
-        
         const user = req.body.EMAIL;
         const first_name = req.body.FIRST_NAME;
         const last_name = req.body.LAST_NAME;
