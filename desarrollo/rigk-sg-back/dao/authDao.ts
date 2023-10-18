@@ -14,27 +14,54 @@ class AuthDao {
     }
     async login(USER: string) {
         const conn = mysqlcon.getConnection()!;
-        const res: any = await conn.query("SELECT user.*,user_rol.ROL_ID AS ROL, rol.NAME AS ROL_NAME, business.NAME AS BUSINESS, business.ID as ID_BUSINESS FROM user INNER JOIN user_rol ON user_rol.USER_ID = user.ID INNER JOIN user_business ON user_business.ID_USER = user.ID INNER JOIN business ON business.ID = user_business.ID_BUSINESS INNER JOIN rol ON rol.ID=user_rol.ROL_ID WHERE user.EMAIL = ? AND user.STATE=1", [USER]).then((res) => res[0]).catch(error => { console.log(error);[{ undefined }] });
+        const res: any = await conn.query(`
+            SELECT user.*, user_rol.ROL_ID AS ROL, rol.NAME AS ROL_NAME, business.NAME AS BUSINESS, 
+            business.ID as ID_BUSINESS 
+            FROM user 
+            INNER JOIN user_rol ON user_rol.USER_ID = user.ID 
+            INNER JOIN user_business ON user_business.ID_USER = user.ID 
+            INNER JOIN business ON business.ID = user_business.ID_BUSINESS 
+            INNER JOIN rol ON rol.ID = user_rol.ROL_ID 
+            WHERE user.EMAIL = ? AND user.STATE = 1
+        `, [USER]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }]; });
+    
         conn.end();
-        let user: any = {}
+    
+        let user: any = {};
         let name_business = [];
         let id_business = [];
+        let roles = [];
+        let roleNames = [];
+    
         for (let i = 0; i < res.length; i++) {
             name_business.push(res[i].BUSINESS);
             id_business.push(res[i].ID_BUSINESS);
+            roles.push(res[i].ROL);
+            roleNames.push(res[i].ROL_NAME);
         }
+    
+        let name_business_unique = Array.from(new Set(name_business));
+        let id_business_unique = Array.from(new Set(id_business));
+        let roles_unique = Array.from(new Set(roles));
+        let roleNames_unique = Array.from(new Set(roleNames));
+    
         user = { ...res[0] };
-        user.BUSINESS = name_business;
-        user.ID_BUSINESS = id_business;
+        user.BUSINESS = name_business_unique;
+        user.ID_BUSINESS = id_business_unique;
+        user.ROLES = roles_unique.map((roleId, index) => ({ id: roleId, name: roleNames_unique[index] }));
+    
         let login = false;
         if (res != null && res != undefined && res.length > 0) {
             login = true;
         }
+    
         if (login) {
             return user;
         }
+    
         return undefined;
     }
+    
 
     async verifyEmail(USER: string) {
         const conn = mysqlcon.getConnection()!;
