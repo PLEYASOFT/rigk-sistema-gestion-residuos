@@ -73,14 +73,16 @@ class AuthDao {
         conn.end();
         return res
     }
-    async register(EMAIL: string, FIRST_NAME: string, LAST_NAME: string, PASSWORD: string, PHONE: string, PHONE_OFFICE: string, POSITION: string, ROL: any) {
+    async register(EMAIL: string, FIRST_NAME: string, LAST_NAME: string, PASSWORD: string, PHONE: string, PHONE_OFFICE: string, POSITION: string, ROL: any[]) {
         const conn = mysqlcon.getConnection()!;
         const res_0: any = await conn.execute("SELECT * FROM user WHERE EMAIL = ? AND STATE=1", [EMAIL]).then((res) => res[0]).catch(error => [{ undefined }]);
         if (res_0.length > 0) {
             return [];
         }
         const res: any = await conn.query("INSERT INTO user(EMAIL,FIRST_NAME,LAST_NAME, PASSWORD,PHONE, STATE, SALT,PHONE_OFFICE,POSITION) VALUES (?,?,?,?,?,?,'ABC',?,?)", [EMAIL, FIRST_NAME, LAST_NAME, PASSWORD, PHONE, 1, PHONE_OFFICE, POSITION]).then((res) => res[0]).catch(error => { [{ undefined }] });
-        await conn.query("INSERT INTO user_rol(USER_ID,ROL_ID) VALUES (?,?)", [res.insertId, ROL]).then((res) => res[0]).catch(error => [{ undefined }]);
+        for (let i = 0; i < ROL.length; i++) {
+            await conn.query("INSERT INTO user_rol(USER_ID,ROL_ID) VALUES (?,?)", [res.insertId, ROL[i]]).then((res) => res[0]).catch(error => [{ undefined }]);
+        }
         conn.end();
         return res
     }
@@ -111,12 +113,17 @@ class AuthDao {
         conn.end();
         return res;
     }
-    public async updateUser(ID: any, FIRST_NAME: any, LAST_NAME: any, EMAIL: any, ROL: any, PHONE: any, PHONE_OFFICE: any, POSITION: any) {
+    public async addUserRoles(id_user: any, id_rol: any) {
+        const conn = mysqlcon.getConnection()!;
+        const res: any = await conn.query("INSERT INTO user_rol VALUES(?,?)", [id_user, id_rol]).then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        return res;
+    }
+    public async updateUser(ID: any, FIRST_NAME: any, LAST_NAME: any, EMAIL: any, PHONE: any, PHONE_OFFICE: any, POSITION: any) {
         const conn = mysqlcon.getConnection()!;
         const res: any = await conn.query("UPDATE user SET FIRST_NAME=?, LAST_NAME=?, EMAIL=?, PHONE=?, PHONE_OFFICE=?, POSITION=? WHERE ID = ?", [FIRST_NAME, LAST_NAME, EMAIL, PHONE, PHONE_OFFICE, POSITION, ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         await conn.query("DELETE FROM user_business WHERE ID_USER=?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         await conn.query("DELETE FROM user_rol WHERE USER_ID=?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
-        await conn.query("INSERT INTO user_rol VALUES (?,?)", [ID, ROL]).then((res) => res[0]).catch(error => [{ undefined }]);;
         conn.end();
         return res;
     }

@@ -19,6 +19,7 @@ import { MaintainerRatesComponent } from './pages/maintainer-rates/maintainer-ra
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { NgxChartsModule }from '@swimlane/ngx-charts';
 import { MaintainerGoalsComponent } from './pages/maintainer-goals/maintainer-goals.component';
+import { DashboardCiGestoresComponent } from './pages/dashboard-ci-gestores/dashboard-ci-gestores.component';
 
 
 @NgModule({
@@ -34,7 +35,8 @@ import { MaintainerGoalsComponent } from './pages/maintainer-goals/maintainer-go
     MaintainerRatesComponent,
     MaintainerGoalsComponent,
     DashboardComponent,
-    MaintainerGoalsComponent
+    MaintainerGoalsComponent,
+    DashboardCiGestoresComponent
   ],
   imports: [
     CommonModule,
