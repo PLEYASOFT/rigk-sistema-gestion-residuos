@@ -126,4 +126,10 @@ export class LoginComponent implements OnInit {
       this.router.navigate(['/gestor']);
     }
   }
+
+  closeModal() {
+    sessionStorage.clear();
+    this.multiRol = false;
+  }
+  
 }
