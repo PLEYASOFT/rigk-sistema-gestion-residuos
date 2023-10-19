@@ -12,6 +12,7 @@ router.get('/businessById/:id/:year', [validarJWT], businessLogic.getAllBusiness
 router.get('/business', [validarJWT, verifyParameters], businessLogic.getAllBusiness);
 router.get('/user', [validarJWT], businessLogic.getBusinessByUser);
 router.get('/getBusinessByUserId/:id', [], businessLogic.getBusinessByUserId);
+router.get('/getCodeBusiness/:idBusiness', [], businessLogic.getCodeBusiness);
 router.post('/business', [validarJWT, verifyParameters], businessLogic.postBusiness);
 router.delete('/business/:id', [validarJWT, verifyParameters], businessLogic.deleteBusiness);
 router.put('/business/:id', [validarJWT, verifyParameters], businessLogic.updateBusiness);
