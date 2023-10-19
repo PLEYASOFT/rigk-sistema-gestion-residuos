@@ -1,0 +1,18 @@
+/* Fondo oscuro tras el modal */
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5); /* Color gris transparente */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+    opacity: 1;
+    transition: opacity 0.8s ease-in-out;
+}
+
+/* Posicionamiento del modal */
+.modal-dialog {
+    z-index: 1000; /* Asegura que el modal esté por encima del fondo oscuro */
+    margin-top: 80px;
+}
