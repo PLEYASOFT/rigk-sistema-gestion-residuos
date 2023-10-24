@@ -55,13 +55,15 @@
 <div *ngIf="multiRol" class="modal show" id="roleSelectionModal" tabindex="-1" aria-labelledby="roleSelectionModalLabel" style="display: block; padding-right: 17px;">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header custom-header">
                 <h5 class="modal-title" id="roleSelectionModalLabel">Por favor, elija el rol:</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="multiRol = false"></button>
-            </div>
+                <div class="header-right">
+                    <img src="assets/images/logo-prorep-c.png" width="120" alt="PROREP Logo">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="multiRol = false; closeModal()"></button>
+                </div>
+            </div>                       
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="roleSelector">Rol</label>
                     <select class="form-control" id="roleSelector" [(ngModel)]="rol">
                         <option value="">Seleccione Rol</option>
                         <option *ngFor="let roleObj of userRoles" [value]="roleObj.id">{{ roleObj.name }}</option>
@@ -69,7 +71,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" (click)="selectRoleAndLogin()">Ingresar con rol seleccionado</button>
+                <button type="button" class="btn btn-primary" (click)="selectRoleAndLogin()" [disabled]="!rol">Ingresar con rol seleccionado</button>
             </div>
         </div>
     </div>

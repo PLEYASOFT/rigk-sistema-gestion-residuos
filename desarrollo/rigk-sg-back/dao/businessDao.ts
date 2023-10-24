@@ -117,6 +117,16 @@ class BusinessDao {
         }
         return businessList;
     }
+
+    public async getCodeBusiness(idBusiness: any) {
+        const conn = mysqlcon.getConnection()!;
+        const code: any = await conn.query("SELECT CODE_business FROM business WHERE ID = ?", [idBusiness]).then(res => res[0]).catch(erro => {
+            return undefined
+        });
+
+        conn.end();
+        return code
+    }
     
 }
 const businessDao = new BusinessDao();

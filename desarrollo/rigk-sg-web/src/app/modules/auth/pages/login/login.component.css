@@ -1,6 +1,5 @@
-/* Fondo oscuro tras el modal */
 .modal-backdrop {
-    background-color: rgba(0, 0, 0, 0.5); /* Color gris transparente */
+    background-color: rgba(0, 0, 0, 0.5);
     position: fixed;
     top: 0;
     left: 0;
@@ -11,8 +10,34 @@
     transition: opacity 0.8s ease-in-out;
 }
 
-/* Posicionamiento del modal */
 .modal-dialog {
-    z-index: 1000; /* Asegura que el modal esté por encima del fondo oscuro */
+    z-index: 1000;
     margin-top: 80px;
+    box-shadow: 0 4px 8px rgba(59, 255, 180, 0.158); /* Sombra sutil alrededor del modal */
 }
+
+.modal-content {
+    border-radius: 8px; /* Bordes redondeados para el modal */
+    overflow: hidden; /* Esconde cualquier contenido que se desborde */
+    background-color: #ffffff; /* Color de fondo claro para el modal */
+}
+
+.modal-body, .modal-footer {
+    padding: 20px; /* Espaciado dentro del cuerpo y el pie del modal */
+}
+
+.custom-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.header-right img {
+    margin-right: 15px;  /* Esto añade un pequeño espacio entre la imagen y el botón de cerrar */
+}
+
