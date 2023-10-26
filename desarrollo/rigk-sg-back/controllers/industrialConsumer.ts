@@ -247,6 +247,7 @@ class IndustrialConsumer {
             const establishmentRegions = establishments.map((establishment: any) => establishment.REGION);
             const filteredManagers = allManagers.filter((manager: any) => establishmentRegions.includes(manager.REGION));
             function createExcelTableForMaterial(material: any, columnRef: any) {
+                material.material_name = material.material_name.replace(/\//g, '_');
                 return {
                     name: material.material_name,
                     ref: columnRef + 1,
@@ -277,7 +278,7 @@ class IndustrialConsumer {
                 rows: materialNames
             });
             worksheetInfo.addTable({
-                name: 'TIPO TRATAMIENTO',
+                name: 'TIPO_TRATAMIENTO',
                 ref: 'C1',
                 headerRow: true,
                 columns: [
@@ -290,7 +291,7 @@ class IndustrialConsumer {
             colInfo[0].width = 9;
             colInfo[1].width = 25;
             colInfo[2].width = 25;
-            worksheetInfo.state = 'veryHidden';
+            //worksheetInfo.state = 'veryHidden';
 
             const info = await businessDao.getBusinessById(id);
             const worksheet = workbook.addWorksheet('Carga Masiva');
