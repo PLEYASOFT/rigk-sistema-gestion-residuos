@@ -299,6 +299,23 @@ class IndustrialConsumer {
             worksheet.getRow(1).getCell(2).value = info[0].VAT;
             worksheet.getRow(2).getCell(1).value = "RAZÓN SOCIAL";
             worksheet.getRow(2).getCell(2).value = info[0].CODE_BUSINESS + " - " + info[0].NAME;
+            
+            worksheet.getCell(`B1`).dataValidation = {
+                type: 'textLength',
+                allowBlank: false,
+                showErrorMessage: true,
+                error: 'No se puede editar',
+                formulae: [10,10]
+            };
+
+            worksheet.getCell(`B2`).dataValidation = {
+                type: 'textLength',
+                allowBlank: false,
+                showErrorMessage: true,
+                error: 'No se puede editar',
+                formulae: [10,10]
+            };
+
             row.getCell(1).value = "ID VU ESTABLECIMIENTO";
             row.getCell(2).value = "SUBCATEGORIA";
             row.getCell(3).value = "TIPO TRATAMIENTO";
@@ -325,7 +342,7 @@ class IndustrialConsumer {
             const maxRows = 150;
             const lastRowMaterials = 1 + materialNames.length;
             const lastRowTreatments = 1 + treatmentsNames.length;
-            const combinedRutNames = filteredManagers.map((manager: any) => [`${manager.VAT}`, manager.BUSINESS_NAME, manager.REGION, manager.MATERIAL_NAME]);
+            const combinedRutNames = filteredManagers.map((manager: any) => [`${manager.VAT} - ${manager.REGION}`, manager.BUSINESS_NAME, manager.REGION, manager.MATERIAL_NAME]);
             worksheetInfo.addTable({
                 name: 'RUTsNames',
                 ref: 'I1',
@@ -378,15 +395,15 @@ class IndustrialConsumer {
                     formulae: [10, 10]
                 };
                 worksheet.getCell(`E${i + 3}`).numFmt = '@';
-                
+
                 worksheet.getCell(`G${i + 3}`).dataValidation = {
                     type: 'list',
                     allowBlank: false,
                     showErrorMessage: true,
                     error: 'Por favor selecciona un RUT válido.',
                     formulae: [`=IF(OR(B${i + 3}="", A${i + 3}=""), "", OFFSET(INDIRECT("Info!$I$2"),MATCH(B${i + 3},INDIRECT("Info!$L$2:$L$"&${combinedRutNames.length + 1}),0)-1,0,COUNTIF(INDIRECT("Info!$L$2:$L$"&${combinedRutNames.length + 1}),B${i + 3})))`]
-                };                
-            
+                };
+
                 worksheet.getCell(`H${i + 3}`).dataValidation = {
                     type: 'list',
                     allowBlank: false,
