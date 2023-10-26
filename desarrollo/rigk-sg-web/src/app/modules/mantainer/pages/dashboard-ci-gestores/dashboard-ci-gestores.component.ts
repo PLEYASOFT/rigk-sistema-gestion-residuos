@@ -13,8 +13,8 @@ export class DashboardCiGestoresComponent implements OnInit {
   currentYear: number = new Date().getFullYear();
   selectedYear: number = this.currentYear;
 
-  view: any = [1200, 400]; 
-  view_barras: any = [600, 400]; 
+  view: any = [1200, 400];
+  view_barras: any = [600, 400];
 
   gradient: boolean = false;
 
@@ -32,7 +32,7 @@ export class DashboardCiGestoresComponent implements OnInit {
   constructor(private dashboardService: DashboardService, private businessService: BusinessService) { }
 
   ngOnInit(): void {
-    for (let i = 2023; i <= 2024; i++) {
+    for (let i = 2023; i <= this.currentYear; i++) {
       this.years.push(i);
     }
     this.loadData();
@@ -67,7 +67,7 @@ export class DashboardCiGestoresComponent implements OnInit {
   }
 
   loadBarChartData(): void {
-    
+
     if (this.selectedCompany === 'Todas') {
       this.dashboardService.getAllBarChartData(this.selectedYear).subscribe(data => {
         this.barChartData = data.data;
@@ -107,4 +107,9 @@ export class DashboardCiGestoresComponent implements OnInit {
 
     return decimales && decimales !== '0' ? `${enteroConPuntos},${decimales.padEnd(2, '0')}` : enteroConPuntos;
   }
+
+  getTooltipContent(item: any): string {
+    return `${item.name} - ${this.selectedYear}`;
+  }
+
 }
