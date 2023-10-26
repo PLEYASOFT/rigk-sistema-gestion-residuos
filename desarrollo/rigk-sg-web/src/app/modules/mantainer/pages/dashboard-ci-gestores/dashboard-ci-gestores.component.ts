@@ -90,6 +90,9 @@ export class DashboardCiGestoresComponent implements OnInit {
         this.normalizedBarChartData = data.data;
         this.normalizedBarChartData[0].name = this.normalizedBarChartData[0].name + ' - ' + this.selectedYear;
         this.normalizedBarChartData[1].name = this.normalizedBarChartData[1].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[2].name = this.normalizedBarChartData[2].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[3].name = this.normalizedBarChartData[3].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[4].name = this.normalizedBarChartData[4].name + ' - ' + this.selectedYear;
       });
     }
     else {
@@ -97,6 +100,9 @@ export class DashboardCiGestoresComponent implements OnInit {
         this.normalizedBarChartData = data.data;
         this.normalizedBarChartData[0].name = this.normalizedBarChartData[0].name + ' - ' + this.selectedYear;
         this.normalizedBarChartData[1].name = this.normalizedBarChartData[1].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[2].name = this.normalizedBarChartData[2].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[3].name = this.normalizedBarChartData[3].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[4].name = this.normalizedBarChartData[4].name + ' - ' + this.selectedYear;
       });
     }
   }
