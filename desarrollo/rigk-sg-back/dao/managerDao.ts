@@ -166,7 +166,6 @@ class ManagerDao {
     
     public async getAllManagersByEstablishmentAndMaterial(establishmentIds: number[]) {
         const conn = mysqlcon.getConnection()!;
-        console.log('LISTADOOOOO: ',establishmentIds)
         const query = `
             SELECT 
                 manager.ID AS ID_MANAGER,
@@ -180,7 +179,6 @@ class ManagerDao {
             WHERE establishment_business.ID_ESTABLISHMENT IN (?)
         `;
         const managerList: any = await conn.query(query, [establishmentIds]).then(res => res[0]).catch(error => undefined);
-        console.log(managerList)
         if (managerList == null || managerList.length == 0) {
             return false;
         }

@@ -221,9 +221,6 @@ class IndustrialConsumer {
                     message: "Empresa sin establecimientos"
                 });
             }
-            /**
-             * DATA VALIDATION
-             */
             const workbook = new ExcelJS.Workbook();
             const worksheetInfo = workbook.addWorksheet('Info');
             const rowInfo = worksheetInfo.getRow(1);
@@ -236,13 +233,10 @@ class IndustrialConsumer {
             }
             rowInfo.commit();
 
-
             const materials = await managerDao.getAllMaterials();
-
             const materialNames = materials.map((material: any) => [material.MATERIAL]);
             const treatments = await managerDao.getAllTreatments();
             const treatmentsNames = treatments.map((treatments: any) => [treatments.NAME]);
-
             const allManagers = await managerDao.getAllManager();
             const establishmentRegions = establishments.map((establishment: any) => establishment.REGION);
             const filteredManagers = allManagers.filter((manager: any) => establishmentRegions.includes(manager.REGION));
@@ -291,7 +285,7 @@ class IndustrialConsumer {
             colInfo[0].width = 9;
             colInfo[1].width = 25;
             colInfo[2].width = 25;
-            //worksheetInfo.state = 'veryHidden';
+            worksheetInfo.state = 'veryHidden';
 
             const info = await businessDao.getBusinessById(id);
             const worksheet = workbook.addWorksheet('Carga Masiva');
@@ -396,7 +390,6 @@ class IndustrialConsumer {
                     formulae: [10, 10]
                 };
                 worksheet.getCell(`E${i + 3}`).numFmt = '@';
-
                 worksheet.getCell(`G${i + 3}`).dataValidation = {
                     type: 'list',
                     allowBlank: false,
@@ -404,7 +397,6 @@ class IndustrialConsumer {
                     error: 'Por favor selecciona un RUT válido.',
                     formulae: [`=IF(OR(B${i + 3}="", A${i + 3}=""), "", OFFSET(INDIRECT("Info!$I$2"),MATCH(B${i + 3},INDIRECT("Info!$L$2:$L$"&${combinedRutNames.length + 1}),0)-1,0,COUNTIF(INDIRECT("Info!$L$2:$L$"&${combinedRutNames.length + 1}),B${i + 3})))`]
                 };
-
                 worksheet.getCell(`H${i + 3}`).dataValidation = {
                     type: 'list',
                     allowBlank: false,
@@ -412,7 +404,6 @@ class IndustrialConsumer {
                     error: 'Por favor selecciona un nombre válido.',
                     formulae: [`=IF(G${i + 3}="", "", OFFSET(Info!$J$2,MATCH(G${i + 3},Info!$I$2:$I$${combinedRutNames.length + 1},0)-1,0,COUNTIF(Info!$I$2:$I$${combinedRutNames.length + 1},G${i + 3})))`]
                 };
-
                 worksheet.getCell(`J${i + 1}`).numFmt = '@';
             }
             await workbook.xlsx.writeFile(outputPath);
