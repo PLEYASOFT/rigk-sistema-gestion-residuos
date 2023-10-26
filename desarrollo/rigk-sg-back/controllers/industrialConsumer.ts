@@ -290,12 +290,11 @@ class IndustrialConsumer {
             colInfo[0].width = 9;
             colInfo[1].width = 25;
             colInfo[2].width = 25;
-            //worksheetInfo.state = 'veryHidden';
+            worksheetInfo.state = 'veryHidden';
 
             const info = await businessDao.getBusinessById(id);
             const worksheet = workbook.addWorksheet('Carga Masiva');
             const row = worksheet.getRow(3);
-            // Insertar las cabeceras "RUT" y "RAZÓN SOCIAL"
             worksheet.getRow(1).getCell(1).value = "RUT";
             worksheet.getRow(1).getCell(2).value = info[0].VAT;
             worksheet.getRow(2).getCell(1).value = "RAZÓN SOCIAL";
