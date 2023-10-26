@@ -19,13 +19,13 @@
             <option *ngFor="let company of companies" [value]="company.ID">{{company.NAME}}</option>
         </select>
     </div>
-
+      
     <div class="gauge-container">
         <div style="text-align: center;font-size: medium;"> TONELADAS VALORIZADAS VS DECLARADAS POR MES</div>
         <ngx-charts-line-chart [view]="view" [scheme]="colorScheme" [results]="lineChartData" [gradient]="gradient"
             [xAxis]="true" [yAxis]="true" [legend]="true" [legendTitle]="' '" [showXAxisLabel]="true"
             [showYAxisLabel]="true" [xAxisLabel]="'Mes'" [yAxisLabel]="'Toneladas'"
-            [yAxisTickFormatting]="setFormato"></ngx-charts-line-chart>
+            [yAxisTickFormatting]="setFormato" ></ngx-charts-line-chart>
     </div>
 
     <div class="gauge-container">
