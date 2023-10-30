@@ -285,7 +285,7 @@ class IndustrialConsumer {
             colInfo[0].width = 9;
             colInfo[1].width = 25;
             colInfo[2].width = 25;
-            worksheetInfo.state = 'veryHidden';
+            //worksheetInfo.state = 'veryHidden';
 
             const info = await businessDao.getBusinessById(id);
             const worksheet = workbook.addWorksheet('Carga Masiva');
@@ -294,13 +294,13 @@ class IndustrialConsumer {
             worksheet.getRow(1).getCell(2).value = info[0].VAT;
             worksheet.getRow(2).getCell(1).value = "RAZÓN SOCIAL";
             worksheet.getRow(2).getCell(2).value = info[0].CODE_BUSINESS + " - " + info[0].NAME;
-            
+
             worksheet.getCell(`B1`).dataValidation = {
                 type: 'textLength',
                 allowBlank: false,
                 showErrorMessage: true,
                 error: 'No se puede editar',
-                formulae: [10,10]
+                formulae: [10, 10]
             };
 
             worksheet.getCell(`B2`).dataValidation = {
@@ -308,7 +308,7 @@ class IndustrialConsumer {
                 allowBlank: false,
                 showErrorMessage: true,
                 error: 'No se puede editar',
-                formulae: [10,10]
+                formulae: [10, 10]
             };
 
             row.getCell(1).value = "ID VU ESTABLECIMIENTO";
@@ -337,7 +337,21 @@ class IndustrialConsumer {
             const maxRows = 150;
             const lastRowMaterials = 1 + materialNames.length;
             const lastRowTreatments = 1 + treatmentsNames.length;
-            const combinedRutNames = filteredManagers.map((manager: any) => [`${manager.VAT} - ${manager.REGION}`, manager.BUSINESS_NAME, manager.REGION, manager.MATERIAL_NAME]);
+            // 1. Crear un Set para mantener un registro de las combinaciones únicas.
+            const uniqueCombinationsSet = new Set<string>();
+
+            // 2. Iterar sobre los filteredManagers y filtrar solo las combinaciones únicas.
+            const uniqueCombinedRutNames = filteredManagers.reduce((uniqueArr: any[], manager: any) => {
+                const combination = `${manager.VAT} - ${manager.REGION}|${manager.BUSINESS_NAME}|${manager.REGION}|${manager.MATERIAL_NAME}`;
+
+                if (!uniqueCombinationsSet.has(combination)) {
+                    uniqueCombinationsSet.add(combination);
+                    uniqueArr.push([`${manager.VAT} - ${manager.REGION}`, manager.BUSINESS_NAME, manager.REGION, manager.MATERIAL_NAME]);
+                }
+                return uniqueArr;
+            }, []);
+
+            // 3. Añadir las combinaciones únicas a la tabla.
             worksheetInfo.addTable({
                 name: 'RUTsNames',
                 ref: 'I1',
@@ -348,7 +362,7 @@ class IndustrialConsumer {
                     { name: 'REGIONES', filterButton: false },
                     { name: 'MATERIALES', filterButton: false },
                 ],
-                rows: combinedRutNames
+                rows: uniqueCombinedRutNames
             });
             for (let i = 1; i <= maxRows; i++) {
                 worksheet.getCell(`A${i + 3}`).dataValidation = {
@@ -395,14 +409,14 @@ class IndustrialConsumer {
                     allowBlank: false,
                     showErrorMessage: true,
                     error: 'Por favor selecciona un RUT válido.',
-                    formulae: [`=IF(OR(B${i + 3}="", A${i + 3}=""), "", OFFSET(INDIRECT("Info!$I$2"),MATCH(B${i + 3},INDIRECT("Info!$L$2:$L$"&${combinedRutNames.length + 1}),0)-1,0,COUNTIF(INDIRECT("Info!$L$2:$L$"&${combinedRutNames.length + 1}),B${i + 3})))`]
+                    formulae: [`=IF(OR(B${i + 3}="", A${i + 3}=""), "", OFFSET(INDIRECT("Info!$I$2"),MATCH(B${i + 3},INDIRECT("Info!$L$2:$L$"&${uniqueCombinedRutNames.length + 1}),0)-1,0,COUNTIF(INDIRECT("Info!$L$2:$L$"&${uniqueCombinedRutNames.length + 1}),B${i + 3})))`]
                 };
                 worksheet.getCell(`H${i + 3}`).dataValidation = {
                     type: 'list',
                     allowBlank: false,
                     showErrorMessage: true,
                     error: 'Por favor selecciona un nombre válido.',
-                    formulae: [`=IF(G${i + 3}="", "", OFFSET(Info!$J$2,MATCH(G${i + 3},Info!$I$2:$I$${combinedRutNames.length + 1},0)-1,0,COUNTIF(Info!$I$2:$I$${combinedRutNames.length + 1},G${i + 3})))`]
+                    formulae: [`=IF(G${i + 3}="", "", OFFSET(Info!$J$2,MATCH(G${i + 3},Info!$I$2:$I$${uniqueCombinedRutNames.length + 1},0)-1,0,COUNTIF(Info!$I$2:$I$${uniqueCombinedRutNames.length + 1},G${i + 3})))`]
                 };
                 worksheet.getCell(`J${i + 1}`).numFmt = '@';
             }
