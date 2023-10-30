@@ -285,7 +285,7 @@ class IndustrialConsumer {
             colInfo[0].width = 9;
             colInfo[1].width = 25;
             colInfo[2].width = 25;
-            //worksheetInfo.state = 'veryHidden';
+            worksheetInfo.state = 'veryHidden';
 
             const info = await businessDao.getBusinessById(id);
             const worksheet = workbook.addWorksheet('Carga Masiva');
@@ -337,10 +337,7 @@ class IndustrialConsumer {
             const maxRows = 150;
             const lastRowMaterials = 1 + materialNames.length;
             const lastRowTreatments = 1 + treatmentsNames.length;
-            // 1. Crear un Set para mantener un registro de las combinaciones únicas.
             const uniqueCombinationsSet = new Set<string>();
-
-            // 2. Iterar sobre los filteredManagers y filtrar solo las combinaciones únicas.
             const uniqueCombinedRutNames = filteredManagers.reduce((uniqueArr: any[], manager: any) => {
                 const combination = `${manager.VAT} - ${manager.REGION}|${manager.BUSINESS_NAME}|${manager.REGION}|${manager.MATERIAL_NAME}`;
 
@@ -350,8 +347,49 @@ class IndustrialConsumer {
                 }
                 return uniqueArr;
             }, []);
+            uniqueCombinedRutNames.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Papel/Cartón']);
+            uniqueCombinedRutNames.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Metal']);
+            uniqueCombinedRutNames.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Plástico']);
+            uniqueCombinedRutNames.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Madera']);
+            uniqueCombinedRutNames.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Mezclados']);
 
-            // 3. Añadir las combinaciones únicas a la tabla.
+            uniqueCombinedRutNames.sort((a: string[], b: string[]) => {
+                const materialA = a[3].toUpperCase();
+                const materialB = b[3].toUpperCase();
+                const materialOrder = ["PAPEL/CARTÓN", "METAL", "PLÁSTICO", "MADERA", "MEZCLADOS"];
+                const indexA = materialOrder.indexOf(materialA);
+                const indexB = materialOrder.indexOf(materialB);
+                if (indexA === -1 || indexB === -1) return 0;
+
+                return indexA - indexB;
+            });
+            const originalArray = [...uniqueCombinedRutNames];
+            
+            originalArray.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Papel/Cartón']);
+            originalArray.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Metal']);
+            originalArray.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Plástico']);
+            originalArray.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Madera']);
+            originalArray.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Mezclados']);
+            const sortedByRutRegionAndName = [...originalArray].sort((a, b) => {
+                const rutRegionA = a[0].toUpperCase();
+                const rutRegionB = b[0].toUpperCase();
+                if (rutRegionA < rutRegionB) {
+                    return -1;
+                } else if (rutRegionA > rutRegionB) {
+                    return 1;
+                } else {
+                    const nameA = a[1].toUpperCase();
+                    const nameB = b[1].toUpperCase();
+                    if (nameA < nameB) {
+                        return -1;
+                    } else if (nameA > nameB) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                }
+            });
+            
             worksheetInfo.addTable({
                 name: 'RUTsNames',
                 ref: 'I1',
@@ -364,6 +402,21 @@ class IndustrialConsumer {
                 ],
                 rows: uniqueCombinedRutNames
             });
+
+            worksheetInfo.addTable({
+                name: 'RutsSorted',
+                ref: 'M1',
+                headerRow: true,
+                columns: [
+                    { name: 'RutSorted', filterButton: false },
+                    { name: 'NameSorted', filterButton: false },
+                    { name: 'REGIONESSorted', filterButton: false },
+                    { name: 'MATERIALESSorted', filterButton: false },
+                ],
+                rows: sortedByRutRegionAndName
+            });
+
+
             for (let i = 1; i <= maxRows; i++) {
                 worksheet.getCell(`A${i + 3}`).dataValidation = {
                     type: 'list',
@@ -383,7 +436,7 @@ class IndustrialConsumer {
                     type: 'list',
                     allowBlank: false,
                     showErrorMessage: true,
-                    error: 'Por favor selecciona un tratamienmto válido.',
+                    error: 'Por favor selecciona un tratamiento válido.',
                     formulae: [`Info!$C$2:$C$${lastRowTreatments}`]
                 };
                 worksheet.getCell(`D${i + 3}`).dataValidation = {
@@ -416,7 +469,7 @@ class IndustrialConsumer {
                     allowBlank: false,
                     showErrorMessage: true,
                     error: 'Por favor selecciona un nombre válido.',
-                    formulae: [`=IF(G${i + 3}="", "", OFFSET(Info!$J$2,MATCH(G${i + 3},Info!$I$2:$I$${uniqueCombinedRutNames.length + 1},0)-1,0,COUNTIF(Info!$I$2:$I$${uniqueCombinedRutNames.length + 1},G${i + 3})))`]
+                    formulae: [`=IF(G${i + 3}="", "", OFFSET(Info!$N$2,MATCH(G${i + 3},Info!$M$2:$M$${uniqueCombinedRutNames.length + 1},0)-1,0,COUNTIF(Info!$M$2:$M$${uniqueCombinedRutNames.length + 1},G${i + 3})))`]
                 };
                 worksheet.getCell(`J${i + 1}`).numFmt = '@';
             }
