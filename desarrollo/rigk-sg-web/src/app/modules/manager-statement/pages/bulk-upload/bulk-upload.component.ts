@@ -716,7 +716,12 @@ export class BulkUploadComponent implements OnInit {
       const element = this.allInvoices[i];
       if (this.allInvoices.length == Object.keys(this.fileNames).length && this.fileNames[i]) {
         try {
-          const response = await this.establishmentService.saveInvoice(element.vat, element.idBusiness, element.numberInvoice, element.idDetail, element.backAdmissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), element.treatmentTypeNum, element.materialTypeNum, this.fileToUpload[i]).toPromise();
+          const response = await Promise.race([
+            this.establishmentService.saveInvoice(element.vat, element.idBusiness, element.numberInvoice, element.idDetail, element.backAdmissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), element.treatmentTypeNum, element.materialTypeNum, this.fileToUpload[i]).toPromise(),
+            new Promise((_resolve, reject) => {
+                setTimeout(() => reject(new Error('Timeout')), 30000); // 30 segundos
+            })
+          ]);
           if (!response.status) {
             errores = true;
             this.allInvoices = [];
@@ -727,16 +732,25 @@ export class BulkUploadComponent implements OnInit {
             });
             return;
           }
-        } catch (error) {
-            // Manejo de otros errores
-            errores = true; // Se establece la variable de errores en true
+        } catch (error: any) {
+            if (error.message === 'Timeout') {
+              errores = true;
+              this.allInvoices = [];
+              Swal.close();
+              Swal.fire({
+                icon: 'error',
+                text: `Ha habido un error y el proceso se ha detenido, consulte más tarde el estado de sus declaraciones para ver cuales fueron exitosamente aprobadas y cuales no.`
+              });
+              return;
+            }
+            errores = true;
             this.allInvoices = [];
             Swal.close();
             Swal.fire({
               icon: 'error',
               text: `Ha habido un error y el proceso se ha detenido, consulte más tarde el estado de sus declaraciones para ver cuales fueron exitosamente aprobadas y cuales no.`
             });
-            return;
+            throw error; // Lanza la excepción para salir del bucle
         }
       }
     }
