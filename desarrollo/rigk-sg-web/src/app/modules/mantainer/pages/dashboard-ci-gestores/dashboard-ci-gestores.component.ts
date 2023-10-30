@@ -13,8 +13,8 @@ export class DashboardCiGestoresComponent implements OnInit {
   currentYear: number = new Date().getFullYear();
   selectedYear: number = this.currentYear;
 
-  view: any = [1200, 400]; 
-  view_barras: any = [600, 400]; 
+  view: any = [1200, 400];
+  view_barras: any = [600, 400];
 
   gradient: boolean = false;
 
@@ -22,9 +22,9 @@ export class DashboardCiGestoresComponent implements OnInit {
     domain: ['#08a47c', '#FCB241', '#d32f2f', '#1976D2', '#388E3C', '#8E24AA', '#FBC02D']
   };
 
-  lineChartData = [];
-  barChartData = [];
-  normalizedBarChartData = [];
+  lineChartData: any = [];
+  barChartData: any = [];
+  normalizedBarChartData: any = [];
 
   companies: { ID: string, NAME: string }[] = [];
   selectedCompany: string = 'Todas';
@@ -32,7 +32,7 @@ export class DashboardCiGestoresComponent implements OnInit {
   constructor(private dashboardService: DashboardService, private businessService: BusinessService) { }
 
   ngOnInit(): void {
-    for (let i = 2023; i <= 2024; i++) {
+    for (let i = 2023; i <= this.currentYear; i++) {
       this.years.push(i);
     }
     this.loadData();
@@ -67,15 +67,19 @@ export class DashboardCiGestoresComponent implements OnInit {
   }
 
   loadBarChartData(): void {
-    
+
     if (this.selectedCompany === 'Todas') {
       this.dashboardService.getAllBarChartData(this.selectedYear).subscribe(data => {
         this.barChartData = data.data;
+        this.barChartData[0].name = this.barChartData[0].name + ' - ' + this.selectedYear;
+        this.barChartData[1].name = this.barChartData[1].name + ' - ' + this.selectedYear;
       });
     }
     else {
       this.dashboardService.getBarChartDataByCompanyId(this.selectedYear, this.selectedCompany).subscribe(data => {
         this.barChartData = data.data;
+        this.barChartData[0].name = this.barChartData[0].name + ' - ' + this.selectedYear;
+        this.barChartData[1].name = this.barChartData[1].name + ' - ' + this.selectedYear;
       });
     }
   }
@@ -84,11 +88,21 @@ export class DashboardCiGestoresComponent implements OnInit {
     if (this.selectedCompany === 'Todas') {
       this.dashboardService.getAllStackedBarChartData(this.selectedYear).subscribe(data => {
         this.normalizedBarChartData = data.data;
+        this.normalizedBarChartData[0].name = this.normalizedBarChartData[0].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[1].name = this.normalizedBarChartData[1].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[2].name = this.normalizedBarChartData[2].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[3].name = this.normalizedBarChartData[3].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[4].name = this.normalizedBarChartData[4].name + ' - ' + this.selectedYear;
       });
     }
     else {
       this.dashboardService.getStackedBarChartDataByCompanyId(this.selectedYear, this.selectedCompany).subscribe(data => {
         this.normalizedBarChartData = data.data;
+        this.normalizedBarChartData[0].name = this.normalizedBarChartData[0].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[1].name = this.normalizedBarChartData[1].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[2].name = this.normalizedBarChartData[2].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[3].name = this.normalizedBarChartData[3].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[4].name = this.normalizedBarChartData[4].name + ' - ' + this.selectedYear;
       });
     }
   }
@@ -107,4 +121,5 @@ export class DashboardCiGestoresComponent implements OnInit {
 
     return decimales && decimales !== '0' ? `${enteroConPuntos},${decimales.padEnd(2, '0')}` : enteroConPuntos;
   }
+
 }

@@ -23,9 +23,9 @@ export class DashboardCiGestorComponent implements OnInit {
     domain: ['#08a47c', '#FCB241', '#d32f2f', '#1976D2', '#388E3C', '#8E24AA', '#FBC02D']
   };
 
-  lineChartData = [];
-  barChartData = [];
-  normalizedBarChartData = [];
+  lineChartData:any = [];
+  barChartData:any = [];
+  normalizedBarChartData:any = [];
 
   companies: { ID: string, NAME: string }[] = [];
   selectedCompany: string = 'Todas';
@@ -34,7 +34,7 @@ export class DashboardCiGestorComponent implements OnInit {
   constructor(private dashboardService: DashboardService, private businessService: BusinessService) { }
 
   ngOnInit(): void {
-    for (let i = 2023; i <= 2024; i++) {
+    for (let i = 2023; i <= this.currentYear; i++) {
       this.years.push(i);
     }
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
@@ -52,13 +52,9 @@ export class DashboardCiGestorComponent implements OnInit {
   }
 
   loadData() {
-    let businessIds: any;
     if (this.selectedCompany === 'Todas') {
-      businessIds = this.companies.filter(c => c.ID !== 'Todas').map(c => c.ID);
-      const businessIdString = businessIds.join(',');
-      this.dashboardService.getLinearDashboardArray(this.selectedYear, businessIdString).subscribe(data => {
+      this.dashboardService.getAllLinearDashboard(this.selectedYear).subscribe(data => {
         this.lineChartData = data.data;
-        console.log(this.lineChartData)
       });
     }
     else {
@@ -75,33 +71,42 @@ export class DashboardCiGestorComponent implements OnInit {
   }
 
   loadBarChartData(): void {
-    let businessIds: any;
+
     if (this.selectedCompany === 'Todas') {
-      businessIds = this.companies.filter(c => c.ID !== 'Todas').map(c => c.ID);
-      const businessIdString = businessIds.join(',');
-      this.dashboardService.getBarChartDataByCompanyIdArray(this.selectedYear, businessIdString).subscribe(data => {
+      this.dashboardService.getAllBarChartData(this.selectedYear).subscribe(data => {
         this.barChartData = data.data;
+        this.barChartData[0].name = this.barChartData[0].name + ' - ' + this.selectedYear;
+        this.barChartData[1].name = this.barChartData[1].name + ' - ' + this.selectedYear;
       });
     }
     else {
       this.dashboardService.getBarChartDataByCompanyId(this.selectedYear, this.selectedCompany).subscribe(data => {
         this.barChartData = data.data;
+        this.barChartData[0].name = this.barChartData[0].name + ' - ' + this.selectedYear;
+        this.barChartData[1].name = this.barChartData[1].name + ' - ' + this.selectedYear;
       });
     }
   }
 
   loadAllStackedChartData(): void {
-    let businessIds: any;
     if (this.selectedCompany === 'Todas') {
-      businessIds = this.companies.filter(c => c.ID !== 'Todas').map(c => c.ID);
-      const businessIdString = businessIds.join(',');
-      this.dashboardService.getStackedBarChartDataByCompanyIdArray(this.selectedYear,businessIdString).subscribe(data => {
+      this.dashboardService.getAllStackedBarChartData(this.selectedYear).subscribe(data => {
         this.normalizedBarChartData = data.data;
+        this.normalizedBarChartData[0].name = this.normalizedBarChartData[0].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[1].name = this.normalizedBarChartData[1].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[2].name = this.normalizedBarChartData[2].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[3].name = this.normalizedBarChartData[3].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[4].name = this.normalizedBarChartData[4].name + ' - ' + this.selectedYear;
       });
     }
     else {
       this.dashboardService.getStackedBarChartDataByCompanyId(this.selectedYear, this.selectedCompany).subscribe(data => {
         this.normalizedBarChartData = data.data;
+        this.normalizedBarChartData[0].name = this.normalizedBarChartData[0].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[1].name = this.normalizedBarChartData[1].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[2].name = this.normalizedBarChartData[2].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[3].name = this.normalizedBarChartData[3].name + ' - ' + this.selectedYear;
+        this.normalizedBarChartData[4].name = this.normalizedBarChartData[4].name + ' - ' + this.selectedYear;
       });
     }
   }
