@@ -337,16 +337,22 @@ class IndustrialConsumer {
             const maxRows = 150;
             const lastRowMaterials = 1 + materialNames.length;
             const lastRowTreatments = 1 + treatmentsNames.length;
-            const uniqueCombinationsSet = new Set<string>();
-            const uniqueCombinedRutNames = filteredManagers.reduce((uniqueArr: any[], manager: any) => {
-                const combination = `${manager.VAT} - ${manager.REGION}|${manager.BUSINESS_NAME}|${manager.REGION}|${manager.MATERIAL_NAME}`;
+            const uniqueCombinations_2:any = {};
 
-                if (!uniqueCombinationsSet.has(combination)) {
-                    uniqueCombinationsSet.add(combination);
-                    uniqueArr.push([`${manager.VAT} - ${manager.REGION}`, manager.BUSINESS_NAME, manager.REGION, manager.MATERIAL_NAME]);
+            const uniqueCombinedRutNames = filteredManagers.reduce((uniqueArr: any[], manager: any) => {
+                const rut = `${manager.VAT} - ${manager.REGION}`; 
+                const material = manager.MATERIAL_NAME; 
+                const key = `${rut}|${material}`;  
+
+                if (!uniqueCombinations_2[key]) {
+                    uniqueCombinations_2[key] = true;
+                    uniqueArr.push([rut, manager.BUSINESS_NAME, manager.REGION, material]);
                 }
                 return uniqueArr;
             }, []);
+
+            const originalArray = [...uniqueCombinedRutNames];
+
             uniqueCombinedRutNames.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Papel/Cartón']);
             uniqueCombinedRutNames.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Metal']);
             uniqueCombinedRutNames.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Plástico']);
@@ -363,14 +369,27 @@ class IndustrialConsumer {
 
                 return indexA - indexB;
             });
-            const originalArray = [...uniqueCombinedRutNames];
-            
-            originalArray.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Papel/Cartón']);
-            originalArray.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Metal']);
-            originalArray.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Plástico']);
-            originalArray.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Madera']);
-            originalArray.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Mezclados']);
-            const sortedByRutRegionAndName = [...originalArray].sort((a, b) => {
+
+            const uniqueCombinations: any = {};
+            const filteredArray = originalArray.filter(entry => {
+                const name = entry[1].toUpperCase();
+                const region = entry[2].toUpperCase();
+                const key = `${name}|${region}`;  
+
+                if (uniqueCombinations[key]) {
+                    return false;
+                } else {
+                    uniqueCombinations[key] = true;
+                    return true;
+                }
+            });
+
+            filteredArray.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Papel/Cartón']);
+            filteredArray.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Metal']);
+            filteredArray.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Plástico']);
+            filteredArray.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Madera']);
+            filteredArray.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Mezclados']);
+            const sortedByRutRegionAndName = [...filteredArray].sort((a, b) => {
                 const rutRegionA = a[0].toUpperCase();
                 const rutRegionB = b[0].toUpperCase();
                 if (rutRegionA < rutRegionB) {
@@ -389,7 +408,7 @@ class IndustrialConsumer {
                     }
                 }
             });
-            
+
             worksheetInfo.addTable({
                 name: 'RUTsNames',
                 ref: 'I1',
@@ -469,7 +488,7 @@ class IndustrialConsumer {
                     allowBlank: false,
                     showErrorMessage: true,
                     error: 'Por favor selecciona un nombre válido.',
-                    formulae: [`=IF(G${i + 3}="", "", OFFSET(Info!$N$2,MATCH(G${i + 3},Info!$M$2:$M$${uniqueCombinedRutNames.length + 1},0)-1,0,COUNTIF(Info!$M$2:$M$${uniqueCombinedRutNames.length + 1},G${i + 3})))`]
+                    formulae: [`=IF(G${i + 3}="1 - Reciclador Interno", Info!$N$2, OFFSET(Info!$N$2,MATCH(G${i + 3},Info!$M$2:$M$${uniqueCombinedRutNames.length + 1},0)-1,0,COUNTIF(Info!$M$2:$M$${uniqueCombinedRutNames.length + 1},G${i + 3})))`]
                 };
                 worksheet.getCell(`J${i + 1}`).numFmt = '@';
             }
