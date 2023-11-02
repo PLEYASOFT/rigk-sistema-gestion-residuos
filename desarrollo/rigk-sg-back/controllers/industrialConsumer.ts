@@ -338,11 +338,13 @@ class IndustrialConsumer {
             const lastRowMaterials = 1 + materialNames.length;
             const lastRowTreatments = 1 + treatmentsNames.length;
             const uniqueCombinations_2:any = {};
+            const uniqueCombinations_3:any = {};
 
             const uniqueCombinedRutNames = filteredManagers.reduce((uniqueArr: any[], manager: any) => {
                 const rut = `${manager.VAT} - ${manager.REGION}`; 
                 const material = manager.MATERIAL_NAME; 
-                const key = `${rut}|${material}`;  
+                const name = manager.BUSINESS_NAME; 
+                const key = `${rut}|${material}|${name}`;  
 
                 if (!uniqueCombinations_2[key]) {
                     uniqueCombinations_2[key] = true;
@@ -351,7 +353,20 @@ class IndustrialConsumer {
                 return uniqueArr;
             }, []);
 
-            const originalArray = [...uniqueCombinedRutNames];
+            const uniqueCombinedRutNames_2 = filteredManagers.reduce((uniqueArr: any[], manager: any) => {
+                const rut = `${manager.VAT} - ${manager.REGION}`; 
+                const material = manager.MATERIAL_NAME; 
+                const name = manager.BUSINESS_NAME; 
+                const key = `${rut}|${material}|${name}`;  
+
+                if (!uniqueCombinations_3[key]) {
+                    uniqueCombinations_3[key] = true;
+                    uniqueArr.push([rut, manager.BUSINESS_NAME, manager.REGION, material]);
+                }
+                return uniqueArr;
+            }, []);
+
+            const originalArray = [...uniqueCombinedRutNames_2];
 
             uniqueCombinedRutNames.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Papel/Cartón']);
             uniqueCombinedRutNames.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Metal']);
