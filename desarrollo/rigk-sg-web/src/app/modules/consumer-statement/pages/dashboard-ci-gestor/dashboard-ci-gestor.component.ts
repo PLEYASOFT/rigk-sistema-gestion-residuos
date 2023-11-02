@@ -23,9 +23,9 @@ export class DashboardCiGestorComponent implements OnInit {
     domain: ['#08a47c', '#FCB241', '#d32f2f', '#1976D2', '#388E3C', '#8E24AA', '#FBC02D']
   };
 
-  lineChartData:any = [];
-  barChartData:any = [];
-  normalizedBarChartData:any = [];
+  lineChartData: any = [];
+  barChartData: any = [];
+  normalizedBarChartData: any = [];
 
   companies: { ID: string, NAME: string }[] = [];
   selectedCompany: string = 'Todas';
@@ -52,8 +52,11 @@ export class DashboardCiGestorComponent implements OnInit {
   }
 
   loadData() {
+    let businessIds: any;
     if (this.selectedCompany === 'Todas') {
-      this.dashboardService.getAllLinearDashboard(this.selectedYear).subscribe(data => {
+      businessIds = this.companies.filter(c => c.ID !== 'Todas').map(c => c.ID);
+      const businessIdString = businessIds.join(',');
+      this.dashboardService.getLinearDashboardArray(this.selectedYear, businessIdString).subscribe(data => {
         this.lineChartData = data.data;
       });
     }
@@ -71,9 +74,11 @@ export class DashboardCiGestorComponent implements OnInit {
   }
 
   loadBarChartData(): void {
-
+    let businessIds: any;
     if (this.selectedCompany === 'Todas') {
-      this.dashboardService.getAllBarChartData(this.selectedYear).subscribe(data => {
+      businessIds = this.companies.filter(c => c.ID !== 'Todas').map(c => c.ID);
+      const businessIdString = businessIds.join(',');
+      this.dashboardService.getBarChartDataByCompanyIdArray(this.selectedYear, businessIdString).subscribe(data => {
         this.barChartData = data.data;
         this.barChartData[0].name = this.barChartData[0].name + ' - ' + this.selectedYear;
         this.barChartData[1].name = this.barChartData[1].name + ' - ' + this.selectedYear;
@@ -89,8 +94,11 @@ export class DashboardCiGestorComponent implements OnInit {
   }
 
   loadAllStackedChartData(): void {
+    let businessIds: any;
     if (this.selectedCompany === 'Todas') {
-      this.dashboardService.getAllStackedBarChartData(this.selectedYear).subscribe(data => {
+      businessIds = this.companies.filter(c => c.ID !== 'Todas').map(c => c.ID);
+      const businessIdString = businessIds.join(',');
+      this.dashboardService.getStackedBarChartDataByCompanyIdArray(this.selectedYear,businessIdString).subscribe(data => {
         this.normalizedBarChartData = data.data;
         this.normalizedBarChartData[0].name = this.normalizedBarChartData[0].name + ' - ' + this.selectedYear;
         this.normalizedBarChartData[1].name = this.normalizedBarChartData[1].name + ' - ' + this.selectedYear;
