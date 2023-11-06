@@ -20,7 +20,7 @@ class ManagerDao {
     public async getAllManager() {
         const conn = mysqlcon.getConnection()!;
         const query = `
-            SELECT m.*, b.VAT, b.NAME AS BUSINESS_NAME, tm.MATERIAL AS MATERIAL_NAME 
+            SELECT m.*, b.VAT, b.NAME AS BUSINESS_NAME, tm.MATERIAL AS MATERIAL_NAME, b.CODE_BUSINESS
             FROM manager m
             JOIN manager_business mb ON m.ID = mb.ID_MANAGER
             JOIN business b ON mb.ID_BUSINESS = b.ID

@@ -317,10 +317,9 @@ class IndustrialConsumer {
             row.getCell(4).value = "SUBTIPO";
             row.getCell(5).value = "FECHA DE RETIRO";
             row.getCell(6).value = "NUM GUIA DESPACHO";
-            row.getCell(7).value = "RUT GESTOR";
-            row.getCell(8).value = "NOMBRE GESTOR";
-            row.getCell(9).value = "ID VU GESTOR";
-            row.getCell(10).value = "CANTIDAD (KG)";
+            row.getCell(7).value = "GESTOR";
+            row.getCell(8).value = "ID VU GESTOR";
+            row.getCell(9).value = "CANTIDAD (KG)";
             row.commit();
             const col = worksheet.columns;
             col[0].width = 26;
@@ -332,18 +331,18 @@ class IndustrialConsumer {
             col[6].width = 26;
             col[7].width = 26;
             col[8].width = 26;
-            col[9].width = 26;
 
             const maxRows = 150;
             const lastRowMaterials = 1 + materialNames.length;
             const lastRowTreatments = 1 + treatmentsNames.length;
-            const uniqueCombinations_2:any = {};
+            const uniqueCombinations_2: any = {};
+            const uniqueCombinations_3: any = {};
 
             const uniqueCombinedRutNames = filteredManagers.reduce((uniqueArr: any[], manager: any) => {
-                const rut = `${manager.VAT} - ${manager.REGION}`; 
-                const material = manager.MATERIAL_NAME; 
-                const key = `${rut}|${material}`;  
-
+                const rut = `${manager.VAT} - ${manager.REGION} - ${manager.CODE_BUSINESS} - ${manager.BUSINESS_NAME}`;
+                const material = manager.MATERIAL_NAME;
+                const name = manager.BUSINESS_NAME;
+                const key = `${rut}|${material}|${name}`;
                 if (!uniqueCombinations_2[key]) {
                     uniqueCombinations_2[key] = true;
                     uniqueArr.push([rut, manager.BUSINESS_NAME, manager.REGION, material]);
@@ -351,7 +350,20 @@ class IndustrialConsumer {
                 return uniqueArr;
             }, []);
 
-            const originalArray = [...uniqueCombinedRutNames];
+            const uniqueCombinedRutNames_2 = filteredManagers.reduce((uniqueArr: any[], manager: any) => {
+                const rut = `${manager.VAT} - ${manager.REGION} - ${manager.CODE_BUSINESS} - ${manager.BUSINESS_NAME}`;
+                const material = manager.MATERIAL_NAME;
+                const name = manager.BUSINESS_NAME;
+                const key = `${rut}|${material}|${name}`;
+
+                if (!uniqueCombinations_3[key]) {
+                    uniqueCombinations_3[key] = true;
+                    uniqueArr.push([rut, manager.BUSINESS_NAME, manager.REGION, material]);
+                }
+                return uniqueArr;
+            }, []);
+
+            const originalArray = [...uniqueCombinedRutNames_2];
 
             uniqueCombinedRutNames.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Papel/Cartón']);
             uniqueCombinedRutNames.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Metal']);
@@ -360,21 +372,29 @@ class IndustrialConsumer {
             uniqueCombinedRutNames.unshift(['1 - Reciclador Interno', 'Reciclador Interno', '', 'Mezclados']);
 
             uniqueCombinedRutNames.sort((a: string[], b: string[]) => {
+                const rutRegionA = a[0];
+                const rutRegionB = b[0];
+                if (rutRegionA < rutRegionB) return -1;
+                if (rutRegionA > rutRegionB) return 1;
+                return 0;
+            });
+
+            uniqueCombinedRutNames.sort((a: string[], b: string[]) => {
                 const materialA = a[3].toUpperCase();
                 const materialB = b[3].toUpperCase();
                 const materialOrder = ["PAPEL/CARTÓN", "METAL", "PLÁSTICO", "MADERA", "MEZCLADOS"];
                 const indexA = materialOrder.indexOf(materialA);
                 const indexB = materialOrder.indexOf(materialB);
                 if (indexA === -1 || indexB === -1) return 0;
-
                 return indexA - indexB;
             });
+
 
             const uniqueCombinations: any = {};
             const filteredArray = originalArray.filter(entry => {
                 const name = entry[1].toUpperCase();
                 const region = entry[2].toUpperCase();
-                const key = `${name}|${region}`;  
+                const key = `${name}|${region}`;
 
                 if (uniqueCombinations[key]) {
                     return false;
@@ -483,14 +503,7 @@ class IndustrialConsumer {
                     error: 'Por favor selecciona un RUT válido.',
                     formulae: [`=IF(OR(B${i + 3}="", A${i + 3}=""), "", OFFSET(INDIRECT("Info!$I$2"),MATCH(B${i + 3},INDIRECT("Info!$L$2:$L$"&${uniqueCombinedRutNames.length + 1}),0)-1,0,COUNTIF(INDIRECT("Info!$L$2:$L$"&${uniqueCombinedRutNames.length + 1}),B${i + 3})))`]
                 };
-                worksheet.getCell(`H${i + 3}`).dataValidation = {
-                    type: 'list',
-                    allowBlank: false,
-                    showErrorMessage: true,
-                    error: 'Por favor selecciona un nombre válido.',
-                    formulae: [`=IF(G${i + 3}="1 - Reciclador Interno", Info!$N$2, OFFSET(Info!$N$2,MATCH(G${i + 3},Info!$M$2:$M$${uniqueCombinedRutNames.length + 1},0)-1,0,COUNTIF(Info!$M$2:$M$${uniqueCombinedRutNames.length + 1},G${i + 3})))`]
-                };
-                worksheet.getCell(`J${i + 1}`).numFmt = '@';
+                worksheet.getCell(`I${i + 1}`).numFmt = '@';
             }
             await workbook.xlsx.writeFile(outputPath);
             return res.download(outputPath);
