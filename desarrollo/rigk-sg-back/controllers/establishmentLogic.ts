@@ -59,6 +59,21 @@ class EstablishmentLogic {
             });
         }
     }
+
+    async getIdByEstablishment(req: any, res: Response) {
+        const {id_vu, region, comuna, name} = req.params;
+        try {
+            const establishment = await establishmentDao.getIdByEstablishment(id_vu, region, comuna, name);
+            console.log(establishment)
+            res.status(200).json({ status: establishment, data: {}, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
     async deleteEstablishment(req: any, res: Response) {
         const id = req.params.id;
         try {
