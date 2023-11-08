@@ -503,8 +503,6 @@ export class BulkUploadComponent implements OnInit {
         return 5;
       case "DF en Relleno Sanitario":
         return 6;
-      case "DF en Relleno Seguridad":
-        return 7;
       default:
         return -1;
     }
