@@ -64,7 +64,6 @@ class EstablishmentLogic {
         const {id_vu, region, comuna, name} = req.params;
         try {
             const establishment = await establishmentDao.getIdByEstablishment(id_vu, region, comuna, name);
-            console.log(establishment)
             res.status(200).json({ status: establishment, data: {}, msg: '' });
         } catch (err) {
             console.log(err);

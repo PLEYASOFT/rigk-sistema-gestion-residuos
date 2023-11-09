@@ -14,12 +14,6 @@ export class BulkUploadComponent implements OnInit {
   dbBusiness: any[] = [];
   userData: any;
 
-  wasteTypes: any = {
-    'PapelCartón': ['Papel', 'Papel Compuesto (cemento)', 'Caja Cartón', 'Papel/Cartón Otro'],
-    'Metal': ['Envase Aluminio', 'Malla o Reja (IBC)', 'Envase Hojalata', 'Metal Otro'],
-    'Plástico': ['Plástico Film Embalaje', 'Plástico Envases Rígidos (Incl. Tapas)', 'Plástico Sacos o Maxisacos', 'Plástico EPS (Poliestireno Expandido)', 'Plástico Zuncho', 'Plástico Otro'],
-    'Madera': ['Caja de Madera', 'Pallet de Madera']
-  };
   constructor(public consumer: ConsumerService,
     public businessService: BusinessService,
     public establishmentService: EstablishmentService) { }
@@ -154,7 +148,7 @@ export class BulkUploadComponent implements OnInit {
     if (!valueWithDash) {
       Swal.fire({
         icon: 'error',
-        text: 'Error en fila 2. Campo RUT no puede venir vacío'
+        text: 'Error en fila 2. Campo Razón Social no puede venir vacío'
       });
       return;
     }
@@ -188,7 +182,7 @@ export class BulkUploadComponent implements OnInit {
       //Validación declaración repetida
       for (let j = i + 1; j < rows.length; j++) {
         const w = rows[j];
-        if (w[0] === row[0] && w[3] === row[3] && w[4] === row[4] && w[5] === row[5] && w[1] === row[1]) {
+        if (w[0] === row[0] && w[3] === row[3] && w[4] === row[4] && w[6] === row[6] && w[1] === row[1] && w[2] === row[2]) {
           Swal.fire({
             icon: 'info',
             text: 'Mismo establecimiento, tratamiento, material, subtipo y gestor para esta fecha'
@@ -275,12 +269,29 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
       //Cantidad
-      const sanitizedQuantity = row[8].replace(',', '.');
-      const quantity = parseFloat(sanitizedQuantity);
-      if (isNaN(quantity)) {
+
+      if (row[8] == undefined) {
         Swal.fire({
           icon: 'error',
-          text: `Cantidad no válida o no proporcionada en la fila ${excelRowNumber}. Asegúrese de usar una coma como separador de decimales`
+          text: `Error en fila ${excelRowNumber}. Campo CANTIDAD (KG) no puede venir vacío.`
+        });
+        return;
+      }
+      const sanitizedQuantity = row[8].replace(',', '.');
+      const quantity = parseFloat(sanitizedQuantity);
+
+      if (quantity <= 0) {
+        Swal.fire({
+          icon: 'error',
+          text: `Cantidad debe ser numérica mayor que cero en fila ${excelRowNumber}.`
+        });
+        return;
+      }
+
+      if (isNaN(quantity) || !quantity) {
+        Swal.fire({
+          icon: 'error',
+          text: `Cantidad no válida en la fila ${excelRowNumber}. Asegúrese de usar una coma como separador de decimales`
         });
         return;
       }
@@ -413,10 +424,6 @@ export class BulkUploadComponent implements OnInit {
 
     // Elimina la hora de la fecha actual, para que sólo se compare la fecha.
     now.setHours(0, 0, 0, 0);
-
-    if (dateObject > now) {
-      return { valid: false, message: "La fecha no debe ser futura." };
-    }
 
     if (dateObject.getDate() !== +dateParts[0] || dateObject.getMonth() !== +dateParts[1] - 1 || dateObject.getFullYear() !== +dateParts[2]) {
       return { valid: false, message: "La fecha proporcionada no es válida." };
