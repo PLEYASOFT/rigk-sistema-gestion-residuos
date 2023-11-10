@@ -29,4 +29,41 @@ export class DashboardService {
   getCountBusiness() {
     return this.http.get<any>(`${this.url}/getBusiness`);
   }
+
+  getAllLinearDashboard(year:any) {
+    return this.http.get<any>(`${this.url}/getAllLinearDashboard/${year}`);
+  }
+
+  getLinearDashboard(year:any, business:any) {
+    return this.http.get<any>(`${this.url}/getLinearDashboard/${year}/${business}`);
+  }
+
+  getLinearDashboardArray(year:any, business:any) {
+    return this.http.get<any>(`${this.url}/getLinearDashboardArray/${year}/${business}`);
+  }
+  
+  getAllBarChartData(year:any) {
+    return this.http.get<any>(`${this.url}/getAllBarChartData/${year}`);
+  }
+
+  getBarChartDataByCompanyId(year:any, business:any) {
+    return this.http.get<any>(`${this.url}/getBarChartDataByCompanyId/${year}/${business}`);
+  }
+
+  getBarChartDataByCompanyIdArray(year:any, business:any) {
+    return this.http.get<any>(`${this.url}/getBarChartDataByCompanyIdArray/${year}/${business}`);
+  }
+
+  getAllStackedBarChartData(year:any) {
+    return this.http.get<any>(`${this.url}/getAllStackedBarChartData/${year}`);
+  }
+
+  getStackedBarChartDataByCompanyId(year:any,business:any) {
+    return this.http.get<any>(`${this.url}/getStackedBarChartDataByCompanyId/${year}/${business}`);
+  }
+
+  getStackedBarChartDataByCompanyIdArray(year:any,business:any) {
+    return this.http.get<any>(`${this.url}/getStackedBarChartDataByCompanyIdArray/${year}/${business}`);
+  }
+  
 }

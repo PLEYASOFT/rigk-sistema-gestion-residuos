@@ -13,6 +13,7 @@ import { LogsComponent } from './pages/logs/logs.component';
 import { MaintainerRatesComponent } from './pages/maintainer-rates/maintainer-rates.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { MaintainerGoalsComponent } from './pages/maintainer-goals/maintainer-goals.component';
+import { DashboardCiGestoresComponent } from './pages/dashboard-ci-gestores/dashboard-ci-gestores.component';
 
 const routes: Routes = [{
   path: '',
@@ -29,7 +30,8 @@ const routes: Routes = [{
   { path: 'faq', component: FaqComponent },
   { path: 'managers', component: MaintainerManagersComponent },
   { path: 'logs', component: LogsComponent },
-  { path: 'dashboard', component: DashboardComponent },
+  { path: 'dashboard-ci-productor', component: DashboardComponent },
+  { path: 'dashboard-ci-gestor', component: DashboardCiGestoresComponent },
   { path: '**', redirectTo: 'home', pathMatch: 'full' }]
 }
   

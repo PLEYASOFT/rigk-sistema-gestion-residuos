@@ -139,6 +139,34 @@ class BusinessLogic {
             });
         }
     }
+
+    async getBusinessByUserId(req: any, res: Response) {
+        const { id } = req.params;
+        try {
+            const data = await businessDao.getBusinessByUserId(id);
+            res.status(200).json({ status: true, data, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+
+    async getCodeBusiness(req: any, res: Response) {
+        const { idBusiness } = req.params;
+        try {
+            const data = await businessDao.getCodeBusiness(idBusiness);
+            res.status(200).json({ status: true, data, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
 }
 const businessLogic = new BusinessLogic();
 export default businessLogic;

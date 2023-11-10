@@ -19,13 +19,20 @@ class ManagerDao {
 
     public async getAllManager() {
         const conn = mysqlcon.getConnection()!;
-        const manager: any = await conn.query("SELECT * FROM manager").then(res => res[0]).catch(erro => undefined);
+        const query = `
+            SELECT m.*, b.VAT, b.NAME AS BUSINESS_NAME, tm.MATERIAL AS MATERIAL_NAME, b.CODE_BUSINESS
+            FROM manager m
+            JOIN manager_business mb ON m.ID = mb.ID_MANAGER
+            JOIN business b ON mb.ID_BUSINESS = b.ID
+            JOIN type_material tm ON m.COD_MATERIAL = tm.ID
+        `;
+        const manager: any = await conn.query(query).then(res => res[0]).catch(erro => undefined);
         if (manager == null || manager.length == 0) {
             return false;
         }
         conn.end();
         return manager;
-    }
+    }       
     
     public async getManager(ID: any) {
         const conn = mysqlcon.getConnection()!;
@@ -133,6 +140,7 @@ class ManagerDao {
                     }
                     currentMaterial = {
                         _id: row.type_id,
+                        material_name: row.material_name,
                         child: []
                     };
                 }
@@ -155,6 +163,29 @@ class ManagerDao {
         
         return rawResults;
     }
+    
+    public async getAllManagersByEstablishmentAndMaterial(establishmentIds: number[]) {
+        const conn = mysqlcon.getConnection()!;
+        const query = `
+            SELECT 
+                manager.ID AS ID_MANAGER,
+                business.VAT AS RUT_GESTOR,
+                establishment_business.ID_ESTABLISHMENT,
+                manager.COD_MATERIAL
+            FROM manager
+            INNER JOIN manager_business ON manager.ID = manager_business.ID_MANAGER
+            INNER JOIN business ON manager_business.ID_BUSINESS = business.ID
+            INNER JOIN establishment_business ON business.ID = establishment_business.ID_BUSINESS
+            WHERE establishment_business.ID_ESTABLISHMENT IN (?)
+        `;
+        const managerList: any = await conn.query(query, [establishmentIds]).then(res => res[0]).catch(error => undefined);
+        if (managerList == null || managerList.length == 0) {
+            return false;
+        }
+        conn.end();
+        return managerList;
+    }
+    
     
 }
 const managerDao = new ManagerDao();

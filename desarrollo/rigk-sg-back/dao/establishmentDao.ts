@@ -39,7 +39,7 @@ class EstablishmentDao {
         const conn = mysqlcon.getConnection()!;
         await conn.execute("SET lc_time_names = 'es_ES';");
         const data: any = await conn.execute(`
-            SELECT CONCAT(establishment.NAME_ESTABLISHMENT, ' - ', establishment.REGION) AS NAME_ESTABLISHMENT_REGION,
+            SELECT CONCAT(establishment.NAME_ESTABLISHMENT, ' - ', communes.NAME, ' - ', establishment.REGION ) AS NAME_ESTABLISHMENT_REGION,
                 header_industrial_consumer_form.CREATED_AT, header_industrial_consumer_form.YEAR_STATEMENT,
                 header_industrial_consumer_form.ID AS ID_HEADER, business.NAME as NAME_BUSINESS, detail_industrial_consumer_form.ID AS ID_DETAIL,
                 CASE
@@ -67,6 +67,7 @@ class EstablishmentDao {
         INNER JOIN establishment_business ON establishment_business.ID_ESTABLISHMENT = establishment.ID
         INNER JOIN business ON business.ID = establishment_business.ID_BUSINESS
         INNER JOIN detail_industrial_consumer_form ON detail_industrial_consumer_form.ID_HEADER = header_industrial_consumer_form.ID
+        INNER JOIN communes ON communes.ID = establishment.ID_COMUNA
         LEFT JOIN invoices_detail ON invoices_detail.ID_DETAIL = detail_industrial_consumer_form.ID
         LEFT JOIN type_material ON type_material.ID = detail_industrial_consumer_form.PRECEDENCE
         LEFT JOIN submaterial ON submaterial.ID = detail_industrial_consumer_form.TYPE_RESIDUE
@@ -95,13 +96,13 @@ class EstablishmentDao {
         return establishment;
     }
     
-    public async getInvoice(number: any, rut: any, treatment_type: number, material_type: number, id_business: number) {
+    public async getInvoice(number: any, rut: any, treatment_type: number, material_type: number) {
         const conn = mysqlcon.getConnection()!;
         const business: any = await conn.execute("SELECT ID, NAME FROM business WHERE VAT = ?", [rut]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
         if (business == null || business.length == 0) {
             return []
         }
-        const data0:any = await conn.execute("SELECT ID, VALUED_TOTAL AS invoice_value,TREATMENT_TYPE,MATERIAL_TYPE FROM invoices WHERE INVOICE_NUMBER=? AND VAT=? AND ID_BUSINESS=?", [number, rut, id_business]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const data0:any = await conn.execute("SELECT ID, VALUED_TOTAL AS invoice_value,TREATMENT_TYPE,MATERIAL_TYPE FROM invoices WHERE INVOICE_NUMBER=? AND VAT=?", [number, rut]).then((res) => res[0]).catch(error => [{ undefined }]);
         // first invoice
         if (data0 == null || data0.length == 0) {
             return [{
@@ -111,6 +112,7 @@ class EstablishmentDao {
                 NAME: business
             }];
         }
+        
         //verify constraint
         if(data0[0]['MATERIAL_TYPE'] != material_type || data0[0]['TREATMENT_TYPE'] != treatment_type) {
             return [];
@@ -126,24 +128,28 @@ class EstablishmentDao {
             NAME: business
         }];
     }
+    
     public async saveInvoice(vat: any, id_business: any, invoice_number: any, id_detail: any, date_pr: any, value: any, file: any, valued_total: any, id_user: any, treatment: any, material: any) {
         const file_name = file.name;
         const _file = file.data;
         const conn = mysqlcon.getConnection()!;
-        const invoice: any = await conn.execute("SELECT ID FROM invoices WHERE INVOICE_NUMBER=? AND VAT=? AND ID_BUSINESS=?", [invoice_number, vat, id_business]).then((res) => res[0]).catch(error => [{ undefined }]);
-        let ID;
-        if (invoice.length == 0) {
-            const _ID: any = await conn.execute("INSERT INTO invoices(INVOICE_NUMBER,VAT,VALUED_TOTAL,ID_USER,TREATMENT_TYPE,MATERIAL_TYPE,ID_BUSINESS) VALUES(?,?,?,?,?,?,?)", [invoice_number, vat, valued_total, id_user, treatment, material, id_business]).then((res) => res[0]).catch(error => [{ undefined }]);
-            ID = _ID.insertId;
-        } else {
-            ID = invoice[0].ID;
+        try {
+            const invoice: any = await conn.execute("SELECT ID FROM invoices WHERE INVOICE_NUMBER=? AND VAT=?", [invoice_number, vat]).then((res) => res[0]).catch(error => [{ undefined }]);
+            let ID;
+            if (invoice.length == 0) {
+                const _ID: any = await conn.execute("INSERT INTO invoices(INVOICE_NUMBER,VAT,VALUED_TOTAL,ID_USER,TREATMENT_TYPE,MATERIAL_TYPE,ID_BUSINESS) VALUES(?,?,?,?,?,?,?)", [invoice_number, vat, valued_total, id_user, treatment, material, id_business]).then((res) => res[0]).catch(error => [{ undefined }]);
+                ID = _ID.insertId;
+            } else {
+                ID = invoice[0].ID;
+            }
+            await conn.execute("INSERT INTO invoices_detail(ID_INVOICE,ID_DETAIL,VALUE,FILE,FILE_NAME,DATE_PR) VALUES(?,?,?,?,?,?)", [ID, id_detail, value, _file, file_name, date_pr]).then((res) => res[0]).catch(error => { console.log(error) });
+            await conn.execute("UPDATE detail_industrial_consumer_form SET STATE_GESTOR=1 WHERE ID = ?", [id_detail]).then((res) => res[0]).catch(error => [{ undefined }]);
+            conn.end();
+            return [{ ID }];
+        } catch (error) {
+            throw error;
         }
-        await conn.execute("INSERT INTO invoices_detail(ID_INVOICE,ID_DETAIL,VALUE,FILE,FILE_NAME,DATE_PR) VALUES(?,?,?,?,?,?)", [ID, id_detail, value, _file, file_name, date_pr]).then((res) => res[0]).catch(error => { console.log(error) });
-        await conn.execute("UPDATE detail_industrial_consumer_form SET STATE_GESTOR=1 WHERE ID = ?", [id_detail]).then((res) => res[0]).catch(error => [{ undefined }]);
-        conn.end();
-        return [{ ID }];
     }
-
 }
 const establishmentDao = new EstablishmentDao();
 export default establishmentDao;

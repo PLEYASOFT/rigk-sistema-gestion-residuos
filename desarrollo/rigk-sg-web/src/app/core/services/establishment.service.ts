@@ -14,8 +14,8 @@ export class EstablishmentService {
     return this.http.get<any>(`${this.url}/all/`);
   }
 
-  getInovice(invoice_number: any, vat: any, treatment_type: any, material_type: any, id_business: any) {
-    return this.http.post<any>(`${this.url}/get/invoice/`, { invoice_number, vat, treatment_type, material_type, id_business });
+  getInovice(invoice_number: any, vat: any, treatment_type: any, material_type: any) {
+    return this.http.post<any>(`${this.url}/get/invoice/`, { invoice_number, vat, treatment_type, material_type});
   }
 
   saveInvoice(vat: any, id_business: any, invoice_number: any, id_detail: any, date_pr: any, value: any, valued_total: any, treatment: any, id_material: any, file: File) {

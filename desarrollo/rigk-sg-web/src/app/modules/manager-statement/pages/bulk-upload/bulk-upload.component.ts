@@ -421,7 +421,7 @@ export class BulkUploadComponent implements OnInit {
       // PESO DECLARADO [11] -> validar
       let declaratedWeight: string | number;
       let declaratedWeightResponse;
-      const businessResponse = await this.establishmentService.getInovice(numberInvoice, vat, treatmentTypeNum, materialTypeNum, idBusiness).toPromise();
+      const businessResponse = await this.establishmentService.getInovice(numberInvoice, vat, treatmentTypeNum, materialTypeNum/*, idBusiness*/).toPromise();
       if (businessResponse.status) {
         totalWeight = (this.formatNumber(businessResponse.data[0]?.invoice_value));
         declaratedWeightResponse = (this.formatNumber(businessResponse.data[0].value_declarated));
@@ -534,28 +534,28 @@ export class BulkUploadComponent implements OnInit {
       for (let j = i + 1; j < rows.length; j++) {
         const w = rows[j];
         // cuando las facturas tienen valores iguales
-        if (w[2] !== row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
+        if (w[2] !== row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7]) {
           Swal.fire({
             icon: 'info',
-            text: `Distintos tipos de tratamiento con el mismo tipo de material, Núm de factura reciclador, rut reciclador y reciclador en las filas ${i+2} y ${j+2}`
+            text: `Distintos tipos de tratamiento con el mismo tipo de material, Núm de factura reciclador y rut reciclador en las filas ${i+2} y ${j+2}`
           });
           return;
         }
-        if (w[2] === row[2] && w[3] !== row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
+        if (w[2] === row[2] && w[3] !== row[3] && w[6] === row[6] && w[7] === row[7]) {
           Swal.fire({
             icon: 'info',
-            text: `Distintos tipos de material con el mismo tipo de tratamiento, Núm de factura reciclador, rut reciclador y reciclador en las filas ${i+2} y ${j+2}`
+            text: `Distintos tipos de material con el mismo tipo de tratamiento, Núm de factura reciclador y rut reciclador en las filas ${i+2} y ${j+2}`
           });
           return;
         }
-        if (w[2] !== row[2] && w[3] !== row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8]) {
+        if (w[2] !== row[2] && w[3] !== row[3] && w[6] === row[6] && w[7] === row[7]) {
           Swal.fire({
             icon: 'info',
-            text: `Distintos tipos de tratamiento y material con el mismo Núm de factura reciclador, rut reciclador y reciclador en las filas ${i+2} y ${j+2}`
+            text: `Distintos tipos de tratamiento y material con el mismo Núm de factura reciclador y rut reciclador en las filas ${i+2} y ${j+2}`
           });
           return;
         }
-        if (w[2] === row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8] && w[10] !== row[10]) {
+        if (w[2] === row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7] && w[10] !== row[10]) {
           Swal.fire({
             icon: 'info',
             text: `Ingresar el mismo peso total para todas las facturas iguales con numero ${row[6]}`
@@ -563,7 +563,7 @@ export class BulkUploadComponent implements OnInit {
           return;
         }
         // LOGICA DE SUMAR TODOS LOS PESOS... VER COMO MANEJAR 
-        if (w[2] === row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7] && w[8] === row[8] && w[10] === row[10]) {
+        if (w[2] === row[2] && w[3] === row[3] && w[6] === row[6] && w[7] === row[7] && w[10] === row[10]) {
           sameRowsVerf.add(row);
           sameRowsVerf.add(w);
         }
@@ -626,10 +626,10 @@ export class BulkUploadComponent implements OnInit {
         materialTypeNum,
         treatmentTypeNum,
       };
-      let included = false;
+      let included = false;     
       for (const arreglo of sameRowsVerf) {
         const arregloD = arreglo as any[];
-        if (arregloD.includes(numberInvoice)) {
+        if (arregloD.includes(vat)) {
           included = true;
         }
       }
@@ -641,20 +641,18 @@ export class BulkUploadComponent implements OnInit {
       }
     }
 
-    const groupedData: { [key: string]: { tipo_tratamiento: string, material: string, numero_factura: string, rut_reciclador: string, nombre_reciclador: string, remanente_total: number } } = {};
-
+    const groupedData: { [key: string]: { tipo_tratamiento: string, material: string, numero_factura: string, rut_reciclador: string, remanente_total: number } } = {};
     let valorTotal = null;
     let facturaInicial = null;
 
     for (const value of rowsDataDuplicated) {
-      const key = `${value.numberInvoice}`;
+      const key = `${value.vat}`;
       if (!groupedData[key]) {
         groupedData[key] = {
           tipo_tratamiento: value.treatmentType,
           material: value.material,
           numero_factura: value.numberInvoice,
           rut_reciclador: value.vat,
-          nombre_reciclador: value.vatCompanyName,
           remanente_total: 0
         };
       }
@@ -666,9 +664,9 @@ export class BulkUploadComponent implements OnInit {
         }else{
           valorTotal = parseFloat(value.totalWeight.replace(",", "."));
         }
-        facturaInicial = parseFloat(value.numberInvoice);
+        facturaInicial = value.vat;
       }    
-      if (facturaInicial != parseFloat(value.numberInvoice)) {
+      if (facturaInicial != value.vat) {
         if (parseFloat(value.declaratedWeightResponse) !== 0) {
           let numericTotalWeight = parseFloat(value.totalWeight.toString().replace(",", "."));
           let numericDeclaratedWeight = parseFloat(value.declaratedWeightResponse.toString().replace(",", "."));
@@ -676,7 +674,7 @@ export class BulkUploadComponent implements OnInit {
         }else{
           valorTotal = parseFloat(value.totalWeight.replace(",", "."));
         }
-        facturaInicial = parseFloat(value.numberInvoice);
+        facturaInicial = value.vat;
       }
       const valorizadoSuma = parseFloat(value.valuedWeight.replace(",", "."));
       valorTotal! -= valorizadoSuma;
@@ -718,7 +716,12 @@ export class BulkUploadComponent implements OnInit {
       const element = this.allInvoices[i];
       if (this.allInvoices.length == Object.keys(this.fileNames).length && this.fileNames[i]) {
         try {
-          const response = await this.establishmentService.saveInvoice(element.vat, element.idBusiness, element.numberInvoice, element.idDetail, element.backAdmissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), element.treatmentTypeNum, element.materialTypeNum, this.fileToUpload[i]).toPromise();
+          const response = await Promise.race([
+            this.establishmentService.saveInvoice(element.vat, element.idBusiness, element.numberInvoice, element.idDetail, element.backAdmissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), element.treatmentTypeNum, element.materialTypeNum, this.fileToUpload[i]).toPromise(),
+            new Promise((_resolve, reject) => {
+                setTimeout(() => reject(new Error('Timeout')), 30000); // 30 segundos
+            })
+          ]);
           if (!response.status) {
             errores = true;
             this.allInvoices = [];
@@ -729,16 +732,25 @@ export class BulkUploadComponent implements OnInit {
             });
             return;
           }
-        } catch (error) {
-            // Manejo de otros errores
-            errores = true; // Se establece la variable de errores en true
+        } catch (error: any) {
+            if (error.message === 'Timeout') {
+              errores = true;
+              this.allInvoices = [];
+              Swal.close();
+              Swal.fire({
+                icon: 'error',
+                text: `Ha habido un error y el proceso se ha detenido, consulte más tarde el estado de sus declaraciones para ver cuales fueron exitosamente aprobadas y cuales no.`
+              });
+              return;
+            }
+            errores = true;
             this.allInvoices = [];
             Swal.close();
             Swal.fire({
               icon: 'error',
               text: `Ha habido un error y el proceso se ha detenido, consulte más tarde el estado de sus declaraciones para ver cuales fueron exitosamente aprobadas y cuales no.`
             });
-            return;
+            throw error; // Lanza la excepción para salir del bucle
         }
       }
     }
