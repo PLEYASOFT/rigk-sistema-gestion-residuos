@@ -95,6 +95,31 @@ class EstablishmentDao {
         conn.end();
         return establishment;
     }
+
+    public async getIdByEstablishment(id_vu: any, region: any, comuna: any, name: any) {
+        const conn = mysqlcon.getConnection()!;
+        const query = `
+            SELECT e.ID
+            FROM establishment e
+            INNER JOIN communes c ON e.ID_COMUNA = c.ID
+            WHERE e.ID_VU = ?
+            AND e.REGION = ?
+            AND e.NAME_ESTABLISHMENT = ?
+            AND c.NAME = ?`;
+    
+        try {
+            const results:any = await conn.query(query, [id_vu, region, name, comuna]);
+            conn.end();
+            if (results.length > 0) {
+                return results[0];
+            }
+            return false;
+        } catch (error) {
+            console.error(error);
+            conn.end();
+            return false;
+        }
+    }    
     
     public async getInvoice(number: any, rut: any, treatment_type: number, material_type: number) {
         const conn = mysqlcon.getConnection()!;

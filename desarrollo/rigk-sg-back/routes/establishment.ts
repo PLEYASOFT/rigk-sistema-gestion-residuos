@@ -3,6 +3,8 @@ import establishmentLogic from "../controllers/establishmentLogic";
 import { validarJWT } from "../middleware/validar-jwt";
 import { verifyParametersGetInvoice, verifyParametersSaveInvoice } from "../middleware/validators/getInvoice";
 const router = Router();
+
+router.get('/getIdByEstablishment/:id_vu/:region/:comuna/:name', [validarJWT], establishmentLogic.getIdByEstablishment);
 router.get('/all', [validarJWT], establishmentLogic.getAllEstablishment);
 router.get('/declaration', [validarJWT], establishmentLogic.getDeclarationEstablishment);
 router.get('/:id', [validarJWT], establishmentLogic.getEstablishment);

@@ -50,6 +50,10 @@ export class EstablishmentService {
     return this.http.get<any>(`${this.url}/get/${id}`);
   }
 
+  getIdByEstablishment(id_vu:any, region:any, comuna:any, name:any) {
+    return this.http.get<any>(`${this.url}/getIdByEstablishment/${id_vu}/${region}/${comuna}/${name}`);
+  }
+
   getDeclarationEstablishment() {
     return this.http.get<any>(`${this.url}/declaration/`);
   }
