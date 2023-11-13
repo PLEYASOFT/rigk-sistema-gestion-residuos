@@ -99,6 +99,14 @@ class BusinessDao {
         return {business, statements};
     }
 
+    public async businessByCode(code:string) {
+        const conn = mysqlcon.getConnection()!;
+        const business: any = await conn.query("SELECT ID FROM business WHERE CODE_BUSINESS = ?", [code]).then(res => res[0]).catch(erro => {
+            return undefined
+        });
+        return {business};
+    }
+
     public async getBusinessByUserId(userId: number) {
         const conn = mysqlcon.getConnection()!;
     

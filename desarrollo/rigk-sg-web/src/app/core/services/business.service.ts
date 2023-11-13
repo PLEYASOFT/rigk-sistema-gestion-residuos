@@ -26,6 +26,9 @@ export class BusinessService {
   getBusinessById(id: string, year: string) {
     return this.http.get<any>(`${this.url}/businessById/${id}/${year}`);
   }
+  getBusinessByCode(code: string) {
+    return this.http.get<any>(`${this.url}/businessByCode/${code}`);
+  }
   getBusinessByVAT(vat: string){
     return this.http.get<any>(`${this.url}/business/vat/${vat}`);
   }

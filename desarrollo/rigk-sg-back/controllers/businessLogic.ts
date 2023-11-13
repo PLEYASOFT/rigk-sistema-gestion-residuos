@@ -140,6 +140,20 @@ class BusinessLogic {
         }
     }
 
+    async businessByCode(req: any, res: Response) {
+        const { code } = req.params;
+        try {
+            const data = await businessDao.businessByCode(code);
+            res.status(200).json({ status: true, data, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+
     async getBusinessByUserId(req: any, res: Response) {
         const { id } = req.params;
         try {
