@@ -352,8 +352,8 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-      const verifyGestor = await this.consumer.verifyGestor(gestorIdValue, precedenceNumber).toPromise();
-      if (!verifyGestor.status) {
+      const verifyGestor = await this.consumer.verifyGestor(partsGestor[2], precedenceNumber).toPromise();
+      if (!verifyGestor.status && gestorIdValue != 0) {
         Swal.fire({
           icon: 'error',
           text: `Error en fila ${excelRowNumber}. Gestor no corresponde a la subcategoría ni al establecimiento`
