@@ -258,7 +258,9 @@ export class BulkUploadComponent implements OnInit {
 
       let partsGestor = gestor.split(' - ');
       let gestorsId: any = await this.businessService.getBusinessByCode(partsGestor[2]).toPromise();
-      
+      if(partsGestor[0] == 1){
+        gestorsId = 0;
+      }
       // Tipo específico
       const gestorIdVu = row[7];
       if (!gestorIdVu) {
@@ -326,7 +328,8 @@ export class BulkUploadComponent implements OnInit {
       let partsEstablishment = valueEstablishment.split(' - ');
       let establishments: any = await this.establishmentService.getIdByEstablishment(partsEstablishment[0], partsEstablishment[1], partsEstablishment[2], partsEstablishment[3]).toPromise();
       let establishmentId = establishments.status[0].ID;
-      const r: any = await this.consumer.checkRow({ treatment: treatmentTypeNumber, sub: typeResidueNumber, gestor: gestorsId.data.business[0].ID, date: dateFormateada, idEstablishment: establishmentId }).toPromise();
+      const gestorIdValue = gestorsId === 0 ? 0 : gestorsId.data.business[0].ID;
+      const r: any = await this.consumer.checkRow({ treatment: treatmentTypeNumber, sub: typeResidueNumber, gestor: gestorIdValue, date: dateFormateada, idEstablishment: establishmentId }).toPromise();
       if (!r.status) {
         Swal.fire({
           icon: 'info',
@@ -334,7 +337,7 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-      if(partsEstablishment[1] != partsGestor[1]){
+      if(partsEstablishment[1] != partsGestor[1] && gestorIdValue != 0){
         Swal.fire({
           icon: 'error',
           text: `La región del gestor en la fila ${excelRowNumber} no coincide con la del establecimiento seleccionado.`
@@ -349,7 +352,7 @@ export class BulkUploadComponent implements OnInit {
         quantity,
         LER: '',
         treatmentType: treatmentTypeNumber,
-        businessId: gestorsId.data.business[0].ID
+        businessId: gestorIdValue
       };
       rowsData.push(rowData);
     }
@@ -475,7 +478,7 @@ export class BulkUploadComponent implements OnInit {
         return 11;
       case "Plástico Film Embalaje":
         return 12;
-      case "Plástico Envases Rígidos (Incl. Tapas)":
+      case "Plástico Envases Rigidos (Incl. Tapas)":
         return 13;
       case "Plástico Saco o Maxisacos":
         return 14;
@@ -508,7 +511,7 @@ export class BulkUploadComponent implements OnInit {
         return 4;
       case "Preparación Reutilización":
         return 5;
-      case "DF en Relleno Sanitario":
+      case "DF en Relleno Seguridad":
         return 6;
       default:
         return -1;
