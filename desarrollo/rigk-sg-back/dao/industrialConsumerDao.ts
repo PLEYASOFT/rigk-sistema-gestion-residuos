@@ -192,6 +192,44 @@ class IndustrialConsumerDao {
             fileContent: fileData[0].FILE
         };
     }
+
+    
+
+    async verifySubmaterialBelongsToMaterial(MATERIAL_ID: number, SUBMATERIAL_ID: number) {
+        const conn = mysqlcon.getConnection()!;
+        const query = `
+            SELECT
+                tm.ID AS MATERIAL_ID,
+                sm.ID AS SUBMATERIAL_ID
+            FROM
+                type_material tm
+            JOIN
+                typematerial_submaterial tsm ON tm.ID = tsm.ID_TYPE_MATERIAL
+            JOIN
+                submaterial sm ON tsm.ID_SUBMATERIAL = sm.ID
+            WHERE
+                tm.ID = ?
+            AND
+                sm.ID = ?;
+        `;
+        const res: any = await conn.query(query, [MATERIAL_ID, SUBMATERIAL_ID])
+                            .then((res) => res[0])
+                            .catch(error => [{ undefined }]);
+        conn.end();
+        return res.length !== 0; 
+    }
+
+    async verifyManagerHasMaterial(MANAGER_ID: number, MATERIAL: string) {
+        const conn = mysqlcon.getConnection()!;
+        const query = `
+            SELECT ID FROM manager WHERE ID = ? AND COD_MATERIAL = ?
+        `;
+        const res: any = await conn.query(query, [MANAGER_ID, MATERIAL])
+                            .then((res) => res[0])
+                            .catch(error => [{ undefined }]);
+        conn.end();
+        return res.length !== 0; 
+    }
 }
 const industrialConsumerDao = new IndustrialConsumerDao();
 export default industrialConsumerDao;

@@ -56,6 +56,12 @@ export class ConsumerService {
   verifyForm(business: any, year: any) {
     return this.http.get<any>(`${this.url}/verify/${year}/${business}`);
   }
+  verifyMaterial(material_id: any, submaterial_id: any) {
+    return this.http.get<any>(`${this.url}/verifyMaterial/${material_id}/${submaterial_id}`);
+  }
+  verifyGestor(manager_id:any, material:any) {
+    return this.http.get<any>(`${this.url}/verifyGestor/${manager_id}/${material}`);
+  }
   downloadExcel(id_business: any) {
     let headers = new HttpHeaders();
     headers = headers.set('Accept', 'application/vnd.ms-excel');
