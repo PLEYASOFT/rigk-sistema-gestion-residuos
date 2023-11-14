@@ -128,7 +128,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
-    this.getAllBusiness();
+    this.getBusinessByRolProductor();
     this.ratesService.getCLP.subscribe({
       next: r => {
         this.rates = r.data;
@@ -177,10 +177,10 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     }
   }
 
-  getAllBusiness() {
-    this.businesService.getAllBusiness().subscribe({
+  getBusinessByRolProductor() {
+    this.productorService.getBusinessByRolProductor().subscribe({
       next: resp => {
-        this.listBusiness = resp.status;
+        this.listBusiness = resp.data.res_business;
       },
       error: r => {
         Swal.close();
@@ -191,23 +191,6 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
         });
       }
     });
-  }
-
-  loadStatements(year: any) {
-    this.productorService.getAllStatementByYear(year).subscribe(r => {
-      if (r.status) {
-        this.listStatements = r.data.res_business.sort((a: { STATE: number; ID_BUSINESS: number; }, b: { STATE: number; ID_BUSINESS: number; }) => {
-          if (a.STATE === b.STATE) {
-            return a.ID_BUSINESS - b.ID_BUSINESS;
-          } else {
-            return b.STATE - a.STATE;
-          }
-        });
-        this.filteredListBusiness = this.listBusiness.filter(business => {
-          return !this.listStatements.some(statement => statement.ID_BUSINESS === business.ID);
-        });
-      }
-    })
   }
 
   allUF: any[] = [];
@@ -240,7 +223,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
         this.filteredListBusiness = this.listBusiness.filter(business => {
           return !this.listStatements.some(statement => statement.ID_BUSINESS === business.ID);
         });
-
+        
         const getDetailsAndValues = async (statement: { ID_HEADER: number; CODE_BUSINESS: any; CREATED_BY: number; ID_BUSINESS: number }) => {
           const f = allStatements.filter(r => r.ID_HEADER == statement.ID_HEADER);
           const lt = allStatements.filter(r => r.ID_BUSINESS == statement.ID_BUSINESS && r.YEAR_STATEMENT == y - 1 && r.STATE == 1);
@@ -266,8 +249,9 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
           this.calculoAjustes(fechaFormateada, statement.STATE);
           const fecha = statement.UPDATED_AT;
           const fechaFormateada__excel = new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+          
           this.datos.push({
-            'ID empresa': statement.CODE_BUSINESS, 'Nombre empresa': statement.NAME, 'Año declaración': y.toString(), 'Estado declaración': statement.STATE == 1 ? 'Enviada' : statement.STATE == 2 ? 'Pendiente' : 'Borrador',
+            'ID empresa': statement.CODE_BUSINESS, 'Rut Empresa':statement.VAT, 'Nombre empresa': statement.NAME, 'Año declaración': y.toString(), 'Estado declaración': statement.STATE == 1 ? 'Enviada' : statement.STATE == 2 ? 'Pendiente' : 'Borrador',
             'Fecha de envío': fechaFormateada__excel, 'Usuario': user.FIRST_NAME + ' ' + user.LAST_NAME, 'R. Papel/cartón NP': this.setFormato(this.R_PapelCarton_NP),
             'R. Papel/cartón P': this.setFormato(this.R_PapelCarton_P), 'R. Papel/cartón Sec': this.setFormato(this.R_PapelCarton_Sec), 'R. Papel/cartón Ter': this.setFormato(this.R_PapelCarton_Ter), 'R. Papel/cartón TOTAL': this.setFormato(this.R_PapelCarton_Total), 'R. Metal NP': this.setFormato(this.R_Metal_NP), 'R. Metal P': this.setFormato(this.R_Metal_P), 'R. Metal Sec': this.setFormato(this.R_Metal_Sec), 'R. Metal Ter': this.setFormato(this.R_Metal_Ter), 'R. Metal TOTAL': this.setFormato(this.R_Metal_Total),
             'R. Plástico NP': this.setFormato(this.R_Plastico_NP), 'R. Plástico P': this.setFormato(this.R_Plastico_P), 'R. Plástico Sec': this.setFormato(this.R_Plastico_Sec), 'R. Plástico Ter': this.setFormato(this.R_Plastico_Ter), 'R. Plástico TOTAL': this.setFormato(this.R_Plastico_Total), 'R. Madera NP': this.setFormato(this.R_Madera_NP), 'R. Madera P': this.setFormato(this.R_Madera_P), 'R. Madera Sec': this.setFormato(this.R_Madera_Sec), 'R. Madera Ter': this.setFormato(this.R_Madera_Ter), 'R. Madera TOTAL': this.setFormato(this.R_Madera_Total),
@@ -289,7 +273,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
 
         for (let i = 0; i < this.filteredListBusiness.length; i++) {
           this.datos.push({
-            'ID empresa': this.filteredListBusiness[i].CODE_BUSINESS, 'Nombre empresa': this.filteredListBusiness[i].NAME, 'Año declaración': '', 'Estado declaración': 'NA',
+            'ID empresa': this.filteredListBusiness[i].CODE_BUSINESS, 'Rut Empresa':this.filteredListBusiness[i].VAT, 'Nombre empresa': this.filteredListBusiness[i].NAME, 'Año declaración': '', 'Estado declaración': 'NA',
             'Fecha de envío': 'NA', 'Usuario': 'NA'
           });
         }

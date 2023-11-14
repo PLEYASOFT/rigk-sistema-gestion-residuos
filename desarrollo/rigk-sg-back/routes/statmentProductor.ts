@@ -16,6 +16,7 @@ router.get('/pdf/:id/year/:year', [validarJWT], statementProductorLogic.generate
 router.get('/detail/:id_header', [validarJWT], statementProductorLogic.getDetailByIdHeader);
 router.get('/year/:year', [validarJWT], statementProductorLogic.getAllStatementByYear);
 router.get('/year2/:year', [validarJWT], statementProductorLogic.getAllStatementByYear2);
+router.get('/getBusinessByRolProductor', [validarJWT], statementProductorLogic.getBusinessByRolProductor);
 router.get('/resume/:id/year/:year', [], statementProductorLogic.getResumeById);
 router.get('/:id', [validarJWT], statementProductorLogic.getProductor);
 router.post('/', [validarJWT, verifyRolProductor, verifyParametersProductorForm], statementProductorLogic.saveForm);

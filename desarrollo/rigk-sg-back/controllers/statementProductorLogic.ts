@@ -106,6 +106,19 @@ class StatementProductorLogic {
         }
     }
 
+    public async getBusinessByRolProductor(req: Request, res: Response) {
+        try {
+            const response = await statementDao.getBusinessByRolProductor();
+            res.status(200).json({status: true, data: response});
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
+
     public async getAllStatementByYear(req: Request, res: Response) {
         const { year } = req.params;
         try {

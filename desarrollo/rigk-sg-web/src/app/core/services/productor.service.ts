@@ -22,6 +22,11 @@ export class ProductorService {
   getAllStatementByYear(year: number) {
     return this.http.get<any>(`${this.url}/year/${year}`);
   }
+
+  getBusinessByRolProductor(){
+    return this.http.get<any>(`${this.url}/getBusinessByRolProductor`);
+  }
+
   getDetailByIdHeader(id_header: number) {
     return this.http.get<any>(`${this.url}/detail/${id_header}`);
   }
