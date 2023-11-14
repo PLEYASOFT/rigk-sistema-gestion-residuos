@@ -185,7 +185,7 @@ export class BulkUploadComponent implements OnInit {
         if (w[0] === row[0] && w[3] === row[3] && w[4] === row[4] && w[6] === row[6] && w[1] === row[1] && w[2] === row[2]) {
           Swal.fire({
             icon: 'info',
-            text: 'Mismo establecimiento, tratamiento, material, subtipo y gestor para esta fecha'
+            text: `Error en fila ${excelRowNumber + 1}. Se repite en el archivo el mismo Establecimiento, Subcategoría, Tratamiento y Gestor para esta Fecha de Retiro. Por favor, revisar.`
           });
           return;
         }
@@ -313,6 +313,14 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
+      const verifyMaterial = await this.consumer.verifyMaterial(precedenceNumber, typeResidueNumber).toPromise();
+      if (!verifyMaterial.status) {
+        Swal.fire({
+          icon: 'error',
+          text: `Error en fila ${excelRowNumber}. Subtipo no corresponde a la subcategoría`
+        });
+        return;
+      }
       const treatmentTypeNumber = this.convertTreatmentType(row[2]);
       if (treatmentTypeNumber == -1) {
         Swal.fire({
@@ -341,6 +349,14 @@ export class BulkUploadComponent implements OnInit {
         Swal.fire({
           icon: 'error',
           text: `La región del gestor en la fila ${excelRowNumber} no coincide con la del establecimiento seleccionado.`
+        });
+        return;
+      }
+      const verifyGestor = await this.consumer.verifyGestor(gestorIdValue, precedenceNumber).toPromise();
+      if (!verifyGestor.status) {
+        Swal.fire({
+          icon: 'error',
+          text: `Error en fila ${excelRowNumber}. Gestor no corresponde a la subcategoría ni al establecimiento`
         });
         return;
       }
