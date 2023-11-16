@@ -41,7 +41,7 @@ class statementProductorDao {
         JOIN user ON user_business.ID_USER = user.ID
         JOIN user_rol ON user.ID = user_rol.USER_ID
         JOIN rol ON user_rol.ROL_ID = rol.ID
-        WHERE rol.NAME = 'Productor';`).then((res) => res[0]).catch(error => { undefined });
+        WHERE rol.NAME = 'Productor' AND user.STATE = '1';`).then((res) => res[0]).catch(error => { undefined });
                                                
         if (res_business.length == 0) {
             return false;

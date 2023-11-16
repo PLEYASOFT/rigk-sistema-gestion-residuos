@@ -341,7 +341,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
         Swal.close();
         this.datos = []
         this.resumen = []
-        this.valores = new Array(29).fill(0);
+        this.valores = new Array(30).fill(0);
       }
       else {
         this.ls.errorLog('No se encuentran declaraciones asociadas al año seleccionado').subscribe(r => { });
@@ -369,7 +369,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     const decimal = Math.round(numero * 100) / 100;
     const [entero, decimales] = decimal.toString().split('.');
     const enteroConPuntos = entero.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
+    
     return decimales && decimales !== '0' ? `${enteroConPuntos},${decimales.padEnd(2, '0')}` : enteroConPuntos;
   }
   setDeclaration(datos: any) {
@@ -622,5 +622,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
       this.valores[28] = this.valores[28] + parseFloat(this.TotalBruto);
       this.valores[29] = this.valores[29] + parseFloat(this.TotalBruto_IVA);
     }
+    console.log(this.TotalBruto_IVA);
+    
   }
 }
