@@ -622,7 +622,5 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
       this.valores[28] = this.valores[28] + parseFloat(this.TotalBruto);
       this.valores[29] = this.valores[29] + parseFloat(this.TotalBruto_IVA);
     }
-    console.log(this.TotalBruto_IVA);
-    
   }
 }
