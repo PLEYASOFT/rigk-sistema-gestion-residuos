@@ -145,16 +145,18 @@ class EstablishmentDao {
     public async getAllTonByYear(year: string) {
         const conn = mysqlcon.getConnection();
         const statements = await conn?.execute(`
-        SELECT  SUM(d.VALUE) as totalToneladas
+        SELECT d.TYPE_RESIDUE, SUM(d.VALUE) as totalToneladas
         FROM detail_statement_form AS d
         INNER JOIN header_statement_form AS h
         ON d.ID_HEADER = h.ID
-        WHERE h.YEAR_STATEMENT = ? AND (d.RECYCLABILITY = 1 OR d.RECYCLABILITY = 2) AND h.STATE = 1 and (d.TYPE_RESIDUE  = 1 OR d.TYPE_RESIDUE = 2 or d.TYPE_RESIDUE = 3)
+        WHERE h.YEAR_STATEMENT = ? AND (d.RECYCLABILITY = 1 OR d.RECYCLABILITY = 2) 
+        AND h.STATE = 1 and (d.TYPE_RESIDUE  = 1 OR d.TYPE_RESIDUE = 2 or d.TYPE_RESIDUE = 3)
+        GROUP BY d.TYPE_RESIDUE
         `, [year]).then((res) => res[0]).catch(error => { return undefined });
         conn?.end();
         return { statements };
     }
-
+    
 
     public async getCountBusiness() {
         const conn = mysqlcon.getConnection()!;
