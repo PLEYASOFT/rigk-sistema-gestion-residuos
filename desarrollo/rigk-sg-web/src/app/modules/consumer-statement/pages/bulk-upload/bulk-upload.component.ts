@@ -3,6 +3,7 @@ import { BusinessService } from 'src/app/core/services/business.service';
 import Swal from 'sweetalert2';
 import { ConsumerService } from '../../../../core/services/consumer.service';
 import * as XLSX from 'xlsx';
+import { EstablishmentService } from '../../../../core/services/establishment.service';
 @Component({
   selector: 'app-bulk-upload',
   templateUrl: './bulk-upload.component.html',
@@ -13,14 +14,9 @@ export class BulkUploadComponent implements OnInit {
   dbBusiness: any[] = [];
   userData: any;
 
-  wasteTypes: any = {
-    'PapelCartón': ['Papel', 'Papel Compuesto (cemento)', 'Caja Cartón', 'Papel/Cartón Otro'],
-    'Metal': ['Envase Aluminio', 'Malla o Reja (IBC)', 'Envase Hojalata', 'Metal Otro'],
-    'Plástico': ['Plástico Film Embalaje', 'Plástico Envases Rígidos (Incl. Tapas)', 'Plástico Sacos o Maxisacos', 'Plástico EPS (Poliestireno Expandido)', 'Plástico Zuncho', 'Plástico Otro'],
-    'Madera': ['Caja de Madera', 'Pallet de Madera']
-  };
   constructor(public consumer: ConsumerService,
-    public businessService: BusinessService) { }
+    public businessService: BusinessService,
+    public establishmentService: EstablishmentService) { }
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
@@ -53,7 +49,7 @@ export class BulkUploadComponent implements OnInit {
       error: r => {
         Swal.fire({
           icon: 'error',
-          text: 'Revise establecimientos de la empresa. En caso de ser necesario, contacte al administrador del sistema.'
+          text: 'Empresa no tiene ningún establecimiento creado en el sistema . En caso de ser necesario, contacte al administrador del sistema.'
         })
       }
     });
@@ -126,6 +122,7 @@ export class BulkUploadComponent implements OnInit {
   }
 
   async processData(data: any[]) {
+    //Validación archivo
     if (data.length == 0) {
       Swal.fire({
         icon: 'error',
@@ -133,10 +130,32 @@ export class BulkUploadComponent implements OnInit {
       });
       return;
     }
-    const rows = data.slice(1).filter(row => row.length > 0 && row.some((item: any) => item));
+    const rows = data.slice(3).filter(row => row.length > 0 && row.some((item: any) => item));
     const rowsData = [];
-    let businessId: any;
-    if (data[0].length != 12) {
+
+    //Validación RUT
+    let valuerut = data[0][1];
+    if (!valuerut) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Error en fila 1. Campo RUT no puede venir vacío'
+      });
+      return;
+    }
+
+    //Validación RAZÓN SOCIAL
+    let valueWithDash = data[1][1];
+    if (!valueWithDash) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Error en fila 2. Campo Razón Social no puede venir vacío'
+      });
+      return;
+    }
+    let parts = valueWithDash.split(' - ');
+    let code: any = await this.businessService.getBusinessByCode(parts[0]).toPromise();
+    let businessId = code.data.business[0].ID;
+    if (data[2].length != 9) {
       Swal.fire({
         icon: 'error',
         text: 'Archivo inválido. No tiene todas las columnas necesarias'
@@ -152,8 +171,7 @@ export class BulkUploadComponent implements OnInit {
     }
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
-      const excelRowNumber = i + 2; // Se agrega 2 para considerar el encabezado y el índice base 1 de Excel
-
+      const excelRowNumber = i + 4;
       if (row.length == 0 && i == 0) {
         Swal.fire({
           icon: 'error',
@@ -161,32 +179,56 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-
+      //Validación declaración repetida
       for (let j = i + 1; j < rows.length; j++) {
         const w = rows[j];
-        if (w[0] === row[0] && w[3] === row[3] && w[4] === row[4] && w[5] === row[5] && w[1] === row[1]) {
+        if (w[0] === row[0] && w[3] === row[3] && w[4] === row[4] && w[6] === row[6] && w[1] === row[1] && w[2] === row[2]) {
           Swal.fire({
             icon: 'info',
-            text: 'Mismo establecimiento, tratamiento, material, subtipo y gestor para esta fecha'
+            text: `Error en fila ${excelRowNumber}. Se repite en el archivo el mismo Establecimiento, Subcategoría, Tratamiento y Gestor para esta Fecha de Retiro. Por favor, revisar.`
           });
           return;
         }
       }
-
       // Código de establecimiento
       const establishmentCode = row[0];
       if (!establishmentCode || establishmentCode.trim() === '') {
         Swal.fire({
           icon: 'error',
-          text: `Código de establecimiento no proporcionado en la fila ${excelRowNumber}`
+          text: `Error en fila ${excelRowNumber}. Campo   ID VU ESTABLECIMIENTO no puede venir vacío`
         });
         return;
       }
-      const establishmentId = establishmentCode.split(" - ")[0];
+
+      // Tipo de residuo
+      const residueType = row[1];
+      if (!residueType) {
+        Swal.fire({
+          icon: 'error',
+          text: `Error en fila ${excelRowNumber}. Campo SUBCATEGORIA no puede venir vacío`
+        });
+        return;
+      }
+      // Tipo de tratamiento
+      const treatmentType = row[2];
+      if (!treatmentType) {
+        Swal.fire({
+          icon: 'error',
+          text: `Error en fila ${excelRowNumber}. Campo TIPO TRATAMIENTO no puede venir vacío`
+        });
+        return;
+      }
+      // Subtipo
+      const subType = row[3];
+      if (!subType) {
+        Swal.fire({
+          icon: 'error',
+          text: `Error en fila ${excelRowNumber}. Campo SUBTIPO no puede venir vacío`
+        });
+        return;
+      }
       // Fecha
-
-      const date = row[1];
-
+      const date = row[4];
       const validationResult = this.isValidDate(date);
       if (!validationResult.valid) {
         Swal.fire({
@@ -195,145 +237,75 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-
       // Número de guía de despacho
-      const dispatchGuideNumber = row[2];
+      const dispatchGuideNumber = row[5];
       if (!dispatchGuideNumber) {
         Swal.fire({
           icon: 'error',
-          text: `Número de guía de despacho no proporcionado en la fila ${excelRowNumber}`
-        });
-        return;
-      }
-      // Tipo de tratamiento
-      const treatmentType = row[3];
-      if (!treatmentType) {
-        Swal.fire({
-          icon: 'error',
-          text: `Tipo de tratamiento no proporcionado en la fila ${excelRowNumber}`
-        });
-        return;
-      }
-      // Tipo de residuo
-      const wasteType = row[4];
-      if (!wasteType) {
-        Swal.fire({
-          icon: 'error',
-          text: `Tipo de residuo no proporcionado en la fila ${excelRowNumber}`
+          text: `Error en fila ${excelRowNumber}. Campo NUM GUIA DESPACHO no puede venir vacío`
         });
         return;
       }
       // Tipo específico
-      const specificType = row[5];
-      if (!specificType) {
+      const gestor = row[6];
+      if (!gestor) {
         Swal.fire({
           icon: 'error',
-          text: `Tipo específico no proporcionado en la fila ${excelRowNumber}`
+          text: `Error en fila ${excelRowNumber}. Campo GESTOR no puede venir vacío`
         });
         return;
       }
 
-      // Buscar el tipo específico en los valores de wasteTypes
-      const materialType = Object.keys(this.wasteTypes).find((key: any) => this.wasteTypes[key].includes(specificType));
+      let partsGestor = gestor.split(' - ');
+      let gestorsId: any = await this.businessService.getBusinessByCode(partsGestor[2]).toPromise();
+      if(partsGestor[0] == 1){
+        gestorsId = 0;
+      }
+      // Tipo específico
+      const gestorIdVu = row[7];
+      if (!gestorIdVu) {
+        Swal.fire({
+          icon: 'error',
+          text: `Error en fila ${excelRowNumber}. Campo  ID VU GESTOR no puede venir vacío`
+        });
+        return;
+      }
+      //Cantidad
 
-      if (!materialType) {
+      if (row[8] == undefined) {
         Swal.fire({
           icon: 'error',
-          text: `El tipo específico '${specificType}' no coincide con ningún material en la fila ${excelRowNumber}`
+          text: `Error en fila ${excelRowNumber}. Campo CANTIDAD (KG) no puede venir vacío.`
         });
         return;
       }
-
-      if (materialType !== wasteType) {
-        Swal.fire({
-          icon: 'error',
-          text: `El tipo de residuo '${wasteType}' no corresponde con el material '${specificType}' en la fila ${excelRowNumber}`
-        });
-        return;
-      }
-      // LER
-      const LER = row[6];
-      // Gestor
-      const managerName = row[7];
-      if (!managerName) {
-        Swal.fire({
-          icon: 'error',
-          text: `Nombre del gestor no proporcionado en la fila ${excelRowNumber}`
-        });
-        return;
-      }
-      // RUT Gestor
-      const managerRUT = row[8];
-      if (!managerRUT) {
-        Swal.fire({
-          icon: 'error',
-          text: `RUT de gestor no proporcionado en la fila ${excelRowNumber}`
-        });
-        return;
-      }
-      const tmp = (managerRUT.toString().split("-"));
-      if (tmp.length != 2 || tmp[1] == '') {
-        Swal.fire({
-          icon: 'error',
-          text: `RUT no válido en la fila ${excelRowNumber}, el formato correcto es sin puntos y con guion`
-        });
-        return;
-      }
-      const businessResponse = await this.businessService.getBusinessByVAT(managerRUT).toPromise();
-      if (!businessResponse.status) {
-        Swal.fire({
-          icon: 'error',
-          text: `RUT de gestor no encontrado en la fila ${excelRowNumber}`
-        });
-        return;
-      }
-      const businesses = businessResponse.status;
-      if (!Array.isArray(businesses)) {
-        Swal.fire({
-          icon: 'error',
-          text: `Error inesperado al buscar gestor en la fila ${excelRowNumber}`
-        });
-        return;
-      }
-      let isValidEstablishmentBusinessRelation = false;
-      for (const business of businesses) {
-        const checkRelationResponse = await this.businessService.checkEstablishmentBusinessRelation(establishmentId, business.ID, specificType).toPromise();
-        if (checkRelationResponse.status) {
-          businessId = business.ID;
-          isValidEstablishmentBusinessRelation = true;
-          break;
-        }
-      }
-      if (!isValidEstablishmentBusinessRelation) {
-        Swal.fire({
-          icon: 'error',
-          text: `No se encontró un gestor con el material y región requeridos en la fila ${excelRowNumber}`
-        });
-        return;
-      }
-      // Código de establecimiento receptor
-      const receivingEstablishmentCode = row[9];
-      // Código de tratamiento receptor
-      const receivingTreatmentCode = row[10];
-      // Cantidad
-      const sanitizedQuantity = row[11].replace(',', '.');
+      const sanitizedQuantity = row[8].replace(',', '.');
       const quantity = parseFloat(sanitizedQuantity);
-      if (isNaN(quantity)) {
+
+      if (quantity <= 0) {
         Swal.fire({
           icon: 'error',
-          text: `Cantidad no válida o no proporcionada en la fila ${excelRowNumber}. Asegúrese de usar una coma como separador de decimales`
+          text: `Cantidad debe ser numérica mayor que cero en fila ${excelRowNumber}.`
         });
         return;
       }
-      const precedenceNumber = this.convertPrecedence(row[4]);
+
+      if (isNaN(quantity) || !quantity) {
+        Swal.fire({
+          icon: 'error',
+          text: `Cantidad no válida en la fila ${excelRowNumber}. Asegúrese de usar una coma como separador de decimales`
+        });
+        return;
+      }
+      const precedenceNumber = this.convertPrecedence(row[1]);
       if (precedenceNumber == -1) {
         Swal.fire({
           icon: 'error',
-          text: `Tipo de Material no válido en fila: ${excelRowNumber}`
+          text: `Subcategoría no válida en fila: ${excelRowNumber}`
         });
         return;
       }
-      const typeResidueNumber = this.convertTypeResidue(row[5]);
+      const typeResidueNumber = this.convertTypeResidue(row[3]);
       if (typeResidueNumber == -1) {
         Swal.fire({
           icon: 'error',
@@ -341,7 +313,15 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-      const treatmentTypeNumber = this.convertTreatmentType(row[3]);
+      const verifyMaterial = await this.consumer.verifyMaterial(precedenceNumber, typeResidueNumber).toPromise();
+      if (!verifyMaterial.status) {
+        Swal.fire({
+          icon: 'error',
+          text: `Error en fila ${excelRowNumber}. Subtipo no corresponde a la subcategoría`
+        });
+        return;
+      }
+      const treatmentTypeNumber = this.convertTreatmentType(row[2]);
       if (treatmentTypeNumber == -1) {
         Swal.fire({
           icon: 'error',
@@ -351,11 +331,32 @@ export class BulkUploadComponent implements OnInit {
       }
 
       const dateFormateada = this.convertDate(date);
-      const r: any = await this.consumer.checkRow({ treatment: treatmentTypeNumber, sub: typeResidueNumber, gestor: businessId, date: dateFormateada }).toPromise();
+
+      let valueEstablishment = row[0];
+      let partsEstablishment = valueEstablishment.split(' - ');
+      let establishments: any = await this.establishmentService.getIdByEstablishment(partsEstablishment[0], partsEstablishment[1], partsEstablishment[2], partsEstablishment[3]).toPromise();
+      let establishmentId = establishments.status[0].ID;
+      const gestorIdValue = gestorsId === 0 ? 0 : gestorsId.data.business[0].ID;
+      const r: any = await this.consumer.checkRow({ treatment: treatmentTypeNumber, sub: typeResidueNumber, gestor: gestorIdValue, date: dateFormateada, idEstablishment: establishmentId }).toPromise();
       if (!r.status) {
         Swal.fire({
           icon: 'info',
           text: `La declaración de la fila ${excelRowNumber} ya ha sido declarada, Mismo tratamiento, material, subtipo y gestor para esta fecha`
+        });
+        return;
+      }
+      if(partsEstablishment[1] != partsGestor[1] && gestorIdValue != 0){
+        Swal.fire({
+          icon: 'error',
+          text: `La región del gestor en la fila ${excelRowNumber} no coincide con la del establecimiento seleccionado.`
+        });
+        return;
+      }
+      const verifyGestor = await this.consumer.verifyGestor(partsGestor[2], precedenceNumber).toPromise();
+      if (!verifyGestor.status && gestorIdValue != 0) {
+        Swal.fire({
+          icon: 'error',
+          text: `Error en fila ${excelRowNumber}. Gestor no corresponde a la subcategoría ni al establecimiento`
         });
         return;
       }
@@ -365,21 +366,20 @@ export class BulkUploadComponent implements OnInit {
         precedence: precedenceNumber,
         typeResidue: typeResidueNumber,
         quantity,
-        LER,
+        LER: '',
         treatmentType: treatmentTypeNumber,
-        businessId: businessId
+        businessId: gestorIdValue
       };
       rowsData.push(rowData);
     }
-
-    // Obten el ID del usuario de la variable de sesión
+    // Obtiene el ID del usuario de la variable de sesión
     const userId = this.userData.ID;
 
-    // Obten la fecha actual
+    // Obtiene la fecha actual
     const currentDate = new Date().toISOString().replace('T', ' ').replace('Z', '');
 
     for (const rowData of rowsData) {
-      // Obten el año de la fecha proporcionada en el Excel
+      // Obtiene el año de la fecha proporcionada en el Excel
       const year = rowData.date.split('/')[2];
 
       const headerFormData = {
@@ -444,10 +444,6 @@ export class BulkUploadComponent implements OnInit {
     // Elimina la hora de la fecha actual, para que sólo se compare la fecha.
     now.setHours(0, 0, 0, 0);
 
-    if (dateObject > now) {
-      return { valid: false, message: "La fecha no debe ser futura." };
-    }
-
     if (dateObject.getDate() !== +dateParts[0] || dateObject.getMonth() !== +dateParts[1] - 1 || dateObject.getFullYear() !== +dateParts[2]) {
       return { valid: false, message: "La fecha proporcionada no es válida." };
     }
@@ -457,7 +453,7 @@ export class BulkUploadComponent implements OnInit {
 
   convertPrecedence(precedence: any): number {
     switch (precedence) {
-      case 'PapelCartón':
+      case 'Papel/Cartón':
         return 1;
       case 'Metal':
         return 2;
@@ -465,6 +461,8 @@ export class BulkUploadComponent implements OnInit {
         return 3;
       case 'Madera':
         return 4;
+      case 'Mezclados':
+        return 5;
       default:
         return -1; // Retornar un valor no válido en caso de que no haya coincidencia
     }
@@ -478,32 +476,40 @@ export class BulkUploadComponent implements OnInit {
         return 2;
       case "Caja Cartón":
         return 3;
-      case "Papel/Cartón Otro":
+      case "Esquineros Conos":
         return 4;
-      case "Envase Aluminio":
+      case "Cartón RH":
         return 5;
-      case "Malla o Reja (IBC)":
+      case "Papel Otros":
         return 6;
-      case "Envase Hojalata":
+      case "Envase Aluminio":
         return 7;
-      case "Metal Otro":
+      case "Malla o Reja (IBC)":
         return 8;
-      case "Plástico Film Embalaje":
+      case "Envase Hojalata":
         return 9;
-      case "Plástico Envases Rígidos (Incl. Tapas)":
+      case "Esquineros Metal":
         return 10;
-      case "Plástico Sacos o Maxisacos":
+      case "Metal Otros":
         return 11;
-      case "Plástico EPS (Poliestireno Expandido)":
+      case "Plástico Film Embalaje":
         return 12;
-      case "Plástico Zuncho":
+      case "Plástico Envases Rigidos (Incl. Tapas)":
         return 13;
-      case "Plástico Otro":
+      case "Plástico Saco o Maxisacos":
         return 14;
-      case "Caja de Madera":
+      case "Plástico EPS (Poliestireno Expandido)":
         return 15;
-      case "Pallet de Madera":
+      case "Plástico Zuncho":
         return 16;
+      case "Plástico Otros":
+        return 17;
+      case "Caja de Madera":
+        return 18;
+      case "Pallet de Madera":
+        return 19;
+      case "EyE sin separación":
+        return 20;
       default:
         return -1;
     }
@@ -517,6 +523,12 @@ export class BulkUploadComponent implements OnInit {
         return 2;
       case "Disposición Final en RS":
         return 3;
+      case "Reciclaje Interno":
+        return 4;
+      case "Preparación Reutilización":
+        return 5;
+      case "DF en Relleno Seguridad":
+        return 6;
       default:
         return -1;
     }

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import industrialConsumerDao from "../dao/industrialConsumerDao";
+import industrialConsumerDao from '../dao/industrialConsumerDao';
 import establishmentDao from '../dao/establishmentDao';
 import ExcelJS from 'exceljs';
 import { createLog } from "../helpers/createLog";
@@ -509,6 +509,34 @@ class IndustrialConsumer {
             return res.download(outputPath);
         } catch (error) {
             console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+
+    async verifySubmaterialBelongsToMaterial(req: any, res: Response) {
+        const {material_id, submaterial_id} = req.params;
+        try {
+            const verify = await industrialConsumerDao.verifySubmaterialBelongsToMaterial(material_id,submaterial_id);
+            res.status(200).json({ status: verify, data: {}, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+
+    async verifyManagerHasMaterial(req: any, res: Response) {
+        const {manager_id, material} = req.params;
+        try {
+            const verify = await industrialConsumerDao.verifyManagerHasMaterial(manager_id,material);
+            res.status(200).json({ status: verify, data: {}, msg: '' });
+        } catch (err) {
+            console.log(err);
             res.status(500).json({
                 status: false,
                 message: "Algo salió mal"
