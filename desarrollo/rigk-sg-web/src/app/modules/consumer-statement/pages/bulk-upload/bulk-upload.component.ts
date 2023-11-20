@@ -185,7 +185,7 @@ export class BulkUploadComponent implements OnInit {
         if (w[0] === row[0] && w[3] === row[3] && w[4] === row[4] && w[6] === row[6] && w[1] === row[1] && w[2] === row[2]) {
           Swal.fire({
             icon: 'info',
-            text: `Error en fila ${excelRowNumber + 1}. Se repite en el archivo el mismo Establecimiento, Subcategoría, Tratamiento y Gestor para esta Fecha de Retiro. Por favor, revisar.`
+            text: `Error en fila ${excelRowNumber}. Se repite en el archivo el mismo Establecimiento, Subcategoría, Tratamiento y Gestor para esta Fecha de Retiro. Por favor, revisar.`
           });
           return;
         }
