@@ -231,9 +231,14 @@ export class DashboardComponent implements OnInit {
   }
 
   getCountBusiness(): any {
+    let len;
     this.productorService.getBusinessByRolProductor().subscribe({
       next: r => {
-        this.count_business = r.data.res_business.length;
+        if(r.data.res_business.length > 0){
+          len = r.data.res_business.length;
+          this.count_business = len;
+        }
+        
       },
       error: error => {
         console.log(error);
