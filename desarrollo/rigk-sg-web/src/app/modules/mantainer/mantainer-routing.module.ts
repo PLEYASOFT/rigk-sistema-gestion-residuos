@@ -14,6 +14,7 @@ import { MaintainerRatesComponent } from './pages/maintainer-rates/maintainer-ra
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { MaintainerGoalsComponent } from './pages/maintainer-goals/maintainer-goals.component';
 import { DashboardCiGestoresComponent } from './pages/dashboard-ci-gestores/dashboard-ci-gestores.component';
+import { MaintainerDeclarationsCiComponent } from "./pages/maintainer-declarations-ci/maintainer-declarations-ci.component";
 
 const routes: Routes = [{
   path: '',
@@ -25,8 +26,9 @@ const routes: Routes = [{
   { path: 'establishment', component: MaintainerEstablishmentComponent },
   { path: 'users', component: MantainerUsersComponent },
   { path: 'declarations', component: MaintainerDeclarationsProductorComponent },
-  {path: 'algo', component: MaintainerRatesComponent },
-  {path: 'goals', component: MaintainerGoalsComponent},
+  { path: 'declarations-ci', component: MaintainerDeclarationsCiComponent },
+  { path: 'algo', component: MaintainerRatesComponent },
+  { path: 'goals', component: MaintainerGoalsComponent },
   { path: 'faq', component: FaqComponent },
   { path: 'managers', component: MaintainerManagersComponent },
   { path: 'logs', component: LogsComponent },

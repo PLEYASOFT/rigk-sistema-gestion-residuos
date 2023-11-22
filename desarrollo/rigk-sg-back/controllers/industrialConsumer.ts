@@ -5,6 +5,7 @@ import ExcelJS from 'exceljs';
 import { createLog } from "../helpers/createLog";
 import businessDao from "../dao/businessDao";
 import managerDao from "../dao/managerDao";
+import { calcularSumaPesoDeclarado , calcularSumaPesoNoValorizado, calcularSumaPesoValorizado , calcularSumaPesoRegion } from "../helpers/generateExcelCI";
 class IndustrialConsumer {
     public async saveForm(req: any, res: Response) {
         const header = JSON.parse(req.body.header);
@@ -505,6 +506,260 @@ class IndustrialConsumer {
                 };
                 worksheet.getCell(`I${i + 1}`).numFmt = '@';
             }
+            await workbook.xlsx.writeFile(outputPath);
+            return res.download(outputPath);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+
+    public async downloadExcelDeclarationCI(req: Request, res: Response) {
+        const { year } = req.params;
+        try {
+            const path = require('path');
+            const outputPath = path.join(__dirname, `../../files/templates/Declaraciones_CI_YYYY.xlsx`);
+            const workbook = new ExcelJS.Workbook();
+            const worksheetDatos = workbook.addWorksheet('Datos');
+            const response = await establishmentDao.getDeclarationEstablishmentExcelCI(year);
+            const businessByRol = await establishmentDao.getBusinessByRolConsumidor();
+
+            for (let i = 0; i < response.length; i++) {
+                const invoice = response[i];
+
+                const rowdata = worksheetDatos.getRow(i + 2);
+                rowdata.getCell(1).value = `${invoice.ID_EMPRESA}`;
+                rowdata.getCell(2).value = `${invoice.RUT_EMPRESA}`;
+                rowdata.getCell(3).value = `${invoice.NOMBRE}`;
+                rowdata.getCell(4).value = `${invoice.ESTABLECIMIENTO}`;
+                rowdata.getCell(5).value = `${invoice.ID_VU}`;
+                rowdata.getCell(6).value = `${invoice.REGION}`;
+                rowdata.getCell(7).value = `${invoice.COMUNA}`;
+                rowdata.getCell(8).value = `${invoice.ANO_DECLARACION}`;
+                rowdata.getCell(9).value = `${invoice.ESTADO_DECLARACION}`;
+                rowdata.getCell(10).value = `${invoice.SUBCATEGORIA}`;
+                rowdata.getCell(11).value = `${invoice.TRATAMIENTO}`;
+                rowdata.getCell(12).value = `${invoice.SUBTIPO}`;
+                rowdata.getCell(13).value = `${parseFloat(invoice.PESO_DECLARADO.toFixed(2).replace(",", ".")).toString().replace(".", ',')}`;
+                rowdata.getCell(14).value = invoice.PESO_VALORIZADO !== null ? `${parseFloat(invoice.PESO_VALORIZADO.toFixed(2).replace(",", ".")).toString().replace(".", ',')}` : ``;
+
+                const fechaOriginal = new Date(invoice.FECHA_DE_RETIRO);
+
+                const dia = fechaOriginal.getDate();
+                const mes = fechaOriginal.getMonth() + 1;
+                const año = fechaOriginal.getFullYear();
+                const fechaFormateada = `${dia.toString().padStart(2, '0')}/${mes.toString().padStart(2, '0')}/${año}`;
+
+                rowdata.getCell(15).value = `${fechaFormateada}`;
+                if (invoice.PESO_VALORIZADO !== null && invoice.ID_GESTOR == 0 && invoice.GESTOR == null && invoice.RUT_GESTOR == null) {
+                    rowdata.getCell(16).value = `Reciclador Interno`;
+                    rowdata.getCell(17).value = `1`;
+                }
+                if (invoice.PESO_VALORIZADO == null && invoice.ID_GESTOR == 0 && invoice.GESTOR == null && invoice.RUT_GESTOR == null) {
+                    rowdata.getCell(16).value = `Reciclador Interno`;
+                    rowdata.getCell(17).value = `1`;
+                }
+                if (invoice.PESO_VALORIZADO !== null && invoice.ID_GESTOR !== 0 && invoice.GESTOR !== null && invoice.RUT_GESTOR !== null) {
+                    rowdata.getCell(16).value = `${invoice.GESTOR}`;
+                    rowdata.getCell(17).value = `${invoice.RUT_GESTOR}`;
+                }
+                if (invoice.PESO_VALORIZADO == null && invoice.ID_GESTOR !== 0 && invoice.GESTOR !== null && invoice.RUT_GESTOR !== null) {
+                    rowdata.getCell(16).value = `${invoice.GESTOR}`;
+                    rowdata.getCell(17).value = `${invoice.RUT_GESTOR}`;
+                }
+                rowdata.getCell(18).value = `${invoice.USUARIO}`;
+                rowdata.commit();
+            }
+
+            if (businessByRol) {
+                const listaEmpresasConRol = businessByRol.res_business.filter((item2: { CODE_BUSINESS: any; }) => !response.some((item1: { ID_EMPRESA: any; }) => item1.ID_EMPRESA === item2.CODE_BUSINESS));
+                for (let i = 0; i < listaEmpresasConRol.length; i++) {
+                    const empresa = listaEmpresasConRol[i];
+
+                    const rowdata = worksheetDatos.getRow(response.length + 2 + i);
+
+                    rowdata.getCell(1).value = `${empresa.CODE_BUSINESS}`;
+                    rowdata.getCell(2).value = `${empresa.VAT}`;
+                    rowdata.getCell(3).value = `${empresa.NAME}`;
+                    rowdata.getCell(4).value = ``;
+                    rowdata.getCell(5).value = "";
+                    rowdata.getCell(6).value = "";
+                    rowdata.getCell(7).value = "";
+                    rowdata.getCell(8).value = "";
+                    rowdata.getCell(9).value = "";
+                    rowdata.getCell(10).value = "";
+                    rowdata.getCell(11).value = "";
+                    rowdata.getCell(12).value = "";
+                    rowdata.getCell(13).value = "";
+                    rowdata.getCell(14).value = "";
+                    rowdata.getCell(15).value = "";
+                    rowdata.getCell(16).value = "";
+                    rowdata.getCell(17).value = "";
+                    rowdata.getCell(18).value = "";
+                    rowdata.commit();
+                }
+            }
+
+            const row = worksheetDatos.getRow(1);
+
+            const col = worksheetDatos.columns;
+            row.getCell(1).value = "ID empresa";
+            col[0].width = 12;
+            row.getCell(2).value = "RUT Empresa";
+            col[1].width = 12;
+            row.getCell(3).value = "Nombre empresa";
+            col[2].width = 22;
+            row.getCell(4).value = "Establecimiento";
+            col[3].width = 22;
+            row.getCell(5).value = "ID VU Establecimiento";
+            col[4].width = 20;
+            row.getCell(6).value = "Región";
+            col[5].width = 20;
+            row.getCell(7).value = "Comuna";
+            col[6].width = 15;
+            row.getCell(8).value = "Año declaración";
+            col[7].width = 15;
+            row.getCell(9).value = "Estado declaración";
+            col[8].width = 16;
+            row.getCell(10).value = "Subcategoria";
+            col[9].width = 12;
+            row.getCell(11).value = "Tratamiento";
+            col[10].width = 22;
+            row.getCell(12).value = "Subtipo";
+            col[11].width = 22;
+            row.getCell(13).value = "Peso declarado (kg)";
+            col[12].width = 18;
+            row.getCell(14).value = "Peso valorizado (kg)";
+            col[13].width = 18;
+            row.getCell(15).value = "Fecha de retiro";
+            col[14].width = 15;
+            row.getCell(16).value = "Gestor";
+            col[15].width = 14;
+            row.getCell(17).value = "RUT Gestor";
+            col[16].width = 11;
+            row.getCell(18).value = "Usuario";
+            col[17].width = 20;
+            row.commit();
+
+            const worksheetResumen = workbook.addWorksheet('Resumen totalizadores');
+
+            const nameCol = worksheetResumen.getColumn('A');
+            const nameCol2 = worksheetResumen.getColumn('B');
+            nameCol.width = 100;
+            nameCol2.width = 15;
+            nameCol2.alignment = {horizontal:"right"};
+
+            worksheetResumen.getCell('A1').value = 'Notas: Todo en Toneladas. Totales anuales del año de ejercicio (año que se declara)';
+            
+            const uniqueID_EMPRESA = new Set(response.map((item: { ID_EMPRESA: any; }) => item.ID_EMPRESA));
+            const EmpresasUnicas =  businessByRol ? uniqueID_EMPRESA.size + businessByRol.res_business.length : uniqueID_EMPRESA.size;
+            // const EmpresasUnicas = uniqueID_EMPRESA.size;
+
+            worksheetResumen.getCell('A3').value = 'Total CI';
+            worksheetResumen.getCell('B3').value = EmpresasUnicas;
+
+            worksheetResumen.getCell('A4').value = 'Total Establecimientos';
+            const uniqueESTABLECIMIENTO = new Set(response.map((item: { ESTABLECIMIENTO: any; }) => item.ESTABLECIMIENTO));
+            const EstablecimientosUnicos = uniqueESTABLECIMIENTO.size;
+            worksheetResumen.getCell('B4').value = EstablecimientosUnicos;
+
+            worksheetResumen.getCell('A5').value = 'Total Gestores';
+            const gestoresUnicos = new Set();
+            response.forEach((item: { GESTOR: any; RUT_GESTOR: any; }) => {
+            const concatenacion = `${item.GESTOR}_${item.RUT_GESTOR}`;
+            gestoresUnicos.add(concatenacion);
+            });
+            const cantidadTotalGestores = gestoresUnicos.size;
+            worksheetResumen.getCell('B5').value = cantidadTotalGestores;
+
+            worksheetResumen.getCell('A6').value = 'Peso Total Declarado';
+            const pesoDeclaradoTotal = response.reduce((suma: any, item: { PESO_DECLARADO: any; }) => suma + item.PESO_DECLARADO, 0);
+            worksheetResumen.getCell('B6').value = parseFloat(pesoDeclaradoTotal).toFixed(2).replace(",", ".").toString().replace(".", ',');
+
+            worksheetResumen.getCell('A7').value = 'Peso Total Valorizado';
+            const pesoValorizadoTotal = response.reduce((suma: any, item: { PESO_VALORIZADO: any; }) => suma + item.PESO_VALORIZADO, 0);
+            worksheetResumen.getCell('B7').value = parseFloat(pesoValorizadoTotal).toFixed(2).replace(",", ".").toString().replace(".", ',');
+
+            // -------------------------------------------------------------------
+
+            worksheetResumen.getCell('A8').value = 'Total Reciclaje Papel/Cartón (Reciclaje Mecánico + Reciclaje Interno) ';
+            worksheetResumen.getCell('B8').value = parseFloat(calcularSumaPesoDeclarado(response, "Papel/Cartón")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A9').value = 'Total Reciclaje Plástico (Reciclaje Mecánico + Reciclaje Interno) ';
+            worksheetResumen.getCell('B9').value = parseFloat(calcularSumaPesoDeclarado(response, "Plástico")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A10').value = 'Total Reciclaje Metal (Reciclaje Mecánico + Reciclaje Interno) ';
+            worksheetResumen.getCell('B10').value = parseFloat(calcularSumaPesoDeclarado(response, "Metal")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A11').value = 'Total Reciclaje Madera (Reciclaje Mecánico + Reciclaje Interno) ';
+            worksheetResumen.getCell('B11').value = parseFloat(calcularSumaPesoDeclarado(response, "Madera")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A12').value = 'Total Reciclaje Mezclados (Reciclaje Mecánico + Reciclaje Interno) ';
+            worksheetResumen.getCell('B12').value = parseFloat(calcularSumaPesoDeclarado(response, "Mezclados")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+
+            worksheetResumen.getCell('A13').value = 'Valorización Total Papel/Cartón (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B13').value = parseFloat(calcularSumaPesoValorizado(response, "Papel/Cartón")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A14').value = 'Valorización Total Plástico (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B14').value = parseFloat(calcularSumaPesoValorizado(response, "Plástico")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A15').value = 'Valorización Total Metal (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B15').value = parseFloat(calcularSumaPesoValorizado(response, "Metal")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A16').value = 'Valorización Total Madera (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B16').value = parseFloat(calcularSumaPesoValorizado(response, "Madera")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A17').value = 'Valorización Total Mezclados (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B17').value = parseFloat(calcularSumaPesoValorizado(response, "Mezclados")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+
+            worksheetResumen.getCell('A18').value = 'Total no valorizado Papel/Cartón (Disposicion Final en RS +  DF en Relleno Seguridad)';
+            const sumaPapelCarton = calcularSumaPesoNoValorizado(response, "Papel/Cartón");
+            worksheetResumen.getCell('B18').value = parseFloat(sumaPapelCarton).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A19').value = 'Total no valorizado Plastico (Disposicion Final en RS + DF en Relleno Seguridad)';
+            const sumaPlastico = calcularSumaPesoNoValorizado(response, "Plástico")
+            worksheetResumen.getCell('B19').value = parseFloat(sumaPlastico).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A20').value = 'Total no valorizado Metal (Disposicion Final en RS + DF en Relleno Seguridad)';
+            const sumaMetal = calcularSumaPesoNoValorizado(response, "Metal")
+            worksheetResumen.getCell('B20').value = parseFloat(sumaMetal).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A21').value = 'Total no valorizado Madera (Disposicion Final en RS + DF en Relleno Seguridad)';
+            const sumaMadera = calcularSumaPesoNoValorizado(response, "Madera");
+            worksheetResumen.getCell('B21').value = parseFloat(sumaMadera).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A22').value = 'Total no valorizado Mezclados (Disposicion Final en RS + DF en Relleno Seguridad)';
+            const sumaMezclados = calcularSumaPesoNoValorizado(response, "Mezclados");
+            worksheetResumen.getCell('B22').value = parseFloat(sumaMezclados).toFixed(2).replace(",", ".").toString().replace(".", ',');
+
+            worksheetResumen.getCell('A23').value = 'Total preparación para reutilización por todas las subcategoría (Disposicion Final en RS + DF en Relleno Seguridad)';
+            const sumaReutilizacion = parseFloat(sumaPapelCarton) + parseFloat(sumaPlastico) + parseFloat(sumaMetal) + parseFloat(sumaMadera) + parseFloat(sumaMezclados);
+            worksheetResumen.getCell('B23').value = sumaReutilizacion.toFixed(2).replace(",", ".").toString().replace(".", ',');
+
+            worksheetResumen.getCell('A24').value = 'Total Valorización Región de Arica y Parinacota  (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B24').value = parseFloat(calcularSumaPesoRegion(response, "Región de Arica y Parinacota")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A25').value = 'Total Valorización Región de Tarapacá (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B25').value = parseFloat(calcularSumaPesoRegion(response, "Región de Tarapacá")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A26').value = 'Total Valorización Región de Antofagasta (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B26').value = parseFloat(calcularSumaPesoRegion(response, "Región de Antofagasta")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A27').value = 'Total Valorización Región de Atacama (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B27').value = parseFloat(calcularSumaPesoRegion(response, "Región de Atacama")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A28').value = 'Total Valorización Región de Coquimbo (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B28').value = parseFloat(calcularSumaPesoRegion(response, "Región de Coquimbo")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A29').value = 'Total Valorización Región de Valparaíso (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B29').value = parseFloat(calcularSumaPesoRegion(response, "Región de Valparaíso")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A30').value = 'Total Valorización Región de O’Higgins (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B30').value = parseFloat(calcularSumaPesoRegion(response, "Región de O’Higgins")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A31').value = 'Total Valorización Región del Maule (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B31').value = parseFloat(calcularSumaPesoRegion(response, "Región del Maules")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A32').value = 'Total Valorización Región de Ñuble (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B32').value = parseFloat(calcularSumaPesoRegion(response, "Región de Ñuble")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A33').value = 'Total Valorización Región del Biobío (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B33').value = parseFloat(calcularSumaPesoRegion(response, "Región del Biobío")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A34').value = 'Total Valorización Región de la Araucanía (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B34').value = parseFloat(calcularSumaPesoRegion(response, "Región de la Araucanía")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A35').value = 'Total Valorización Región de Los Ríos (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B35').value = parseFloat(calcularSumaPesoRegion(response, "Región de Los Ríos")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A36').value = 'Total Valorización Región de Los Lagos (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B36').value = parseFloat(calcularSumaPesoRegion(response, "Región de Los Lagos")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A37').value = 'Total Valorización Región de Aysén (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B37').value = parseFloat(calcularSumaPesoRegion(response, "Región de Aysén")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A38').value = 'Total Valorización Región de Magallanes (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B38').value = parseFloat(calcularSumaPesoRegion(response, "Región de Magallanes")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('A39').value = 'Total Valorización Región Metropolitana (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
+            worksheetResumen.getCell('B39').value = parseFloat(calcularSumaPesoRegion(response, "Región Metropolitana")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+
             await workbook.xlsx.writeFile(outputPath);
             return res.download(outputPath);
         } catch (error) {

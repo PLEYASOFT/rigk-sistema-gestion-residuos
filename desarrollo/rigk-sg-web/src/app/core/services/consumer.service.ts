@@ -61,6 +61,11 @@ export class ConsumerService {
     headers = headers.set('Accept', 'application/vnd.ms-excel');
     return this.http.get<any>(`${this.url}/excel/${id_business}`, { headers: headers, responseType: 'blob' as 'json' });
   }
+  downloadExcelDeclarationCI(year: any) {
+    let headers = new HttpHeaders();
+    headers = headers.set('Accept', 'application/vnd.ms-excel');
+    return this.http.get<any>(`${this.url}/excel_ci/${year}`, { headers: headers, responseType: 'blob' as 'json' });
+  }
   checkRow(row: any) {
     return this.http.post<any>(`${this.url}/verifyRow/`, row);
   }
