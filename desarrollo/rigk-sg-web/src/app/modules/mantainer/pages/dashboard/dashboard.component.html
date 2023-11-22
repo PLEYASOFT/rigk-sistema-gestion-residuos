@@ -42,23 +42,23 @@
                 </tr>
                 <tr>
                   <td>POM Total</td>
-                  <td>{{setFormato(pom)}} Ton</td>
+                  <td>{{setFormato(pomTotal)}} Ton</td>
                 </tr>
                 <tr>
                   <td>POM Meta 2023</td>
-                  <td>{{setFormato(pom * globalGoal)}} Ton</td>
+                  <td>{{setFormato((pomPapel * paperCardboardGoal + pomMetal * metalGoal + pomPlastico * plasticGoal)*globalGoal)}} Ton</td>
                 </tr>
                 <tr>
                   <td>POM Meta Papel/Cartón 2023</td>
-                  <td>{{setFormato(pom * paperCardboardGoal * globalGoal)}} Ton</td>
+                  <td>{{setFormato(pomPapel * paperCardboardGoal * globalGoal)}} Ton</td>
                 </tr>
                 <tr>
                   <td>POM Meta Metal 2023</td>
-                  <td>{{setFormato(pom * metalGoal * globalGoal)}} Ton</td>
+                  <td>{{setFormato(pomMetal * metalGoal * globalGoal)}} Ton</td>
                 </tr>
                 <tr>
                   <td>POM Meta Plástico 2023</td>
-                  <td>{{setFormato(pom * plasticGoal * globalGoal)}} Ton</td>
+                  <td>{{setFormato(pomPlastico * plasticGoal * globalGoal)}} Ton</td>
                 </tr>
               </tbody>
             </table>

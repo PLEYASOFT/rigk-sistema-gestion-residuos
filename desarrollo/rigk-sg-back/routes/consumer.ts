@@ -10,6 +10,8 @@ router.get('/excel/:id', [validarJWT], IndustrialConsumer.downloadBulkUploadFile
 router.get('/excel_ci/:year', [validarJWT], IndustrialConsumer.downloadExcelDeclarationCI);
 router.get('/detailMV/:id', [validarJWT], IndustrialConsumer.getMV);
 router.get('/download/:id', [validarJWT], IndustrialConsumer.downloadFile);
+router.get('/verifyMaterial/:material_id/:submaterial_id', [validarJWT], IndustrialConsumer.verifySubmaterialBelongsToMaterial);
+router.get('/verifyGestor/:manager_id/:material', [], IndustrialConsumer.verifyManagerHasMaterial);
 router.post('/verifyRow/', [validarJWT], IndustrialConsumer.verifyRow);
 router.post('/', [validarJWT], IndustrialConsumer.saveForm);
 router.post('/saveFile', [validarJWT], IndustrialConsumer.saveFile);
