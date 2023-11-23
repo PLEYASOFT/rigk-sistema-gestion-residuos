@@ -654,12 +654,16 @@ class IndustrialConsumer {
 
             worksheetResumen.getCell('A1').value = 'Notas: Todo en Toneladas. Totales anuales del año de ejercicio (año que se declara)';
             
-            const uniqueID_EMPRESA = new Set(response.map((item: { ID_EMPRESA: any; }) => item.ID_EMPRESA));
-            const EmpresasUnicas =  businessByRol ? uniqueID_EMPRESA.size + businessByRol.res_business.length : uniqueID_EMPRESA.size;
-            // const EmpresasUnicas = uniqueID_EMPRESA.size;
-
             worksheetResumen.getCell('A3').value = 'Total CI';
-            worksheetResumen.getCell('B3').value = EmpresasUnicas;
+            const uniqueID_EMPRESA = new Set(response.map((item: { ID_EMPRESA: any; }) => item.ID_EMPRESA));
+            if (businessByRol) {
+                const listaEmpresasConRol = businessByRol.res_business.filter((item2: { CODE_BUSINESS: any; }) => !response.some((item1: { ID_EMPRESA: any; }) => item1.ID_EMPRESA === item2.CODE_BUSINESS));
+                let EmpresasUnicas = uniqueID_EMPRESA.size + listaEmpresasConRol.length;
+                worksheetResumen.getCell('B3').value = EmpresasUnicas;
+            }else{
+                let EmpresasUnicas = uniqueID_EMPRESA.size;
+                worksheetResumen.getCell('B3').value = EmpresasUnicas;
+            }
 
             worksheetResumen.getCell('A4').value = 'Total Establecimientos';
             const uniqueESTABLECIMIENTO = new Set(response.map((item: { ESTABLECIMIENTO: any; }) => item.ESTABLECIMIENTO));
