@@ -7,6 +7,7 @@ router.get('/:id', [validarJWT], IndustrialConsumer.getForm);
 router.get('/declaration/:id_header/:id_detail', [validarJWT], IndustrialConsumer.getDeclarationByID);
 router.get('/consult/:id', [validarJWT], IndustrialConsumer.getFormConsulta);
 router.get('/excel/:id', [validarJWT], IndustrialConsumer.downloadBulkUploadFile);
+router.get('/excel_ci/:year', [validarJWT], IndustrialConsumer.downloadExcelDeclarationCI);
 router.get('/detailMV/:id', [validarJWT], IndustrialConsumer.getMV);
 router.get('/download/:id', [validarJWT], IndustrialConsumer.downloadFile);
 router.get('/verifyMaterial/:material_id/:submaterial_id', [validarJWT], IndustrialConsumer.verifySubmaterialBelongsToMaterial);
