@@ -149,7 +149,7 @@ class EstablishmentDao {
         LEFT JOIN submaterial ON submaterial.ID = detail_industrial_consumer_form.TYPE_RESIDUE
         LEFT JOIN type_treatment ON type_treatment.ID = detail_industrial_consumer_form.TREATMENT_TYPE
         
-        WHERE rol.NAME = 'Consumidor' AND user_assigned.STATE = '1' AND header_industrial_consumer_form.YEAR_STATEMENT = ?
+        WHERE user_assigned.STATE = '1' AND header_industrial_consumer_form.YEAR_STATEMENT = ?
      `, [YEAR]).then(res => res[0]).catch(erro => { console.log(erro); return undefined });
         conn.end();
         return data;
