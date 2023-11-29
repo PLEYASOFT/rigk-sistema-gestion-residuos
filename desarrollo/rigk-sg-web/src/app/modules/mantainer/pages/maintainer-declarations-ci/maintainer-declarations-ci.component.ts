@@ -50,7 +50,7 @@ export class MaintainerDeclarationsCiComponent implements OnInit {
   }
 
   loadStatements(year: any) {
-    this.productorService.getAllStatementByYear(year).subscribe(r => { 
+    this.productorService.getAllStatementByYear(year).subscribe(r => {
       if (r.status) {
         this.listStatements = r.data.res_business.sort((a: { STATE: number; ID_BUSINESS: number; }, b: { STATE: number; ID_BUSINESS: number; }) => {
           if (a.STATE === b.STATE) {
