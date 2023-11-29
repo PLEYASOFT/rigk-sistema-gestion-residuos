@@ -66,6 +66,31 @@
                             (click)="autoFilter = false; filter(); pagTo(0)">Mostrar</button>
                     </div>
                 </div>
+                <div class="col-12 col-xl-3 mb-3 mb-xl-0">
+                    <label class="form-label">Número de declaraciones seleccionadas:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" [(ngModel)]="selectedDeclarationsCount" readonly>
+                    </div>
+                </div>
+
+                <div class="col-12 col-xl-3 mb-3 mb-xl-0">
+                    <p></p>
+                    <label class="form-label">Peso total declarado seleccionado (Kg):</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" [(ngModel)]="selectedWeight" readonly>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <p></p>
+                    <label class="form-label">&nbsp;</label>
+                    <!-- Añade un espacio vacío para alinear el botón correctamente -->
+                    <div class="input-group">
+                        <button class="btn btn-primary w-100" (click)="autoFilter = false; filter(); pagTo(0)"
+                            [disabled]="selectedDeclarationsCount == 0 && selectedWeight == 0">
+                            Aprobar Selección
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -73,6 +98,7 @@
             <table class="table table-even table-section table-borderless table-radius">
                 <thead class="vertical-middle">
                     <tr>
+                        <th> <input type="checkbox"> Seleccionar todo</th>
                         <th>Empresa CI</th>
                         <th>Establecimiento CI</th>
                         <th>Tipo de tratamiento</th>
@@ -87,6 +113,9 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let s of db; let x = index">
+                        <td>
+                            <input type="checkbox" [disabled]="s.STATE_GESTOR != 0">
+                        </td>
                         <td>{{s.NAME_BUSINESS}}</td>
                         <td>{{s.NAME_ESTABLISHMENT_REGION}}</td>
                         <td>{{s.TipoTratamiento}}</td>
@@ -154,8 +183,9 @@
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">RUT Reciclador</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" [readonly]="userForm.controls['invoiceNumber'].invalid" placeholder="1-9" formControlName="rut"
-                                (change)="onChangeVAT($event.target)">
+                            <input type="text" class="form-control"
+                                [readonly]="userForm.controls['invoiceNumber'].invalid" placeholder="1-9"
+                                formControlName="rut" (change)="onChangeVAT($event.target)">
                             <div *ngIf="userForm.controls['rut'].errors && userForm.controls['rut'].touched"
                                 class="text-danger pl-0">
                                 <p *ngIf="userForm.controls['rut'].errors['required']">El rut de la empresa es
@@ -170,12 +200,14 @@
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Reciclador</label>
                         <div class="col-sm-8">
-                            <select [disabled]="userForm.controls['invoiceNumber'].value == ''" class="form-select" formControlName="reciclador" (change)="onRUTChange(this.index)">
+                            <select [disabled]="userForm.controls['invoiceNumber'].value == ''" class="form-select"
+                                formControlName="reciclador" (change)="onRUTChange(this.index)">
                                 <option value="0">Seleccione Reciclador</option>
                                 <option *ngFor="let b of dbBusiness" value="{{b['ID']}}">{{b['NAME']}}</option>
                             </select>
                             <div class="text-danger pl-0">
-                                <p *ngIf="businessNoFound && userForm.controls['rut'].touched">Rut no se encuentra registrado en el sistema.
+                                <p *ngIf="businessNoFound && userForm.controls['rut'].touched">Rut no se encuentra
+                                    registrado en el sistema.
                                 </p>
                             </div>
                         </div>
@@ -208,12 +240,15 @@
                         <label class="col-sm-4 col-form-label">Fecha Ingreso PR</label>
                         <div class="col-sm-8">
                             <input type="date" class="form-control" placeholder="10/4/2023" formControlName="entryDate">
-                            <div *ngIf="userForm.controls['entryDate'].errors && userForm.controls['entryDate'].touched" class="text-danger">
-                                <p *ngIf="userForm.controls['entryDate'].errors['required']">Debe ingresar una fecha.</p>
-                                <p *ngIf="userForm.controls['entryDate'].errors['futureDate']">La fecha no puede ser futura.</p>
+                            <div *ngIf="userForm.controls['entryDate'].errors && userForm.controls['entryDate'].touched"
+                                class="text-danger">
+                                <p *ngIf="userForm.controls['entryDate'].errors['required']">Debe ingresar una fecha.
+                                </p>
+                                <p *ngIf="userForm.controls['entryDate'].errors['futureDate']">La fecha no puede ser
+                                    futura.</p>
                             </div>
                         </div>
-                    </div>                    
+                    </div>
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Peso Total</label>
                         <div class="col-sm-8">
@@ -224,7 +259,8 @@
                                     total.</p>
                                 <p *ngIf="userForm.controls['totalWeight'].errors['pattern']">Debe ingresar un número
                                     válido (con coma).</p>
-                                <p *ngIf="userForm.controls['totalWeight'].errors['minStringValue']">El valor debe ser mayor que cero.</p>
+                                <p *ngIf="userForm.controls['totalWeight'].errors['minStringValue']">El valor debe ser
+                                    mayor que cero.</p>
                             </div>
                         </div>
                     </div>
@@ -238,14 +274,18 @@
                         <label class="col-sm-4 col-form-label">Peso Valorizado</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" formControlName="valuedWeight">
-                            <div *ngIf="userForm.controls['valuedWeight'].errors && userForm.controls['valuedWeight'].touched" class="text-danger">
-                                <p *ngIf="userForm.controls['valuedWeight'].errors['required']">Debe ingresar un peso valorizado.</p>
-                                <p *ngIf="userForm.controls['valuedWeight'].errors['pattern']">Debe ingresar un número válido (Con coma).</p>
-                                <p *ngIf="userForm.controls['valuedWeight'].errors['minStringValue']">El valor debe ser mayor que cero.</p>
+                            <div *ngIf="userForm.controls['valuedWeight'].errors && userForm.controls['valuedWeight'].touched"
+                                class="text-danger">
+                                <p *ngIf="userForm.controls['valuedWeight'].errors['required']">Debe ingresar un peso
+                                    valorizado.</p>
+                                <p *ngIf="userForm.controls['valuedWeight'].errors['pattern']">Debe ingresar un número
+                                    válido (Con coma).</p>
+                                <p *ngIf="userForm.controls['valuedWeight'].errors['minStringValue']">El valor debe ser
+                                    mayor que cero.</p>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Peso Remanente</label>
                         <div class="col-sm-8">

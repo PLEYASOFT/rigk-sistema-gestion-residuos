@@ -57,6 +57,8 @@ export class StatementsComponent implements OnInit {
   });
 
   dbBusiness = [];
+  selectedDeclarationsCount: any = 0;
+  selectedWeight: any = 0;
   constructor(
     public productorService: ProductorService,
     private establishmentService: EstablishmentService,
