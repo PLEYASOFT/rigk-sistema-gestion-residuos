@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DashboardService } from 'src/app/core/services/dashboard.service';
 import { GoalsTsService } from 'src/app/core/services/goals.ts.service';
+import { ProductorService } from 'src/app/core/services/productor.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,7 +10,10 @@ import { GoalsTsService } from 'src/app/core/services/goals.ts.service';
 })
 export class DashboardComponent implements OnInit {
   currentMonth: any;
-  pom: any
+  pomTotal: any
+  pomPapel: any
+  pomMetal: any
+  pomPlastico: any
   globalGoal: any;
   paperCardboardGoal: any;
   metalGoal: any;
@@ -54,7 +58,7 @@ export class DashboardComponent implements OnInit {
   yAxisLabel = 'Toneladas Valorizadas';
 
   dashboardData: any;
-  constructor(private dashboardService: DashboardService, private goalsService: GoalsTsService) { }
+  constructor(private dashboardService: DashboardService, private goalsService: GoalsTsService, private productorService: ProductorService) { }
 
   ngOnInit() {
     this.getDataCum();
@@ -136,7 +140,10 @@ export class DashboardComponent implements OnInit {
   getAllTonByYear(): any {
     this.dashboardService.getAllTonByYear(this.currentYear - 1).subscribe({
       next: r => {
-        this.pom = r.data.statements[0].totalToneladas;
+        this.pomPapel = r.data.statements[0].totalToneladas;
+        this.pomMetal = r.data.statements[1].totalToneladas;
+        this.pomPlastico = r.data.statements[2].totalToneladas;
+        this.pomTotal = this.pomPapel + this.pomMetal + this.pomPlastico;
       },
       error: error => {
         console.log(error);
@@ -224,9 +231,14 @@ export class DashboardComponent implements OnInit {
   }
 
   getCountBusiness(): any {
-    this.dashboardService.getCountBusiness().subscribe({
+    let len;
+    this.productorService.getBusinessByRolProductor().subscribe({
       next: r => {
-        this.count_business = r.data[0].total_empresas;
+        if(r.data.res_business.length > 0){
+          len = r.data.res_business.length;
+          this.count_business = len;
+        }
+        
       },
       error: error => {
         console.log(error);

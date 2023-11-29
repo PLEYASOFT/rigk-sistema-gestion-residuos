@@ -77,6 +77,83 @@ class EstablishmentDao {
         conn.end();
         return data;
     }
+
+    // public async getAllEstablishmentExcelCI(YEAR: any) {
+    public async getBusinessByRolConsumidor(){
+        const conn = mysqlcon.getConnection();
+
+        const res_business: any = await conn?.execute(`SELECT DISTINCT business.ID, business.NAME, business.VAT, business.CODE_BUSINESS
+        FROM business
+        JOIN user_business ON business.ID = user_business.ID_BUSINESS
+        JOIN user ON user_business.ID_USER = user.ID
+        JOIN user_rol ON user.ID = user_rol.USER_ID
+        JOIN rol ON user_rol.ROL_ID = rol.ID
+        WHERE rol.NAME = 'Consumidor' AND user.STATE = '1';`).then((res) => res[0]).catch(error => { undefined });
+                                                
+        if (res_business.length == 0) {
+            return false;
+        }
+        conn?.end();
+        return { res_business };
+    }
+
+    public async getDeclarationEstablishmentExcelCI(YEAR: any) {
+        const conn = mysqlcon.getConnection()!;
+        await conn.execute("SET lc_time_names = 'es_ES';");
+        const data: any = await conn.execute(`
+            SELECT DISTINCT 
+            business_created_by.CODE_BUSINESS AS ID_EMPRESA,
+            business_created_by.VAT AS RUT_EMPRESA,
+            business_created_by.NAME AS NOMBRE,
+            establishment.NAME_ESTABLISHMENT AS ESTABLECIMIENTO,
+            establishment.ID_VU AS ID_VU,
+            regions.NAME AS REGION,
+            communes.NAME AS COMUNA,
+            header_industrial_consumer_form.YEAR_STATEMENT as ANO_DECLARACION, 
+            CASE detail_industrial_consumer_form.STATE_GESTOR
+                WHEN 0 THEN 'PENDIENTE'
+                WHEN 1 THEN 'APROBADO'
+            END AS ESTADO_DECLARACION,
+            type_material.MATERIAL AS SUBCATEGORIA,
+            type_treatment.NAME AS TRATAMIENTO,
+            submaterial.SUBMATERIAL AS SUBTIPO,
+            detail_industrial_consumer_form.VALUE AS PESO_DECLARADO,
+            invoices_detail.VALUE AS PESO_VALORIZADO,
+            detail_industrial_consumer_form.DATE_WITHDRAW AS FECHA_DE_RETIRO,
+            detail_industrial_consumer_form.ID_GESTOR AS ID_GESTOR,
+            business_assignated_to.NAME AS GESTOR,
+            business_assignated_to.VAT AS RUT_GESTOR,
+            concat(user_created_by.FIRST_NAME , " " , user_created_by.LAST_NAME) AS USUARIO	
+        
+        FROM header_industrial_consumer_form
+        
+        JOIN establishment ON establishment.ID = header_industrial_consumer_form.ID_ESTABLISHMENT
+        JOIN establishment_business ON establishment_business.ID_ESTABLISHMENT = establishment.ID
+        JOIN business AS business_created_by ON business_created_by.ID = establishment_business.ID_BUSINESS
+        
+        JOIN detail_industrial_consumer_form ON detail_industrial_consumer_form.ID_HEADER = header_industrial_consumer_form.ID
+        
+        LEFT JOIN business AS business_assignated_to ON business_assignated_to.ID = detail_industrial_consumer_form.ID_GESTOR
+        
+        JOIN communes ON communes.ID = establishment.ID_COMUNA
+        JOIN regions ON regions.ID = establishment.ID_REGION
+        
+        JOIN user_business ON business_created_by.ID = user_business.ID_BUSINESS
+        JOIN user AS user_created_by ON user_created_by.ID = header_industrial_consumer_form.CREATED_BY
+        JOIN user AS user_assigned ON user_assigned.ID = user_business.ID_USER
+        JOIN user_rol ON user_assigned.ID = user_rol.USER_ID
+        JOIN rol ON user_rol.ROL_ID = rol.ID
+        
+        LEFT JOIN invoices_detail ON invoices_detail.ID_DETAIL = detail_industrial_consumer_form.ID
+        LEFT JOIN type_material ON type_material.ID = detail_industrial_consumer_form.PRECEDENCE
+        LEFT JOIN submaterial ON submaterial.ID = detail_industrial_consumer_form.TYPE_RESIDUE
+        LEFT JOIN type_treatment ON type_treatment.ID = detail_industrial_consumer_form.TREATMENT_TYPE
+        
+        WHERE rol.NAME = 'Consumidor' AND user_assigned.STATE = '1' AND header_industrial_consumer_form.YEAR_STATEMENT = ?
+     `, [YEAR]).then(res => res[0]).catch(erro => { console.log(erro); return undefined });
+        conn.end();
+        return data;
+    }
     
 
     public async getEstablishmentByID(ID: any) {
