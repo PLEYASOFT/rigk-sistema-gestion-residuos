@@ -49,7 +49,7 @@ export class StatementsComponent implements OnInit {
     entryDate: ['', [Validators.required, this.pastDateValidator()]],
     totalWeight: ['', [Validators.required, this.minStringValue(0), Validators.pattern(/^[0-9]+(,[0-9]+)?$/)]],
     declarateWeight: [''],
-    valuedWeight: ['', [Validators.required, this.minStringValue(0),Validators.pattern(/^[0-9]+(,[0-9]+)?$/)]],
+    valuedWeight: ['', [Validators.required, this.minStringValue(0), Validators.pattern(/^[0-9]+(,[0-9]+)?$/)]],
     remainingWeight: [''],
     asoc: [''],
     declarated: [''],
@@ -59,6 +59,7 @@ export class StatementsComponent implements OnInit {
   dbBusiness = [];
   selectedDeclarationsCount: any = 0;
   selectedWeight: any = 0;
+  isAnyCheckboxSelected: boolean = false;
   constructor(
     public productorService: ProductorService,
     private establishmentService: EstablishmentService,
@@ -94,7 +95,7 @@ export class StatementsComponent implements OnInit {
         if (r.status) {
           r.status = r.status.sort((a: any, b: any) => {
             const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
-            
+
             if (dateComparison === 0) {
               return b.ID_DETAIL - a.ID_DETAIL;
             } else {
@@ -103,7 +104,7 @@ export class StatementsComponent implements OnInit {
           });
 
           (r.status as any[]).forEach(e => {
-
+            e.isChecked = false;
             if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
               this.business_name.push(e.NAME_BUSINESS);
             }
@@ -128,7 +129,7 @@ export class StatementsComponent implements OnInit {
           this.cant = Math.ceil(this.dbStatements.length / 10);
           this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a: any, b: any) => {
             const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
-            
+
             if (dateComparison === 0) {
               return b.ID_DETAIL - a.ID_DETAIL;
             } else {
@@ -156,7 +157,7 @@ export class StatementsComponent implements OnInit {
     });
     this.db = this.filteredStatements.slice(0, 10).sort((a: any, b: any) => {
       const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
-      
+
       if (dateComparison === 0) {
         return b.ID_DETAIL - a.ID_DETAIL;
       } else {
@@ -232,47 +233,47 @@ export class StatementsComponent implements OnInit {
       this.filter();
       this.pagTo(this.pos - 1);
     });
-    this.userForm.reset({reciclador:'0'})
+    this.userForm.reset({ reciclador: '0' })
   }
   pagTo(i: number) {
     this.pos = i + 1;
     this.db = this.filteredStatements.slice((i * 10), (i + 1) * 10).sort((a: any, b: any) => {
-            const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
-            
-            if (dateComparison === 0) {
-              return b.ID_DETAIL - a.ID_DETAIL;
-            } else {
-              return dateComparison;
-            }
-          });
+      const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+
+      if (dateComparison === 0) {
+        return b.ID_DETAIL - a.ID_DETAIL;
+      } else {
+        return dateComparison;
+      }
+    });
   }
 
   next() {
     if (this.pos >= this.cant) return;
     this.pos++;
     this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a: any, b: any) => {
-            const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
-            
-            if (dateComparison === 0) {
-              return b.ID_DETAIL - a.ID_DETAIL;
-            } else {
-              return dateComparison;
-            }
-          });
+      const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+
+      if (dateComparison === 0) {
+        return b.ID_DETAIL - a.ID_DETAIL;
+      } else {
+        return dateComparison;
+      }
+    });
   }
 
   previus() {
     if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
     this.pos = this.pos - 1;
     this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a: any, b: any) => {
-            const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
-            
-            if (dateComparison === 0) {
-              return b.ID_DETAIL - a.ID_DETAIL;
-            } else {
-              return dateComparison;
-            }
-          });
+      const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+
+      if (dateComparison === 0) {
+        return b.ID_DETAIL - a.ID_DETAIL;
+      } else {
+        return dateComparison;
+      }
+    });
   }
 
   setArrayFromNumber() {
@@ -387,7 +388,7 @@ export class StatementsComponent implements OnInit {
     } else {
       return value.toLocaleString('es');
     }
-  }  
+  }
   async onRUTChange(index: number) {
     const rut = this.userForm.controls['rut'].value;
     const invoiceNumber = this.userForm.controls['invoiceNumber'].value;
@@ -398,7 +399,7 @@ export class StatementsComponent implements OnInit {
       try {
         const businessResponse = await this.establishmentService.getInovice(invoiceNumber, rut, treatmentType, material).toPromise();
         if (businessResponse.status) {
-          
+
           this.userForm.controls['totalWeight'].setValue(
             this.formatNumber(businessResponse.data[0]?.invoice_value)
           );
@@ -510,7 +511,7 @@ export class StatementsComponent implements OnInit {
   }
 
   minStringValue(min: number): ValidatorFn {
-    return (control: AbstractControl): {[key: string]: any} | null => {
+    return (control: AbstractControl): { [key: string]: any } | null => {
       if (!control.value) {
         return null;
       }
@@ -531,11 +532,34 @@ export class StatementsComponent implements OnInit {
   }
 
   pastDateValidator(): ValidatorFn {
-    return (control: AbstractControl): {[key: string]: any} | null => {
+    return (control: AbstractControl): { [key: string]: any } | null => {
       const selectedDate = new Date(control.value);
       const now = new Date();
       now.setHours(0, 0, 0, 0);
       return selectedDate > now ? { 'futureDate': { value: control.value } } : null;
     };
   }
+
+  updateCheckboxSelection() {
+    this.isAnyCheckboxSelected = this.db.some(s => s.isChecked);
+  }
+
+
+  selectAllCheckboxes(isSelected: boolean) {
+    this.db.forEach(s => {
+      if (s.STATE_GESTOR == 0) { // Solo cambiar si STATE_GESTOR es 0
+        s.isChecked = isSelected;
+      }
+    });
+
+    this.updateCheckboxSelection();
+  }
+
+
+  onSelectAllCheckboxChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.selectAllCheckboxes(input.checked);
+  }
+
+
 }

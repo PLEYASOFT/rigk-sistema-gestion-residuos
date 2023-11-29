@@ -98,7 +98,10 @@
             <table class="table table-even table-section table-borderless table-radius">
                 <thead class="vertical-middle">
                     <tr>
-                        <th> <input type="checkbox"> Seleccionar todo</th>
+                        <th>
+                            <input type="checkbox" [disabled]="!isAnyCheckboxSelected" (change)="onSelectAllCheckboxChange($event)">
+                            Seleccionar todo
+                        </th>                                                                     
                         <th>Empresa CI</th>
                         <th>Establecimiento CI</th>
                         <th>Tipo de tratamiento</th>
@@ -114,7 +117,9 @@
                 <tbody>
                     <tr *ngFor="let s of db; let x = index">
                         <td>
-                            <input type="checkbox" [disabled]="s.STATE_GESTOR != 0">
+                            <section class="example-section">
+                                <input type="checkbox" [disabled]="s.STATE_GESTOR != 0" [(ngModel)]="s.isChecked" (change)="updateCheckboxSelection()">
+                            </section>
                         </td>
                         <td>{{s.NAME_BUSINESS}}</td>
                         <td>{{s.NAME_ESTABLISHMENT_REGION}}</td>
