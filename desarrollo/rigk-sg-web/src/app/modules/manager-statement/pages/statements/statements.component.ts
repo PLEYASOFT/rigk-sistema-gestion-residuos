@@ -60,6 +60,7 @@ export class StatementsComponent implements OnInit {
   selectedDeclarationsCount: any = 0;
   selectedWeight: any = 0;
   isAnyCheckboxSelected: boolean = false;
+  disableFilters: any;
   constructor(
     public productorService: ProductorService,
     private establishmentService: EstablishmentService,
@@ -145,7 +146,36 @@ export class StatementsComponent implements OnInit {
 
   filter(auto: boolean = false) {
     if (auto && !this.autoFilter) return;
+    this.filteredStatements = this.dbStatements.filter(r => {
+      return (
+        (this.selectedBusiness === '-1' || r.NAME_BUSINESS === this.selectedBusiness) &&
+        (this.selectedMaterial === '-1' || r.PRECEDENCE === this.selectedMaterial) &&
+        (this.selectedTreatment === '-1' || r.TipoTratamiento === this.selectedTreatment) &&
+        (this.selectedYear === '-1' || r.FechaRetiroTipeada === this.selectedYear) &&
+        (this.selectedState === '-1' || parseInt(r.STATE_GESTOR) === parseInt(this.selectedState))
+      );
+    });
+    this.db = this.filteredStatements.slice(0, 10).sort((a: any, b: any) => {
+      const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
 
+      if (dateComparison === 0) {
+        return b.ID_DETAIL - a.ID_DETAIL;
+      } else {
+        return dateComparison;
+      }
+    });
+    this.cant = Math.ceil(this.filteredStatements.length / 10);
+    this.selectedDeclarationsCount = 0;
+    this.selectedWeight = 0;
+    this.filteredStatements.forEach(s => {
+      if (s.STATE_GESTOR == 0) { 
+        s.isChecked = false;
+      }
+    });
+  }
+
+  filter_two(auto: boolean = false) {
+    if (auto && !this.autoFilter) return;
     this.filteredStatements = this.dbStatements.filter(r => {
       return (
         (this.selectedBusiness === '-1' || r.NAME_BUSINESS === this.selectedBusiness) &&
@@ -541,25 +571,66 @@ export class StatementsComponent implements OnInit {
   }
 
   updateCheckboxSelection() {
-    this.isAnyCheckboxSelected = this.db.some(s => s.isChecked);
+    console.log(this.db)
+    const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
+    console.log(selectedItems)
+    // Actualizar el número de declaraciones seleccionadas
+    this.selectedDeclarationsCount = selectedItems.length;
+
+    // Calcular y actualizar el peso total declarado seleccionado
+    let totalWeight = selectedItems.reduce((sum, current) => sum + parseFloat(current.VALUE), 0);
+
+    // Formatear el peso total para usar coma como separador decimal y quitar decimales si es entero
+    if (totalWeight % 1 === 0) {
+      // Es un número entero
+      this.selectedWeight = totalWeight.toLocaleString('es-ES');
+    } else {
+      // Tiene decimales
+      this.selectedWeight = totalWeight.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    if (selectedItems.length > 0) {
+      // Si hay elementos seleccionados, establecer los filtros según el primer elemento seleccionado
+      const selectedItem = selectedItems[0];
+      this.selectedTreatment = selectedItem.TipoTratamiento;
+      this.selectedMaterial = selectedItem.PRECEDENCE;
+      this.selectedState = '0'; // Estado "Por aprobar"
+      this.disableFilters = true; // Deshabilitar filtros
+      this.updateFilters();
+    } else {
+      // Si no hay elementos seleccionados, restablecer los filtros y habilitarlos
+      this.selectedTreatment = '-1';
+      this.selectedMaterial = '-1';
+      this.selectedState = '-1';
+      this.disableFilters = false;
+      this.filter_two();
+      this.updateFilters();
+      this.pagTo(0);
+    }
+
+    this.isAnyCheckboxSelected = selectedItems.length > 0;
+
+    if (selectedItems.length == 1) {
+      this.filter_two();
+      this.updateFilters();
+      this.pagTo(0);
+    }
   }
 
-
   selectAllCheckboxes(isSelected: boolean) {
-    this.db.forEach(s => {
+    this.filteredStatements.forEach(s => {
       if (s.STATE_GESTOR == 0) { // Solo cambiar si STATE_GESTOR es 0
         s.isChecked = isSelected;
       }
     });
 
+    // Actualizar la vista actual (db) para reflejar los cambios
+    this.db = this.filteredStatements.slice((this.pos - 1) * 10, this.pos * 10);
     this.updateCheckboxSelection();
   }
-
 
   onSelectAllCheckboxChange(event: Event) {
     const input = event.target as HTMLInputElement;
     this.selectAllCheckboxes(input.checked);
   }
-
 
 }

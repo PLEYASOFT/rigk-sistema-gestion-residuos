@@ -24,7 +24,7 @@
                     <label class="form-label">Tipo de tratamiento:</label>
                     <div class="input-group">
                         <select id="f_establishment" class="form-select" [(ngModel)]="selectedTreatment"
-                            (change)="updateFilters()">
+                            (change)="updateFilters()" [disabled]="disableFilters">
                             <option value="-1" selected>Todos</option>
                             <option *ngFor="let es of treatment_name" value="{{es}}">{{es}}</option>
                         </select>
@@ -34,7 +34,7 @@
                     <label class="form-label">Material:</label>
                     <div class="input-group">
                         <select id="f_material" class="form-select" [(ngModel)]="selectedMaterial"
-                            (change)="updateFilters()">
+                            (change)="updateFilters()" [disabled]="disableFilters">
                             <option value="-1" selected>Todos</option>
                             <option *ngFor="let ma of material_name" value="{{ma}}">{{ma}}</option>
                         </select>
@@ -52,7 +52,7 @@
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Estado:</label>
                     <div class="input-group">
-                        <select id="f_state" class="form-select" [(ngModel)]="selectedState" (change)="updateFilters()">
+                        <select id="f_state" class="form-select" [(ngModel)]="selectedState" (change)="updateFilters()" [disabled]="disableFilters">
                             <option value="-1" selected>Todos</option>
                             <option *ngFor="let s of state" [value]="s">{{getStateText(s)}}</option>
                         </select>
@@ -99,9 +99,10 @@
                 <thead class="vertical-middle">
                     <tr>
                         <th>
-                            <input type="checkbox" [disabled]="!isAnyCheckboxSelected" (change)="onSelectAllCheckboxChange($event)">
+                            <input type="checkbox" [disabled]="!isAnyCheckboxSelected"
+                                (change)="onSelectAllCheckboxChange($event)">
                             Seleccionar todo
-                        </th>                                                                     
+                        </th>
                         <th>Empresa CI</th>
                         <th>Establecimiento CI</th>
                         <th>Tipo de tratamiento</th>
@@ -118,7 +119,8 @@
                     <tr *ngFor="let s of db; let x = index">
                         <td>
                             <section class="example-section">
-                                <input type="checkbox" [disabled]="s.STATE_GESTOR != 0" [(ngModel)]="s.isChecked" (change)="updateCheckboxSelection()">
+                                <input type="checkbox" [disabled]="s.STATE_GESTOR != 0" [(ngModel)]="s.isChecked"
+                                    (change)="updateCheckboxSelection()">
                             </section>
                         </td>
                         <td>{{s.NAME_BUSINESS}}</td>
