@@ -284,6 +284,10 @@ export class StatementsComponent implements OnInit {
     });
     this.userForm.reset({ reciclador: '0' })
   }
+
+  reset_nocheck() {
+    this.userForm.reset({ reciclador: '0' })
+  }
   pagTo(i: number) {
     this.pos = i + 1;
     this.db = this.filteredStatements.slice((i * 10), (i + 1) * 10).sort((a: any, b: any) => {
