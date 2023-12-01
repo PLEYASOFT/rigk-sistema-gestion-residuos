@@ -52,7 +52,8 @@
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Estado:</label>
                     <div class="input-group">
-                        <select id="f_state" class="form-select" [(ngModel)]="selectedState" (change)="updateFilters()" [disabled]="disableFilters">
+                        <select id="f_state" class="form-select" [(ngModel)]="selectedState" (change)="updateFilters()"
+                            [disabled]="disableFilters">
                             <option value="-1" selected>Todos</option>
                             <option *ngFor="let s of state" [value]="s">{{getStateText(s)}}</option>
                         </select>
@@ -85,10 +86,11 @@
                     <label class="form-label">&nbsp;</label>
                     <!-- Añade un espacio vacío para alinear el botón correctamente -->
                     <div class="input-group">
-                        <button class="btn btn-primary w-100" (click)="autoFilter = false; filter(); pagTo(0)"
+                        <button class="btn btn-primary w-100" (click)="openApprovalModal()"
                             [disabled]="selectedDeclarationsCount == 0 && selectedWeight == 0">
                             Aprobar Selección
                         </button>
+
                     </div>
                 </div>
             </div>
@@ -138,7 +140,7 @@
                         <td>
                             <a class="custom-cursor" data-bs-toggle="modal"
                                 [attr.data-bs-target]="s.STATE_GESTOR == 0 ? '#infoModal' : null"
-                                (click)="handleClick(x, s.STATE_GESTOR)"
+                                (click)="handleClick(x, s.STATE_GESTOR); this.selectedDeclarationsCount = 0"
                                 [ngClass]="{'no-pointer': s.STATE_GESTOR !== 0}">
                                 <i class="fa fa-check fa-lg fa-fw"
                                     [ngClass]="s.STATE_GESTOR == 0 ? 'color-verde-opaco' : 'color-verde'"
@@ -334,8 +336,9 @@
                     (click)="this.userForm.reset({reciclador:'0'})">Volver</button>
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     [disabled]="userForm.invalid || isRemainingWeightNegative"
-                    (click)="saveInvoice(this.index)">Guardar</button>
+                    (click)="saveInvoice(this.index); reset()">Guardar</button>
             </div>
         </div>
     </div>
 </div>
+<a id="openModalButton" data-bs-toggle="modal" data-bs-target="#infoModal" style="display: none;"></a>

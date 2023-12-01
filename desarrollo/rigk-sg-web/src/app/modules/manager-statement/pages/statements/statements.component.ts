@@ -144,6 +144,25 @@ export class StatementsComponent implements OnInit {
     });
   }
 
+  openApprovalModal() {
+    const selectedItems = this.db.filter(s => s.isChecked && s.STATE_GESTOR == 0);
+
+    // Comprobar si hay elementos seleccionados
+    if (selectedItems.length > 0) {
+      // Actualizar el formulario con los valores correspondientes
+      this.userForm.patchValue({
+        declarated: this.selectedWeight,
+        treatmentType: selectedItems[0].TipoTratamiento,
+        material: selectedItems[0].PRECEDENCE
+      });
+
+      // Simular un clic en el botón que abre el modal
+      document.getElementById('openModalButton')?.click();
+    } else {
+      console.log('error')
+    }
+  }
+
   filter(auto: boolean = false) {
     if (auto && !this.autoFilter) return;
     this.filteredStatements = this.dbStatements.filter(r => {
@@ -168,7 +187,7 @@ export class StatementsComponent implements OnInit {
     this.selectedDeclarationsCount = 0;
     this.selectedWeight = 0;
     this.filteredStatements.forEach(s => {
-      if (s.STATE_GESTOR == 0) { 
+      if (s.STATE_GESTOR == 0) {
         s.isChecked = false;
       }
     });
@@ -372,25 +391,60 @@ export class StatementsComponent implements OnInit {
 
   async saveInvoice(index: number): Promise<void> {
     if (this.selectedFile) {
-      const { rut, invoiceNumber, entryDate, valuedWeight, reciclador } = this.userForm.value;
+      let { rut, invoiceNumber, entryDate, valuedWeight, reciclador } = this.userForm.value;
       const totalWeight = this.userForm.controls['totalWeight'].value;
-      const treatmentType = this.db[index].TREATMENT_TYPE_NUMBER
-      const material = this.db[index].PRECEDENCE_NUMBER
-      const id_detail = this.db[index].ID_DETAIL
-      try {
-        const response = await this.establishmentService.saveInvoice(rut, reciclador, invoiceNumber, id_detail, entryDate, valuedWeight!.replace(",", "."), totalWeight!.replace(",", "."), treatmentType, material, this.selectedFile).toPromise();
-        if (response.status) {
+      const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
+      if (selectedItems.length > 0) {
+        try {
+          valuedWeight = (parseFloat(valuedWeight!.replace(",", ".")) / selectedItems.length).toFixed(2);
+          Swal.fire({
+            title: 'Cargando Datos',
+            text: 'Se están recuperando datos',
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowEscapeKey: false,
+            allowOutsideClick: false
+          });
+          for (let i = 0; i < selectedItems.length; i++) {
+            const treatmentType = selectedItems[i].TREATMENT_TYPE_NUMBER
+            const material = selectedItems[i].PRECEDENCE_NUMBER
+            const id_detail = selectedItems[i].ID_DETAIL
+            const response = await this.establishmentService.saveInvoice(rut, reciclador, invoiceNumber, id_detail, entryDate, valuedWeight, totalWeight!.replace(",", "."), treatmentType, material, this.selectedFile).toPromise();
+          }
+          // Cerrar mensaje de carga
+          Swal.close();
           setTimeout(async () => {
             await Swal.fire({
-              title: "La factura fue guardada exitosamente",
+              title: "Las facturas fueron guardadas exitosamente",
               text: "",
               icon: "success",
               showConfirmButton: true, // Muestra el botón de confirmación.
             });
           }, 1500);
         }
-      } catch (error) {
-        console.error('Error:', error);
+        catch (error) {
+          console.error('Error:', error);
+        }
+      }
+      else {
+        const treatmentType = this.db[index].TREATMENT_TYPE_NUMBER
+        const material = this.db[index].PRECEDENCE_NUMBER
+        const id_detail = this.db[index].ID_DETAIL
+        try {
+          const response = await this.establishmentService.saveInvoice(rut, reciclador, invoiceNumber, id_detail, entryDate, valuedWeight!.replace(",", "."), totalWeight!.replace(",", "."), treatmentType, material, this.selectedFile).toPromise();
+          if (response.status) {
+            setTimeout(async () => {
+              await Swal.fire({
+                title: "La factura fue guardada exitosamente",
+                text: "",
+                icon: "success",
+                showConfirmButton: true, // Muestra el botón de confirmación.
+              });
+            }, 1500);
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
       }
     } else {
       console.error('No file selected');
@@ -436,10 +490,14 @@ export class StatementsComponent implements OnInit {
           this.userForm.controls['declarateWeight'].setValue(
             this.formatNumber(businessResponse.data[0].value_declarated)
           );
-          this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + 1);
+          if (this.selectedDeclarationsCount != 0) {
+            this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + this.selectedDeclarationsCount);
+          }
+          else {
+            this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + 1);
+          }
           const asoc = this.userForm.controls['asoc'].value || "0";
-
-          if (parseInt(asoc) > 1) {
+          if (parseInt(asoc) > 1 && this.selectedDeclarationsCount == 0) {
             if (invoiceNumber) {
               this.userForm.controls['valuedWeight'].enable();
             } else {
@@ -571,9 +629,7 @@ export class StatementsComponent implements OnInit {
   }
 
   updateCheckboxSelection() {
-    console.log(this.db)
     const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
-    console.log(selectedItems)
     // Actualizar el número de declaraciones seleccionadas
     this.selectedDeclarationsCount = selectedItems.length;
 
@@ -630,7 +686,29 @@ export class StatementsComponent implements OnInit {
 
   onSelectAllCheckboxChange(event: Event) {
     const input = event.target as HTMLInputElement;
-    this.selectAllCheckboxes(input.checked);
+    this.filteredStatements.forEach(s => {
+      if (s.STATE_GESTOR == 0) { // Solo cambiar si STATE_GESTOR es 0
+        s.isChecked = input.checked;
+      }
+    });
+
+    // Actualizar la vista actual (db) para reflejar los cambios
+    this.db = this.filteredStatements.slice((this.pos - 1) * 10, this.pos * 10);
+    const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
+    // Actualizar el número de declaraciones seleccionadas
+    this.selectedDeclarationsCount = selectedItems.length;
+
+    // Calcular y actualizar el peso total declarado seleccionado
+    let totalWeight = selectedItems.reduce((sum, current) => sum + parseFloat(current.VALUE), 0);
+
+    // Formatear el peso total para usar coma como separador decimal y quitar decimales si es entero
+    if (totalWeight % 1 === 0) {
+      // Es un número entero
+      this.selectedWeight = totalWeight.toLocaleString('es-ES');
+    } else {
+      // Tiene decimales
+      this.selectedWeight = totalWeight.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
   }
 
 }
