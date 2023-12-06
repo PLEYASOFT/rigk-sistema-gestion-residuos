@@ -45,15 +45,18 @@
                             </tr>
                         </tbody>
                     </table>
+                    <!-- Pagination -->
                     <nav aria-label="Navegación resultados">
                         <ul class="pagination">
-                            <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
-                            <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
-                            <li *ngFor="let in of setArrayFromNumber(); let i = index"><button class="border btn btn-sm"
-                                    [ngClass]="{ 'btn-info':pos==(i+1), 'btn-primary': pos != (i+1)}"
-                                    (click)="pagTo(i)">{{i+1}}</button></li>
-                            <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
-                            <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
+                          <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
+                          <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
+                          <li *ngFor="let i of visiblePageNumbers(); let j = index">
+                            <button class="border btn btn-sm"
+                                    [ngClass]="{ 'btn-info': pos === (i+1), 'btn-primary': pos !== (i+1) }"
+                                    (click)="pagTo(i)">{{i+1}}</button>
+                          </li>
+                          <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
+                          <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
                         </ul>
                     </nav>
                 </div>
