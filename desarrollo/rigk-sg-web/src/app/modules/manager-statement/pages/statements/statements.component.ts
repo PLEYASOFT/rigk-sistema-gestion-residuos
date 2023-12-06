@@ -4,6 +4,7 @@ import { validate } from 'rut.js';
 import { BusinessService } from 'src/app/core/services/business.service';
 import { EstablishmentService } from 'src/app/core/services/establishment.service';
 import { ProductorService } from 'src/app/core/services/productor.service';
+import { ChangeDetectorRef } from '@angular/core';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -36,8 +37,11 @@ export class StatementsComponent implements OnInit {
   selectedYear: string = '-1';
   selectedTreatment: string = '-1';
   selectedState: any = '-1';
+  selectAllChecked: boolean = false;
   autoFilter: boolean = true;
   isRemainingWeightNegative: boolean = false;
+  anyCheckboxSelected: boolean = false;
+
 
   index: number = 0;
   userForm = this.fb.group({
@@ -49,7 +53,7 @@ export class StatementsComponent implements OnInit {
     entryDate: ['', [Validators.required, this.pastDateValidator()]],
     totalWeight: ['', [Validators.required, this.minStringValue(0), Validators.pattern(/^[0-9]+(,[0-9]+)?$/)]],
     declarateWeight: [''],
-    valuedWeight: ['', [Validators.required, this.minStringValue(0),Validators.pattern(/^[0-9]+(,[0-9]+)?$/)]],
+    valuedWeight: ['', [Validators.required, this.minStringValue(0), Validators.pattern(/^[0-9]+(,[0-9]+)?$/)]],
     remainingWeight: [''],
     asoc: [''],
     declarated: [''],
@@ -57,11 +61,16 @@ export class StatementsComponent implements OnInit {
   });
 
   dbBusiness = [];
+  selectedDeclarationsCount: any = 0;
+  selectedWeight: any = 0;
+  isAnyCheckboxSelected: boolean = false;
+  disableFilters: any;
   constructor(
     public productorService: ProductorService,
     private establishmentService: EstablishmentService,
     public businessService: BusinessService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -92,7 +101,7 @@ export class StatementsComponent implements OnInit {
         if (r.status) {
           r.status = r.status.sort((a: any, b: any) => {
             const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
-            
+
             if (dateComparison === 0) {
               return b.ID_DETAIL - a.ID_DETAIL;
             } else {
@@ -101,7 +110,7 @@ export class StatementsComponent implements OnInit {
           });
 
           (r.status as any[]).forEach(e => {
-
+            e.isChecked = false;
             if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
               this.business_name.push(e.NAME_BUSINESS);
             }
@@ -126,7 +135,7 @@ export class StatementsComponent implements OnInit {
           this.cant = Math.ceil(this.dbStatements.length / 10);
           this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a: any, b: any) => {
             const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
-            
+
             if (dateComparison === 0) {
               return b.ID_DETAIL - a.ID_DETAIL;
             } else {
@@ -140,9 +149,27 @@ export class StatementsComponent implements OnInit {
     });
   }
 
+  openApprovalModal() {
+    const selectedItems = this.db.filter(s => s.isChecked && s.STATE_GESTOR == 0);
+
+    // Comprobar si hay elementos seleccionados
+    if (selectedItems.length > 0) {
+      // Actualizar el formulario con los valores correspondientes
+      this.userForm.patchValue({
+        declarated: this.selectedWeight,
+        treatmentType: selectedItems[0].TipoTratamiento,
+        material: selectedItems[0].PRECEDENCE
+      });
+
+      // Simular un clic en el botón que abre el modal
+      document.getElementById('openModalButton')?.click();
+    } else {
+      console.log('error')
+    }
+  }
+
   filter(auto: boolean = false) {
     if (auto && !this.autoFilter) return;
-
     this.filteredStatements = this.dbStatements.filter(r => {
       return (
         (this.selectedBusiness === '-1' || r.NAME_BUSINESS === this.selectedBusiness) &&
@@ -154,7 +181,40 @@ export class StatementsComponent implements OnInit {
     });
     this.db = this.filteredStatements.slice(0, 10).sort((a: any, b: any) => {
       const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
-      
+
+      if (dateComparison === 0) {
+        return b.ID_DETAIL - a.ID_DETAIL;
+      } else {
+        return dateComparison;
+      }
+    });
+    this.cant = Math.ceil(this.filteredStatements.length / 10);
+    this.selectedDeclarationsCount = 0;
+    this.selectedWeight = 0;
+    this.selectAllChecked = false;
+    this.filteredStatements.forEach(s => {
+      if (s.STATE_GESTOR == 0) {
+        s.isChecked = false;
+      }
+    });
+    this.anyCheckboxSelected = this.filteredStatements.some(s => s.isChecked && s.STATE_GESTOR == 0);
+    this.cdr.detectChanges();
+  }
+
+  filter_two(auto: boolean = false) {
+    if (auto && !this.autoFilter) return;
+    this.filteredStatements = this.dbStatements.filter(r => {
+      return (
+        (this.selectedBusiness === '-1' || r.NAME_BUSINESS === this.selectedBusiness) &&
+        (this.selectedMaterial === '-1' || r.PRECEDENCE === this.selectedMaterial) &&
+        (this.selectedTreatment === '-1' || r.TipoTratamiento === this.selectedTreatment) &&
+        (this.selectedYear === '-1' || r.FechaRetiroTipeada === this.selectedYear) &&
+        (this.selectedState === '-1' || parseInt(r.STATE_GESTOR) === parseInt(this.selectedState))
+      );
+    });
+    this.db = this.filteredStatements.slice(0, 10).sort((a: any, b: any) => {
+      const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+
       if (dateComparison === 0) {
         return b.ID_DETAIL - a.ID_DETAIL;
       } else {
@@ -230,47 +290,51 @@ export class StatementsComponent implements OnInit {
       this.filter();
       this.pagTo(this.pos - 1);
     });
-    this.userForm.reset({reciclador:'0'})
+    this.userForm.reset({ reciclador: '0' })
+  }
+
+  reset_nocheck() {
+    this.userForm.reset({ reciclador: '0' })
   }
   pagTo(i: number) {
     this.pos = i + 1;
     this.db = this.filteredStatements.slice((i * 10), (i + 1) * 10).sort((a: any, b: any) => {
-            const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
-            
-            if (dateComparison === 0) {
-              return b.ID_DETAIL - a.ID_DETAIL;
-            } else {
-              return dateComparison;
-            }
-          });
+      const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+
+      if (dateComparison === 0) {
+        return b.ID_DETAIL - a.ID_DETAIL;
+      } else {
+        return dateComparison;
+      }
+    });
   }
 
   next() {
     if (this.pos >= this.cant) return;
     this.pos++;
     this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a: any, b: any) => {
-            const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
-            
-            if (dateComparison === 0) {
-              return b.ID_DETAIL - a.ID_DETAIL;
-            } else {
-              return dateComparison;
-            }
-          });
+      const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+
+      if (dateComparison === 0) {
+        return b.ID_DETAIL - a.ID_DETAIL;
+      } else {
+        return dateComparison;
+      }
+    });
   }
 
   previus() {
     if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
     this.pos = this.pos - 1;
     this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a: any, b: any) => {
-            const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
-            
-            if (dateComparison === 0) {
-              return b.ID_DETAIL - a.ID_DETAIL;
-            } else {
-              return dateComparison;
-            }
-          });
+      const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+
+      if (dateComparison === 0) {
+        return b.ID_DETAIL - a.ID_DETAIL;
+      } else {
+        return dateComparison;
+      }
+    });
   }
 
   setArrayFromNumber() {
@@ -367,25 +431,77 @@ export class StatementsComponent implements OnInit {
 
   async saveInvoice(index: number): Promise<void> {
     if (this.selectedFile) {
-      const { rut, invoiceNumber, entryDate, valuedWeight, reciclador } = this.userForm.value;
+      let { rut, invoiceNumber, entryDate, valuedWeight, reciclador } = this.userForm.value;
       const totalWeight = this.userForm.controls['totalWeight'].value;
-      const treatmentType = this.db[index].TREATMENT_TYPE_NUMBER
-      const material = this.db[index].PRECEDENCE_NUMBER
-      const id_detail = this.db[index].ID_DETAIL
-      try {
-        const response = await this.establishmentService.saveInvoice(rut, reciclador, invoiceNumber, id_detail, entryDate, valuedWeight!.replace(",", "."), totalWeight!.replace(",", "."), treatmentType, material, this.selectedFile).toPromise();
-        if (response.status) {
+      const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
+      if (selectedItems.length > 0) {
+        try {
+          valuedWeight = (parseFloat(valuedWeight!.replace(",", ".")) / selectedItems.length).toFixed(2);
+          Swal.fire({
+            title: 'Cargando Datos',
+            text: 'Se están recuperando datos',
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowEscapeKey: false,
+            allowOutsideClick: false
+          });
+          for (let i = 0; i < selectedItems.length; i++) {
+            const treatmentType = selectedItems[i].TREATMENT_TYPE_NUMBER
+            const material = selectedItems[i].PRECEDENCE_NUMBER
+            const id_detail = selectedItems[i].ID_DETAIL
+            const response = await this.establishmentService.saveInvoice(rut, reciclador, invoiceNumber, id_detail, entryDate, valuedWeight, totalWeight!.replace(",", "."), treatmentType, material, this.selectedFile).toPromise();
+            if (response.status) {
+              // Encuentra y actualiza el elemento en la lista db
+              const updatedItem = this.db.find(item => item.ID_DETAIL === id_detail);
+              if (updatedItem) {
+                updatedItem.STATE_GESTOR = 1; // Actualiza el estado a "Aprobado"
+              }
+              // Notifica a Angular que debe verificar cambios en la vista
+              this.cdr.detectChanges();
+            }
+          }
+          // Cerrar mensaje de carga
+          Swal.close();
           setTimeout(async () => {
             await Swal.fire({
-              title: "La factura fue guardada exitosamente",
+              title: "Las facturas fueron guardadas exitosamente",
               text: "",
               icon: "success",
               showConfirmButton: true, // Muestra el botón de confirmación.
             });
           }, 1500);
         }
-      } catch (error) {
-        console.error('Error:', error);
+        catch (error) {
+          console.error('Error:', error);
+        }
+      }
+      else {
+        const treatmentType = this.db[index].TREATMENT_TYPE_NUMBER
+        const material = this.db[index].PRECEDENCE_NUMBER
+        const id_detail = this.db[index].ID_DETAIL
+        try {
+          const response = await this.establishmentService.saveInvoice(rut, reciclador, invoiceNumber, id_detail, entryDate, valuedWeight!.replace(",", "."), totalWeight!.replace(",", "."), treatmentType, material, this.selectedFile).toPromise();
+          if (response.status) {
+            // Encuentra y actualiza el elemento en la lista db
+            const updatedItem = this.db.find(item => item.ID_DETAIL === id_detail);
+            if (updatedItem) {
+              updatedItem.STATE_GESTOR = 1; // Actualiza el estado a "Aprobado"
+            }
+            // Notifica a Angular que debe verificar cambios en la vista
+            this.cdr.detectChanges();
+            Swal.close();
+            setTimeout(async () => {
+              await Swal.fire({
+                title: "La factura fue guardada exitosamente",
+                text: "",
+                icon: "success",
+                showConfirmButton: true, // Muestra el botón de confirmación.
+              });
+            }, 1500);
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
       }
     } else {
       console.error('No file selected');
@@ -413,7 +529,7 @@ export class StatementsComponent implements OnInit {
     } else {
       return value.toLocaleString('es');
     }
-  }  
+  }
   async onRUTChange(index: number) {
     const rut = this.userForm.controls['rut'].value;
     const invoiceNumber = this.userForm.controls['invoiceNumber'].value;
@@ -424,17 +540,21 @@ export class StatementsComponent implements OnInit {
       try {
         const businessResponse = await this.establishmentService.getInovice(invoiceNumber, rut, treatmentType, material).toPromise();
         if (businessResponse.status) {
-          
+
           this.userForm.controls['totalWeight'].setValue(
             this.formatNumber(businessResponse.data[0]?.invoice_value)
           );
           this.userForm.controls['declarateWeight'].setValue(
             this.formatNumber(businessResponse.data[0].value_declarated)
           );
-          this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + 1);
+          if (this.selectedDeclarationsCount != 0) {
+            this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + this.selectedDeclarationsCount);
+          }
+          else {
+            this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + 1);
+          }
           const asoc = this.userForm.controls['asoc'].value || "0";
-
-          if (parseInt(asoc) > 1) {
+          if (parseInt(asoc) > 1 && this.selectedDeclarationsCount == 0) {
             if (invoiceNumber) {
               this.userForm.controls['valuedWeight'].enable();
             } else {
@@ -536,7 +656,7 @@ export class StatementsComponent implements OnInit {
   }
 
   minStringValue(min: number): ValidatorFn {
-    return (control: AbstractControl): {[key: string]: any} | null => {
+    return (control: AbstractControl): { [key: string]: any } | null => {
       if (!control.value) {
         return null;
       }
@@ -557,11 +677,101 @@ export class StatementsComponent implements OnInit {
   }
 
   pastDateValidator(): ValidatorFn {
-    return (control: AbstractControl): {[key: string]: any} | null => {
+    return (control: AbstractControl): { [key: string]: any } | null => {
       const selectedDate = new Date(control.value);
       const now = new Date();
       now.setHours(0, 0, 0, 0);
       return selectedDate > now ? { 'futureDate': { value: control.value } } : null;
     };
   }
+
+  updateCheckboxSelection() {
+    const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
+    this.anyCheckboxSelected = selectedItems.length > 0;
+    // Actualizar el número de declaraciones seleccionadas
+    this.selectedDeclarationsCount = selectedItems.length;
+
+    // Calcular y actualizar el peso total declarado seleccionado
+    let totalWeight = selectedItems.reduce((sum, current) => sum + parseFloat(current.VALUE), 0);
+
+    // Formatear el peso total para usar coma como separador decimal y quitar decimales si es entero
+    if (totalWeight % 1 === 0) {
+      // Es un número entero
+      this.selectedWeight = totalWeight.toLocaleString('es-ES');
+    } else {
+      // Tiene decimales
+      this.selectedWeight = totalWeight.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    if (selectedItems.length > 0) {
+      // Si hay elementos seleccionados, establecer los filtros según el primer elemento seleccionado
+      const selectedItem = selectedItems[0];
+      this.selectedTreatment = selectedItem.TipoTratamiento;
+      this.selectedMaterial = selectedItem.PRECEDENCE;
+      this.selectedState = '0'; // Estado "Por aprobar"
+      this.disableFilters = true; // Deshabilitar filtros
+      this.updateFilters();
+    } else {
+      // Si no hay elementos seleccionados, restablecer los filtros y habilitarlos
+      this.selectedTreatment = '-1';
+      this.selectedMaterial = '-1';
+      this.selectedState = '-1';
+      this.disableFilters = false;
+      this.filter_two();
+      this.updateFilters();
+      this.pagTo(0);
+    }
+
+    this.isAnyCheckboxSelected = selectedItems.length > 0;
+
+    if (selectedItems.length == 1) {
+      this.filter_two();
+      this.updateFilters();
+      this.pagTo(0);
+    }
+  }
+
+  selectAllCheckboxes(isSelected: boolean) {
+    this.filteredStatements.forEach(s => {
+      if (s.STATE_GESTOR == 0) { // Solo cambiar si STATE_GESTOR es 0
+        s.isChecked = isSelected;
+      }
+    });
+
+    // Actualizar la vista actual (db) para reflejar los cambios
+    this.db = this.filteredStatements.slice((this.pos - 1) * 10, this.pos * 10);
+    this.updateCheckboxSelection();
+  }
+
+  onSelectAllCheckboxChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.filteredStatements.forEach(s => {
+      if (s.STATE_GESTOR == 0) { // Solo cambiar si STATE_GESTOR es 0
+        s.isChecked = input.checked;
+      }
+    });
+
+    // Actualizar la vista actual (db) para reflejar los cambios
+    this.db = this.filteredStatements.slice((this.pos - 1) * 10, this.pos * 10);
+    const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
+    this.anyCheckboxSelected = this.filteredStatements.some(s => s.isChecked && s.STATE_GESTOR == 0);
+    this.cdr.detectChanges();
+    // Actualizar el número de declaraciones seleccionadas
+    this.selectedDeclarationsCount = selectedItems.length;
+    if (this.selectedDeclarationsCount == 0) {
+      this.disableFilters = false
+    }
+
+    // Calcular y actualizar el peso total declarado seleccionado
+    let totalWeight = selectedItems.reduce((sum, current) => sum + parseFloat(current.VALUE), 0);
+
+    // Formatear el peso total para usar coma como separador decimal y quitar decimales si es entero
+    if (totalWeight % 1 === 0) {
+      // Es un número entero
+      this.selectedWeight = totalWeight.toLocaleString('es-ES');
+    } else {
+      // Tiene decimales
+      this.selectedWeight = totalWeight.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+  }
+
 }
