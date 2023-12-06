@@ -64,7 +64,7 @@
                     <!-- Añade un espacio vacío para alinear el botón correctamente -->
                     <div class="input-group">
                         <button class="btn btn-primary w-100"
-                            (click)="autoFilter = false; filter(); pagTo(0)">Mostrar</button>
+                            (click)="autoFilter = false; filter(); pagTo(0);disableFilters = false">Mostrar</button>
                     </div>
                 </div>
                 <div class="col-12 col-xl-3 mb-3 mb-xl-0">
@@ -101,7 +101,7 @@
                 <thead class="vertical-middle">
                     <tr>
                         <th>
-                            <input type="checkbox" [disabled]="!isAnyCheckboxSelected"
+                            <input type="checkbox" [disabled]="!isAnyCheckboxSelected" [(ngModel)]="selectAllChecked"
                                 (change)="onSelectAllCheckboxChange($event)">
                             Seleccionar todo
                         </th>
@@ -114,7 +114,9 @@
                         <th>Estado</th>
                         <th>Peso Declarado</th>
                         <th>Peso Valorizado</th>
-                        <th>Aprobar</th>
+                        <ng-container *ngIf="!anyCheckboxSelected">
+                            <th>Aprobar</th>
+                        </ng-container>
                     </tr>
                 </thead>
                 <tbody>
@@ -137,16 +139,18 @@
                         </td>
                         <td>{{replaceDot(s.VALUE)}}</td>
                         <td>{{formatValue(s.VALUE_DECLARATE)}}</td>
-                        <td>
-                            <a class="custom-cursor" data-bs-toggle="modal"
-                                [attr.data-bs-target]="s.STATE_GESTOR == 0 ? '#infoModal' : null"
-                                (click)="handleClick(x, s.STATE_GESTOR); this.selectedDeclarationsCount = 0"
-                                [ngClass]="{'no-pointer': s.STATE_GESTOR !== 0}">
-                                <i class="fa fa-check fa-lg fa-fw"
-                                    [ngClass]="s.STATE_GESTOR == 0 ? 'color-verde-opaco' : 'color-verde'"
-                                    aria-hidden="true"></i>
-                            </a>
-                        </td>
+                        <ng-container *ngIf="!anyCheckboxSelected">
+                            <td>
+                                <a class="custom-cursor" data-bs-toggle="modal"
+                                    [attr.data-bs-target]="s.STATE_GESTOR == 0 ? '#infoModal' : null"
+                                    (click)="handleClick(x, s.STATE_GESTOR); this.selectedDeclarationsCount = 0"
+                                    [ngClass]="{'no-pointer': s.STATE_GESTOR !== 0}">
+                                    <i class="fa fa-check fa-lg fa-fw"
+                                        [ngClass]="s.STATE_GESTOR == 0 ? 'color-verde-opaco' : 'color-verde'"
+                                        aria-hidden="true"></i>
+                                </a>
+                            </td>
+                        </ng-container>
                     </tr>
                 </tbody>
             </table>

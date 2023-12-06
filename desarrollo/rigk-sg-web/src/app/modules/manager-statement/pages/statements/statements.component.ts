@@ -4,6 +4,7 @@ import { validate } from 'rut.js';
 import { BusinessService } from 'src/app/core/services/business.service';
 import { EstablishmentService } from 'src/app/core/services/establishment.service';
 import { ProductorService } from 'src/app/core/services/productor.service';
+import { ChangeDetectorRef } from '@angular/core';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -36,8 +37,11 @@ export class StatementsComponent implements OnInit {
   selectedYear: string = '-1';
   selectedTreatment: string = '-1';
   selectedState: any = '-1';
+  selectAllChecked: boolean = false;
   autoFilter: boolean = true;
   isRemainingWeightNegative: boolean = false;
+  anyCheckboxSelected: boolean = false;
+
 
   index: number = 0;
   userForm = this.fb.group({
@@ -65,7 +69,8 @@ export class StatementsComponent implements OnInit {
     public productorService: ProductorService,
     private establishmentService: EstablishmentService,
     public businessService: BusinessService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -186,11 +191,14 @@ export class StatementsComponent implements OnInit {
     this.cant = Math.ceil(this.filteredStatements.length / 10);
     this.selectedDeclarationsCount = 0;
     this.selectedWeight = 0;
+    this.selectAllChecked = false;
     this.filteredStatements.forEach(s => {
       if (s.STATE_GESTOR == 0) {
         s.isChecked = false;
       }
     });
+    this.anyCheckboxSelected = this.filteredStatements.some(s => s.isChecked && s.STATE_GESTOR == 0);
+    this.cdr.detectChanges();
   }
 
   filter_two(auto: boolean = false) {
@@ -414,6 +422,15 @@ export class StatementsComponent implements OnInit {
             const material = selectedItems[i].PRECEDENCE_NUMBER
             const id_detail = selectedItems[i].ID_DETAIL
             const response = await this.establishmentService.saveInvoice(rut, reciclador, invoiceNumber, id_detail, entryDate, valuedWeight, totalWeight!.replace(",", "."), treatmentType, material, this.selectedFile).toPromise();
+            if (response.status) {
+              // Encuentra y actualiza el elemento en la lista db
+              const updatedItem = this.db.find(item => item.ID_DETAIL === id_detail);
+              if (updatedItem) {
+                updatedItem.STATE_GESTOR = 1; // Actualiza el estado a "Aprobado"
+              }
+              // Notifica a Angular que debe verificar cambios en la vista
+              this.cdr.detectChanges();
+            }
           }
           // Cerrar mensaje de carga
           Swal.close();
@@ -437,6 +454,14 @@ export class StatementsComponent implements OnInit {
         try {
           const response = await this.establishmentService.saveInvoice(rut, reciclador, invoiceNumber, id_detail, entryDate, valuedWeight!.replace(",", "."), totalWeight!.replace(",", "."), treatmentType, material, this.selectedFile).toPromise();
           if (response.status) {
+            // Encuentra y actualiza el elemento en la lista db
+            const updatedItem = this.db.find(item => item.ID_DETAIL === id_detail);
+            if (updatedItem) {
+              updatedItem.STATE_GESTOR = 1; // Actualiza el estado a "Aprobado"
+            }
+            // Notifica a Angular que debe verificar cambios en la vista
+            this.cdr.detectChanges();
+            Swal.close();
             setTimeout(async () => {
               await Swal.fire({
                 title: "La factura fue guardada exitosamente",
@@ -634,6 +659,7 @@ export class StatementsComponent implements OnInit {
 
   updateCheckboxSelection() {
     const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
+    this.anyCheckboxSelected = selectedItems.length > 0;
     // Actualizar el número de declaraciones seleccionadas
     this.selectedDeclarationsCount = selectedItems.length;
 
@@ -699,8 +725,13 @@ export class StatementsComponent implements OnInit {
     // Actualizar la vista actual (db) para reflejar los cambios
     this.db = this.filteredStatements.slice((this.pos - 1) * 10, this.pos * 10);
     const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
+    this.anyCheckboxSelected = this.filteredStatements.some(s => s.isChecked && s.STATE_GESTOR == 0);
+    this.cdr.detectChanges();
     // Actualizar el número de declaraciones seleccionadas
     this.selectedDeclarationsCount = selectedItems.length;
+    if (this.selectedDeclarationsCount == 0) {
+      this.disableFilters = false
+    }
 
     // Calcular y actualizar el peso total declarado seleccionado
     let totalWeight = selectedItems.reduce((sum, current) => sum + parseFloat(current.VALUE), 0);
