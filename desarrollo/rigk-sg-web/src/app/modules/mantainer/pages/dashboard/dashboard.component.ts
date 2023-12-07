@@ -165,10 +165,10 @@ export class DashboardComponent implements OnInit {
               this.paperCardboardGoal = goal.PERCENTAGE_CUM;
               break;
             case '2':
-              this.plasticGoal = goal.PERCENTAGE_CUM;
+              this.metalGoal = goal.PERCENTAGE_CUM;
               break;
             case '3':
-              this.metalGoal = goal.PERCENTAGE_CUM;
+              this.plasticGoal = goal.PERCENTAGE_CUM;
               break;
           }
         }
