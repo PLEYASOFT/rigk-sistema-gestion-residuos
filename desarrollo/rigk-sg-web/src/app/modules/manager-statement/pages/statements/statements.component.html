@@ -24,7 +24,7 @@
                     <label class="form-label">Tipo de tratamiento:</label>
                     <div class="input-group">
                         <select id="f_establishment" class="form-select" [(ngModel)]="selectedTreatment"
-                            (change)="updateFilters()">
+                            (change)="updateFilters()" [disabled]="disableFilters">
                             <option value="-1" selected>Todos</option>
                             <option *ngFor="let es of treatment_name" value="{{es}}">{{es}}</option>
                         </select>
@@ -34,7 +34,7 @@
                     <label class="form-label">Material:</label>
                     <div class="input-group">
                         <select id="f_material" class="form-select" [(ngModel)]="selectedMaterial"
-                            (change)="updateFilters()">
+                            (change)="updateFilters()" [disabled]="disableFilters">
                             <option value="-1" selected>Todos</option>
                             <option *ngFor="let ma of material_name" value="{{ma}}">{{ma}}</option>
                         </select>
@@ -52,7 +52,8 @@
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Estado:</label>
                     <div class="input-group">
-                        <select id="f_state" class="form-select" [(ngModel)]="selectedState" (change)="updateFilters()">
+                        <select id="f_state" class="form-select" [(ngModel)]="selectedState" (change)="updateFilters()"
+                            [disabled]="disableFilters">
                             <option value="-1" selected>Todos</option>
                             <option *ngFor="let s of state" [value]="s">{{getStateText(s)}}</option>
                         </select>
@@ -63,7 +64,33 @@
                     <!-- Añade un espacio vacío para alinear el botón correctamente -->
                     <div class="input-group">
                         <button class="btn btn-primary w-100"
-                            (click)="autoFilter = false; filter(); pagTo(0)">Mostrar</button>
+                            (click)="autoFilter = false; filter(); pagTo(0);disableFilters = false">Mostrar</button>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-3 mb-3 mb-xl-0">
+                    <label class="form-label">Número de declaraciones seleccionadas:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" [(ngModel)]="selectedDeclarationsCount" readonly>
+                    </div>
+                </div>
+
+                <div class="col-12 col-xl-3 mb-3 mb-xl-0">
+                    <p></p>
+                    <label class="form-label">Peso total declarado seleccionado (Kg):</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" [(ngModel)]="selectedWeight" readonly>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <p></p>
+                    <label class="form-label">&nbsp;</label>
+                    <!-- Añade un espacio vacío para alinear el botón correctamente -->
+                    <div class="input-group">
+                        <button class="btn btn-primary w-100" (click)="openApprovalModal()"
+                            [disabled]="selectedDeclarationsCount == 0 && selectedWeight == 0">
+                            Aprobar Selección
+                        </button>
+
                     </div>
                 </div>
             </div>
@@ -73,6 +100,11 @@
             <table class="table table-even table-section table-borderless table-radius">
                 <thead class="vertical-middle">
                     <tr>
+                        <th>
+                            <input type="checkbox" [disabled]="!isAnyCheckboxSelected" [(ngModel)]="selectAllChecked"
+                                (change)="onSelectAllCheckboxChange($event)">
+                            Seleccionar todo
+                        </th>
                         <th>Empresa CI</th>
                         <th>Establecimiento CI</th>
                         <th>Tipo de tratamiento</th>
@@ -82,11 +114,19 @@
                         <th>Estado</th>
                         <th>Peso Declarado</th>
                         <th>Peso Valorizado</th>
-                        <th>Aprobar</th>
+                        <ng-container *ngIf="!anyCheckboxSelected">
+                            <th>Aprobar</th>
+                        </ng-container>
                     </tr>
                 </thead>
                 <tbody>
                     <tr *ngFor="let s of db; let x = index">
+                        <td>
+                            <section class="example-section">
+                                <input type="checkbox" [disabled]="s.STATE_GESTOR != 0" [(ngModel)]="s.isChecked"
+                                    (change)="updateCheckboxSelection()">
+                            </section>
+                        </td>
                         <td>{{s.NAME_BUSINESS}}</td>
                         <td>{{s.NAME_ESTABLISHMENT_REGION}}</td>
                         <td>{{s.TipoTratamiento}}</td>
@@ -99,16 +139,18 @@
                         </td>
                         <td>{{replaceDot(s.VALUE)}}</td>
                         <td>{{formatValue(s.VALUE_DECLARATE)}}</td>
-                        <td>
-                            <a class="custom-cursor" data-bs-toggle="modal"
-                                [attr.data-bs-target]="s.STATE_GESTOR == 0 ? '#infoModal' : null"
-                                (click)="handleClick(x, s.STATE_GESTOR)"
-                                [ngClass]="{'no-pointer': s.STATE_GESTOR !== 0}">
-                                <i class="fa fa-check fa-lg fa-fw"
-                                    [ngClass]="s.STATE_GESTOR == 0 ? 'color-verde-opaco' : 'color-verde'"
-                                    aria-hidden="true"></i>
-                            </a>
-                        </td>
+                        <ng-container *ngIf="!anyCheckboxSelected">
+                            <td>
+                                <a class="custom-cursor" data-bs-toggle="modal"
+                                    [attr.data-bs-target]="s.STATE_GESTOR == 0 ? '#infoModal' : null"
+                                    (click)="handleClick(x, s.STATE_GESTOR); this.selectedDeclarationsCount = 0"
+                                    [ngClass]="{'no-pointer': s.STATE_GESTOR !== 0}">
+                                    <i class="fa fa-check fa-lg fa-fw"
+                                        [ngClass]="s.STATE_GESTOR == 0 ? 'color-verde-opaco' : 'color-verde'"
+                                        aria-hidden="true"></i>
+                                </a>
+                            </td>
+                        </ng-container>
                     </tr>
                 </tbody>
             </table>
@@ -116,13 +158,15 @@
         <!-- Pagination -->
         <nav aria-label="Navegación resultados">
             <ul class="pagination">
-                <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
-                <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
-                <li *ngFor="let in of setArrayFromNumber(); let i = index"><button class="border btn btn-sm"
-                        [ngClass]="{ 'btn-info':pos==(i+1), 'btn-primary': pos != (i+1)}"
-                        (click)="pagTo(i)">{{i+1}}</button></li>
-                <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
-                <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
+              <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
+              <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
+              <li *ngFor="let i of visiblePageNumbers(); let j = index">
+                <button class="border btn btn-sm"
+                        [ngClass]="{ 'btn-info': pos === (i+1), 'btn-primary': pos !== (i+1) }"
+                        (click)="pagTo(i)">{{i+1}}</button>
+              </li>
+              <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
+              <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
             </ul>
         </nav>
     </section>
@@ -130,7 +174,7 @@
 </div>
 
 <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
-    (hidden.bs.modal)="reset()">
+    (hidden.bs.modal)="reset_nocheck()">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -154,8 +198,9 @@
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">RUT Reciclador</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" [readonly]="userForm.controls['invoiceNumber'].invalid" placeholder="1-9" formControlName="rut"
-                                (change)="onChangeVAT($event.target)">
+                            <input type="text" class="form-control"
+                                [readonly]="userForm.controls['invoiceNumber'].invalid" placeholder="1-9"
+                                formControlName="rut" (change)="onChangeVAT($event.target)">
                             <div *ngIf="userForm.controls['rut'].errors && userForm.controls['rut'].touched"
                                 class="text-danger pl-0">
                                 <p *ngIf="userForm.controls['rut'].errors['required']">El rut de la empresa es
@@ -170,12 +215,14 @@
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Reciclador</label>
                         <div class="col-sm-8">
-                            <select [disabled]="userForm.controls['invoiceNumber'].value == ''" class="form-select" formControlName="reciclador" (change)="onRUTChange(this.index)">
+                            <select [disabled]="userForm.controls['invoiceNumber'].value == ''" class="form-select"
+                                formControlName="reciclador" (change)="onRUTChange(this.index)">
                                 <option value="0">Seleccione Reciclador</option>
                                 <option *ngFor="let b of dbBusiness" value="{{b['ID']}}">{{b['NAME']}}</option>
                             </select>
                             <div class="text-danger pl-0">
-                                <p *ngIf="businessNoFound && userForm.controls['rut'].touched">Rut no se encuentra registrado en el sistema.
+                                <p *ngIf="businessNoFound && userForm.controls['rut'].touched">Rut no se encuentra
+                                    registrado en el sistema.
                                 </p>
                             </div>
                         </div>
@@ -208,14 +255,17 @@
                         <label class="col-sm-4 col-form-label">Fecha Ingreso PR</label>
                         <div class="col-sm-8">
                             <input type="date" class="form-control" placeholder="10/4/2023" formControlName="entryDate">
-                            <div *ngIf="userForm.controls['entryDate'].errors && userForm.controls['entryDate'].touched" class="text-danger">
-                                <p *ngIf="userForm.controls['entryDate'].errors['required']">Debe ingresar una fecha.</p>
-                                <p *ngIf="userForm.controls['entryDate'].errors['futureDate']">La fecha no puede ser futura.</p>
+                            <div *ngIf="userForm.controls['entryDate'].errors && userForm.controls['entryDate'].touched"
+                                class="text-danger">
+                                <p *ngIf="userForm.controls['entryDate'].errors['required']">Debe ingresar una fecha.
+                                </p>
+                                <p *ngIf="userForm.controls['entryDate'].errors['futureDate']">La fecha no puede ser
+                                    futura.</p>
                             </div>
                         </div>
-                    </div>                    
+                    </div>
                     <div class="row mb-3">
-                        <label class="col-sm-4 col-form-label">Peso Total</label>
+                        <label class="col-sm-4 col-form-label">Peso Total Factura Reciclador</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" formControlName="totalWeight">
                             <div *ngIf="userForm.controls['totalWeight'].errors && userForm.controls['totalWeight'].touched"
@@ -224,7 +274,8 @@
                                     total.</p>
                                 <p *ngIf="userForm.controls['totalWeight'].errors['pattern']">Debe ingresar un número
                                     válido (con coma).</p>
-                                <p *ngIf="userForm.controls['totalWeight'].errors['minStringValue']">El valor debe ser mayor que cero.</p>
+                                <p *ngIf="userForm.controls['totalWeight'].errors['minStringValue']">El valor debe ser
+                                    mayor que cero.</p>
                             </div>
                         </div>
                     </div>
@@ -238,14 +289,18 @@
                         <label class="col-sm-4 col-form-label">Peso Valorizado</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" formControlName="valuedWeight">
-                            <div *ngIf="userForm.controls['valuedWeight'].errors && userForm.controls['valuedWeight'].touched" class="text-danger">
-                                <p *ngIf="userForm.controls['valuedWeight'].errors['required']">Debe ingresar un peso valorizado.</p>
-                                <p *ngIf="userForm.controls['valuedWeight'].errors['pattern']">Debe ingresar un número válido (Con coma).</p>
-                                <p *ngIf="userForm.controls['valuedWeight'].errors['minStringValue']">El valor debe ser mayor que cero.</p>
+                            <div *ngIf="userForm.controls['valuedWeight'].errors && userForm.controls['valuedWeight'].touched"
+                                class="text-danger">
+                                <p *ngIf="userForm.controls['valuedWeight'].errors['required']">Debe ingresar un peso
+                                    valorizado.</p>
+                                <p *ngIf="userForm.controls['valuedWeight'].errors['pattern']">Debe ingresar un número
+                                    válido (Con coma).</p>
+                                <p *ngIf="userForm.controls['valuedWeight'].errors['minStringValue']">El valor debe ser
+                                    mayor que cero.</p>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Peso Remanente</label>
                         <div class="col-sm-8">
@@ -287,8 +342,9 @@
                     (click)="this.userForm.reset({reciclador:'0'})">Volver</button>
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     [disabled]="userForm.invalid || isRemainingWeightNegative"
-                    (click)="saveInvoice(this.index)">Guardar</button>
+                    (click)="saveInvoice(this.index); reset()">Guardar</button>
             </div>
         </div>
     </div>
 </div>
+<a id="openModalButton" data-bs-toggle="modal" data-bs-target="#infoModal" style="display: none;"></a>

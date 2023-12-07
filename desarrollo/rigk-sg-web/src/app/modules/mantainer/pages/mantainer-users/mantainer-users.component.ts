@@ -303,4 +303,31 @@ export class MantainerUsersComponent implements OnInit {
   setArrayFromNumber() {
     return new Array(this.cant);
   }
+  visiblePageNumbers() {
+    const totalPages = this.setArrayFromNumber().length;
+    const visiblePages = [];
+  
+    if (totalPages <= 15) {
+      // Si hay 20 o menos páginas, mostrar todas
+      for (let i = 0; i < totalPages; i++) {
+        visiblePages.push(i);
+      }
+    } else {
+      // Calcular las páginas visibles alrededor de la página actual
+      let startPage = Math.max(0, this.pos - Math.floor(15 / 2));
+      let endPage = Math.min(totalPages - 1, startPage + 14);
+  
+      // Ajustar el cálculo si estamos cerca del final
+      if (endPage - startPage + 1 < 15) {
+        endPage = totalPages - 1;
+        startPage = Math.max(0, endPage - 14);
+      }
+  
+      for (let i = startPage; i <= endPage; i++) {
+        visiblePages.push(i);
+      }
+    }
+  
+    return visiblePages;
+  }
 }

@@ -2,7 +2,7 @@
 <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
-        <li class="breadcrumb-item"><a href="#">Consulta de Declaración</a></li>
+        <li class="breadcrumb-item"><a href="#/productor/statements">Consulta de Declaración</a></li>
         <li class="breadcrumb-item active" aria-current="page">Declaración {{year_statement}} - {{name_business}}({{rut_business}})
         </li>
     </ol>
@@ -18,7 +18,6 @@
             <li class="list-process__dot" [ngClass]="{active: position == 1}"><a>Formulario</a></li>
             <li class="list-process__dot" [ngClass]="{active: position == 2}"><a>Resumen</a></li>
             <li class="list-process__dot" [ngClass]="{active: position == 3}"><a>Facturación</a></li>
-            <!-- <li (click)="optionSelected(6)" class="list-process__icon"><a ><img width="40" src="assets/images/ic-mail.svg"></a></li> -->
         </ul>
     </div>
 </div>
