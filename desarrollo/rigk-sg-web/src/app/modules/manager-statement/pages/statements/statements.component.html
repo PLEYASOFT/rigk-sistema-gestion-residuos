@@ -64,7 +64,7 @@
                     <!-- Añade un espacio vacío para alinear el botón correctamente -->
                     <div class="input-group">
                         <button class="btn btn-primary w-100"
-                            (click)="autoFilter = false; filter(); pagTo(0);disableFilters = false">Mostrar</button>
+                            (click)="autoFilter = false; filter(); pagTo(0);disableFilters = false;">Mostrar</button>
                     </div>
                 </div>
                 <div class="col-12 col-xl-3 mb-3 mb-xl-0">
@@ -340,7 +340,7 @@
                     (click)="this.userForm.reset({reciclador:'0'})">Volver</button>
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     [disabled]="userForm.invalid || isRemainingWeightNegative"
-                    (click)="saveInvoice(this.index); reset()">Guardar</button>
+                    (click)="saveInvoice(this.index); reset();disableFilters = false;">Guardar</button>
             </div>
         </div>
     </div>

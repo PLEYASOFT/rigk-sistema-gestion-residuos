@@ -99,6 +99,7 @@ export class StatementsComponent implements OnInit {
       Swal.showLoading();
       this.establishmentService.getDeclarationEstablishment().subscribe(r => {
         if (r.status) {
+          r.status = r.status.filter((item: any) => item.TipoTratamiento != null);
           r.status = r.status.sort((a: any, b: any) => {
             const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
 
@@ -123,8 +124,8 @@ export class StatementsComponent implements OnInit {
             if (this.material_name.indexOf(e.PRECEDENCE) == -1) {
               this.material_name.push(e.PRECEDENCE)
             }
-            if (this.treatment_name.indexOf(e.TipoTratamiento) == -1) {
-              this.treatment_name.push(e.TipoTratamiento)
+            if (this.treatment_name.indexOf(e.TipoTratamiento) === -1) {
+              this.treatment_name.push(e.TipoTratamiento);
             }
             if (this.state.indexOf(e.STATE_GESTOR) == -1) {
               this.state.push(e.STATE_GESTOR)
@@ -427,6 +428,7 @@ export class StatementsComponent implements OnInit {
               const updatedItem = this.db.find(item => item.ID_DETAIL === id_detail);
               if (updatedItem) {
                 updatedItem.STATE_GESTOR = 1; // Actualiza el estado a "Aprobado"
+                updatedItem.VALUE_DECLARATE = valuedWeight.replace('.', ',');
               }
               // Notifica a Angular que debe verificar cambios en la vista
               this.cdr.detectChanges();
@@ -458,6 +460,7 @@ export class StatementsComponent implements OnInit {
             const updatedItem = this.db.find(item => item.ID_DETAIL === id_detail);
             if (updatedItem) {
               updatedItem.STATE_GESTOR = 1; // Actualiza el estado a "Aprobado"
+              updatedItem.VALUE_DECLARATE = parseFloat(valuedWeight!.replace(',', '.')).toFixed(2).replace('.', ',');
             }
             // Notifica a Angular que debe verificar cambios en la vista
             this.cdr.detectChanges();
@@ -731,6 +734,9 @@ export class StatementsComponent implements OnInit {
     this.selectedDeclarationsCount = selectedItems.length;
     if (this.selectedDeclarationsCount == 0) {
       this.disableFilters = false
+    }
+    else{
+      this.disableFilters = true
     }
 
     // Calcular y actualizar el peso total declarado seleccionado
