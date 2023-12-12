@@ -52,6 +52,7 @@ export class SidebarComponent implements OnInit {
     { title: "Logs del Sistema", path: "#/mantenedor/logs", icon: "fa fa-database" },
     { title: "Dashboard CI / Productor", path: "#/mantenedor/dashboard-ci-productor", icon: "fa-chart-pie" },
     { title: "Dashboard CI / Gestor", path: "#/mantenedor/dashboard-ci-gestor", icon: "fa-chart-pie" },
+    { title: "Visualizar Medio de Verificación", path: "#/mantenedor/visualizar-mv", icon: "fas fa-folder-open" },
   ];
 
   menuGestor = [

@@ -6,12 +6,12 @@ import { Location } from '@angular/common';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-statements',
-  templateUrl: './statements.component.html',
-  styleUrls: ['./statements.component.css']
+  selector: 'app-visualizar-mv',
+  templateUrl: './visualizar-mv.component.html',
+  styleUrls: ['./visualizar-mv.component.css']
 })
-export class StatementsComponent implements OnInit {
-
+export class VisualizarMvComponent implements OnInit {
+  checkboxState: { [id: string]: boolean } = {};
   userData: any | null;
   dbStatements: any[] = [];
   db: any[] = [];
@@ -47,7 +47,7 @@ export class StatementsComponent implements OnInit {
 
     // Verificar si la página anterior no es una página de detalle
     const previousUrl = this.location.getState() as { navigationId?: number; url?: string };
-    const notDetailPage = previousUrl && previousUrl.url && !previousUrl.url.match(/\/consumidor\/statements\/\d+/);
+    const notDetailPage = previousUrl && previousUrl.url && !previousUrl.url.match(/\/mantenedor\/visualizar-mv\/\d+/);
     if (previousUrl.navigationId && notDetailPage) {
       this.resetFilters();
     }
@@ -87,7 +87,7 @@ export class StatementsComponent implements OnInit {
         allowOutsideClick: false
       });
       Swal.showLoading();
-      this.establishmentService.getDeclarationEstablishment().subscribe(r => {
+      this.establishmentService.getAllDeclarationEstablishments().subscribe(r => {
         if (r.status) {
           r.status = r.status.sort(((a: any, b: any) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()));
 
@@ -266,5 +266,9 @@ export class StatementsComponent implements OnInit {
   goToDetails(headerId: string, detailId: string) {
     this.saveState();
     this.router.navigate(['/consumidor/statements/', headerId, detailId]);
+  }
+
+  isAnyCheckboxSelected(): boolean {
+    return Object.values(this.checkboxState).some(value => value);
   }
 }
