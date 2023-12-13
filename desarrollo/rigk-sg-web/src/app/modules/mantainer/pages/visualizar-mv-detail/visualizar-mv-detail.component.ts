@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { ConsumerService } from '../../../../core/services/consumer.service';
 import { ActivatedRoute } from '@angular/router';
-import { FormBuilder, Validators, AbstractControl, ValidatorFn } from '@angular/forms';
 
 @Component({
   selector: 'app-visualizar-mv-detail',
@@ -13,44 +12,23 @@ import { FormBuilder, Validators, AbstractControl, ValidatorFn } from '@angular/
 })
 export class VisualizarMvDetailComponent implements OnInit {
 
-  maxFiles = 3;
   userData: any | null;
-  dbStatements: any[] = [];
-  db: any[] = [];
-  pos = 1;
-  index: any = 0
   data_consulta: any = [];
   detail_consulta: any = [];
   MV_consulta: any = [];
-  years: number[] = [];
-  cant: number = 0;
   userForm: any;
-  selectedFile: File | null = null;
-  listMV = [
-    { name: "Guia de despacho", value: 1 },
-    { name: "Factura gestor", value: 2 },
-    { name: "Registro de peso", value: 3 },
-    { name: "Fotografía retiro", value: 4 },
-    { name: "Balance de masas", value: 5 },
-    { name: "Otro", value: 6 },
-  ];
+  isLoading: boolean = true;
+  pendingCalls = 0;
   attached: any[] = [];
-  fileName = '';
-  fileBuffer: any;
   constructor(public productorService: ProductorService,
     private ConsumerService: ConsumerService,
     private router: Router,
-    private route: ActivatedRoute,
-    private fb: FormBuilder) { }
+    private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
     this.loadData();
     this.loadDetail();
-    this.userForm = this.fb.group({
-      MV: ["", Validators.required],
-      ARCHIVO: [null, [Validators.required, this.fileTypeValidator, this.fileSizeValidator]],
-    });
   }
 
   loadData() {
@@ -64,48 +42,50 @@ export class VisualizarMvDetailComponent implements OnInit {
     });
     Swal.showLoading();
     const idHeader = this.route.snapshot.params['id_header_'];
+    this.pendingCalls++;
     this.ConsumerService.getFormConsulta(idHeader).subscribe(r => {
       if (r.status) {
         this.data_consulta = r.data.header[0];
-        Swal.close();
       }
-    })
+      this.pendingCalls--;
+      if (this.pendingCalls === 0) {
+        this.isLoading = false;
+      }
+      Swal.close();
+    });
   }
 
   loadDetail() {
     const idHeader = this.route.snapshot.params['id_header_'];
     const idDetail = this.route.snapshot.params['id_detail'];
+    this.pendingCalls++;
     this.ConsumerService.getDeclarationByID(idHeader, idDetail).subscribe(r => {
       if (r.status) {
         this.detail_consulta = r.status[0];
         this.loadMV();
       }
-    })
+      this.pendingCalls--;
+      if (this.pendingCalls === 0) {
+        this.isLoading = false;
+      }
+    });
   }
 
   loadMV() {
+    this.pendingCalls++;
     this.ConsumerService.getMV(this.detail_consulta.ID_DETAIL).subscribe(r => {
       if (r.status) {
         this.MV_consulta = r.data.header;
       }
-    })
-  }
-
-  volver() {
-    this.router.navigate(['/consumidor/statements']);
-  }
-
-  reset() {
-    this.userForm.reset();
-    this.userForm.patchValue({
-      MV: "",
-      ARCHIVO: ""
+      this.pendingCalls--;
+      if (this.pendingCalls === 0) {
+        this.isLoading = false;
+      }
     });
   }
 
-  formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
+  volver() {
+    this.router.navigate(['/mantenedor/visualizar-mv']);
   }
 
   formatValue(value: number): string {
@@ -116,64 +96,6 @@ export class VisualizarMvDetailComponent implements OnInit {
       return value.toString();
     } else {
       return value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-  }
-
-  saveFile() {
-    this.detail_consulta.FechaRetiro = this.formatDate(this.detail_consulta.FechaRetiro);
-    this.ConsumerService.saveFile(this.detail_consulta.ID_DETAIL, this.fileName, this.fileBuffer, this.userForm.controls['MV'].value).subscribe(r => {
-      if (r.status) {
-        Swal.fire({
-          icon: 'success',
-          text: 'Medio de verificación guardado satisfactoriamente'
-        })
-        this.loadMV();
-      }
-      else {
-        console.log('error')
-      }
-    })
-  }
-
-  deleteMV(id: any) {
-    this.ConsumerService.deleteById(id).subscribe(r => {
-      if (r.status) {
-        Swal.fire({
-          icon: 'info',
-          text: 'Medio de verificación eliminado satisfactoriamente'
-        })
-        this.loadMV();
-      }
-      else {
-        console.log('error')
-      }
-    })
-  }
-
-  onFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input && input.files && input.files.length > 0) {
-      const file = input.files[0];
-      this.fileName = file.name;
-      this.fileBuffer = file;
-      this.selectedFile = input.files[0];
-
-      const allowedExtensions = ['pdf', 'jpeg', 'jpg'];
-      const fileExtension = this.selectedFile.name.split('.').pop()?.toLowerCase() || '';
-      const isValid = allowedExtensions.includes(fileExtension);
-
-      if (!isValid) {
-        this.userForm.controls['ARCHIVO'].setErrors({ 'invalidFileType': true });
-        this.userForm.controls['ARCHIVO'].markAsTouched();
-      } else if (file.size > 1 * 1024 * 1024) {
-        this.userForm.controls['ARCHIVO'].setErrors({ 'invalidFileSize': true });
-        this.userForm.controls['ARCHIVO'].markAsTouched();
-      } else {
-        this.userForm.controls['ARCHIVO'].setErrors(null);
-        this.userForm.controls['ARCHIVO'].markAsTouched();
-      }
-    } else {
-      this.selectedFile = null;
     }
   }
 
@@ -194,38 +116,6 @@ export class VisualizarMvDetailComponent implements OnInit {
         console.error('Error al descargar el archivo:', error);
       }
     );
-  }
-
-  maxSizeValidator(maxSize: number) {
-    return (control: AbstractControl): { [key: string]: any } | null => {
-      const file = control.value;
-      if (file && file.size > maxSize) {
-        return { maxSizeExceeded: true };
-      }
-      return null;
-    };
-  }
-
-  fileTypeValidator(control: AbstractControl): { [key: string]: any } | null {
-    const file = control.value;
-    if (file) {
-      const allowedFileTypes = ['application/pdf', 'image/jpeg'];
-      if (!allowedFileTypes.includes(file.type)) {
-        return { invalidFileType: true };
-      }
-    }
-    return null;
-  }
-
-  fileSizeValidator(control: AbstractControl): { [key: string]: any } | null {
-    const file = control.value;
-    if (file) {
-      const maxSizeInBytes = 1 * 1024 * 1024; // 1 MB
-      if (file.size > maxSizeInBytes) {
-        return { invalidFileSize: true };
-      }
-    }
-    return null;
   }
 
 }

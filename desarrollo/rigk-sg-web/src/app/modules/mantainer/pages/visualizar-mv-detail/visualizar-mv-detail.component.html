@@ -1,161 +1,99 @@
 <div class="container mt-4">
-    <!-- inicio breadcrumbs -->
-    <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
-        <li class="breadcrumb-item"><a href="#/consumidor/statements"><i class="fa fa-home" aria-hidden="true"></i> Consulta de
-            Declaración</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Detalle de Declaración</li>
-      </ol>
-    </nav>
-    <!-- fin breadcrumbs -->
-  
-    <!-- inicio Consulta de declaración -->
-    <section class="declaracion">
-      <h1>Detalle de Declaración</h1>
-      <div class="table-responsive">
-        <table class="table-atributos">
-          <tbody>
-            <tr>
-              <td class="attr-name">Nombre de Empresa</td>
-              <td class="attr-value">{{ data_consulta.NombreEmpresa }}</td>
-            </tr>
-            <tr>
-              <td class="attr-name">ID Consumidor Industrial</td>
-              <td class="attr-value">{{data_consulta.CodigoEmpresa}}</td>
-            </tr>
-            <tr>
-              <td class="attr-name">Establecimiento</td>
-              <td class="attr-value">{{ data_consulta.Establecimiento }}</td>
-            </tr>
-            <tr>
-              <td class="attr-name">ID Establecimiento VU</td>
-              <td class="attr-value">{{ data_consulta.ID_VU}}</td>
-            </tr>
-            <tr>
-              <td class="attr-name">Región</td>
-              <td class="attr-value">{{ data_consulta.Region }}</td>
-            </tr>
-            <tr>
-              <td class="attr-name">Comuna</td>
-              <td class="attr-value">{{ data_consulta.Comuna }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="separador"></div>
-      <div class="table-responsive">
-        <table class="table table-even table-section table-borderless table-radius">
-          <thead class="vertical-middle">
-            <tr>
-              <th class="text-center">Tipo de tratamiento</th>
-              <th class="text-center">Material</th>
-              <th class="text-center">Subtipo</th>
-              <th class="text-center">LER</th>
-              <th class="text-center">Peso</th>
-              <th class="text-center">Fecha Retiro</th>
-              <th class="text-center">Gestor</th>
-              <th class="text-center">MV</th>
-            </tr>
-          </thead>
-          <tbody>
-            <td class="text-center">{{detail_consulta.TIPO_TRATAMIENTO_TIPEADO}}</td>
-            <td class="text-center">{{detail_consulta.PRECEDENCETIPEADO}}</td>
-            <td class="text-center">{{detail_consulta.TYPE_RESIDUE_TIPEADO}}</td>
-            <td class="text-center">{{detail_consulta.LER}}</td>
-            <td>
-              {{formatValue(detail_consulta.VALUE)}}
-            </td>
-            <td class="text-center">{{detail_consulta.FechaRetiro | date: 'dd-MM-yyyy'}}</td>
-            <td class="text-center">{{detail_consulta.NombreGestor}}</td>
-            <td class="text-center">
-              <button class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal"><i
-                  class="fa fa-book fa-fw fa-lg color-blue" aria-hidden="true"></i></button>
-            </td>
-          </tbody>
-        </table>
-      </div>
-      <div class="text-end">
-        <button class="btn btn-primary" (click)="volver()">Volver</button>
-      </div>
-    </section>
-  </div>
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
-    (hidden.bs.modal)="reset()">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Medios de verificación</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="container">
-            <form #miFormulario="ngForm" [formGroup]="userForm">
-              <div class="row">
-                <div class="col-md-6">
-                  <label for="inp_nom">Tipo MV</label>
-                  <select formControlName="MV" id="inp_mv" class="form-select" required>
-                    <option value="">Selecciona MV</option>
-                    <option *ngFor="let r of listMV" [value]="r.value">{{r.name}}</option>
-                  </select>
-                  <div *ngIf="userForm.controls['MV'].errors && userForm.controls['MV'].touched" class="text-danger pl-0">
-                    <p *ngIf="userForm.controls['MV'].errors['required']">Debe seleccionar algun tipo de MV.</p>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <label for="inp_archivo">Archivo</label>
-                  <input type="file" formControlName="ARCHIVO" id="inp_archivo" class="form-control"
-                    accept="application/pdf, image/jpeg" required (change)="onFileSelected($event)">
-                  <div *ngIf="userForm.controls['ARCHIVO'].errors && userForm.controls['ARCHIVO'].touched"
-                    class="text-danger pl-0">
-                    <p *ngIf="userForm.controls['ARCHIVO'].errors['invalidFileType']">El formato del archivo debe ser PDF,
-                      JPEG o JPG.</p>
-                    <p *ngIf="userForm.controls['ARCHIVO'].errors['invalidFileSize']">El tamaño del archivo no debe
-                      superar 1 MB.</p>
-                  </div>
-                </div>
-              </div>
-              <div *ngIf="MV_consulta.length >= maxFiles" class="text-danger mt-2 text-end">
-                No se pueden subir más de 3 archivos de verificación.
-              </div>
-              <div class="modal-footer">
-                <button type="button" id="btnCloseModal" class="btn btn-secondary" data-bs-dismiss="modal"
-                  (click)="reset()">Cerrar</button>
-                <button type="button" class="btn btn-primary"
-                  [disabled]="miFormulario.invalid || MV_consulta.length >= maxFiles"
-                  (click)="saveFile() ; reset()">Agregar</button>
-              </div>
-              <div style="visibility: hidden;">a</div>
-              <div style="visibility: hidden;">a</div>
-              <div *ngIf="this.MV_consulta && this.MV_consulta.length > 0">
-                <div style="height: 50px;"></div>
-                <table
-                  class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
-                  <thead>
-                    <tr class="text-center w-100">
-                      <th>Tipo MV</th>
-                      <th>Nombre Archivo</th>
-                      <th>Eliminar</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="text-center w-100" *ngFor="let r of MV_consulta; let x = index">
-                      <td>{{r.TYPE_FILE_TIPEADO}}</td>
-                      <td>
-                        <a class="file-link" (click)="downloadFile(r.ID, r.FILE_NAME)">{{r.FILE_NAME}}</a>
-                      </td>
-                      <td>
-                        <button type="button" class="btn btn-danger btn-sm rounded-pill" (click)="deleteMV(r.ID)">
-                          X
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+  <!-- inicio breadcrumbs -->
+  <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+      <li class="breadcrumb-item"><a href="#/mantenedor/visualizar-mv"><i class="fa fa-home" aria-hidden="true"></i>
+        Visualización de medios de verificación</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Detalle Visualizacion de medios de verificación</li>
+    </ol>
+  </nav>
+  <!-- fin breadcrumbs -->
+
+  <!-- inicio Consulta de declaración -->
+  <section class="declaracion">
+    <h1>Detalle Visualizacion de medios de verificación</h1>
+    <div class="table-responsive">
+      <table class="table-atributos">
+        <tbody>
+          <tr>
+            <td class="attr-name">Nombre de Empresa</td>
+            <td class="attr-value">{{ data_consulta.NombreEmpresa }}</td>
+          </tr>
+          <tr>
+            <td class="attr-name">ID Consumidor Industrial</td>
+            <td class="attr-value">{{data_consulta.CodigoEmpresa}}</td>
+          </tr>
+          <tr>
+            <td class="attr-name">Establecimiento</td>
+            <td class="attr-value">{{ data_consulta.Establecimiento }}</td>
+          </tr>
+          <tr>
+            <td class="attr-name">ID Establecimiento VU</td>
+            <td class="attr-value">{{ data_consulta.ID_VU}}</td>
+          </tr>
+          <tr>
+            <td class="attr-name">Región</td>
+            <td class="attr-value">{{ data_consulta.Region }}</td>
+          </tr>
+          <tr>
+            <td class="attr-name">Comuna</td>
+            <td class="attr-value">{{ data_consulta.Comuna }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
+    <div class="separador"></div>
+    <div class="table-responsive">
+      <table class="table table-even table-section table-borderless table-radius">
+        <thead class="vertical-middle">
+          <tr>
+            <th class="text-center">Tipo de tratamiento</th>
+            <th class="text-center">Material</th>
+            <th class="text-center">Subtipo</th>
+            <th class="text-center">Peso</th>
+            <th class="text-center">Fecha Retiro</th>
+            <th class="text-center">Gestor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <td class="text-center">{{detail_consulta.TIPO_TRATAMIENTO_TIPEADO}}</td>
+          <td class="text-center">{{detail_consulta.PRECEDENCETIPEADO}}</td>
+          <td class="text-center">{{detail_consulta.TYPE_RESIDUE_TIPEADO}}</td>
+          <td>
+            {{formatValue(detail_consulta.VALUE)}}
+          </td>
+          <td class="text-center">{{detail_consulta.FechaRetiro | date: 'dd-MM-yyyy'}}</td>
+          <td class="text-center">{{detail_consulta.NombreGestor}}</td>
+        </tbody>
+      </table>
+    </div>
+    <div class="text-end">
+      <button class="btn btn-primary" (click)="volver()">Volver</button>
+    </div>
+    <p></p>
+    <div *ngIf="this.MV_consulta && this.MV_consulta.length > 0">
+      <div style="height: 50px;"></div>
+      <table
+        class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
+        <thead>
+          <tr class="text-center w-100">
+            <th>Tipo MV</th>
+            <th>Nombre Archivo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="text-center w-100" *ngFor="let r of MV_consulta; let x = index">
+            <td>{{r.TYPE_FILE_TIPEADO}}</td>
+            <td>
+              <a class="file-link" (click)="downloadFile(r.ID, r.FILE_NAME)">{{r.FILE_NAME}}</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="!isLoading && (!MV_consulta || MV_consulta.length === 0)" class="alert alert-danger">
+      No existen medios de verificación para esta declaración.
+    </div>       
+  </section>
+</div>

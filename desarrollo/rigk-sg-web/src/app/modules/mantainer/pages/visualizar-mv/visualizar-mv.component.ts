@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { EstablishmentService } from 'src/app/core/services/establishment.service';
-import { ProductorService } from 'src/app/core/services/productor.service';
-import { Router } from '@angular/router';
-import { Location } from '@angular/common';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { ConsumerService } from 'src/app/core/services/consumer.service';
 
@@ -34,26 +33,26 @@ export class VisualizarMvComponent implements OnInit {
   autoFilter: boolean = true;
 
   constructor(
-    public productorService: ProductorService,
     private establishmentService: EstablishmentService,
     private consumer: ConsumerService,
     private router: Router,
-    private location: Location
-  ) { }
+  ) {
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+      // Verificar si la ruta actual no es una de las especificadas
+      if (!this.isRelevantRoute(event.urlAfterRedirects)) {
+        this.resetFilters();
+        this.saveState(); // Guarda el estado reseteado
+      }
+    });
+   }
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
 
     // Cargar el estado de los filtros si está disponible
     this.loadState();
-
-    // Verificar si la página anterior no es una página de detalle
-    const previousUrl = this.location.getState() as { navigationId?: number; url?: string };
-    const notDetailPage = previousUrl && previousUrl.url && !previousUrl.url.match(/\/mantenedor\/visualizar-mv\/\d+/);
-    if (previousUrl.navigationId && notDetailPage) {
-      this.resetFilters();
-    }
-
     this.loadStatements().then(() => {
       this.updateFilters();
       if (!this.filtersApplied) {
@@ -62,6 +61,12 @@ export class VisualizarMvComponent implements OnInit {
         this.filtersApplied = true;
       }
     });
+  }
+
+  isRelevantRoute(url: string): boolean {
+    // Definir las rutas relevantes
+    return url === '/mantenedor/visualizar-mv' || 
+           url.startsWith('/mantenedor/visualizar-mv/') && !url.endsWith('/visualizar-mv');
   }
 
   formatValue(value: number): string {
@@ -76,6 +81,7 @@ export class VisualizarMvComponent implements OnInit {
     this.selectedEstablishment = '-1';
     this.selectedMaterial = '-1';
     this.selectedYear = '-1';
+    this.pos = 1;
   }
 
   loadStatements(): Promise<void> {
