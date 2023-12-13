@@ -97,10 +97,16 @@ export class VisualizarMvComponent implements OnInit {
       Swal.showLoading();
       this.establishmentService.getAllDeclarationEstablishments().subscribe(r => {
         if (r.status) {
-          r.status = r.status.sort(((a: any, b: any) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()));
+          const uniqueMap = new Map();
+          r.status.forEach((item: any) => {
+            if (!uniqueMap.has(item.ID_DETAIL)) {
+              uniqueMap.set(item.ID_DETAIL, item);
+            }
+          });
+          const uniqueStatus = Array.from(uniqueMap.values());
+          uniqueStatus.sort((a: any, b: any) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime());
 
-          (r.status as any[]).forEach(e => {
-
+          uniqueStatus.forEach(e => {
             if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
               this.business_name.push(e.NAME_BUSINESS);
             }
@@ -117,17 +123,17 @@ export class VisualizarMvComponent implements OnInit {
               this.treatment_name.push(e.TipoTratamiento)
             }
           });
+
           this.years.sort((a, b) => b - a);
-          this.dbStatements = r.status;
+          this.dbStatements = uniqueStatus;
           this.cant = Math.ceil(this.dbStatements.length / 10);
-          this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();;
+          this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();
           Swal.close();
         }
         resolve();
-      })
+      });
     });
   }
-
 
   filter(auto: boolean = false) {
     if (auto && !this.autoFilter) return;
@@ -140,7 +146,8 @@ export class VisualizarMvComponent implements OnInit {
         (this.selectedYear === '-1' || r.FechaRetiroTipeada === this.selectedYear)
       );
     });
-    this.db = this.filteredStatements.slice(0, 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();;
+    this.db = this.filteredStatements.slice(0, 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();
+    console.log(this.db)
     this.cant = Math.ceil(this.filteredStatements.length / 10);
     this.saveState();
     this.filtersApplied = false;
