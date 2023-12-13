@@ -136,7 +136,7 @@ class AuthDao {
     }
     public async addUserBusiness(id_user: any, id_business: any) {
         const conn = mysqlcon.getConnection()!;
-        const res: any = await conn.query("INSERT INTO user_business VALUES(?,?)", [id_user, id_business]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const res: any = await conn.query("INSERT INTO user_business (ID_USER, ID_BUSINESS, DJ_FILE) VALUES (?, ?, NULL)", [id_user, id_business]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         return res;
     }

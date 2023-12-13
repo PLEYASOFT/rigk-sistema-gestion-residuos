@@ -37,7 +37,7 @@ export class HomeComponent implements OnInit {
     //verificar si inicie sesión
     const isLoggedIn = sessionStorage.getItem('user');
     if (isLoggedIn) {
-      this.openTermsAndConditions();
+      // this.openTermsAndConditions();
     }
   }
   loadStatements() {
