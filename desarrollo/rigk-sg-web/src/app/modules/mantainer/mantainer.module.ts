@@ -21,6 +21,7 @@ import { MaintainerGoalsComponent } from './pages/maintainer-goals/maintainer-go
 import { DashboardCiGestoresComponent } from './pages/dashboard-ci-gestores/dashboard-ci-gestores.component';
 import { MaintainerDeclarationsCiComponent } from './pages/maintainer-declarations-ci/maintainer-declarations-ci.component';
 import { VisualizarMvComponent } from './pages/visualizar-mv/visualizar-mv.component';
+import { VisualizarMvDetailComponent } from './pages/visualizar-mv-detail/visualizar-mv-detail.component';
 
 
 @NgModule({
@@ -39,7 +40,8 @@ import { VisualizarMvComponent } from './pages/visualizar-mv/visualizar-mv.compo
     MaintainerGoalsComponent,
     DashboardCiGestoresComponent,
     MaintainerDeclarationsCiComponent,
-    VisualizarMvComponent
+    VisualizarMvComponent,
+    VisualizarMvDetailComponent
   ],
   imports: [
     CommonModule,

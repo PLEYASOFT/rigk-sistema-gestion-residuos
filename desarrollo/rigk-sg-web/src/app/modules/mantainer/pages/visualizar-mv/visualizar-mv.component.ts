@@ -4,6 +4,7 @@ import { ProductorService } from 'src/app/core/services/productor.service';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import Swal from 'sweetalert2';
+import { ConsumerService } from 'src/app/core/services/consumer.service';
 
 @Component({
   selector: 'app-visualizar-mv',
@@ -35,6 +36,7 @@ export class VisualizarMvComponent implements OnInit {
   constructor(
     public productorService: ProductorService,
     private establishmentService: EstablishmentService,
+    private consumer: ConsumerService,
     private router: Router,
     private location: Location
   ) { }
@@ -216,7 +218,7 @@ export class VisualizarMvComponent implements OnInit {
   visiblePageNumbers() {
     const totalPages = this.setArrayFromNumber().length;
     const visiblePages = [];
-  
+
     if (totalPages <= 15) {
       // Si hay 20 o menos páginas, mostrar todas
       for (let i = 0; i < totalPages; i++) {
@@ -226,18 +228,18 @@ export class VisualizarMvComponent implements OnInit {
       // Calcular las páginas visibles alrededor de la página actual
       let startPage = Math.max(0, this.pos - Math.floor(15 / 2));
       let endPage = Math.min(totalPages - 1, startPage + 14);
-  
+
       // Ajustar el cálculo si estamos cerca del final
       if (endPage - startPage + 1 < 15) {
         endPage = totalPages - 1;
         startPage = Math.max(0, endPage - 14);
       }
-  
+
       for (let i = startPage; i <= endPage; i++) {
         visiblePages.push(i);
       }
     }
-  
+
     return visiblePages;
   }
 
@@ -265,10 +267,67 @@ export class VisualizarMvComponent implements OnInit {
 
   goToDetails(headerId: string, detailId: string) {
     this.saveState();
-    this.router.navigate(['/consumidor/statements/', headerId, detailId]);
+    this.router.navigate(['/mantenedor/visualizar-mv/', headerId, detailId]);
   }
 
   isAnyCheckboxSelected(): boolean {
     return Object.values(this.checkboxState).some(value => value);
+  }
+
+  downloadSelected() {
+    const selectedItems = this.dbStatements.filter(s => this.checkboxState[s.ID_HEADER]);
+
+    const itemsToDownload = selectedItems.map(s => {
+      // Convertir la fecha a un objeto Date
+      const fechaRetiro = new Date(s.FechaRetiro);
+
+      // Formatear la fecha como dd-MM-yyyy
+      const formattedDate = `${fechaRetiro.getDate().toString().padStart(2, '0')}-${(fechaRetiro.getMonth() + 1).toString().padStart(2, '0')}-${fechaRetiro.getFullYear()}`;
+
+      return {
+        id: s.ID_DETAIL,
+        additionalData: {
+          empresa: s.NAME_BUSINESS,
+          establecimiento: s.NAME_ESTABLISHMENT_REGION,
+          tipoTratamiento: s.TipoTratamiento,
+          material: s.PRECEDENCE,
+          subtipo: s.TYPE_RESIDUE,
+          fechaRetiro: formattedDate
+        }
+      };
+    });
+    if (itemsToDownload.length > 0) {
+      this.consumer.downloadMVSelected(itemsToDownload).subscribe(blob => {
+        // Crear un enlace temporal para descargar el archivo
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'medios_de_verificacion.zip';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, error => {
+        // Manejar errores aquí
+        console.error('Error al descargar los archivos:', error);
+      });
+    } else {
+      // Mostrar algún mensaje de error o aviso
+      console.error('No hay elementos seleccionados para descargar');
+    }
+  }
+
+  deselectAllCheckboxes() {
+    // Reiniciar el estado de todos los checkbox a false
+    this.checkboxState = {};
+    this.db.forEach(s => {
+      this.checkboxState[s.ID_HEADER] = false;
+    });
+  }
+
+  showButtonClicked() {
+    this.deselectAllCheckboxes();
+    this.filter();
+    this.pagTo(0);
   }
 }

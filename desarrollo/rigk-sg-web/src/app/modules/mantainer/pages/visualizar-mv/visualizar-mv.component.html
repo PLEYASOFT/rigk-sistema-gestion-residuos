@@ -52,8 +52,7 @@
                 <div class="col-12 col-xl-4 mb-3 mb-xl-0">
                     <div class="row">
                         <div class="col-6">
-                            <button class="btn btn-primary col-12"
-                                (click)="autoFilter = false; filter(); pagTo(0)">Mostrar</button>
+                            <button class="btn btn-primary col-12" (click)="showButtonClicked()">Mostrar</button>
                         </div>
                     </div>
                 </div>
@@ -62,7 +61,7 @@
                 <div class="col-12 col-xl-5 mb-3 mb-xl-0">
                     <div class="row">
                         <div class="col-6">
-                            <button class="btn btn-primary col-12" [disabled]="!isAnyCheckboxSelected()">Descargar Medios de Verificación</button>
+                            <button class="btn btn-primary col-12" [disabled]="!isAnyCheckboxSelected()" (click)="downloadSelected()">Descargar Medios de Verificación</button>
                         </div>
                     </div>
                 </div>
@@ -89,7 +88,7 @@
                     <tr *ngFor="let s of db">
                         <td>
                             <section class="example-section">
-                                <input type="checkbox" [(ngModel)]="checkboxState[s.ID_HEADER]">
+                                <input type="checkbox" [(ngModel)]="checkboxState[s.ID_HEADER]" [disabled]="!s.HAS_MV">
                             </section>
                         </td>
                         <td>{{s.NAME_BUSINESS}}</td>

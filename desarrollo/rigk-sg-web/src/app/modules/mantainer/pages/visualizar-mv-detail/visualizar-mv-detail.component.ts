@@ -7,12 +7,11 @@ import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, Validators, AbstractControl, ValidatorFn } from '@angular/forms';
 
 @Component({
-  selector: 'app-statements-detail',
-  templateUrl: './statements-detail.component.html',
-  styleUrls: ['./statements-detail.component.css']
+  selector: 'app-visualizar-mv-detail',
+  templateUrl: './visualizar-mv-detail.component.html',
+  styleUrls: ['./visualizar-mv-detail.component.css']
 })
-
-export class StatementsDetailComponent implements OnInit {
+export class VisualizarMvDetailComponent implements OnInit {
 
   maxFiles = 3;
   userData: any | null;
@@ -228,4 +227,5 @@ export class StatementsDetailComponent implements OnInit {
     }
     return null;
   }
+
 }
