@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { EstablishmentService } from 'src/app/core/services/establishment.service';
-import { ProductorService } from 'src/app/core/services/productor.service';
-import { Router } from '@angular/router';
-import { Location } from '@angular/common';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import Swal from 'sweetalert2';
+import { ConsumerService } from 'src/app/core/services/consumer.service';
 
 @Component({
-  selector: 'app-statements',
-  templateUrl: './statements.component.html',
-  styleUrls: ['./statements.component.css']
+  selector: 'app-visualizar-mv',
+  templateUrl: './visualizar-mv.component.html',
+  styleUrls: ['./visualizar-mv.component.css']
 })
-export class StatementsComponent implements OnInit {
-
+export class VisualizarMvComponent implements OnInit {
+  checkboxState: { [id: string]: boolean } = {};
   userData: any | null;
   dbStatements: any[] = [];
   db: any[] = [];
@@ -33,25 +33,26 @@ export class StatementsComponent implements OnInit {
   autoFilter: boolean = true;
 
   constructor(
-    public productorService: ProductorService,
     private establishmentService: EstablishmentService,
+    private consumer: ConsumerService,
     private router: Router,
-    private location: Location
-  ) { }
+  ) {
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+      // Verificar si la ruta actual no es una de las especificadas
+      if (!this.isRelevantRoute(event.urlAfterRedirects)) {
+        this.resetFilters();
+        this.saveState(); // Guarda el estado reseteado
+      }
+    });
+   }
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
 
     // Cargar el estado de los filtros si está disponible
     this.loadState();
-
-    // Verificar si la página anterior no es una página de detalle
-    const previousUrl = this.location.getState() as { navigationId?: number; url?: string };
-    const notDetailPage = previousUrl && previousUrl.url && !previousUrl.url.match(/\/consumidor\/statements\/\d+/);
-    if (previousUrl.navigationId && notDetailPage) {
-      this.resetFilters();
-    }
-
     this.loadStatements().then(() => {
       this.updateFilters();
       if (!this.filtersApplied) {
@@ -60,6 +61,12 @@ export class StatementsComponent implements OnInit {
         this.filtersApplied = true;
       }
     });
+  }
+
+  isRelevantRoute(url: string): boolean {
+    // Definir las rutas relevantes
+    return url === '/mantenedor/visualizar-mv' || 
+           url.startsWith('/mantenedor/visualizar-mv/') && !url.endsWith('/visualizar-mv');
   }
 
   formatValue(value: number): string {
@@ -74,6 +81,7 @@ export class StatementsComponent implements OnInit {
     this.selectedEstablishment = '-1';
     this.selectedMaterial = '-1';
     this.selectedYear = '-1';
+    this.pos = 1;
   }
 
   loadStatements(): Promise<void> {
@@ -87,12 +95,18 @@ export class StatementsComponent implements OnInit {
         allowOutsideClick: false
       });
       Swal.showLoading();
-      this.establishmentService.getDeclarationEstablishment().subscribe(r => {
+      this.establishmentService.getAllDeclarationEstablishments().subscribe(r => {
         if (r.status) {
-          r.status = r.status.sort(((a: any, b: any) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()));
+          const uniqueMap = new Map();
+          r.status.forEach((item: any) => {
+            if (!uniqueMap.has(item.ID_DETAIL)) {
+              uniqueMap.set(item.ID_DETAIL, item);
+            }
+          });
+          const uniqueStatus = Array.from(uniqueMap.values());
+          uniqueStatus.sort((a: any, b: any) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime());
 
-          (r.status as any[]).forEach(e => {
-
+          uniqueStatus.forEach(e => {
             if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
               this.business_name.push(e.NAME_BUSINESS);
             }
@@ -109,17 +123,17 @@ export class StatementsComponent implements OnInit {
               this.treatment_name.push(e.TipoTratamiento)
             }
           });
+
           this.years.sort((a, b) => b - a);
-          this.dbStatements = r.status;
+          this.dbStatements = uniqueStatus;
           this.cant = Math.ceil(this.dbStatements.length / 10);
-          this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();;
+          this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();
           Swal.close();
         }
         resolve();
-      })
+      });
     });
   }
-
 
   filter(auto: boolean = false) {
     if (auto && !this.autoFilter) return;
@@ -132,12 +146,11 @@ export class StatementsComponent implements OnInit {
         (this.selectedYear === '-1' || r.FechaRetiroTipeada === this.selectedYear)
       );
     });
-    this.db = this.filteredStatements.slice(0, 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();;
+    this.db = this.filteredStatements.slice(0, 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();
     this.cant = Math.ceil(this.filteredStatements.length / 10);
     this.saveState();
     this.filtersApplied = false;
   }
-
 
   updateFilters() {
     // Filtrar las opciones de business_name
@@ -216,7 +229,7 @@ export class StatementsComponent implements OnInit {
   visiblePageNumbers() {
     const totalPages = this.setArrayFromNumber().length;
     const visiblePages = [];
-  
+
     if (totalPages <= 15) {
       // Si hay 20 o menos páginas, mostrar todas
       for (let i = 0; i < totalPages; i++) {
@@ -226,18 +239,18 @@ export class StatementsComponent implements OnInit {
       // Calcular las páginas visibles alrededor de la página actual
       let startPage = Math.max(0, this.pos - Math.floor(15 / 2));
       let endPage = Math.min(totalPages - 1, startPage + 14);
-  
+
       // Ajustar el cálculo si estamos cerca del final
       if (endPage - startPage + 1 < 15) {
         endPage = totalPages - 1;
         startPage = Math.max(0, endPage - 14);
       }
-  
+
       for (let i = startPage; i <= endPage; i++) {
         visiblePages.push(i);
       }
     }
-  
+
     return visiblePages;
   }
 
@@ -265,6 +278,64 @@ export class StatementsComponent implements OnInit {
 
   goToDetails(headerId: string, detailId: string) {
     this.saveState();
-    this.router.navigate(['/consumidor/statements/', headerId, detailId]);
+    this.router.navigate(['/mantenedor/visualizar-mv/', headerId, detailId]);
+  }
+
+  isAnyCheckboxSelected(): boolean {
+    return Object.values(this.checkboxState).some(value => value);
+  }
+
+  downloadSelected() {
+    const selectedItems = this.dbStatements.filter(s => this.checkboxState[s.ID_HEADER]);
+
+    const itemsToDownload = selectedItems.map(s => {
+      // Convertir la fecha a un objeto Date
+      const fechaRetiro = new Date(s.FechaRetiro);
+
+      // Formatear la fecha como dd-MM-yyyy
+      const formattedDate = `${fechaRetiro.getDate().toString().padStart(2, '0')}-${(fechaRetiro.getMonth() + 1).toString().padStart(2, '0')}-${fechaRetiro.getFullYear()}`;
+
+      return {
+        id: s.ID_DETAIL,
+        additionalData: {
+          empresa: s.NAME_BUSINESS,
+          establecimiento: s.NAME_ESTABLISHMENT_REGION,
+          tipoTratamiento: s.TipoTratamiento,
+          material: s.PRECEDENCE,
+          subtipo: s.TYPE_RESIDUE,
+          fechaRetiro: formattedDate
+        }
+      };
+    });
+    if (itemsToDownload.length > 0) {
+      this.consumer.downloadMVSelected(itemsToDownload).subscribe(blob => {
+        // Crear un enlace temporal para descargar el archivo
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'medios_de_verificacion.zip';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, error => {
+        // Manejar errores aquí
+        console.error('Error al descargar los archivos:', error);
+      });
+    }
+  }
+
+  deselectAllCheckboxes() {
+    // Reiniciar el estado de todos los checkbox a false
+    this.checkboxState = {};
+    this.db.forEach(s => {
+      this.checkboxState[s.ID_HEADER] = false;
+    });
+  }
+
+  showButtonClicked() {
+    this.deselectAllCheckboxes();
+    this.filter();
+    this.pagTo(0);
   }
 }
