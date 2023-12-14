@@ -147,12 +147,10 @@ export class VisualizarMvComponent implements OnInit {
       );
     });
     this.db = this.filteredStatements.slice(0, 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();
-    console.log(this.db)
     this.cant = Math.ceil(this.filteredStatements.length / 10);
     this.saveState();
     this.filtersApplied = false;
   }
-
 
   updateFilters() {
     // Filtrar las opciones de business_name
@@ -324,9 +322,6 @@ export class VisualizarMvComponent implements OnInit {
         // Manejar errores aquí
         console.error('Error al descargar los archivos:', error);
       });
-    } else {
-      // Mostrar algún mensaje de error o aviso
-      console.error('No hay elementos seleccionados para descargar');
     }
   }
 
