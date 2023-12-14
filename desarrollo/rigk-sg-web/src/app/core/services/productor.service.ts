@@ -51,13 +51,20 @@ export class ProductorService {
   verifyDraft(id_business: any, year: any) {
     return this.http.get<any>(`${this.url}/draft/${id_business}/year/${year}`);
   }
-
+  verifyDJ(id_business: any, id: any) {
+    return this.http.get<any>(`${this.url}/dj/${id_business}/id/${id}`);
+  }
+  businessUserDJ(id_user: any) {
+    return this.http.get<any>(`${this.url}/businessDJ/${id_user}`);
+  }
+  deleteDJ(id_business: any, id_user: any) {
+    return this.http.delete<any>(`${this.url}/dj/delete/${id_business}/${id_user}`);
+  }
   downloadPDF(id_business: any, year: any) {
     let headers = new HttpHeaders();
     headers = headers.set('Accept', 'application/pdf');
     return this.http.get<any>(`${this.url}/pdf/${id_business}/year/${year}`, { headers: headers, responseType: 'blob' as 'json' });
   }
-
   uploadOC(id: any, file: any) {
     const body = new FormData();
     body.append('file', file[0]);
@@ -68,19 +75,19 @@ export class ProductorService {
     headers = headers.set('Accept', 'application/pdf');
     return this.http.get<any>(`${environment.API_V1_URL}/utiles/download/pdf`, { headers: headers, responseType: 'blob' as 'json' });
   }
-  uploadPDFTerminos(file: any) {
+  uploadPDFTerminos(file: any, idEmpresa: any, idUsuario: any) {
     const body = new FormData();
     body.append('file', file);
-    return this.http.post<any>(`${environment.API_V1_URL}/utiles/upload/pdf`, body);
+    return this.http.post<any>(`${environment.API_V1_URL}/utiles/upload/pdf/${idEmpresa}/${idUsuario}`, body);
   }
   veryfyPDFTerminos() {
     let headers = new HttpHeaders();
     headers = headers.set('Accept', 'application/pdf');
     return this.http.post<any>(`${environment.API_V1_URL}/utiles/verifyUser`, { headers: headers, responseType: 'blob' as 'json' });
   }
-  downloadPdfFirma() {
+  downloadPdfFirma(idEmpresa: any, idUsuario: any) {
     let headers = new HttpHeaders();
     headers = headers.set('Accept', 'application/pdf');
-    return this.http.get<any>(`${environment.API_V1_URL}/utiles/download`, { responseType: 'blob' as 'json' });
+    return this.http.get<any>(`${environment.API_V1_URL}/utiles/download/${idEmpresa}/${idUsuario}`, { responseType: 'blob' as 'json' });
   }
 }

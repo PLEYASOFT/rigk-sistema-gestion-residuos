@@ -372,13 +372,30 @@ class statementProductorDao {
             return {isOk, _res};
         }
     }
+    public async haveDJ(business: string, id: any) {
+        const conn = mysqlcon.getConnection();
+        const res: any = await conn?.execute("SELECT user_business.ID_USER, user_business.ID_BUSINESS, user_business.DJ_FILE, business.CODE_BUSINESS FROM user_business JOIN business ON user_business.ID_BUSINESS = business.ID WHERE CODE_BUSINESS = ? AND ID_USER = ? AND DJ_FILE IS NOT NULL; ", [business, id]).then((res) => res[0]).catch(error => undefined);
+        conn?.end();
+        return res;
+    }
+    public async businessUserDJ(id: any) {
+        const conn = mysqlcon.getConnection();
+        const res: any = await conn?.execute("SELECT user_business.ID_USER, user_business.ID_BUSINESS, user_business.DJ_FILE, business.CODE_BUSINESS, business.NAME FROM user_business JOIN business ON user_business.ID_BUSINESS = business.ID WHERE ID_USER = ?;", [id]).then((res) => res[0]).catch(error => undefined);
+        conn?.end();
+        return res;
+    }
+    public async deleteDJ(business: string, id: any) {
+        const conn = mysqlcon.getConnection()!;
+        const res: any = await conn.query("UPDATE user_business SET DJ_FILE = NULL WHERE ID_USER = ? AND ID_BUSINESS = ?", [id, business]).then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        return res;
+    }
     public async getDetailById(id: any, year: any) {
         const conn = mysqlcon.getConnection();
         const table0 = await conn?.execute("SELECT SUM(VALUE) as VALUE, TYPE_RESIDUE, RECYCLABILITY, header_statement_form.STATE FROM detail_statement_form INNER JOIN header_statement_form ON header_statement_form.ID = detail_statement_form.ID_HEADER WHERE ID_BUSINESS = (SELECT ID FROM business WHERE CODE_BUSINESS=?) AND YEAR_STATEMENT=? GROUP BY TYPE_RESIDUE, RECYCLABILITY", [id, year]).then((res) => res[0]).catch(error => { undefined });
         conn?.end();
         return table0;
     }
-
     public async getDetailByIdHeader(id_header: any) {
         const conn = mysqlcon.getConnection();
         const table0 = await conn?.execute("SELECT * FROM detail_statement_form WHERE ID_HEADER = ?", [id_header]).then((res) => res[0]).catch(error => { undefined });
