@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MantainerRoutingModule } from './mantainer-routing.module';
 import { HomeComponent } from './pages/home/home.component';
@@ -21,6 +20,8 @@ import { NgxChartsModule }from '@swimlane/ngx-charts';
 import { MaintainerGoalsComponent } from './pages/maintainer-goals/maintainer-goals.component';
 import { DashboardCiGestoresComponent } from './pages/dashboard-ci-gestores/dashboard-ci-gestores.component';
 import { MaintainerDeclarationsCiComponent } from './pages/maintainer-declarations-ci/maintainer-declarations-ci.component';
+import { VisualizarMvComponent } from './pages/visualizar-mv/visualizar-mv.component';
+import { VisualizarMvDetailComponent } from './pages/visualizar-mv-detail/visualizar-mv-detail.component';
 
 
 @NgModule({
@@ -38,7 +39,9 @@ import { MaintainerDeclarationsCiComponent } from './pages/maintainer-declaratio
     DashboardComponent,
     MaintainerGoalsComponent,
     DashboardCiGestoresComponent,
-    MaintainerDeclarationsCiComponent
+    MaintainerDeclarationsCiComponent,
+    VisualizarMvComponent,
+    VisualizarMvDetailComponent
   ],
   imports: [
     CommonModule,

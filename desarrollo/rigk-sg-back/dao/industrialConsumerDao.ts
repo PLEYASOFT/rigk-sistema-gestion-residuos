@@ -193,8 +193,24 @@ class IndustrialConsumerDao {
         };
     }
 
+    public async downloadFilesByDetailId(detailId: any) {
+        const conn = mysqlcon.getConnection()!;
+        const fileData: any = await conn.query("SELECT ID, FILE_NAME, FILE, TYPE_FILE FROM attached_industrial_consumer_form WHERE ID_DETAIL=?", [detailId])
+                                          .then((res) => res[0])
+                                          .catch(error => { console.error(error); return []; });
     
-
+        if (!fileData || fileData.length === 0) {
+            return [];
+        }
+    
+        conn.end();
+        return fileData.map((file:any) => ({
+            fileName: file.FILE_NAME,
+            fileType: file.TYPE_FILE,
+            fileContent: file.FILE
+        }));
+    }
+    
     async verifySubmaterialBelongsToMaterial(MATERIAL_ID: number, SUBMATERIAL_ID: number) {
         const conn = mysqlcon.getConnection()!;
         const query = `

@@ -144,17 +144,12 @@
                                                 <td class="centered-td">
                                                     <button type="button" class="btn btn-primary" [disabled]="r.DJ_FILE !== null" (click)="adjuntar(r.ID_BUSINESS)">
                                                       {{ r.DJ_FILE == null ? 'Adjuntar' : 'Adjuntado' }}
-
                                                     </button>
                                                 </td>
-                                                <td>
-                                                    <button type="button" class="btn btn-primary btn-fa w-100" [disabled]="r.DJ_FILE == null" (click)="downloadTerminos(r.ID_BUSINESS)">
-                                                        <ng-container *ngIf="r.DJ_FILE == null; else iconTemplate">
-                                                            <i class="fas fa-times"></i>
-                                                          </ng-container>
-                                                          <ng-template #iconTemplate>
+                                                <td class="centered-td">
+                                                    <i *ngIf="r.DJ_FILE == null" class="fas fa-times text-danger"></i>
+                                                    <button *ngIf="r.DJ_FILE !== null" type="button" class="btn btn-primary btn-fa w-100" (click)="downloadTerminos(r.ID_BUSINESS)">
                                                             Descargar
-                                                          </ng-template>
                                                     </button>
                                                 </td>
                                                 <td class="centered-td">

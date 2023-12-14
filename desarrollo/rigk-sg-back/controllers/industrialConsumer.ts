@@ -2,10 +2,11 @@ import { Request, Response } from "express";
 import industrialConsumerDao from '../dao/industrialConsumerDao';
 import establishmentDao from '../dao/establishmentDao';
 import ExcelJS from 'exceljs';
+import JSZip from "jszip";
 import { createLog } from "../helpers/createLog";
 import businessDao from "../dao/businessDao";
 import managerDao from "../dao/managerDao";
-import { calcularSumaPesoDeclarado , calcularSumaPesoNoValorizado, calcularSumaPesoValorizado , calcularSumaPesoRegion } from "../helpers/generateExcelCI";
+import { calcularSumaPesoDeclarado, calcularSumaPesoNoValorizado, calcularSumaPesoValorizado, calcularSumaPesoRegion } from "../helpers/generateExcelCI";
 class IndustrialConsumer {
     public async saveForm(req: any, res: Response) {
         const header = JSON.parse(req.body.header);
@@ -129,6 +130,49 @@ class IndustrialConsumer {
             });
         }
     }
+    async downloadFiles(req: Request, res: Response) {
+        const items = req.body;
+    
+        try {
+            const zip = new JSZip();
+    
+            for (const item of items) {
+                const filesData = await industrialConsumerDao.downloadFilesByDetailId(item.id);
+    
+                if (filesData.length > 0) {
+                    // Reemplazar caracteres especiales en el nombre del material
+                    const materialName = item.additionalData.material.replace(/[\/\\:]/g, '_');
+                    
+                    const folderName = `${item.additionalData.empresa}_${item.additionalData.establecimiento}_${item.additionalData.tipoTratamiento}_${materialName}_${item.additionalData.subtipo}_${item.additionalData.fechaRetiro}`;
+                    const folder:any = zip.folder(folderName);
+    
+                    filesData.forEach((fileData: any) => {
+                        const fileContent = Buffer.from(fileData.fileContent, 'binary');
+                        folder.file(fileData.fileName, fileContent, { binary: true });
+                    });
+                }
+            }
+    
+            if (zip.length === 0) {
+                res.status(404).json({ status: false, message: 'Archivos no encontrados' });
+                return;
+            }
+    
+            zip.generateNodeStream({ type: 'nodebuffer', streamFiles: true })
+                .pipe(res)
+                .on('finish', () => res.status(200).end());
+    
+            res.setHeader('Content-Type', 'application/zip');
+            res.setHeader('Content-Disposition', 'attachment; filename=archivos.zip');
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: 'Algo salió mal',
+            });
+        }
+    }
+       
     public async getMV(req: any, res: Response) {
         const { id } = req.params;
         try {
@@ -650,17 +694,17 @@ class IndustrialConsumer {
             const nameCol2 = worksheetResumen.getColumn('B');
             nameCol.width = 100;
             nameCol2.width = 15;
-            nameCol2.alignment = {horizontal:"right"};
+            nameCol2.alignment = { horizontal: "right" };
 
             worksheetResumen.getCell('A1').value = 'Notas: Todo en Toneladas. Totales anuales del año de ejercicio (año que se declara)';
-            
+
             worksheetResumen.getCell('A3').value = 'Total CI';
             const uniqueID_EMPRESA = new Set(response.map((item: { ID_EMPRESA: any; }) => item.ID_EMPRESA));
             if (businessByRol) {
                 const listaEmpresasConRol = businessByRol.res_business.filter((item2: { CODE_BUSINESS: any; }) => !response.some((item1: { ID_EMPRESA: any; }) => item1.ID_EMPRESA === item2.CODE_BUSINESS));
                 let EmpresasUnicas = uniqueID_EMPRESA.size + listaEmpresasConRol.length;
                 worksheetResumen.getCell('B3').value = EmpresasUnicas;
-            }else{
+            } else {
                 let EmpresasUnicas = uniqueID_EMPRESA.size;
                 worksheetResumen.getCell('B3').value = EmpresasUnicas;
             }
@@ -673,8 +717,8 @@ class IndustrialConsumer {
             worksheetResumen.getCell('A5').value = 'Total Gestores';
             const gestoresUnicos = new Set();
             response.forEach((item: { GESTOR: any; RUT_GESTOR: any; }) => {
-            const concatenacion = `${item.GESTOR}_${item.RUT_GESTOR}`;
-            gestoresUnicos.add(concatenacion);
+                const concatenacion = `${item.GESTOR}_${item.RUT_GESTOR}`;
+                gestoresUnicos.add(concatenacion);
             });
             const cantidadTotalGestores = gestoresUnicos.size;
             worksheetResumen.getCell('B5').value = cantidadTotalGestores;
@@ -772,9 +816,9 @@ class IndustrialConsumer {
     }
 
     async verifySubmaterialBelongsToMaterial(req: any, res: Response) {
-        const {material_id, submaterial_id} = req.params;
+        const { material_id, submaterial_id } = req.params;
         try {
-            const verify = await industrialConsumerDao.verifySubmaterialBelongsToMaterial(material_id,submaterial_id);
+            const verify = await industrialConsumerDao.verifySubmaterialBelongsToMaterial(material_id, submaterial_id);
             res.status(200).json({ status: verify, data: {}, msg: '' });
         } catch (err) {
             console.log(err);
@@ -786,9 +830,9 @@ class IndustrialConsumer {
     }
 
     async verifyManagerHasMaterial(req: any, res: Response) {
-        const {manager_id, material} = req.params;
+        const { manager_id, material } = req.params;
         try {
-            const verify = await industrialConsumerDao.verifyManagerHasMaterial(manager_id,material);
+            const verify = await industrialConsumerDao.verifyManagerHasMaterial(manager_id, material);
             res.status(200).json({ status: verify, data: {}, msg: '' });
         } catch (err) {
             console.log(err);
