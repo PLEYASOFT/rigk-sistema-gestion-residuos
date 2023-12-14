@@ -179,6 +179,45 @@ class StatementProductorLogic {
             });
         }
     }
+    public async haveDJ(req: Request, res: Response) {
+        const { business, id } = req.params;
+        try {
+            const data = await statementDao.haveDJ(business, id);
+            res.status(200).json({ status: true, data });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
+    public async businessUserDJ(req: Request, res: Response) {
+        const { id } = req.params;
+        try {
+            const data = await statementDao.businessUserDJ(id);
+            res.status(200).json({ status: true, data });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
+    async deleteDJ(req: any, res: Response) {
+        const { idEmpresa, idUsuario } = req.params;
+        try {
+            const dj = await statementDao.deleteDJ(idEmpresa, idUsuario);
+            res.status(200).json({ status: dj, data: {}, msg: '' });
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
     public async saveForm(req: any, res: Response) {
         try {
             const { header, detail } = req.body;

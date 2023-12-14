@@ -37,7 +37,7 @@ export class HomeComponent implements OnInit {
     //verificar si inicie sesión
     const isLoggedIn = sessionStorage.getItem('user');
     if (isLoggedIn) {
-      this.openTermsAndConditions();
+      // this.openTermsAndConditions();
     }
   }
   loadStatements() {
@@ -153,33 +153,6 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  adjuntar() {
-    var input = document.createElement('input');
-    input.type = 'file';
-    // input.accept = 'application/pdf';
-    input.style.display = 'none';
-    input.onchange = (e) => {
-      var target = e.target as HTMLInputElement;
-      let _file = target.files![0];
-      if (_file && _file.type === 'application/pdf' && _file.size / 1000 <= 1000) {
-        this.file = _file;
-        this.productorService.uploadPDFTerminos(_file).subscribe({
-          next: (res) => {
-            if (res.status) {
-              document.getElementById("modal_terminos_close")!.click();
-            }
-          }
-        });
-      } else {
-        Swal.fire({
-          icon: 'info',
-          text: 'El archivo debe ser PDF y debe pesar menos de 1MB'
-        })
-      }
-    }
-    document.body.appendChild(input);
-    input.click();
-  }
   openTermsAndConditions() {
     this.productorService.veryfyPDFTerminos().subscribe((res) => {
       if (!res.status) {

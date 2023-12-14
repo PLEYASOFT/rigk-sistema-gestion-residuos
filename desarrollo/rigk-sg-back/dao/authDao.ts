@@ -134,11 +134,29 @@ class AuthDao {
         conn.end();
         return res;
     }
-    public async addUserBusiness(id_user: any, id_business: any) {
+    public async addUserBusiness(id_user: any, array_id_business: any) {
         const conn = mysqlcon.getConnection()!;
-        const res: any = await conn.query("INSERT INTO user_business VALUES(?,?)", [id_user, id_business]).then((res) => res[0]).catch(error => [{ undefined }]);
-        conn.end();
-        return res;
+        try {
+            const currentRelations = await conn.query("SELECT ID_BUSINESS, DJ_FILE FROM user_business WHERE ID_USER=?", [id_user]);
+            await conn.query("DELETE FROM user_business WHERE ID_USER=?", [id_user]);
+            const currentRelationsArray = currentRelations[0] as { ID_BUSINESS: any, DJ_FILE: any }[];
+            for (const id_business of array_id_business) {
+                const currentRelation = currentRelationsArray.find((relation) => relation.ID_BUSINESS === id_business);
+                const currentDJFile = currentRelation ? currentRelation.DJ_FILE : null;
+    
+                if (currentDJFile === null) {
+                    await conn.query("INSERT INTO user_business (ID_USER, ID_BUSINESS, DJ_FILE) VALUES (?, ?, NULL)", [id_user, id_business]);
+                } else {
+                    await conn.query("INSERT INTO user_business (ID_USER, ID_BUSINESS, DJ_FILE) VALUES (?, ?, ?)", [id_user, id_business, currentDJFile]);
+                }
+            }
+            return { status: true, msg: 'Relaciones de usuario y empresas actualizadas correctamente', data: [] };
+        } catch (error: any) {
+            console.log(error);
+            return { status: false, msg: 'Ocurrió un error al actualizar las relaciones de usuario y empresas', data: {} };
+        } finally {
+            conn.end();
+        }
     }
     public async addUserRoles(id_user: any, id_rol: any) {
         const conn = mysqlcon.getConnection()!;
@@ -149,7 +167,6 @@ class AuthDao {
     public async updateUser(ID: any, FIRST_NAME: any, LAST_NAME: any, EMAIL: any, PHONE: any, PHONE_OFFICE: any, POSITION: any) {
         const conn = mysqlcon.getConnection()!;
         const res: any = await conn.query("UPDATE user SET FIRST_NAME=?, LAST_NAME=?, EMAIL=?, PHONE=?, PHONE_OFFICE=?, POSITION=? WHERE ID = ?", [FIRST_NAME, LAST_NAME, EMAIL, PHONE, PHONE_OFFICE, POSITION, ID]).then((res) => res[0]).catch(error => [{ undefined }]);
-        await conn.query("DELETE FROM user_business WHERE ID_USER=?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         await conn.query("DELETE FROM user_rol WHERE USER_ID=?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
         conn.end();
         return res;
