@@ -100,6 +100,19 @@ class EstablishmentLogic {
             });
         }
     }
+
+    async getAllDeclarationEstablishments(req: any, res: Response) {
+        try {
+            const establishment = await establishmentDao.getAllDeclarationEstablishments();
+            res.status(200).json({ status: establishment, data: {}, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
     public async saveInvoice(req: any, res: Response) {
         const { vat, invoice_number, id_detail, date_pr, value, valued_total, treatment, id_material, id_business } = req.body;
         if (!req.files || Object.keys(req.files).length == 0 || !req.files['file']) {
