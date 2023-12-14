@@ -7,6 +7,7 @@ const router = Router();
 router.get('/getIdByEstablishment/:id_vu/:region/:comuna/:name', [validarJWT], establishmentLogic.getIdByEstablishment);
 router.get('/all', [validarJWT], establishmentLogic.getAllEstablishment);
 router.get('/declaration', [validarJWT], establishmentLogic.getDeclarationEstablishment);
+router.get('/alldeclaration', [validarJWT], establishmentLogic.getAllDeclarationEstablishments);
 router.get('/:id', [validarJWT], establishmentLogic.getEstablishment);
 router.get('/get/:id', [validarJWT], establishmentLogic.getEstablishmentByID);
 router.post('/add', [validarJWT], establishmentLogic.addEstablishment);
