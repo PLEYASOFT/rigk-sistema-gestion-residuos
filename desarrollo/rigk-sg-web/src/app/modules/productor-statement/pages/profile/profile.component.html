@@ -90,20 +90,18 @@
                 </div>
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
-
-                        <li (click)=" displayModifyPassword2()" data-bs-toggle="collapse"
-                            data-bs-target="#panelsStayOpen-collapseTwo"><a><span>Descargar Mi Declaración</span> <i
-                                    class="fa fa-chevron-{{pos2}}" aria-hidden="true"></i></a></li>
+                        <li (click)=" displayModifyPassword2()" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo">
+                            <a><span>Mis Declaraciones Juradas</span> <i class="fa fa-chevron-{{pos2}}" aria-hidden="true"></i></a>
+                        </li>
                     </h2>
                     <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse "
                         aria-labelledby="panelsStayOpen-headingTwo">
                         <div class="accordion-body">
                             <form class="form-recovery" autocomplete="off" [formGroup]="formData">
                                 <div class="mb-4">
-                                    <button type="button" (click)="downloadTerminos()"
-                                        class="btn btn-primary btn-fa w-100 ">
-                                        Descargar <i class="fa fa-long-arrow-right fa-fw"
-                                            aria-hidden="true"></i></button>
+                                    <div class="buttonRight">
+                                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Ver Declaraciones Juradas</button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -112,4 +110,77 @@
             </div>
         </ul>
     </section>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Declaraciones</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p></p>
+                                </div>
+                                <div>
+                                    <table
+                                        class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
+                                        <thead>
+                                            <tr class="text-center w-100">
+                                                <th>Código Empresa</th>
+                                                <th>Nombre Empresa</th>
+                                                <th>Adjuntar Declaración Jurada</th>
+                                                <th>Descargar Declaración Jurada</th>
+                                                <th>Eliminar Declaración Jurada</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let r of db">
+                                                <td>{{r.CODE_BUSINESS}}</td>
+                                                <td>{{r.NAME}}</td>
+                                                <td class="centered-td">
+                                                    <button type="button" class="btn btn-primary" [disabled]="r.DJ_FILE !== null" (click)="adjuntar(r.ID_BUSINESS)">
+                                                      {{ r.DJ_FILE == null ? 'Adjuntar' : 'Adjuntado' }}
+                                                    </button>
+                                                </td>
+                                                <td class="centered-td">
+                                                    <i *ngIf="r.DJ_FILE == null" class="fas fa-times text-danger"></i>
+                                                    <button *ngIf="r.DJ_FILE !== null" type="button" class="btn btn-primary btn-fa w-100" (click)="downloadTerminos(r.ID_BUSINESS)">
+                                                            Descargar
+                                                    </button>
+                                                </td>
+                                                <td class="centered-td">
+                                                    <button type="button" class="btn btn-danger btn-sm rounded-pill" [disabled]="r.DJ_FILE == null" (click)="deleteDJ(r.ID_BUSINESS)">X</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <!-- Pagination -->
+                                    <nav aria-label="Navegación resultados">
+                                        <ul class="pagination">
+                                          <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
+                                          <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
+                                          <li *ngFor="let i of visiblePageNumbers(); let j = index">
+                                            <button class="border btn btn-sm"
+                                                    [ngClass]="{ 'btn-info': posP === (i+1), 'btn-primary': posP !== (i+1) }"
+                                                    (click)="pagTo(i)">{{i+1}}</button>
+                                          </li>
+                                          <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
+                                          <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnCloseModal" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
