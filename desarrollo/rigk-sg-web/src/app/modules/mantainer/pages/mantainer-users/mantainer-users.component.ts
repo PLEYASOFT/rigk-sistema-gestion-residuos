@@ -36,6 +36,7 @@ export class MantainerUsersComponent implements OnInit {
   business: any[] = [];
   selectedBusiness!: any[];
   listUser: any[] = [];
+  dbTmp: any[] = [];
   listRoles: any[] = [];
   isEdit = false;
   saving = false;
@@ -50,7 +51,6 @@ export class MantainerUsersComponent implements OnInit {
     POSITION: ['', [Validators.required, Validators.min(1)]],
     BUSINESS: [[], [Validators.required]]
   });
-  dbTmp: any[] = [];
   constructor(private authService: AuthService,
     private businesService: BusinessService,
     private productorService: ProductorService,
@@ -71,33 +71,27 @@ export class MantainerUsersComponent implements OnInit {
     });
   }
   filter(target: any) {
-    const value = target.value?.toLowerCase().trim();
+    const value = target.value?.toLowerCase();
     this.pos = 1;
+    const listIndex:any = []
     if (target.value != '') {
-      if (this.dbTmp.length > 0) {
-        this.listUser = this.dbTmp;
-      }
       this.cant = 1;
       this.db = this.listUser.filter(r => {
-        const name = `${r.FIRST_NAME?.toLowerCase()} ${r.LAST_NAME?.toLowerCase()}`;
-        const tmp: any[] = r.BUSINESS.filter((b: any) => {
-          return b.NAME.toLowerCase().indexOf(value) > -1;
-        });
-        if (tmp.length > 0 || r.FIRST_NAME?.toLowerCase().indexOf(value) > -1 || r.LAST_NAME?.toLowerCase().indexOf(value) > -1 || r.PHONE?.toLowerCase().indexOf(value) > -1 || r.ROL_NAME?.toLowerCase().indexOf(value) > -1 || r.EMAIL?.toLowerCase().indexOf(value) > -1 || r.PHONE_OFFICE?.toLowerCase().indexOf(value) > -1 || r.POSITION?.toLowerCase().indexOf(value) > -1 || name.indexOf(value) > -1) return r;
+        if (r.FIRST_NAME?.toLowerCase().indexOf(value) > -1 || r.LAST_NAME?.toLowerCase().indexOf(value) > -1 || r.PHONE?.toLowerCase().indexOf(value) > -1 ||
+          r.ROL_NAME?.toLowerCase().indexOf(value) > -1 || r.EMAIL?.toLowerCase().indexOf(value) > -1 || r.PHONE_OFFICE?.toLowerCase().indexOf(value) > -1 ||
+          r.POSITION?.toLowerCase().indexOf(value) > -1){
+            listIndex.push(r);
+          } 
       });
-      if (this.dbTmp.length == 0) {
-        this.dbTmp = this.listUser;
-      }
-      this.listUser = this.db;
-      this.db = this.db.splice(0, 10);
-      this.cant = Math.ceil(this.listUser.length / 10) || 1;
-      return;
+      this.dbTmp = listIndex;
+      this.db = this.dbTmp.slice(0, 10);
+      this.cant = Math.ceil(listIndex.length / 10);
+      return this.db;
     }
-    if (this.dbTmp.length > 0) {
-      this.listUser = this.dbTmp;
-    }
+    this.dbTmp = this.listUser;
     this.db = this.listUser.slice(0, 10);
-    this.cant = (Math.ceil(this.listUser.length / 10) || 1);
+    this.cant = Math.ceil(this.listUser.length / 10);
+    return this.db;
   }
   loadRoles() {
     this.authService.getRoles.subscribe(r => {
@@ -110,8 +104,6 @@ export class MantainerUsersComponent implements OnInit {
     });
   }
   loadUsers() {
-    this.listUser = [];
-    this.dbTmp = [];
     Swal.fire({
       title: 'Cargando Datos',
       text: 'Se está recuperando datos',
@@ -126,7 +118,7 @@ export class MantainerUsersComponent implements OnInit {
       if (r.status) {
         this.listUser = r.data;
         this.dbTmp = r.data;
-        this.cant = Math.ceil(this.listUser.length / 10) || 1;
+        this.cant = Math.ceil(this.listUser.length / 10);
         this.db = this.listUser.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
         Swal.close();
       }
@@ -298,17 +290,17 @@ export class MantainerUsersComponent implements OnInit {
   cant = 0;
   pagTo(i: number) {
     this.pos = i + 1;
-    this.db = this.listUser.slice((i * 10), (i + 1) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
+    this.db = this.dbTmp.slice((i * 10), (i + 1) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
   }
   next() {
     if (this.pos >= this.cant) return;
     this.pos++;
-    this.db = this.listUser.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
+    this.db = this.dbTmp.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
   }
   previus() {
     if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
     this.pos = this.pos - 1;
-    this.db = this.listUser.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);;
+    this.db = this.dbTmp.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
   }
   visiblePageNumbers() {
     const totalPages = this.setArrayFromNumber().length;
