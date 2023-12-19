@@ -61,15 +61,15 @@
                     <!-- Pagination -->
                     <nav aria-label="Navegación resultados">
                         <ul class="pagination">
-                          <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
-                          <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
-                          <li *ngFor="let i of visiblePageNumbers(); let j = index">
-                            <button class="border btn btn-sm"
+                            <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
+                            <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
+                            <li *ngFor="let i of visiblePageNumbers(); let j = index">
+                                <button class="border btn btn-sm"
                                     [ngClass]="{ 'btn-info': pos === (i+1), 'btn-primary': pos !== (i+1) }"
                                     (click)="pagTo(i)">{{i+1}}</button>
-                          </li>
-                          <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
-                          <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
+                            </li>
+                            <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
+                            <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
                         </ul>
                     </nav>
                 </div>
@@ -93,17 +93,21 @@
                                 <label for="inp_nom">NOMBRE:</label>
                                 <input type="text" formControlName="FIRST_NAME" id="inp_nom" placeholder="Nombre"
                                     class="form-control">
-                                    <div *ngIf="userForm.controls['FIRST_NAME'].errors && userForm.controls['FIRST_NAME'].touched" class="text-danger pl-0">
-                                        <p *ngIf="userForm.controls['FIRST_NAME'].errors['required']">El nombre del usuario es requerido.</p>
-                                    </div>
+                                <div *ngIf="userForm.controls['FIRST_NAME'].errors && userForm.controls['FIRST_NAME'].touched"
+                                    class="text-danger pl-0">
+                                    <p *ngIf="userForm.controls['FIRST_NAME'].errors['required']">El nombre del usuario
+                                        es requerido.</p>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label for="inp_ap">APELLIDOS:</label>
                                 <input type="text" formControlName="LAST_NAME" id="inp_ap" placeholder="Apellidos"
                                     class="form-control">
-                                    <div *ngIf="userForm.controls['LAST_NAME'].errors && userForm.controls['LAST_NAME'].touched" class="text-danger pl-0">
-                                        <p *ngIf="userForm.controls['LAST_NAME'].errors['required']">El apellido del usuario es requerido.</p>
-                                    </div>
+                                <div *ngIf="userForm.controls['LAST_NAME'].errors && userForm.controls['LAST_NAME'].touched"
+                                    class="text-danger pl-0">
+                                    <p *ngIf="userForm.controls['LAST_NAME'].errors['required']">El apellido del usuario
+                                        es requerido.</p>
+                                </div>
                             </div>
                         </div>
                         <div class="row mt-4">
@@ -111,21 +115,29 @@
                                 <label for="inp_tel">TELÉFONO</label>
                                 <input type="text" formControlName="PHONE" class="form-control" id="inp_tel"
                                     placeholder="912345678">
-                                    <div *ngIf="userForm.controls['PHONE'].errors && userForm.controls['PHONE'].touched" class="text-danger pl-0">
-                                        <p *ngIf="userForm.controls['PHONE'].errors['required']">El teléfono del usuario es requerido.</p>
-                                        <p *ngIf="userForm.controls['PHONE'].errors['pattern']">El formato del teléfono es inválido (entre 7 y 12 dígitos).</p>
-                                    </div>
+                                <div *ngIf="userForm.controls['PHONE'].errors && userForm.controls['PHONE'].touched"
+                                    class="text-danger pl-0">
+                                    <p *ngIf="userForm.controls['PHONE'].errors['required']">El teléfono del usuario es
+                                        requerido.</p>
+                                    <p *ngIf="userForm.controls['PHONE'].errors['pattern']">El formato del teléfono es
+                                        inválido (entre 7 y 12 dígitos).</p>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label for="inp_email">E-MAIL</label>
-                                <input type="text" formControlName="EMAIL" id="inp_email"
-                                    class="form-control" placeholder="cto@correo.com">
+                                <input type="text" formControlName="EMAIL" id="inp_email" class="form-control"
+                                    placeholder="cto@correo.com">
                                 <!-- <p class="text-danger" *ngIf="showErrorEmail">El correo ya se encuentra registrado.</p> -->
-                                <div *ngIf="userForm.controls['EMAIL'].errors && userForm.controls['EMAIL'].touched" class="text-danger pl-0">
-                                    <p *ngIf="userForm.controls['EMAIL'].errors['required']">El email contacto es requerido (ejemplo@correo.com).</p>
-                                    <p *ngIf="userForm.controls['EMAIL'].errors['email']">El formato del correo es inválido (ejemplo@correo.com).</p>
-                                    <p *ngIf="userForm.controls['EMAIL'].errors['pattern']">El formato del correo es inválido (ejemplo@correo.com).</p>
-                                    <p *ngIf="userForm.controls['EMAIL'].errors['used']">El correo ya se encuentra registrado.</p>
+                                <div *ngIf="userForm.controls['EMAIL'].errors && userForm.controls['EMAIL'].touched"
+                                    class="text-danger pl-0">
+                                    <p *ngIf="userForm.controls['EMAIL'].errors['required']">El email contacto es
+                                        requerido (ejemplo&#64;correo.com).</p>
+                                    <p *ngIf="userForm.controls['EMAIL'].errors['email']">El formato del correo es
+                                        inválido (ejemplo&#64;correo.com).</p>
+                                    <p *ngIf="userForm.controls['EMAIL'].errors['pattern']">El formato del correo es
+                                        inválido (ejemplo&#64;correo.com).</p>
+                                    <p *ngIf="userForm.controls['EMAIL'].errors['used']">El correo ya se encuentra
+                                        registrado.</p>
                                 </div>
                             </div>
                         </div>
@@ -134,59 +146,138 @@
                                 <label for="inp_tel">TELÉFONO OFICINA</label>
                                 <input type="text" formControlName="PHONE_OFFICE" required class="form-control"
                                     id="inp_tel" placeholder="912345678">
-                                    <div *ngIf="userForm.controls['PHONE_OFFICE'].errors && userForm.controls['PHONE_OFFICE'].touched" class="text-danger pl-0">
-                                        <p *ngIf="userForm.controls['PHONE_OFFICE'].errors['required']">El teléfono de la oficina del usuario es requerido (entre 7 y 12 dígitos).</p>
-                                        <p *ngIf="userForm.controls['PHONE_OFFICE'].errors['pattern']">El formato del teléfono es inválido (entre 7 y 12 dígitos).</p>
-                                    </div>
+                                <div *ngIf="userForm.controls['PHONE_OFFICE'].errors && userForm.controls['PHONE_OFFICE'].touched"
+                                    class="text-danger pl-0">
+                                    <p *ngIf="userForm.controls['PHONE_OFFICE'].errors['required']">El teléfono de la
+                                        oficina del usuario es requerido (entre 7 y 12 dígitos).</p>
+                                    <p *ngIf="userForm.controls['PHONE_OFFICE'].errors['pattern']">El formato del
+                                        teléfono es inválido (entre 7 y 12 dígitos).</p>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label for="inp_email">CARGO</label>
                                 <input type="text" formControlName="POSITION" id="inp_email" class="form-control"
                                     placeholder="Gerente">
-                                    <div *ngIf="userForm.controls['POSITION'].errors && userForm.controls['POSITION'].touched" class="text-danger pl-0">
-                                        <p *ngIf="userForm.controls['POSITION'].errors['required']">El cargo del usuario es requerido.</p>
-                                    </div>
+                                <div *ngIf="userForm.controls['POSITION'].errors && userForm.controls['POSITION'].touched"
+                                    class="text-danger pl-0">
+                                    <p *ngIf="userForm.controls['POSITION'].errors['required']">El cargo del usuario es
+                                        requerido.</p>
+                                </div>
+                            </div>
+                            <p></p>
+                            <div class="col-md-6">
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalDeclarationes" *ngIf="isEdit && hasProductorRole()" (click)="loadDJ()">Ver Declaraciones Juradas</button>
                             </div>
                         </div>
-                        
+
                         <div class="row mt-4">
                             <div class="col-md-6">
                                 <label for="">EMPRESAS</label> <br>
-                                <p-multiSelect [options]="business" formControlName="BUSINESS" optionLabel="view_name" optionValue="ID"
-                                    defaultLabel="Seleccione Empresas" [selectedItemsLabel]="'{0} Empresas seleccionadas'"></p-multiSelect>
+                                <p-multiSelect [options]="business" formControlName="BUSINESS" optionLabel="view_name"
+                                    optionValue="ID" defaultLabel="Seleccione Empresas"
+                                    [selectedItemsLabel]="'{0} Empresas seleccionadas'"></p-multiSelect>
                                 <div *ngIf="userForm.controls['BUSINESS'].errors && userForm.controls['BUSINESS'].touched"
                                     class="text-danger pl-0">
-                                    <p *ngIf="userForm.controls['BUSINESS'].errors['required']">Empresa(s) del usuario es requerido.</p>
+                                    <p *ngIf="userForm.controls['BUSINESS'].errors['required']">Empresa(s) del usuario
+                                        es requerido.</p>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <label for="inp_rol">ROLES</label>
-                                    <p-multiSelect [options]="listRoles" formControlName="ROL" optionLabel="view_name" optionValue="ID" 
-                                    defaultLabel="Seleccione Roles"
+                                <p-multiSelect [options]="listRoles" formControlName="ROL" optionLabel="view_name"
+                                    optionValue="ID" defaultLabel="Seleccione Roles"
                                     [selectedItemsLabel]="'{0} Roles seleccionados'"></p-multiSelect>
-                                <div *ngIf="userForm.controls['ROL'].errors && userForm.controls['ROL'].touched" class="text-danger pl-0">
-                                    <p *ngIf="userForm.controls['ROL'].errors['required']">Rol(es) del usuario es requerido.</p>
-                                    <p *ngIf="userForm.controls['ROL'].errors['min']">Rol(es) del usuario es requerido.</p>
+                                <div *ngIf="userForm.controls['ROL'].errors && userForm.controls['ROL'].touched"
+                                    class="text-danger pl-0">
+                                    <p *ngIf="userForm.controls['ROL'].errors['required']">Rol(es) del usuario es
+                                        requerido.</p>
+                                    <p *ngIf="userForm.controls['ROL'].errors['min']">Rol(es) del usuario es requerido.
+                                    </p>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
-                                <span *ngFor="let e of userForm.value.BUSINESS" class="badge bg-primary m-1">{{showName(e)}}</span>
+                                <span *ngFor="let e of userForm.value.BUSINESS"
+                                    class="badge bg-primary m-1">{{showName(e)}}</span>
                             </div>
-                            
+
                             <div class="col-md-6">
-                                <span *ngFor="let e of userForm.value.ROL" class="badge bg-primary m-1">{{showRol(e)}}</span>
+                                <span *ngFor="let e of userForm.value.ROL"
+                                    class="badge bg-primary m-1">{{showRol(e)}}</span>
                             </div>
                         </div>
                     </form>
                 </div>
-        </div>
+            </div>
             <div class="modal-footer">
                 <button type="button" id="btnCloseModal" class="btn btn-secondary"
                     data-bs-dismiss="modal">Cerrar</button>
                 <button type="button" class="btn btn-primary" (click)="saveForm()"
                     [disabled]="userForm.invalid || saving">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModalDeclarationes" tabindex="-1" aria-labelledby="exampleModalDeclarationesLabel" aria-hidden="true" (hidden.bs.modal)="pagTo2(0)">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalDeclarationesLabel">Declaraciones</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <form>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p></p>
+                            </div>
+                            <div>
+                                <table
+                                    class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
+                                    <thead>
+                                        <tr class="text-center w-100">
+                                            <th>Código Empresa</th>
+                                            <th>Nombre Empresa</th>
+                                            <th>Descargar Declaración Jurada</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let r of db2">
+                                            <td>{{r.CODE_BUSINESS}}</td>
+                                            <td>{{r.NAME}}</td>
+                                            <td class="centered-td">
+                                                <i *ngIf="r.DJ_FILE == null" class="fas fa-times text-danger"></i>
+                                                <button *ngIf="r.DJ_FILE !== null" type="button" class="btn btn-primary btn-fa w-100" (click)="downloadTerminos(r.ID_BUSINESS)">
+                                                        Descargar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- Pagination -->
+                                <nav aria-label="Navegación resultados">
+                                    <ul class="pagination">
+                                      <li><button class="btn btn-primary" (click)="pagTo2(0)">Primero</button></li>
+                                      <li><button class="btn btn-primary" (click)="previus2()">Anterior</button></li>
+                                      <li *ngFor="let i of visiblePageNumbers2(); let j = index">
+                                        <button class="border btn btn-sm"
+                                                [ngClass]="{ 'btn-info': posP === (i+1), 'btn-primary': posP !== (i+1) }"
+                                                (click)="pagTo2(i)">{{i+1}}</button>
+                                      </li>
+                                      <li><button class="btn btn-primary" (click)="next2()">Siguiente</button></li>
+                                      <li><button class="btn btn-primary" (click)="pagTo2(cant2-1)">Último</button></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCloseModal" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>

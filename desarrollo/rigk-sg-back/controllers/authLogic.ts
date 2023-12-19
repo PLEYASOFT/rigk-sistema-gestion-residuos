@@ -171,10 +171,7 @@ class AuthLogic {
                 await createLog('AGREGA_USUARIO', req.uid, 'Correo Existe');
                 return res.status(200).json({ status: false, msg: 'Correo existe', data: {} });
             }
-            for (let i = 0; i < BUSINESS.length; i++) {
-                const b = BUSINESS[i];
-                await authDao.addUserBusiness(result.insertId, b);
-            }
+            await authDao.addUserBusiness(result.insertId, BUSINESS);
             await createLog('AGREGA_USUARIO', req.uid, null);
             res.status(200).json({ status: true, msg: 'Has creado usuario', data: {} });
         }
@@ -237,10 +234,7 @@ class AuthLogic {
         const { ID, FIRST_NAME, LAST_NAME, EMAIL, ROL, PHONE, PHONE_OFFICE, POSITION, BUSINESS } = req.body;
         try {
             await authDao.updateUser(ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE, PHONE_OFFICE, POSITION);
-            for (let i = 0; i < BUSINESS.length; i++) {
-                const b = BUSINESS[i];
-                await authDao.addUserBusiness(ID, b);
-            }
+            await authDao.addUserBusiness(ID, BUSINESS);
             for (let i = 0; i < ROL.length; i++) {
                 const b = ROL[i];
                 await authDao.addUserRoles(ID, b);
