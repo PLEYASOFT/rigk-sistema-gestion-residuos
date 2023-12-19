@@ -73,18 +73,30 @@ export class MantainerUsersComponent implements OnInit {
   filter(target: any) {
     const value = target.value?.toLowerCase();
     this.pos = 1;
-    const listIndex:any = []
+    const listIndex:any = [];
+
     if (target.value != '') {
       this.cant = 1;
-      this.db = this.listUser.filter(r => {
-        if (r.FIRST_NAME?.toLowerCase().indexOf(value) > -1 || r.LAST_NAME?.toLowerCase().indexOf(value) > -1 || r.PHONE?.toLowerCase().indexOf(value) > -1 ||
-          r.ROL_NAME?.toLowerCase().indexOf(value) > -1 || r.EMAIL?.toLowerCase().indexOf(value) > -1 || r.PHONE_OFFICE?.toLowerCase().indexOf(value) > -1 ||
-          r.POSITION?.toLowerCase().indexOf(value) > -1){
-            listIndex.push(r);
-          } 
+
+      this.dbTmp = this.listUser.filter(user => {
+        const isMatch = user.FIRST_NAME?.toLowerCase().indexOf(value) > -1 ||
+                        user.LAST_NAME?.toLowerCase().indexOf(value) > -1 ||
+                        user.PHONE?.toLowerCase().indexOf(value) > -1 ||
+                        user.ROL_NAME?.toLowerCase().indexOf(value) > -1 ||
+                        user.EMAIL?.toLowerCase().indexOf(value) > -1 ||
+                        user.PHONE_OFFICE?.toLowerCase().indexOf(value) > -1 ||
+                        user.POSITION?.toLowerCase().indexOf(value) > -1;
+
+        const isBusinessMatch = user.BUSINESS?.some((business:any) => 
+            business.NAME?.toLowerCase().indexOf(value) > -1
+        );
+
+        if (isMatch || isBusinessMatch) {
+            listIndex.push(user);
+        }
       });
-      this.dbTmp = listIndex;
-      this.db = this.dbTmp.slice(0, 10);
+      this.dbTmp =  listIndex;
+      this.db = listIndex.slice(0, 10);
       this.cant = Math.ceil(listIndex.length / 10);
       return this.db;
     }
@@ -92,7 +104,8 @@ export class MantainerUsersComponent implements OnInit {
     this.db = this.listUser.slice(0, 10);
     this.cant = Math.ceil(this.listUser.length / 10);
     return this.db;
-  }
+}
+
   loadRoles() {
     this.authService.getRoles.subscribe(r => {
       if (r.status) {
