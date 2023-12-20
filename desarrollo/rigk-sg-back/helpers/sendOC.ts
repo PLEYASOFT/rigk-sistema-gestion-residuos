@@ -6,7 +6,7 @@ import { MailOptions } from 'nodemailer/lib/sendmail-transport';
 export const sendOC = async ( id: any, file: any ) => {
     const transporter = nodemailer.createTransport({
         pool: true,
-        host: "mail.prorep.cl",
+        host: "smtp.gmail.com",
         port: 465,
         secure:true,
         auth: {
@@ -23,7 +23,7 @@ export const sendOC = async ( id: any, file: any ) => {
 
     const mailOptions: MailOptions = {
         from: `PROREP noreply@prorep.cl`,
-        to: `${process.env.EMAIL_OC},admin@prorep.cl,lbustos@prorep.cl,kuzmicic@rigk.cl,crlumar@gmail.com,noreply@prorep.cl,pangelini@zeustech.cl`,
+        to: `${process.env.EMAIL_OC},pangelini@zeustech.cl,ordenesdecompra@prorep.cl,noreply@prorep.cl`,
         subject: `OC de empresa ${code_business} - ${name}`,
         attachments: [
             {filename: file.name, content: file.data}

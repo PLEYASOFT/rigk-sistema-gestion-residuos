@@ -227,12 +227,12 @@ export class MaintainerGoalsComponent implements OnInit {
       switch(val.year_material.split("_")[1]) {
         case "1": { 
            return "Papel";  
-        } 
+        }  
         case "2": { 
-          return "Plástico"; 
-        } 
-        case "3": { 
           return "Metal";  
+        }
+        case "3": { 
+          return "Plástico"; 
         }
         default: { 
           return "Global"; 

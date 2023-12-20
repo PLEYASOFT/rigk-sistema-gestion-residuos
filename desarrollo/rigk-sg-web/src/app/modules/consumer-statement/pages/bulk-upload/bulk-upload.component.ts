@@ -279,7 +279,8 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-      const sanitizedQuantity = row[8].replace(',', '.');
+      
+      const sanitizedQuantity = row[8].toString().replace(',', '.');
       const quantity = parseFloat(sanitizedQuantity);
 
       if (quantity <= 0) {

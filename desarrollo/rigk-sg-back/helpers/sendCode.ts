@@ -5,7 +5,7 @@ import mysqlcon from '../db';
 export const sendCode = async ( output: any, cod: any, res: Response ) => {
     const transporter = nodemailer.createTransport({
         pool: true,
-        host: "mail.prorep.cl",
+        host: "smtp.gmail.com",
         port: 465,
         secure:true,
         auth: {
