@@ -16,6 +16,7 @@ export class MaintainerBusinessComponent implements OnInit {
   db: any[] = [];
   cant = 0;
 
+  filteredList: any[] = [];
   formData: any;
   existingCode: any = '';
   popupVisible = false;
@@ -77,6 +78,7 @@ export class MaintainerBusinessComponent implements OnInit {
     this.giro = [];
     this.businessService.getAllBusiness().subscribe({
       next: resp => {
+        this.filteredList = resp.status;
         this.listBusiness = resp.status;
         this.cant = Math.ceil(this.listBusiness.length / 10);
         this.db = this.listBusiness.slice(0, 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
@@ -246,17 +248,17 @@ export class MaintainerBusinessComponent implements OnInit {
 
   pagTo(i: number) {
     this.pos = i + 1;
-    this.db = this.listBusiness.slice((i * 10), (i + 1) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+    this.db = this.filteredList.slice((i * 10), (i + 1) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
   }
   next() {
     if (this.pos >= this.cant) return;
     this.pos++;
-    this.db = this.listBusiness.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+    this.db = this.filteredList.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
   }
   previus() {
     if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
     this.pos = this.pos - 1;
-    this.db = this.listBusiness.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
+    this.db = this.filteredList.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT);
   }
   setArrayFromNumber() {
     return new Array(this.cant);
@@ -303,10 +305,12 @@ export class MaintainerBusinessComponent implements OnInit {
             listIndex.push(r);
           } 
       });
+      this.filteredList = listIndex;
       this.db = listIndex.slice(0, 10);
       this.cant = Math.ceil(listIndex.length / 10);
       return this.db;
     }
+    this.filteredList = this.listBusiness;
     this.db = this.listBusiness.slice(0, 10);
     this.cant = Math.ceil(this.listBusiness.length / 10);
     return this.db;
