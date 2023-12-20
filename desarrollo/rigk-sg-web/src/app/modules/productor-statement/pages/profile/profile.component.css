@@ -21,4 +21,7 @@ a:hover {
 .swal-icon img{
     width: 20px;
     height: 20px;
-  }
+}
+.centered-td {
+    text-align: center;
+}

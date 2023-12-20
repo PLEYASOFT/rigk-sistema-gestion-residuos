@@ -15,6 +15,8 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { MaintainerGoalsComponent } from './pages/maintainer-goals/maintainer-goals.component';
 import { DashboardCiGestoresComponent } from './pages/dashboard-ci-gestores/dashboard-ci-gestores.component';
 import { MaintainerDeclarationsCiComponent } from "./pages/maintainer-declarations-ci/maintainer-declarations-ci.component";
+import { VisualizarMvComponent } from './pages/visualizar-mv/visualizar-mv.component';
+import { VisualizarMvDetailComponent } from './pages/visualizar-mv-detail/visualizar-mv-detail.component';
 
 const routes: Routes = [{
   path: '',
@@ -34,6 +36,8 @@ const routes: Routes = [{
   { path: 'logs', component: LogsComponent },
   { path: 'dashboard-ci-productor', component: DashboardComponent },
   { path: 'dashboard-ci-gestor', component: DashboardCiGestoresComponent },
+  { path: 'visualizar-mv', component: VisualizarMvComponent },
+  { path: 'visualizar-mv/:id_header_/:id_detail', component: VisualizarMvDetailComponent },
   { path: '**', redirectTo: 'home', pathMatch: 'full' }]
 }
   

@@ -14,6 +14,14 @@ export class ProfileComponent implements OnInit {
   userData: any | null;
   pos = "right";
   horaIngreso = new Date();
+  db: any[] = [];
+  business_user: any[] = [];
+  index: number = 0;
+  file: any;
+  posP = 1;
+  cant: number = 0;
+  allBusiness: any[] = [];
+  filteredForm: any[] = [];
 
   formData: FormGroup = this.fb.group({
     actual: ['', [Validators.required]],
@@ -27,8 +35,78 @@ export class ProfileComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit(): void {
+    this.loadStatements();
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
     this.horaIngreso = new Date(sessionStorage.getItem('horaIngreso')!);
+  }
+
+  getBusiness() {
+    this.productorServices.businessUserDJ(this.userData.ID).subscribe(r => {
+      if (r.status) {
+        this.business_user = r.data;
+      }
+    });
+  }
+
+  loadStatements() {
+    const idUser = JSON.parse(sessionStorage.getItem('user')!).ID;
+    this.productorServices.businessUserDJ(idUser).subscribe(r => {
+      this.allBusiness = (r.data as any).sort((a: any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
+      this.cant = Math.ceil(this.allBusiness.length / 10);
+      this.db = this.allBusiness.slice((this.posP - 1) * 10, this.posP * 10).sort((a: any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
+    })
+  }
+
+  reset() {
+    this.loadStatements();
+  }
+
+  pagTo(i: number) {
+    this.posP = i + 1;
+    this.db = this.allBusiness.slice((i * 10), (i + 1) * 10).sort((a: any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
+  }
+
+  next() {
+    if (this.posP >= this.cant) return;
+    this.posP++;
+    this.db = this.allBusiness.slice((this.posP - 1) * 10, (this.posP) * 10).sort((a: any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
+  }
+
+  previus() {
+    if (this.posP - 1 <= 0 || this.posP >= this.cant + 1) return;
+    this.posP = this.posP - 1;
+    this.db = this.allBusiness.slice((this.posP - 1) * 10, (this.posP) * 10).sort((a: any, b: any) => a.CODE_BUSINESS.toString().localeCompare(b.CODE_BUSINESS.toString()));
+  }
+
+  setArrayFromNumber() {
+    return new Array(this.cant);
+  }
+  
+  visiblePageNumbers() {
+    const totalPages = this.setArrayFromNumber().length;
+    const visiblePages = [];
+  
+    if (totalPages <= 15) {
+      // Si hay 20 o menos páginas, mostrar todas
+      for (let i = 0; i < totalPages; i++) {
+        visiblePages.push(i);
+      }
+    } else {
+      // Calcular las páginas visibles alrededor de la página actual
+      let startPage = Math.max(0, this.posP - Math.floor(15 / 2));
+      let endPage = Math.min(totalPages - 1, startPage + 14);
+  
+      // Ajustar el cálculo si estamos cerca del final
+      if (endPage - startPage + 1 < 15) {
+        endPage = totalPages - 1;
+        startPage = Math.max(0, endPage - 14);
+      }
+  
+      for (let i = startPage; i <= endPage; i++) {
+        visiblePages.push(i);
+      }
+    }
+    return visiblePages;
   }
 
   btnrecovery() {
@@ -69,6 +147,7 @@ export class ProfileComponent implements OnInit {
       this.pos = "right";
     }
   }
+
   pos2 = "right"
   displayModifyPassword2() {
     if (this.pos2 == "right") {
@@ -77,8 +156,10 @@ export class ProfileComponent implements OnInit {
       this.pos2 = "right";
     }
   }
-  downloadTerminos() {
-    this.productorServices.downloadPdfFirma().subscribe({
+
+  downloadTerminos(idEmpresa: string) {
+    const idUsuario = this.userData.ID;
+    this.productorServices.downloadPdfFirma(idEmpresa, idUsuario).subscribe({
       next: (r) => {
         if (r) {
           const file = new Blob([r], { type: 'application/pdf' });
@@ -90,6 +171,73 @@ export class ProfileComponent implements OnInit {
           link.remove();
           window.URL.revokeObjectURL(link.href);
         }
+      }
+    })
+  }
+
+  adjuntar(idEmpresa: string) {
+    const idUsuario = this.userData.ID;
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.style.display = 'none';
+    input.onchange = (e) => {
+      var target = e.target as HTMLInputElement;
+      let _file = target.files![0];
+      if (_file && _file.type === 'application/pdf' && _file.size / 1000 <= 1000) {
+        this.file = _file;
+        this.productorServices.uploadPDFTerminos(_file, idEmpresa, idUsuario).subscribe({
+          next: (res) => {
+            if (res.status) {
+              this.reset();
+            }
+          }
+        });
+      } else {
+        Swal.fire({
+          icon: 'info',
+          text: 'El archivo debe ser PDF y debe pesar menos de 1MB'
+        })
+      }
+    }
+    document.body.appendChild(input);
+    input.click();
+  }
+
+  deleteDJ(idEmpresa: string) {
+    const idUsuario = this.userData.ID;
+    Swal.fire({
+      title: '¿Esta seguro de eliminar la declaración jurada?',
+      showDenyButton: true,
+      confirmButtonText: 'Aceptar',
+      denyButtonText: `Cancelar`,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.productorServices.deleteDJ(idEmpresa, idUsuario).subscribe({
+          next: resp => {
+            if (resp.status) {
+              Swal.fire({
+                title: "Declaración Eliminada",
+                text: "",
+                icon: "error",
+              });
+              this.reset();
+            }
+            else {
+              Swal.fire({
+                title: "Validar información",
+                text: resp.msg,
+                icon: "error",
+              });
+            }
+          },
+          error: err => {
+            Swal.fire({
+              title: 'Formato inválido',
+              text: '',
+              icon: 'error'
+            })
+          }
+        });
       }
     })
   }

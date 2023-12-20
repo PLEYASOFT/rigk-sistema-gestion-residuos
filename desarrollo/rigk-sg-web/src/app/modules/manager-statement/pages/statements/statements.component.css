@@ -19,3 +19,7 @@
 .no-pointer {
     cursor: default;
 }
+
+.example-section {
+    margin: 0 50px;
+}

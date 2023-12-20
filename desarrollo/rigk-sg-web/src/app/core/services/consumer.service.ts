@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -44,6 +44,11 @@ export class ConsumerService {
       responseType: 'blob' as 'json',
     });
   }
+  downloadMVSelected(items: any[]): Observable<Blob> {
+    return this.http.post<any>(`${this.url}/downloadMV`, items, {
+      responseType: 'blob' as 'json',
+    });
+  }
   deleteById(id: any) {
     return this.http.delete<any>(`${this.url}/detailMV/${id}`);
   }
@@ -59,7 +64,7 @@ export class ConsumerService {
   verifyMaterial(material_id: any, submaterial_id: any) {
     return this.http.get<any>(`${this.url}/verifyMaterial/${material_id}/${submaterial_id}`);
   }
-  verifyGestor(manager_id:any, material:any) {
+  verifyGestor(manager_id: any, material: any) {
     return this.http.get<any>(`${this.url}/verifyGestor/${manager_id}/${material}`);
   }
   downloadExcel(id_business: any) {

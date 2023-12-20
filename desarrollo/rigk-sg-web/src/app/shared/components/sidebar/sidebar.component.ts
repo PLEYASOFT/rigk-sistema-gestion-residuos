@@ -52,6 +52,7 @@ export class SidebarComponent implements OnInit {
     { title: "Logs del Sistema", path: "#/mantenedor/logs", icon: "fa fa-database" },
     { title: "Dashboard CI / Productor", path: "#/mantenedor/dashboard-ci-productor", icon: "fa-chart-pie" },
     { title: "Dashboard CI / Gestor", path: "#/mantenedor/dashboard-ci-gestor", icon: "fa-chart-pie" },
+    { title: "Visualizar Medios de Verificación", path: "#/mantenedor/visualizar-mv", icon: "fas fa-folder-open" },
   ];
 
   menuGestor = [
@@ -71,12 +72,15 @@ export class SidebarComponent implements OnInit {
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
   }
+  
   hideSidebar() {
     if (window.innerWidth <= 992) {
       document.getElementById('sidebar')?.classList.toggle("active");
     }
   }
+
   async showDialog() {
+    const componente = this;
     this.rates.getCLP.subscribe({
       next: r=> {
         if(r.data.length < 4) {
@@ -111,7 +115,27 @@ export class SidebarComponent implements OnInit {
                       this.productorService.verifyDraft(id_business, year).subscribe({
                         next: e => {
                           if (!e.status) {
-                            this.router.navigate(['/productor/form'], { queryParams: { year, id_business } });
+                            this.productorService.verifyDJ(id_business, this.userData.ID).subscribe({
+                              next: r => {
+                                if (r.data.length === 0) {
+                                  Swal.fire({
+                                    title: '<i class="fas fa-exclamation-triangle color-orange fa-3x icon-orange"></i><br><h2 class="modal-title text-center" id="ModalLabel">Términos y condiciones</h2>',
+                                    html: '<div class="modal-content"><button type="button" id="modal_terminos_close" class="btn-close d-none" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body text-center"><p>Estimado usuario Productor, para empezar a operar en el sistema se solicita subir la declaración jurada que encontrará en el siguiente link debidamente firmada. Por favor, subir la declaración en la opción “Mis Declaraciones Juradas” de “Mi Perfil”</p><a href="javascript:void(0)" id="downloadPdfLink" >Descargar términos y condiciones</a></div><div class="modal-footer"></div></div>',
+                                    confirmButtonText: 'Aceptar',
+                                    allowOutsideClick: false,
+                                    preConfirm: async () => {
+                                      // Redireccionar aquí
+                                      this.router.navigate(['/productor/profile']);
+                                    }
+                                  });
+                                  document.getElementById('downloadPdfLink')?.addEventListener('click', () => {
+                                    componente.downloadPdf();
+                                  });
+                                } else {
+                                  this.router.navigate(['/productor/form'], { queryParams: { year, id_business } });
+                                }
+                              }
+                            })
                           } else {
                             if(e.data[0].state == 2) {
                               this.router.navigate(['/productor/form'], { queryParams: { year, id_business } });
@@ -145,8 +169,8 @@ export class SidebarComponent implements OnInit {
         }
       }
     })
-
   }
+
   async showDialog2() {
     Swal.fire({
       title: 'Ingrese Datos',
@@ -181,6 +205,20 @@ export class SidebarComponent implements OnInit {
         }
       }
     }).then(result => {
+    });
+  }
+
+  downloadPdf() {
+    this.productorService.downloadPDFTerminos().subscribe(r => {
+      const blob = new Blob([r], { type: r.type });
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = "Declaracion Jurada.pdf";
+      link.click();
+
+      window.URL.revokeObjectURL(url);
     });
   }
 }

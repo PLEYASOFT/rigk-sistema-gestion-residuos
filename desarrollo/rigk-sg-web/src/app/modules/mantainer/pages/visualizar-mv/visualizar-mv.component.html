@@ -1,0 +1,131 @@
+<div class="container mt-4">
+    <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Visualización de medios de verificación</li>
+        </ol>
+    </nav>
+    <!-- inicio Visualización de medios de verificación -->
+    <section class="declaracion">
+        <h1>Visualización de medios de verificación</h1>
+        <div class="box box-form mb-4">
+            <div class="row align-items-end">
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <label class="form-label">Empresa:</label>
+                    <div class="input-group">
+                        <select id="f_name" class="form-select" [(ngModel)]="selectedBusiness"
+                            (change)="updateFilters()">
+                            <option value="-1" selected>Todos</option>
+                            <option *ngFor="let na of business_name" value="{{na}}">{{na}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <label class="form-label">Establecimiento</label>
+                    <div class="input-group">
+                        <select id="f_establishment" class="form-select" [(ngModel)]="selectedEstablishment"
+                            (change)="updateFilters()">
+                            <option value="-1" selected>Todos</option>
+                            <option *ngFor="let es of establishment_name" value="{{es}}">{{es}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <label class="form-label">Material:</label>
+                    <div class="input-group">
+                        <select id="f_material" class="form-select" [(ngModel)]="selectedMaterial"
+                            (change)="updateFilters()">
+                            <option value="-1" selected>Todos</option>
+                            <option *ngFor="let ma of material_name" value="{{ma}}">{{ma}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <label class="form-label">Año/Mes de retiro:</label>
+                    <div class="input-group">
+                        <select id="f_year" class="form-select" [(ngModel)]="selectedYear" (change)="updateFilters()">
+                            <option value="-1" selected>Todos</option>
+                            <option *ngFor="let y of years" value="{{y}}">{{y}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 mb-3 mb-xl-0">
+                    <div class="row">
+                        <div class="col-6">
+                            <button class="btn btn-primary col-12" (click)="showButtonClicked()">Mostrar</button>
+                        </div>
+                    </div>
+                </div>
+                <p></p>
+                <p></p>
+                <div class="col-12 col-xl-5 mb-3 mb-xl-0">
+                    <div class="row">
+                        <div class="col-6">
+                            <button class="btn btn-primary col-12" [disabled]="!isAnyCheckboxSelected()" (click)="downloadSelected()">Descargar Medios de Verificación</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-even table-section table-borderless table-radius">
+                <thead class="vertical-middle">
+                    <tr>
+                        <th></th>
+                        <th>Empresa</th>
+                        <th>Establecimiento</th>
+                        <th>Tipo de tratamiento</th>
+                        <th>Material</th>
+                        <th>Subtipo</th>
+                        <th>Peso</th>
+                        <th>Fecha Retiro</th>
+                        <th>Estado</th>
+                        <th>Ver detalle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let s of db">
+                        <td>
+                            <section class="example-section">
+                                <input type="checkbox" [(ngModel)]="checkboxState[s.ID_HEADER]" [disabled]="!s.HAS_MV">
+                            </section>
+                        </td>
+                        <td>{{s.NAME_BUSINESS}}</td>
+                        <td>{{s.NAME_ESTABLISHMENT_REGION}}</td>
+                        <td>{{s.TipoTratamiento}}</td>
+                        <td>{{s.PRECEDENCE}}</td>
+                        <td>{{s.TYPE_RESIDUE}}</td>
+                        <td>
+                            {{formatValue(s.VALUE)}}
+                        </td>
+                        <td>{{s.FechaRetiro | date: 'dd-MM-yyyy'}}</td>
+                        <td>
+                            <span [ngClass]="s.semaforo ? 'circle green-circle' : 'circle red-circle'"></span>
+                        </td>
+                        <td>
+                            <a (click)="goToDetails(s.ID_HEADER, s.ID_DETAIL)" class="custom-cursor">
+                                <i class="fa fa-eye fa-lg fa-fw color-verde" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Pagination -->
+        <nav aria-label="Navegación resultados">
+            <ul class="pagination">
+                <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
+                <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
+                <li *ngFor="let i of visiblePageNumbers(); let j = index">
+                    <button class="border btn btn-sm"
+                        [ngClass]="{ 'btn-info': pos === (i+1), 'btn-primary': pos !== (i+1) }"
+                        (click)="pagTo(i)">{{i+1}}</button>
+                </li>
+                <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
+                <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
+            </ul>
+        </nav>
+    </section>
+    <!-- fin Monitor Inicio -->
+</div>

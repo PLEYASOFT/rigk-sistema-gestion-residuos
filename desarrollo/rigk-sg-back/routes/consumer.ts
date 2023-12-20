@@ -12,11 +12,12 @@ router.get('/detailMV/:id', [validarJWT], IndustrialConsumer.getMV);
 router.get('/download/:id', [validarJWT], IndustrialConsumer.downloadFile);
 router.get('/verifyMaterial/:material_id/:submaterial_id', [validarJWT], IndustrialConsumer.verifySubmaterialBelongsToMaterial);
 router.get('/verifyGestor/:manager_id/:material', [], IndustrialConsumer.verifyManagerHasMaterial);
+router.post('/downloadMV', [validarJWT], IndustrialConsumer.downloadFiles);
 router.post('/verifyRow/', [validarJWT], IndustrialConsumer.verifyRow);
 router.post('/', [validarJWT], IndustrialConsumer.saveForm);
 router.post('/saveFile', [validarJWT], IndustrialConsumer.saveFile);
-router.delete('/detailMV/:id', [validarJWT], IndustrialConsumer.deleteById);
 router.post('/headerForm', [validarJWT], IndustrialConsumer.saveHeaderData);
 router.post('/detailForm', validarJWT, IndustrialConsumer.saveDetailData);
+router.delete('/detailMV/:id', [validarJWT], IndustrialConsumer.deleteById);
 export default router;
 
