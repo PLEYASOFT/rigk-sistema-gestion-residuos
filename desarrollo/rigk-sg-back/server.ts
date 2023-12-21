@@ -107,8 +107,8 @@ class Server {
             xssFilter: true,
             hsts: true
         }));
-        this.app.use(express.urlencoded({ extended: false }));
-        this.app.use(express.json({ strict: true }));
+        this.app.use(express.json({ limit: '5mb', strict: true })); 
+        this.app.use(express.urlencoded({ limit: '5mb', extended: true })); 
         this.app.use(cors(corsOptionsDelegate));
         this.app.use(fileUpload({
             limits: { fileSize: 1024 * 1024 * 1 }
