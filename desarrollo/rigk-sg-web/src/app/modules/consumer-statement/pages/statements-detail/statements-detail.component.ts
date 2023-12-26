@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { ConsumerService } from '../../../../core/services/consumer.service';
 import { ActivatedRoute } from '@angular/router';
-import { FormBuilder, Validators, AbstractControl, ValidatorFn } from '@angular/forms';
+import { FormBuilder, Validators, AbstractControl } from '@angular/forms';
 
 @Component({
   selector: 'app-statements-detail',

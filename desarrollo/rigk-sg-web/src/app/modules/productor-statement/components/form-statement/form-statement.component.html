@@ -101,3 +101,86 @@
         </tfoot>
     </table>
 </div>
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Agregar Medios de Verificación para Retornables/Reutilizables</button>
+<p></p>
+<p><strong>Si ingresa materiales Retornables/Reutilizables, con excepción de Madera, debe adjuntar medios de verificación o de lo contrario se cobrarán las tarifas de EyE Reciclables.</strong></p>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+  (hidden.bs.modal)="reset()">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Medios de Verificación</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <form #miFormulario="ngForm" [formGroup]="userForm">
+            <div class="row">
+              <div class="col-md-6">
+                <label for="inp_nom">Tipo MV</label>
+                <select formControlName="MV" id="inp_mv" class="form-select" required>
+                  <option value="">Selecciona MV</option>
+                  <option *ngFor="let r of listMV" [value]="r.value">{{r.name}}</option>
+                </select>
+                <div *ngIf="userForm.controls['MV'].errors && userForm.controls['MV'].touched" class="text-danger pl-0">
+                  <p *ngIf="userForm.controls['MV'].errors['required']">Debe seleccionar algun tipo de MV.</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="inp_archivo">Archivo</label>
+                <input type="file" formControlName="ARCHIVO" id="inp_archivo" class="form-control"
+                  accept="application/pdf, image/jpeg" required (change)="onFileSelected($event)">
+                <div *ngIf="userForm.controls['ARCHIVO'].errors && userForm.controls['ARCHIVO'].touched"
+                  class="text-danger pl-0">
+                  <p *ngIf="userForm.controls['ARCHIVO'].errors['invalidFileType']">El formato del archivo debe ser PDF,
+                    JPEG o JPG.</p>
+                  <p *ngIf="userForm.controls['ARCHIVO'].errors['invalidFileSize']">El tamaño del archivo no debe
+                    superar 1 MB.</p>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="MV_consulta.length >= maxFiles" class="text-danger mt-2 text-end">
+              No se pueden subir más de 3 archivos de verificación.
+            </div>
+            <div class="modal-footer">
+              <button type="button" id="btnCloseModal" class="btn btn-secondary" data-bs-dismiss="modal"
+                (click)="reset()">Cerrar</button>
+              <button type="button" class="btn btn-primary"
+                [disabled]="miFormulario.invalid || MV_consulta.length >= maxFiles"
+                (click)="saveFile() ; reset()">Agregar</button>
+            </div>
+            <div style="visibility: hidden;">a</div>
+            <div style="visibility: hidden;">a</div>
+            <div *ngIf="this.MV_consulta && this.MV_consulta.length > 0">
+              <div style="height: 50px;"></div>
+              <table
+                class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
+                <thead>
+                  <tr class="text-center w-100">
+                    <th>Tipo MV</th>
+                    <th>Nombre Archivo</th>
+                    <th>Eliminar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="text-center w-100" *ngFor="let r of MV_consulta; let x = index">
+                    <td>{{r.TYPE_FILE_TIPEADO}}</td>
+                    <td>
+                      <a class="file-link" (click)="downloadFile(r.ID, r.FILE_NAME)">{{r.FILE_NAME}}</a>
+                    </td>
+                    <td>
+                      <button type="button" class="btn btn-danger btn-sm rounded-pill" (click)="deleteMV(r.ID)">
+                        X
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
