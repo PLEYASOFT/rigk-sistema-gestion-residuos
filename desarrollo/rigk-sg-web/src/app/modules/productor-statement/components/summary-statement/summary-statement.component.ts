@@ -70,6 +70,9 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   sumaNeto = 0;
   sumaIva = 0;
   sumaUF = 0;
+  hasMV_PapelCarton: any;
+  hasMV_Metal: any;
+  hasMV_Plastico: any;
   constructor(private fb: FormBuilder,
     public productorService: ProductorService,
     private actived: ActivatedRoute,
@@ -89,8 +92,18 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   generateForm() {
     this.detailLastForm = JSON.parse(sessionStorage.getItem("detailLastForm")!);
     this.detailForm = JSON.parse(sessionStorage.getItem('detailForm')!);
+    this.hasMV_PapelCarton = JSON.parse(sessionStorage.getItem("hasMV_PapelCarton")!);
+    this.hasMV_Metal = JSON.parse(sessionStorage.getItem('hasMV_Metal')!);
+    this.hasMV_Plastico = JSON.parse(sessionStorage.getItem('hasMV_Plastico')!);
     for (let i = 0; i < this.detailForm.length; i++) {
       const r = this.detailForm[i];
+      if (r.recyclability == 3) {
+        if ((r.type_residue == 1 && !this.hasMV_PapelCarton) ||
+          (r.type_residue == 2 && !this.hasMV_Metal) ||
+          (r.type_residue == 3 && !this.hasMV_Plastico)) {
+          r.recyclability = 1;
+        }
+      }
       if (r.recyclability == 1) {
         if (r.precedence == 1) {
           this.tonSums.primario[r?.type_residue - 1] = this.tonSums.primario[r?.type_residue - 1] + parseFloat(r?.value);
