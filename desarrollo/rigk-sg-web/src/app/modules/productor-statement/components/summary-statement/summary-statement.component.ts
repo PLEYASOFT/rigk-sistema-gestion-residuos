@@ -12,7 +12,7 @@ import { RatesTsService } from '../../../../core/services/rates.ts.service';
   styleUrls: ['./summary-statement.component.css']
 })
 
-export class SummaryStatementComponent implements OnInit, AfterViewInit {
+export class SummaryStatementComponent implements AfterViewInit {
 
   @ViewChild("table1") table!: ElementRef;
 
@@ -25,23 +25,11 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     'Retornables'
   ];
 
-  isSubmited = false;
-  isEdited = false;
   id_business: number = 0;
   year_statement: number = 0;
   id_statement: number | null = null;
 
-  detail = this.fb.group({
-    precedence: [],
-    hazard: [],
-    recyclability: [1],
-    type_residue: [1],
-    value: [],
-    amount: []
-  });
-
   detailForm: any[] = [];
-  headLastForm: any = {};
   detailLastForm: any[] = [];
 
   tonSums = {
@@ -52,16 +40,12 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     l_tonSum: Array.from({ length: 5 }, () => 0)
   }
 
-  tonNoReciclable = 0;
   tonNoReciclablePrim = 0;
   tonNoReciclableSec = 0;
   tonNoReciclableTer = 0;
   tonRetPrim = 0;
   tonRetSec = 0;
   tonRetTer = 0;
-  tonRetornable = 0;
-  l_tonNoReciclable = 0;
-  l_tonRetornable = 0;
   result: any = 0;
   dif = Array.from({ length: 5 }, () => 0);
   ajuste = Array.from({ length: 5 }, () => 0);
@@ -73,8 +57,7 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   hasMV_PapelCarton: any;
   hasMV_Metal: any;
   hasMV_Plastico: any;
-  constructor(private fb: FormBuilder,
-    public productorService: ProductorService,
+  constructor(public productorService: ProductorService,
     private actived: ActivatedRoute,
     public ratesService: RatesTsService) {
     this.actived.queryParams.subscribe(r => {
@@ -84,9 +67,6 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
   }
   ngAfterViewInit(): void {
     this.generateForm();
-  }
-
-  ngOnInit(): void {
   }
 
   generateForm() {
@@ -230,14 +210,6 @@ export class SummaryStatementComponent implements OnInit, AfterViewInit {
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
     /* save to file */
     XLSX.writeFile(wb, "Tabla-Resumen.xlsx");
-  }
-
-  verifyNumber(number: number) {
-    if (Number.isInteger(number)) {
-      return number.toString();
-    } else {
-      return number.toFixed(2);
-    }
   }
 
   setFormato(num: number | string): string {

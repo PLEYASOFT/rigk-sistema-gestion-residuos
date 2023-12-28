@@ -22,7 +22,6 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     'Envases compuestos'
   ];
   maxFiles = 9;
-  showOtherEnvInNoRecyclableTable: boolean = false;
   isSubmited = false;
   isEdited = false;
 
@@ -60,8 +59,6 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
   fileName: any;
   fileBuffer: any;
   selectedFile: any;
-  hour: any;
-  _saving: any;
   constructor(private fb: FormBuilder,
     public productorService: ProductorService,
     private router: Router,
@@ -74,7 +71,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
   }
   ngOnDestroy(): void {
     // sessionStorage.removeItem('isEdited');
-    this.lala?.unsubscribe();
+    this.suscription?.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -194,10 +191,10 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     (document.getElementById(`total_weight_2`) as HTMLSpanElement).innerHTML = weight_2.toFixed(2).replace(".", ",");
     (document.getElementById(`total_weight_3`) as HTMLSpanElement).innerHTML = weight_3.toFixed(2).replace(".", ",");
   }
-  lala: Subscription | null = null;
+  suscription: Subscription | null = null;
   getDraftStatement() {
     this.detailForm = [];
-    this.lala = this.productorService.getValueStatementByYear(this.id_business, this.year_statement, 1).subscribe({
+    this.suscription = this.productorService.getValueStatementByYear(this.id_business, this.year_statement, 1).subscribe({
       next: resp => {
         if (resp.status) {
           if (resp.data.header.STATE) {
@@ -388,7 +385,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     return null;
   }
 
-  saveFile() {
+  async saveFile() {
     const selectedMaterial = this.userForm.get('MV').value;
     if (this.fileCountByMaterial[selectedMaterial] >= 3) {
       Swal.fire({
@@ -397,6 +394,18 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
         text: 'No puedes subir más de 3 archivos para el tipo de material seleccionado.'
       });
       return; // Detener la ejecución si se alcanza el límite
+    }
+
+    const tmp = sessionStorage.getItem('detailForm');
+    const detail = JSON.parse(tmp ? tmp : "[]");
+    const materialHasValues = detail.some((item:any) => item.recyclability === 3 && item.type_residue === parseInt(selectedMaterial));
+    if (!materialHasValues) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Advertencia',
+        text: 'El material no tiene valores ingresados.'
+      });
+      return;
     }
 
     if (this.id_statement == null) {
@@ -420,18 +429,15 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
         detail.push({ precedence: 1, hazard: 1, recyclability: 1, type_residue: 1, value: 0, amount: 0 });
       }
       sessionStorage.setItem('saving', 'true');
-      this.productorService.saveForm({ header, detail }).subscribe(r => {
-        this.hour = new Date();
-        this._saving = false;
-        if (r.status) {
-          sessionStorage.setItem('id_statement', r.data);
-          this.id_statement = r.data;
-          Swal.close()
-        }
-        sessionStorage.removeItem('isEdited');
-        sessionStorage.removeItem('saving');
-      });
-      this.productorService.saveFile(this.id_statement, this.fileName, this.fileBuffer, this.userForm.controls['MV'].value).subscribe(r => {
+      const r = await this.productorService.saveForm({ header, detail }).toPromise();
+      if (r.status) {
+        sessionStorage.setItem('id_statement', r.data);
+        this.id_statement = r.data;
+        Swal.close()
+      }
+      sessionStorage.removeItem('isEdited');
+      sessionStorage.removeItem('saving');
+      this.productorService.saveFile(this.id_statement, this.fileName, this.fileBuffer, selectedMaterial).subscribe(r => {
         if (r.status) {
           Swal.fire({
             icon: 'success',
@@ -443,7 +449,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
       this.fileCountByMaterial[selectedMaterial]++;
     }
     else {
-      this.productorService.saveFile(this.id_statement, this.fileName, this.fileBuffer, this.userForm.controls['MV'].value).subscribe(r => {
+      this.productorService.saveFile(this.id_statement, this.fileName, this.fileBuffer, selectedMaterial).subscribe(r => {
         if (r.status) {
           Swal.fire({
             icon: 'success',
@@ -476,18 +482,18 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
           2: 0, // "Metal"
           3: 0  // "Plástico"
         };
-  
+
         this.MV_consulta.forEach((mv: any) => {
           if (this.fileCountByMaterial.hasOwnProperty(mv.TYPE_MATERIAL)) {
             this.fileCountByMaterial[mv.TYPE_MATERIAL]++;
           }
         });
-  
+
         // Establecer variables en sessionStorage
         sessionStorage.setItem('hasMV_PapelCarton', this.fileCountByMaterial[1] > 0 ? 'true' : 'false');
         sessionStorage.setItem('hasMV_Metal', this.fileCountByMaterial[2] > 0 ? 'true' : 'false');
         sessionStorage.setItem('hasMV_Plastico', this.fileCountByMaterial[3] > 0 ? 'true' : 'false');
       }
     });
-  }  
+  }
 }
