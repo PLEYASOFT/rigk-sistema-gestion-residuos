@@ -12,7 +12,7 @@ import { RatesTsService } from '../../../../core/services/rates.ts.service';
   styleUrls: ['./form-statement.component.css']
 })
 export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestroy {
-  
+
   tablas = ['EyE Reciclables', 'EyE No Reciclables', 'EyE Retornables / Reutilizables'];
   residuos = [
     'Papel/Cartón',
@@ -21,7 +21,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     'Madera',
     'Envases compuestos'
   ];
-  maxFiles = 3;
+  maxFiles = 9;
   showOtherEnvInNoRecyclableTable: boolean = false;
   isSubmited = false;
   isEdited = false;
@@ -46,16 +46,22 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
   detailLastForm: any[] = [];
 
   rates: any[] = [];
-  listMV = [
+  listMV: any = [
     { name: "Papel/Cartón", value: 1 },
     { name: "Metal", value: 2 },
     { name: "Plástico", value: 3 }
   ];
-  
+  fileCountByMaterial: any = {
+    1: 0, // "Papel/Cartón"
+    2: 0, // "Metal"
+    3: 0  // "Plástico"
+  };
   MV_consulta: any = [];
   fileName: any;
   fileBuffer: any;
   selectedFile: any;
+  hour: any;
+  _saving: any;
   constructor(private fb: FormBuilder,
     public productorService: ProductorService,
     private router: Router,
@@ -132,7 +138,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
       this.selectedFile = null;
     }
   }
-  
+
   reset() {
     this.userForm.reset();
     this.userForm.patchValue({
@@ -227,6 +233,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
           }
           sessionStorage.setItem('detailForm', JSON.stringify(this.detailForm));
         }
+        this.loadMV();
       },
       error: r => {
         Swal.close();
@@ -382,11 +389,105 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
   }
 
   saveFile() {
-    
+    const selectedMaterial = this.userForm.get('MV').value;
+    if (this.fileCountByMaterial[selectedMaterial] >= 3) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Límite Alcanzado',
+        text: 'No puedes subir más de 3 archivos para el tipo de material seleccionado.'
+      });
+      return; // Detener la ejecución si se alcanza el límite
+    }
+
+    if (this.id_statement == null) {
+      Swal.fire({
+        title: 'Guardando Datos',
+        text: `Se están guardando datos`,
+        timerProgressBar: true,
+        showConfirmButton: false
+      });
+      Swal.showLoading();
+      const header = {
+        id_business: this.id_business,
+        year_statement: this.year_statement,
+        state: false,
+        id_statement: this.id_statement
+      };
+
+      const tmp = sessionStorage.getItem('detailForm');
+      const detail = JSON.parse(tmp ? tmp : "[]");
+      if (detail.length == 0) {
+        detail.push({ precedence: 1, hazard: 1, recyclability: 1, type_residue: 1, value: 0, amount: 0 });
+      }
+      sessionStorage.setItem('saving', 'true');
+      this.productorService.saveForm({ header, detail }).subscribe(r => {
+        this.hour = new Date();
+        this._saving = false;
+        if (r.status) {
+          sessionStorage.setItem('id_statement', r.data);
+          this.id_statement = r.data;
+          Swal.close()
+        }
+        sessionStorage.removeItem('isEdited');
+        sessionStorage.removeItem('saving');
+      });
+      this.productorService.saveFile(this.id_statement, this.fileName, this.fileBuffer, this.userForm.controls['MV'].value).subscribe(r => {
+        if (r.status) {
+          Swal.fire({
+            icon: 'success',
+            text: 'Medio de verificación guardado satisfactoriamente'
+          })
+          this.loadMV();
+        }
+      });
+      this.fileCountByMaterial[selectedMaterial]++;
+    }
+    else {
+      this.productorService.saveFile(this.id_statement, this.fileName, this.fileBuffer, this.userForm.controls['MV'].value).subscribe(r => {
+        if (r.status) {
+          Swal.fire({
+            icon: 'success',
+            text: 'Medio de verificación guardado satisfactoriamente'
+          })
+          this.loadMV();
+        }
+      })
+    }
   }
 
-  downloadFile(fileId: number, fileName: string) {
+  deleteMV(id: any) {
+    this.productorService.deleteById(id).subscribe(r => {
+      if (r.status) {
+        Swal.fire({
+          icon: 'info',
+          text: 'Medio de verificación eliminado satisfactoriamente'
+        })
+        this.loadMV();
+      }
+    })
   }
 
-  deleteMV(id: any) {}
+  loadMV() {
+    this.productorService.getMV(this.id_statement).subscribe(r => {
+      if (r.status) {
+        this.MV_consulta = r.data.header;
+        this.fileCountByMaterial = {
+          1: 0, // "Papel/Cartón"
+          2: 0, // "Metal"
+          3: 0  // "Plástico"
+        };
+  
+        this.MV_consulta.forEach((mv: any) => {
+          if (this.fileCountByMaterial.hasOwnProperty(mv.TYPE_MATERIAL)) {
+            this.fileCountByMaterial[mv.TYPE_MATERIAL]++;
+          }
+        });
+  
+        // Establecer variables en sessionStorage
+        sessionStorage.setItem('hasMV_PapelCarton', this.fileCountByMaterial[1] > 0 ? 'true' : 'false');
+        sessionStorage.setItem('hasMV_Metal', this.fileCountByMaterial[2] > 0 ? 'true' : 'false');
+        sessionStorage.setItem('hasMV_Plastico', this.fileCountByMaterial[3] > 0 ? 'true' : 'false');
+      }
+    });
+  }  
 }

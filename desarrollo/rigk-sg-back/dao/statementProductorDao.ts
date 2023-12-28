@@ -13,6 +13,38 @@ class statementProductorDao {
         conn?.end();
         return { statements };
     }
+    public async saveFile(idDetail: number, fileName: string, fileBuffer: File, typeMaterial: number) {
+        const conn = mysqlcon.getConnection()!;
+        const attached: any = await conn.execute("INSERT INTO attached_productor_form(ID_HEADER, FILE_NAME, FILE, TYPE_MATERIAL) VALUES (?,?,?,?)", [idDetail, fileName, fileBuffer, typeMaterial]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
+        conn.end();
+        return { attached };
+    }
+    public async getMV(id_header: any) {
+        const conn = mysqlcon.getConnection()!;
+        const header: any = await conn.execute(`
+            SELECT
+                attached_productor_form.ID,
+                attached_productor_form.FILE_NAME,
+                attached_productor_form.TYPE_MATERIAL,
+                CASE attached_productor_form.TYPE_MATERIAL
+                    WHEN 1 THEN 'Papel/Cartón'
+                    WHEN 2 THEN 'Metal'
+                    WHEN 3 THEN 'Plástico'
+                    ELSE 'Desconocido'
+                END AS TYPE_MATERIAL_TIPEADO
+            FROM
+                attached_productor_form
+            WHERE
+                attached_productor_form.ID_HEADER = ?`, [id_header]).then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        return { header };
+    }
+    public async deleteById(id: number) {
+        const conn = mysqlcon.getConnection()!;
+        const result: any = await conn.execute("DELETE FROM attached_productor_form WHERE ID = ?", [id]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
+        conn.end();
+        return result;
+    }
     public async getDeclaretionByYear(business: string, year: string, isDraft: number) {
         let res_header: any;
         let res_detail: any;

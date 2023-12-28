@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import statementDao from '../dao/statementProductorDao';
 import ratesDao from '../dao/ratesDao';
 import dateFormat, { i18n } from 'dateformat';
-import businessDao from '../dao/businessDao';
 import { sendOC } from '../helpers/sendOC';
 import { createLog } from '../helpers/createLog';
 i18n.dayNames = [
@@ -48,6 +47,47 @@ i18n.monthNames = [
     "Diciembre",
 ];
 class StatementProductorLogic {
+    public async saveFile(req: any, res: Response) {
+        const { idDetail, fileName, typeMaterial } = req.body;
+        const fileBuffer = req.files.fileBuffer.data;
+        try {
+            const id_header = await statementDao.saveFile(idDetail, fileName, fileBuffer, typeMaterial);
+            res.json({ status: true, data: id_header });
+        } catch (error: any) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+    public async getMV(req: any, res: Response) {
+        const { id } = req.params;
+        try {
+            const id_header = await statementDao.getMV(id);
+            res.json({ status: true, data: id_header });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+    public async deleteById(req: any, res: Response) {
+        const { id } = req.params;
+        try {
+            const id_header = await statementDao.deleteById(id);
+            res.json({ status: true, data: id_header });
+        } catch (error: any) {
+            console.log(error);
+            await createLog('ELIMINA_MEDIO_VERIFICACION_DECLARACION_CI', req.uid, error.message);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
     public async getStatementsByUser(req: any, res: Response) {
         const user = req.uid;
         try {

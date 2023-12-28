@@ -141,7 +141,7 @@
               </div>
             </div>
             <div *ngIf="MV_consulta.length >= maxFiles" class="text-danger mt-2 text-end">
-              No se pueden subir más de 3 archivos de verificación.
+              No se pueden subir más de 9 archivos de verificación.
             </div>
             <div class="modal-footer">
               <button type="button" id="btnCloseModal" class="btn btn-secondary" data-bs-dismiss="modal"
@@ -165,9 +165,9 @@
                 </thead>
                 <tbody>
                   <tr class="text-center w-100" *ngFor="let r of MV_consulta; let x = index">
-                    <td>{{r.TYPE_FILE_TIPEADO}}</td>
+                    <td>{{r.TYPE_MATERIAL_TIPEADO}}</td>
                     <td>
-                      <a class="file-link" (click)="downloadFile(r.ID, r.FILE_NAME)">{{r.FILE_NAME}}</a>
+                      <a class="file-link">{{r.FILE_NAME}}</a>
                     </td>
                     <td>
                       <button type="button" class="btn btn-danger btn-sm rounded-pill" (click)="deleteMV(r.ID)">
