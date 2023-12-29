@@ -9,6 +9,8 @@ import {
 import { verifyRolProductor } from "../middleware/roles/rolesCustom";
 const router = Router();
 
+router.get('/statements', [validarJWT], statementProductorLogic.getStatements);
+router.get('/statements/:id_header', [validarJWT], statementProductorLogic.getDeclarationById);
 router.get('/byUser', [validarJWT], statementProductorLogic.getStatementsByUser);
 router.get('/:business/year/:year/isDraft/:draft', [validarJWT, verifyRolProductor, verifyParametersStatementByYear], statementProductorLogic.getStatmentByYear);
 router.get('/draft/:business/year/:year', [validarJWT, verifyRolProductor], statementProductorLogic.verifyDraft);

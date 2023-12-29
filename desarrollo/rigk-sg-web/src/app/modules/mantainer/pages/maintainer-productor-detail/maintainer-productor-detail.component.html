@@ -1,0 +1,58 @@
+<div class="container mt-4">
+    <!-- inicio breadcrumbs -->
+    <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+            <li class="breadcrumb-item"><a href="#/mantenedor/productor"> Mantenedor Declaraciones Productores</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Detalle Declaración Productor</li>
+        </ol>
+    </nav>
+    <!-- fin breadcrumbs -->
+
+    <!-- inicio Registro de declaración -->
+    <section class="declaracion">
+        <h1>Detalle Declaración Productor</h1>
+        <div class="d-sm-flex justify-content-between mb-3 mb-md-0">
+        </div>
+        <div class="box box-mi-perfil mb-5 d-flex align-items-start" style="margin-left: 20px;">
+            <ul class="list list-data list-data-title-green gap-0 list-unstyled">
+                <li>
+                    <span class="list-data__title" style="margin-left: 10px">Código de Empresa</span>
+                    <span class="list-data__text" style="margin-left: 10px">{{this.listData.data[0].CODE_BUSINESS}}</span>
+                </li>
+                <li>
+                    <span class="list-data__title" style="margin-left: 10px">Nombre de Empresa</span>
+                    <span class="list-data__text" style="margin-left: 10px">{{this.listData.data[0].NAME_BUSINESS}}</span>
+                </li>
+                <li>
+                    <span class="list-data__title" style="margin-left: 10px">Año Declaración</span>
+                    <span class="list-data__text" style="margin-left: 10px">{{this.listData.data[0].YEAR_STATEMENT}}</span>
+                </li>
+
+                <li>
+                    <span class="list-data__title" style="margin-left: 10px">Estado</span>
+                    <span class="list-data__text" style="margin-left: 10px">{{this.listData.data[0].EMAIL}}</span>
+                </li>
+                <li>
+                    <button class="list-data__title btn btn-light">Cambiar a estado Pendiente</button>
+                </li>
+                <li>
+                    <button class="list-data__title btn btn-light disabled">Cambiar a estado Borrador</button>
+                </li>
+                <li>
+                    <button class="list-data__title btn btn-light">Teléfono Oficina</button>
+                </li>
+                <li>
+                    <button class="list-data__title btn btn-light">Descargar PDF</button>
+                </li>
+                <li>
+                    <button class="list-data__title btn btn-light">Descargar OC</button>
+                </li>
+                <li>
+                    <button class="list-data__title btn btn-light">Volver</button>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+</div>

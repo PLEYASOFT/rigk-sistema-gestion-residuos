@@ -105,6 +105,39 @@ class StatementProductorLogic {
             });
         }
     }
+    public async getStatements(req: any, res: Response) {
+        try {
+            const { statements } = await statementDao.getDeclaretions();
+            res.status(200).json({
+                status: true,
+                data: statements,
+                msg: ""
+            });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
+    public async getDeclarationById(req: any, res: Response) {
+        const user = req.params.id_header;
+        try {
+            const { statement } = await statementDao.getDeclarationById(user);
+            res.status(200).json({
+                status: true,
+                data: statement,
+                msg: ""
+            });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
     public async getStatmentByYear(req: Request, res: Response) {
         const { year, business, draft } = req.params;
         try {

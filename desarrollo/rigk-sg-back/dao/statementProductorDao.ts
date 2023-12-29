@@ -1,6 +1,18 @@
 import mysqlcon from '../db';
 import ratesDao from '../dao/ratesDao';
 class statementProductorDao {
+    public async getDeclaretions() {
+        const conn = mysqlcon.getConnection();
+        const statements = await conn?.execute("SELECT header_statement_form.ID, header_statement_form.ID_BUSINESS, header_statement_form.STATE, header_statement_form.CREATED_BY, header_statement_form.UPDATED_AT, header_statement_form.VALIDATED_AT, header_statement_form.YEAR_STATEMENT, business.NAME as NAME_BUSINESS, business.CODE_BUSINESS, SUM(detail_statement_form.AMOUNT) as AMOUNT FROM header_statement_form INNER JOIN business ON business.id = header_statement_form.ID_BUSINESS INNER JOIN detail_statement_form ON detail_statement_form.ID_HEADER = header_statement_form.ID GROUP BY header_statement_form.ID").then((res) => res[0]).catch(error => { undefined });
+        conn?.end();
+        return { statements };
+    }  
+    public async getDeclarationById(id_header: number) {
+        const conn = mysqlcon.getConnection();
+        const statement = await conn?.execute("SELECT header_statement_form.ID, header_statement_form.ID_BUSINESS, header_statement_form.STATE, header_statement_form.CREATED_BY, header_statement_form.UPDATED_AT, header_statement_form.VALIDATED_AT, header_statement_form.YEAR_STATEMENT, business.NAME as NAME_BUSINESS, business.CODE_BUSINESS, BUSINESS.EMAIL, SUM(detail_statement_form.AMOUNT) as AMOUNT FROM header_statement_form INNER JOIN business ON business.id = header_statement_form.ID_BUSINESS INNER JOIN detail_statement_form ON detail_statement_form.ID_HEADER = header_statement_form.ID WHERE header_statement_form.ID = ? GROUP BY header_statement_form.ID", [id_header]).then((res) => res[0]).catch(error => { undefined });
+        conn?.end();
+        return { statement };
+    }      
     public async getDeclaretionsByUser(user: string) {
         const conn = mysqlcon.getConnection();
         const statements = await conn?.execute("SELECT header_statement_form.ID, header_statement_form.ID_BUSINESS, header_statement_form.STATE, header_statement_form.CREATED_BY, header_statement_form.UPDATED_AT, header_statement_form.VALIDATED_AT,  header_statement_form.YEAR_STATEMENT, business.NAME as NAME_BUSINESS, business.CODE_BUSINESS, SUM(detail_statement_form.AMOUNT) as AMOUNT  FROM header_statement_form INNER JOIN business ON business.id = header_statement_form.ID_BUSINESS INNER JOIN detail_statement_form ON detail_statement_form.ID_HEADER = header_statement_form.ID WHERE ID_BUSINESS in (SELECT ID_BUSINESS FROM user_business WHERE ID_USER=?) GROUP BY header_statement_form.ID", [user]).then((res) => res[0]).catch(error => { undefined });
