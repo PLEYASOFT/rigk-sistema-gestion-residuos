@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import statementDao from '../dao/statementProductorDao';
 import ratesDao from '../dao/ratesDao';
 import dateFormat, { i18n } from 'dateformat';
-import businessDao from '../dao/businessDao';
 import { sendOC } from '../helpers/sendOC';
 import { createLog } from '../helpers/createLog';
 i18n.dayNames = [
@@ -48,6 +47,47 @@ i18n.monthNames = [
     "Diciembre",
 ];
 class StatementProductorLogic {
+    public async saveFile(req: any, res: Response) {
+        const { idDetail, fileName, typeMaterial } = req.body;
+        const fileBuffer = req.files.fileBuffer.data;
+        try {
+            const id_header = await statementDao.saveFile(idDetail, fileName, fileBuffer, typeMaterial);
+            res.json({ status: true, data: id_header });
+        } catch (error: any) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+    public async getMV(req: any, res: Response) {
+        const { id } = req.params;
+        try {
+            const id_header = await statementDao.getMV(id);
+            res.json({ status: true, data: id_header });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+    public async deleteById(req: any, res: Response) {
+        const { id } = req.params;
+        try {
+            const id_header = await statementDao.deleteById(id);
+            res.json({ status: true, data: id_header });
+        } catch (error: any) {
+            console.log(error);
+            await createLog('ELIMINA_MEDIO_VERIFICACION_DECLARACION_CI', req.uid, error.message);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
     public async getStatementsByUser(req: any, res: Response) {
         const user = req.uid;
         try {
@@ -109,7 +149,7 @@ class StatementProductorLogic {
     public async getBusinessByRolProductor(req: Request, res: Response) {
         try {
             const response = await statementDao.getBusinessByRolProductor();
-            res.status(200).json({status: true, data: response});
+            res.status(200).json({ status: true, data: response });
         } catch (error) {
             console.log(error);
             res.status(500).json({
@@ -596,6 +636,7 @@ class StatementProductorLogic {
             const declaretion_draft: any = await statementDao.getDeclaretionByYear(id, year, 1);
             const declaretion_pending: any = await statementDao.getDeclaretionByYear(id, year, 2);
             let declaretion: any;
+
             if (declaretion_ok == false && declaretion_draft == false && declaretion_pending == false) {
                 return res.status(500).json({
                     status: false,
@@ -619,6 +660,21 @@ class StatementProductorLogic {
                 }
             }
             const { detail, header } = declaretion!;
+            const MV_consulta: any = await statementDao.getMV(header.ID);
+            let fileCountByMaterial = {
+                1: 0, // "Papel/Cartón"
+                2: 0, // "Metal"
+                3: 0  // "Plástico"
+            }
+            MV_consulta.header.forEach((mv: any) => {
+                const typeMaterial = Number(mv.TYPE_MATERIAL);
+                if (typeMaterial === 1 || typeMaterial === 2 || typeMaterial === 3) {
+                    fileCountByMaterial[typeMaterial]++;
+                }
+            });
+            const hasMV_PapelCarton = fileCountByMaterial[1] > 0 ? true : false;
+            const hasMV_Metal = fileCountByMaterial[2] > 0 ? true : false;
+            const hasMV_Plastico = fileCountByMaterial[3] > 0 ? true : false;
             const uf: any = await ratesDao.getUF((new Date(header.VALIDATED_AT || header.UPDATED_AT)).toISOString().split("T")[0]);
             let lrp = 0;
             let lrme = 0;
@@ -634,6 +690,13 @@ class StatementProductorLogic {
             let onr = 0;
             for (let i = 0; i < detail.length; i++) {
                 const t = detail[i];
+                if (t.RECYCLABILITY == 3) {
+                    if ((t.TYPE_RESIDUE == 1 && !hasMV_PapelCarton) ||
+                        (t.TYPE_RESIDUE == 2 && !hasMV_Metal) ||
+                        (t.TYPE_RESIDUE == 3 && !hasMV_Plastico)) {
+                        t.RECYCLABILITY = 1;
+                    }
+                }
                 if (t.RECYCLABILITY == 1) {
                     switch (t.TYPE_RESIDUE) {
                         case 1:

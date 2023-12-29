@@ -1,6 +1,5 @@
-import { CurrencyPipe } from '@angular/common';
-import { Component, OnInit, AfterContentInit, AfterViewChecked, OnDestroy } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { Component, OnInit, AfterViewChecked, OnDestroy } from '@angular/core';
+import { FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ProductorService } from 'src/app/core/services/productor.service';
@@ -13,9 +12,7 @@ import { RatesTsService } from '../../../../core/services/rates.ts.service';
   styleUrls: ['./form-statement.component.css']
 })
 export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestroy {
-  /**
- * BORRAR
- */
+
   tablas = ['EyE Reciclables', 'EyE No Reciclables', 'EyE Retornables / Reutilizables'];
   residuos = [
     'Papel/Cartón',
@@ -24,11 +21,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     'Madera',
     'Envases compuestos'
   ];
-  /**
-   * END BORRAr
-   */
-
-  showOtherEnvInNoRecyclableTable: boolean = false;
+  maxFiles = 9;
   isSubmited = false;
   isEdited = false;
 
@@ -44,6 +37,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     value: [],
     amount: []
   });
+  userForm: any;
 
   detailForm: any[] = [];
 
@@ -51,13 +45,25 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
   detailLastForm: any[] = [];
 
   rates: any[] = [];
-
+  listMV: any = [
+    { name: "Papel/Cartón", value: 1 },
+    { name: "Metal", value: 2 },
+    { name: "Plástico", value: 3 }
+  ];
+  fileCountByMaterial: any = {
+    1: 0, // "Papel/Cartón"
+    2: 0, // "Metal"
+    3: 0  // "Plástico"
+  };
+  MV_consulta: any = [];
+  fileName: any;
+  fileBuffer: any;
+  selectedFile: any;
   constructor(private fb: FormBuilder,
     public productorService: ProductorService,
     private router: Router,
     private actived: ActivatedRoute,
-    public ratesService: RatesTsService,
-    private currencyPipe: CurrencyPipe) {
+    public ratesService: RatesTsService) {
     this.actived.queryParams.subscribe(r => {
       this.id_business = r['id_business'];
       this.year_statement = r['year'];
@@ -65,7 +71,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
   }
   ngOnDestroy(): void {
     // sessionStorage.removeItem('isEdited');
-    this.lala?.unsubscribe();
+    this.suscription?.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -93,10 +99,49 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
         console.log(error);
       }
     });
+    this.userForm = this.fb.group({
+      MV: ["", Validators.required],
+      ARCHIVO: [null, [Validators.required, this.fileTypeValidator, this.fileSizeValidator]],
+    });
   }
 
   ngAfterViewChecked(): void {
     this.calculateDiff();
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input && input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.fileName = file.name;
+      this.fileBuffer = file;
+      this.selectedFile = input.files[0];
+
+      const allowedExtensions = ['pdf', 'jpeg', 'jpg'];
+      const fileExtension = this.selectedFile.name.split('.').pop()?.toLowerCase() || '';
+      const isValid = allowedExtensions.includes(fileExtension);
+
+      if (!isValid) {
+        this.userForm.controls['ARCHIVO'].setErrors({ 'invalidFileType': true });
+        this.userForm.controls['ARCHIVO'].markAsTouched();
+      } else if (file.size > 1 * 1024 * 1024) {
+        this.userForm.controls['ARCHIVO'].setErrors({ 'invalidFileSize': true });
+        this.userForm.controls['ARCHIVO'].markAsTouched();
+      } else {
+        this.userForm.controls['ARCHIVO'].setErrors(null);
+        this.userForm.controls['ARCHIVO'].markAsTouched();
+      }
+    } else {
+      this.selectedFile = null;
+    }
+  }
+
+  reset() {
+    this.userForm.reset();
+    this.userForm.patchValue({
+      MV: "",
+      ARCHIVO: ""
+    });
   }
 
   calculateDiff() {
@@ -146,10 +191,10 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
     (document.getElementById(`total_weight_2`) as HTMLSpanElement).innerHTML = weight_2.toFixed(2).replace(".", ",");
     (document.getElementById(`total_weight_3`) as HTMLSpanElement).innerHTML = weight_3.toFixed(2).replace(".", ",");
   }
-  lala: Subscription | null = null;
+  suscription: Subscription | null = null;
   getDraftStatement() {
     this.detailForm = [];
-    this.lala = this.productorService.getValueStatementByYear(this.id_business, this.year_statement, 1).subscribe({
+    this.suscription = this.productorService.getValueStatementByYear(this.id_business, this.year_statement, 1).subscribe({
       next: resp => {
         if (resp.status) {
           if (resp.data.header.STATE) {
@@ -185,6 +230,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
           }
           sessionStorage.setItem('detailForm', JSON.stringify(this.detailForm));
         }
+        this.loadMV();
       },
       error: r => {
         Swal.close();
@@ -313,6 +359,140 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
           text: r.msg,
           title: '¡Ups!'
         });
+      }
+    });
+  }
+
+  fileTypeValidator(control: AbstractControl): { [key: string]: any } | null {
+    const file = control.value;
+    if (file) {
+      const allowedFileTypes = ['application/pdf', 'image/jpeg'];
+      if (!allowedFileTypes.includes(file.type)) {
+        return { invalidFileType: true };
+      }
+    }
+    return null;
+  }
+
+  fileSizeValidator(control: AbstractControl): { [key: string]: any } | null {
+    const file = control.value;
+    if (file) {
+      const maxSizeInBytes = 1 * 1024 * 1024; // 1 MB
+      if (file.size > maxSizeInBytes) {
+        return { invalidFileSize: true };
+      }
+    }
+    return null;
+  }
+
+  async saveFile() {
+    const selectedMaterial = this.userForm.get('MV').value;
+    if (this.fileCountByMaterial[selectedMaterial] >= 3) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Límite Alcanzado',
+        text: 'No puedes subir más de 3 archivos para el tipo de material seleccionado.'
+      });
+      return; // Detener la ejecución si se alcanza el límite
+    }
+
+    const tmp = sessionStorage.getItem('detailForm');
+    const detail = JSON.parse(tmp ? tmp : "[]");
+    const materialHasValues = detail.some((item:any) => item.recyclability === 3 && item.type_residue === parseInt(selectedMaterial));
+    if (!materialHasValues) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Advertencia',
+        text: 'El material no tiene valores ingresados.'
+      });
+      return;
+    }
+
+    if (this.id_statement == null) {
+      Swal.fire({
+        title: 'Guardando Datos',
+        text: `Se están guardando datos`,
+        timerProgressBar: true,
+        showConfirmButton: false
+      });
+      Swal.showLoading();
+      const header = {
+        id_business: this.id_business,
+        year_statement: this.year_statement,
+        state: false,
+        id_statement: this.id_statement
+      };
+
+      const tmp = sessionStorage.getItem('detailForm');
+      const detail = JSON.parse(tmp ? tmp : "[]");
+      if (detail.length == 0) {
+        detail.push({ precedence: 1, hazard: 1, recyclability: 1, type_residue: 1, value: 0, amount: 0 });
+      }
+      sessionStorage.setItem('saving', 'true');
+      const r = await this.productorService.saveForm({ header, detail }).toPromise();
+      if (r.status) {
+        sessionStorage.setItem('id_statement', r.data);
+        this.id_statement = r.data;
+        Swal.close()
+      }
+      sessionStorage.removeItem('isEdited');
+      sessionStorage.removeItem('saving');
+      this.productorService.saveFile(this.id_statement, this.fileName, this.fileBuffer, selectedMaterial).subscribe(r => {
+        if (r.status) {
+          Swal.fire({
+            icon: 'success',
+            text: 'Medio de verificación guardado satisfactoriamente'
+          })
+          this.loadMV();
+        }
+      });
+      this.fileCountByMaterial[selectedMaterial]++;
+    }
+    else {
+      this.productorService.saveFile(this.id_statement, this.fileName, this.fileBuffer, selectedMaterial).subscribe(r => {
+        if (r.status) {
+          Swal.fire({
+            icon: 'success',
+            text: 'Medio de verificación guardado satisfactoriamente'
+          })
+          this.loadMV();
+        }
+      })
+    }
+  }
+
+  deleteMV(id: any) {
+    this.productorService.deleteById(id).subscribe(r => {
+      if (r.status) {
+        Swal.fire({
+          icon: 'info',
+          text: 'Medio de verificación eliminado satisfactoriamente'
+        })
+        this.loadMV();
+      }
+    })
+  }
+
+  loadMV() {
+    this.productorService.getMV(this.id_statement).subscribe(r => {
+      if (r.status) {
+        this.MV_consulta = r.data.header;
+        this.fileCountByMaterial = {
+          1: 0, // "Papel/Cartón"
+          2: 0, // "Metal"
+          3: 0  // "Plástico"
+        };
+
+        this.MV_consulta.forEach((mv: any) => {
+          if (this.fileCountByMaterial.hasOwnProperty(mv.TYPE_MATERIAL)) {
+            this.fileCountByMaterial[mv.TYPE_MATERIAL]++;
+          }
+        });
+
+        // Establecer variables en sessionStorage
+        sessionStorage.setItem('hasMV_PapelCarton', this.fileCountByMaterial[1] > 0 ? 'true' : 'false');
+        sessionStorage.setItem('hasMV_Metal', this.fileCountByMaterial[2] > 0 ? 'true' : 'false');
+        sessionStorage.setItem('hasMV_Plastico', this.fileCountByMaterial[3] > 0 ? 'true' : 'false');
       }
     });
   }

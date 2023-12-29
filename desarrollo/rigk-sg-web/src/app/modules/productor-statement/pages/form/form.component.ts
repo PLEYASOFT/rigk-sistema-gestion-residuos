@@ -13,9 +13,6 @@ import { map, takeWhile } from 'rxjs/operators';
   styleUrls: ['./form.component.css']
 })
 export class FormComponent implements OnInit, OnDestroy {
-  /**
-   * BORRAR
-   */
   tablas = ['Reciclable', 'No Reciclable', 'Retornables / Reutilizados'];
   residuos = [
     'Papel Cartón',
@@ -24,9 +21,6 @@ export class FormComponent implements OnInit, OnDestroy {
     'Madera**',
     'Envases compuestos'
   ];
-  /**
-   * END BORRAR
-   */
 
   position = 1;
   hour: Date | null = null;
@@ -66,15 +60,16 @@ export class FormComponent implements OnInit, OnDestroy {
     sessionStorage.removeItem('detailForm');
     sessionStorage.removeItem('saving');
     sessionStorage.removeItem('detailLastForm');
+    sessionStorage.removeItem('hasMV_PapelCarton');
+    sessionStorage.removeItem('hasMV_Metal');
+    sessionStorage.removeItem('hasMV_Plastico');
     if (this.sessionCheck !== null) {
       this.sessionCheck.unsubscribe();
     }
   }
 
   ngOnInit(): void {
-    //this.productorService.currentPosition.subscribe(position => this.position = position);
     if (sessionStorage.getItem('state') && sessionStorage.getItem('state') == '2') {
-      //this.productorService.changePosition(3);
       this.position = 3;
     }
     this.sessionCheck = interval(100)
