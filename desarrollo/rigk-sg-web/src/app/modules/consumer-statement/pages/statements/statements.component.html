@@ -85,7 +85,7 @@
                         <td>
                             {{formatValue(s.VALUE)}}
                         </td>
-                        <td>{{s.FechaRetiro | date: 'dd-MM-yyyy'}}</td>
+                        <td>{{s.FechaRetiro | date: 'dd-MM-yyyy':'UTC'}}</td>
                         <td>
                             <span [ngClass]="s.semaforo ? 'circle green-circle' : 'circle red-circle'"></span>
                         </td>
