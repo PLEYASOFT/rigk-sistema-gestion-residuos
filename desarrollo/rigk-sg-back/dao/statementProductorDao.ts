@@ -391,6 +391,15 @@ class statementProductorDao {
         }
         return error;
     }
+    public async findOC(id: number) {
+        const conn = mysqlcon.getConnection()!;
+        const res: any = await conn.query("SELECT FILE_OC FROM header_statement_form WHERE ID=?", [id]).then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        if (res.length == 0){
+            return false
+        }
+        return res[0].FILE_OC
+    }
     public async haveDraft(business: string, year: string) {
         const conn = mysqlcon.getConnection();
         const _res: any = await conn?.execute("SELECT ID, STATE FROM header_statement_form WHERE ID_BUSINESS=(SELECT ID FROM business WHERE CODE_BUSINESS=?) AND YEAR_STATEMENT=? AND STATE in (1, 2) ORDER BY ID DESC LIMIT 1", [business, year]).then((res) => res[0]).catch(error => undefined);

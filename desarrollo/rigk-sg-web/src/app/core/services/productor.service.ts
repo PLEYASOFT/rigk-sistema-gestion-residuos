@@ -106,4 +106,9 @@ export class ProductorService {
   deleteById(id: any) {
     return this.http.delete<any>(`${this.url}/detailMV/${id}`);
   }
+  downloadOC(id: any) {
+    let headers = new HttpHeaders();
+    headers = headers.set('Accept', 'application/pdf');
+    return this.http.get<any>(`${this.url}/downloadOC/${id}`, { headers: headers, responseType: 'blob' as 'json' });
+  }
 }

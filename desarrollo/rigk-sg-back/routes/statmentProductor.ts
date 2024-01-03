@@ -26,6 +26,7 @@ router.post('/', [validarJWT, verifyRolProductor, verifyParametersProductorForm]
 router.post('/saveFile', [validarJWT], statementProductorLogic.saveFile);
 router.post('/restapi', [validarJWT, verifyRolProductor], statementProductorLogic.respApiSaveStatement);
 router.post('/OC/:id', [validarJWT, verifyRolProductor], statementProductorLogic.uploadOC);
+router.get('/downloadOC/:id', [validarJWT], statementProductorLogic.downloadOC);
 router.put('/:id/state/:state', [validarJWT, verifyRolProductor, verifyParametersUpdateStateForm], statementProductorLogic.updateStateForm);
 router.put('/validate/:id', [validarJWT, verifyRolProductor], statementProductorLogic.validateStatement);
 router.put('/:id', [validarJWT, verifyRolProductor], statementProductorLogic.updateValuesForm);

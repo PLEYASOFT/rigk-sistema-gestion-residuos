@@ -765,6 +765,23 @@ class StatementProductorLogic {
             });
         }
     }
+    public async downloadOC(req: any, res: Response) {
+        const { id } = req.params;
+        try {
+            const r: any = await statementDao.findOC(id);
+            if (r == false) {
+                return res.status(404).json({ status: false, msg: 'Documento no encontrado', data: {} });
+            }
+            const fileContent = Buffer.from(r, 'binary');
+
+            res.setHeader('Content-Type', "application/pdf");
+            res.setHeader('Content-Disposition', `attachment; filename=OrdenDeCompra.pdf`);
+            res.send(fileContent);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
+        }
+    }
 }
 export const convertWordToPDF = async (id: any, res: Response) => {
     const path = require('path');
