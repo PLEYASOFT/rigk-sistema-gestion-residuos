@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProductorService } from 'src/app/core/services/productor.service';
 import Swal from 'sweetalert2';
 
@@ -13,7 +13,8 @@ export class MaintainerProductorDetailComponent implements OnInit {
   listData: any = [];
   MV_consulta: any = [];
   constructor(public productorService: ProductorService,
-    private route: ActivatedRoute,) { }
+    private route: ActivatedRoute,
+    private router: Router,) { }
 
   ngOnInit(): void {
     this.loadData();
@@ -80,5 +81,9 @@ export class MaintainerProductorDetailComponent implements OnInit {
 
   isDownloadOCEnabled(): boolean {
     return this.listData.data && this.listData.data.length > 0 && this.listData.data[0].STATE === 1;
+  }
+
+  volver() {
+    this.router.navigate(['/mantenedor/productor']);
   }
 }
