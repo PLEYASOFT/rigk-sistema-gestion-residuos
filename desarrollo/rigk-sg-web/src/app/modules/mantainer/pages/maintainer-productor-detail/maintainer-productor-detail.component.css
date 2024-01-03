@@ -8,3 +8,8 @@
     text-decoration: underline;
     cursor: pointer;
 }
+
+.disabled-link {
+    pointer-events: none;
+    color: #ccc
+}

@@ -52,8 +52,12 @@
                                 Borrador</span> </a></li>
                     <li data-bs-toggle="collapse"><a class="list-data__title btn btn-light "><span>Descargar PDF</span>
                         </a></li>
-                    <li data-bs-toggle="collapse"><a class="list-data__title btn btn-light "><span (click)="descargarOC(this.listData.data[0].ID)">Descargar OC</span>
-                        </a></li>
+                    <li data-bs-toggle="collapse">
+                        <a class="list-data__title btn btn-light" [class.disabled-link]="!isDownloadOCEnabled()"
+                            (click)="isDownloadOCEnabled() && descargarOC(this.listData.data[0].ID)">
+                            <span>Descargar OC</span>
+                        </a>
+                    </li>
                     <li data-bs-toggle="collapse"> <button class="list-data__title btn btn-primary btn-rounded "
                             style="margin-left: 90%; width: 85px;">
                             Volver
@@ -85,26 +89,27 @@
                             </div>
                             <div *ngIf="this.MV_consulta && this.MV_consulta.length > 0">
                                 <table
-                                  class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
-                                  <thead>
-                                    <tr class="text-center w-100">
-                                      <th>Tipo MV</th>
-                                      <th>Nombre Archivo</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr class="text-center w-100" *ngFor="let r of MV_consulta; let x = index">
-                                      <td>{{r.TYPE_MATERIAL_TIPEADO}}</td>
-                                      <td>
-                                        <a class="file-link" (click)="downloadFile(r.ID, r.FILE_NAME)">{{r.FILE_NAME}}</a>
-                                      </td>
-                                    </tr>
-                                  </tbody>
+                                    class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
+                                    <thead>
+                                        <tr class="text-center w-100">
+                                            <th>Tipo MV</th>
+                                            <th>Nombre Archivo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="text-center w-100" *ngFor="let r of MV_consulta; let x = index">
+                                            <td>{{r.TYPE_MATERIAL_TIPEADO}}</td>
+                                            <td>
+                                                <a class="file-link"
+                                                    (click)="downloadFile(r.ID, r.FILE_NAME)">{{r.FILE_NAME}}</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
                                 </table>
-                              </div>
-                              <div *ngIf="(!MV_consulta || MV_consulta.length === 0)" class="alert alert-danger">
+                            </div>
+                            <div *ngIf="(!MV_consulta || MV_consulta.length === 0)" class="alert alert-danger">
                                 No existen medios de verificación para esta declaración.
-                              </div>
+                            </div>
                         </div>
                     </form>
                 </div>

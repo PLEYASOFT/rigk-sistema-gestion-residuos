@@ -77,4 +77,8 @@ export class MaintainerProductorDetailComponent implements OnInit {
       }
     })
   }
+
+  isDownloadOCEnabled(): boolean {
+    return this.listData.data && this.listData.data.length > 0 && this.listData.data[0].STATE === 1;
+  }
 }
