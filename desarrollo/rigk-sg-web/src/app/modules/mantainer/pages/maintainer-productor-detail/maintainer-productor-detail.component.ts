@@ -83,6 +83,17 @@ export class MaintainerProductorDetailComponent implements OnInit {
     return this.listData.data && this.listData.data.length > 0 && this.listData.data[0].STATE === 1;
   }
 
+  isEstadoPendiente(): boolean {
+    return this.listData.data && this.listData.data.length > 0 && this.listData.data[0].STATE === 2;
+  }
+
+  isEstadoBorrador(): boolean {
+    return this.listData.data && this.listData.data.length > 0 && this.listData.data[0].STATE === 0;
+  }
+
+  isEstadoEnviado(): boolean {
+    return this.listData.data && this.listData.data.length > 0 && this.listData.data[0].STATE === 1;
+  }
   volver() {
     this.router.navigate(['/mantenedor/productor']);
   }
@@ -106,4 +117,87 @@ export class MaintainerProductorDetailComponent implements OnInit {
       Swal.close();
     });
   }
+
+  cambiarAEstadoPendiente(){
+    const id_header = this.route.snapshot.params['id_header'];
+  
+    Swal.fire({
+      title: '¿Está seguro?',
+      text: '¿Está seguro de cambiar a estado Pendiente? La Orden de Compra actual se eliminará del sistema y el usuario tendrá un plazo de 7 días para subir una nueva Orden de Compra. Pasado este plazo, la declaración volverá a estado borrador y se recalculará el valor de la UF',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.productorService.updateToPending(id_header).subscribe(r => {
+          if (r.status) {
+            Swal.fire(
+              'Cambiado!',
+              'El estado ha sido cambiado a Pendiente.',
+              'success'
+            ).then(() => {
+              this.loadData();
+            });
+          } else {
+            Swal.fire(
+              'Error!',
+              'Hubo un problema al cambiar el estado.',
+              'error'
+            );
+          }
+        }, error => {
+          Swal.fire(
+            'Error!',
+            'Hubo un problema al cambiar el estado.',
+            'error'
+          );
+        });
+      }
+    });
+  }
+
+  cambiarAEstadoBorrador() {
+    const id_header = this.route.snapshot.params['id_header'];
+  
+    Swal.fire({
+      title: '¿Está seguro?',
+      text: '¿Está seguro de cambiar a estado Borrador? La Orden de Compra se eliminará del sistema y los valores de la declaración se actualizarán al valor de la UF de hoy',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.productorService.updateToDraft(id_header).subscribe(r => {
+          if (r.status) {
+            Swal.fire(
+              'Cambiado!',
+              'El estado ha sido cambiado a Borrador.',
+              'success'
+            ).then(() => {
+              this.loadData();
+            });
+          } else {
+            Swal.fire(
+              'Error!',
+              'Hubo un problema al cambiar el estado.',
+              'error'
+            );
+          }
+        }, error => {
+          Swal.fire(
+            'Error!',
+            'Hubo un problema al cambiar el estado.',
+            'error'
+          );
+        });
+      }
+    });
+  }
+  
 }

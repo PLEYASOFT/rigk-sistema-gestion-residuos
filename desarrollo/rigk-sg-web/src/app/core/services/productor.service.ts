@@ -55,6 +55,12 @@ export class ProductorService {
   validateStatement(id: any) {
     return this.http.put<any>(`${this.url}/validate/${id}`, {});
   }
+  updateToDraft(idHeader: any) {
+    return this.http.put<any>(`${this.url}/updateToDraft/${idHeader}`, {});
+  }
+  updateToPending(idHeader: any) {
+    return this.http.put<any>(`${this.url}/updateToPending/${idHeader}`, {});
+  }
   verifyDraft(id_business: any, year: any) {
     return this.http.get<any>(`${this.url}/draft/${id_business}/year/${year}`);
   }

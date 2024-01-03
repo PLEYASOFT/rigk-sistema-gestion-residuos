@@ -327,6 +327,32 @@ class StatementProductorLogic {
             });
         }
     }
+    public async updateToDraftStatus(req: Request, res: Response) {
+        const { idHeader} = req.params;
+        try {
+            await statementDao.updateToDraftStatus(idHeader);
+            res.status(200).json({ status: true });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
+    public async updateToPendingStatus(req: Request, res: Response) {
+        const { idHeader} = req.params;
+        try {
+            await statementDao.updateToPendingStatus(idHeader);
+            res.status(200).json({ status: true });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
     public async updateValuesForm(req: Request | any, res: Response) {
         const { id } = req.params;
         const { detail } = req.body;

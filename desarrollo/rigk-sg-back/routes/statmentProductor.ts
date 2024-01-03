@@ -32,6 +32,8 @@ router.get('/downloadOC/:id', [validarJWT], statementProductorLogic.downloadOC);
 router.put('/:id/state/:state', [validarJWT, verifyRolProductor, verifyParametersUpdateStateForm], statementProductorLogic.updateStateForm);
 router.put('/validate/:id', [validarJWT, verifyRolProductor], statementProductorLogic.validateStatement);
 router.put('/:id', [validarJWT, verifyRolProductor], statementProductorLogic.updateValuesForm);
+router.put('/updateToDraft/:idHeader', [validarJWT, verifyRolProductor], statementProductorLogic.updateToDraftStatus);
+router.put('/updateToPending/:idHeader', [validarJWT, verifyRolProductor], statementProductorLogic.updateToPendingStatus);
 router.delete('/dj/delete/:idEmpresa/:idUsuario', [validarJWT], statementProductorLogic.deleteDJ);
 router.delete('/detailMV/:id', [validarJWT], statementProductorLogic.deleteById);
 router.all('**', (req: Request, res: Response) => { res.status(500).json({ status: false, msg: "Ruta incorrecta" }) });

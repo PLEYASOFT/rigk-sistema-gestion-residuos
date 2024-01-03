@@ -34,7 +34,8 @@
 
                 <li>
                     <span class="list-data__title" style="margin-left: 10px">Estado</span>
-                    <span class="list-data__text" style="margin-left: 10px">{{this.listData.data[0].EMAIL}}</span>
+                    <span class="list-data__text" style="margin-left: 10px">{{this.listData.data[0].STATE == 1 ?
+                        'Enviada': this.listData.data[0].STATE == 0 ? 'Borrador':'Pendiente'}}</span>
                 </li>
 
             </ul>
@@ -46,10 +47,19 @@
                     <li><a class="list-data__title btn btn-light " data-bs-toggle="modal"
                             data-bs-target="#exampleModal"><span>Ver Medios de
                                 Verificación</span> </a></li>
-                    <li data-bs-toggle="collapse"><a class="list-data__title btn btn-light "><span>Cambiar a estado
-                                Pendiente</span> </a></li>
-                    <li data-bs-toggle="collapse"><a class="list-data__title btn btn-light "><span>Cambiar a estado
-                                Borrador</span> </a></li>
+                    <li data-bs-toggle="collapse">
+                        <a class="list-data__title btn btn-light"
+                            [class.disabled-link]="isEstadoPendiente() || isEstadoBorrador()"
+                            (click)="isEstadoEnviado() && cambiarAEstadoPendiente()">
+                            <span>Cambiar a estado Pendiente</span>
+                        </a>
+                    </li>
+                    <li data-bs-toggle="collapse">
+                        <a class="list-data__title btn btn-light" [class.disabled-link]="isEstadoBorrador()"
+                            (click)="(isEstadoPendiente() || isEstadoEnviado()) && cambiarAEstadoBorrador()">
+                            <span>Cambiar a estado Borrador</span>
+                        </a>
+                    </li>
                     <li data-bs-toggle="collapse">
                         <a class="list-data__title btn btn-light" [class.disabled-link]="!isDownloadOCEnabled()"
                             (click)="isDownloadOCEnabled() && downloadPDF(this.listData.data[0].CODE_BUSINESS, this.listData.data[0].YEAR_STATEMENT)">

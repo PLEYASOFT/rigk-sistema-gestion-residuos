@@ -25,6 +25,30 @@ class statementProductorDao {
         conn?.end();
         return { statements };
     }
+    public async updateToDraftStatus(idHeader: string) {
+        const conn = mysqlcon.getConnection()!;
+        try {
+            await conn.execute("UPDATE header_statement_form SET STATE = 0, FILE_NAME = NULL, FILE_OC = NULL, VALIDATED_AT = NULL WHERE ID = ?", [idHeader]);
+            conn.end();
+            return { success: true };
+        } catch (error) {
+            console.log(error);
+            conn.end();
+            return { success: false, error };
+        }
+    }   
+    public async updateToPendingStatus(idHeader: string) {
+        const conn = mysqlcon.getConnection()!;
+        try {
+            await conn.execute("UPDATE header_statement_form SET STATE = 2, FILE_NAME = NULL, FILE_OC = NULL, UPDATED_AT = NOW() WHERE ID = ?", [idHeader]);
+            conn.end();
+            return { success: true };
+        } catch (error) {
+            console.log(error);
+            conn.end();
+            return { success: false, error };
+        }
+    }       
     public async saveFile(idDetail: number, fileName: string, fileBuffer: File, typeMaterial: number) {
         const conn = mysqlcon.getConnection()!;
         const attached: any = await conn.execute("INSERT INTO attached_productor_form(ID_HEADER, FILE_NAME, FILE, TYPE_MATERIAL) VALUES (?,?,?,?)", [idDetail, fileName, fileBuffer, typeMaterial]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
