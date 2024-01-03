@@ -15,44 +15,104 @@
         <div class="d-sm-flex justify-content-between mb-3 mb-md-0">
         </div>
         <div class="box box-mi-perfil mb-5 d-flex align-items-start" style="margin-left: 20px;">
-            <ul class="list list-data list-data-title-green gap-0 list-unstyled">
+            <ul class="list list-data list-data-title-green gap-0 column-md-2 list-unstyled">
                 <li>
                     <span class="list-data__title" style="margin-left: 10px">Código de Empresa</span>
-                    <span class="list-data__text" style="margin-left: 10px">{{this.listData.data[0].CODE_BUSINESS}}</span>
+                    <span class="list-data__text"
+                        style="margin-left: 10px">{{this.listData.data[0].CODE_BUSINESS}}</span>
                 </li>
                 <li>
                     <span class="list-data__title" style="margin-left: 10px">Nombre de Empresa</span>
-                    <span class="list-data__text" style="margin-left: 10px">{{this.listData.data[0].NAME_BUSINESS}}</span>
+                    <span class="list-data__text"
+                        style="margin-left: 10px">{{this.listData.data[0].NAME_BUSINESS}}</span>
                 </li>
                 <li>
                     <span class="list-data__title" style="margin-left: 10px">Año Declaración</span>
-                    <span class="list-data__text" style="margin-left: 10px">{{this.listData.data[0].YEAR_STATEMENT}}</span>
+                    <span class="list-data__text"
+                        style="margin-left: 10px">{{this.listData.data[0].YEAR_STATEMENT}}</span>
                 </li>
 
                 <li>
                     <span class="list-data__title" style="margin-left: 10px">Estado</span>
                     <span class="list-data__text" style="margin-left: 10px">{{this.listData.data[0].EMAIL}}</span>
                 </li>
-                <li>
-                    <button class="list-data__title btn btn-light">Cambiar a estado Pendiente</button>
-                </li>
-                <li>
-                    <button class="list-data__title btn btn-light disabled">Cambiar a estado Borrador</button>
-                </li>
-                <li>
-                    <button class="list-data__title btn btn-light">Teléfono Oficina</button>
-                </li>
-                <li>
-                    <button class="list-data__title btn btn-light">Descargar PDF</button>
-                </li>
-                <li>
-                    <button class="list-data__title btn btn-light">Descargar OC</button>
-                </li>
-                <li>
-                    <button class="list-data__title btn btn-light">Volver</button>
-                </li>
+
             </ul>
         </div>
+        <h2 class="color-verde">Acciones</h2>
+        <ul class="list list-links list-unstyled">
+            <div class="accordion accordion-flush" id="accordionPanelsStayOpenExample">
+                <div class="accordion-item">
+                    <li><a class="list-data__title btn btn-light " data-bs-toggle="modal"
+                            data-bs-target="#exampleModal"><span>Ver Medios de
+                                Verificación</span> </a></li>
+                    <li data-bs-toggle="collapse"><a class="list-data__title btn btn-light "><span>Cambiar a estado
+                                Pendiente</span> </a></li>
+                    <li data-bs-toggle="collapse"><a class="list-data__title btn btn-light "><span>Cambiar a estado
+                                Borrador</span> </a></li>
+                    <li data-bs-toggle="collapse"><a class="list-data__title btn btn-light "><span>Descargar PDF</span>
+                        </a></li>
+                    <li data-bs-toggle="collapse"><a class="list-data__title btn btn-light "><span>Descargar OC</span>
+                        </a></li>
+                    <li data-bs-toggle="collapse"> <button class="list-data__title btn btn-primary btn-rounded "
+                            style="margin-left: 90%; width: 85px;">
+                            Volver
+                        </button>
+                    </li>
+                    <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse "
+                        aria-labelledby="panelsStayOpen-headingOne">
+                        <div class="accordion-body">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ul>
     </section>
-
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Medios de Verificación</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <form>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p></p>
+                            </div>
+                            <div *ngIf="this.MV_consulta && this.MV_consulta.length > 0">
+                                <table
+                                  class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
+                                  <thead>
+                                    <tr class="text-center w-100">
+                                      <th>Tipo MV</th>
+                                      <th>Nombre Archivo</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr class="text-center w-100" *ngFor="let r of MV_consulta; let x = index">
+                                      <td>{{r.TYPE_MATERIAL_TIPEADO}}</td>
+                                      <td>
+                                        <a class="file-link" (click)="downloadFile(r.ID, r.FILE_NAME)">{{r.FILE_NAME}}</a>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                              <div *ngIf="(!MV_consulta || MV_consulta.length === 0)" class="alert alert-danger">
+                                No existen medios de verificación para esta declaración.
+                              </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCloseModal" class="btn btn-secondary"
+                    data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
 </div>

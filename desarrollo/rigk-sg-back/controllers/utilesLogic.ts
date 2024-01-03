@@ -51,5 +51,20 @@ class utilesLogic {
         }
     }
 
+    public async downloadMV(req: any, res: Response) {
+        const { id_attached } = req.params;
+        try {
+            const r: any = await utilesDao.downloadMV(id_attached);
+            if (r == false ) return res.status(200).json({ status: false, msg: 'undefined o null', data: {} });
+            const fileContent = Buffer.from(r, 'binary');
+
+            res.setHeader('Content-Type', "application/pdf");
+            res.setHeader('Content-Disposition', `attachment; filename=Declaracion.pdf`);
+            res.send(fileContent);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
+        }
+    }
 }
 export default new utilesLogic();

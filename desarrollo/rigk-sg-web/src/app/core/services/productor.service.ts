@@ -97,6 +97,11 @@ export class ProductorService {
     headers = headers.set('Accept', 'application/pdf');
     return this.http.get<any>(`${environment.API_V1_URL}/utiles/download/${idEmpresa}/${idUsuario}`, { responseType: 'blob' as 'json' });
   }
+  downloadMV(id_attached: any) {
+    let headers = new HttpHeaders();
+    headers = headers.set('Accept', 'application/pdf');
+    return this.http.get<any>(`${environment.API_V1_URL}/utiles/downloadMV/${id_attached}`, { responseType: 'blob' as 'json' });
+  }
   saveFile(idDetail: any, fileName: string, file: string, typeMaterial: number) {
     const formData = new FormData();
     formData.append('idDetail', idDetail.toString());
@@ -113,4 +118,5 @@ export class ProductorService {
   deleteById(id: any) {
     return this.http.delete<any>(`${this.url}/detailMV/${id}`);
   }
+  
 }
