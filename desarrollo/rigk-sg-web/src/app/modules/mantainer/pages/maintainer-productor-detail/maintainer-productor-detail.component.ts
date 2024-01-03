@@ -55,10 +55,8 @@ export class MaintainerProductorDetailComponent implements OnInit {
       }
     );
   }
-  descargarOC(){
-    const id_header = this.route.snapshot.params['id_header'];
-    console.log(this.listData);
-    this.productorService.downloadOC(id_header).subscribe({
+  descargarOC(idHeader: number){
+    this.productorService.downloadOC(idHeader).subscribe({
       next: (r) => {
         if (r) {
           const file = new Blob([r], { type: 'application/pdf' });
