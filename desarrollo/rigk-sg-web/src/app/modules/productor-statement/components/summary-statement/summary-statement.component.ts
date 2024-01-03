@@ -167,8 +167,8 @@ export class SummaryStatementComponent implements AfterViewInit {
 
     document.getElementById(`total_ton`)!.innerHTML = this.setFormato(this.sumaAmount);
     document.getElementById(`pom_total`)!.innerHTML = document.getElementById(`total_ton`)!.innerHTML
-
-    this.ratesService.getCLP.pipe(
+    const yearRate = parseInt(this.year_statement.toString()) + 1;
+    this.ratesService.getRates(yearRate).pipe(
       concatMap(clp => {
         this.sumaAmount = 0;
         // Procesamiento de los datos de la primera suscripción

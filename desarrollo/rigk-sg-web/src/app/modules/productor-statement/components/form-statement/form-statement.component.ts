@@ -398,7 +398,7 @@ export class FormStatementComponent implements OnInit, AfterViewChecked, OnDestr
 
     const tmp = sessionStorage.getItem('detailForm');
     const detail = JSON.parse(tmp ? tmp : "[]");
-    const materialHasValues = detail.some((item:any) => item.recyclability === 3 && item.type_residue === parseInt(selectedMaterial));
+    const materialHasValues = detail.some((item:any) => item.recyclability === 3 && item.type_residue === parseInt(selectedMaterial) && item.value !== 0);
     if (!materialHasValues) {
       Swal.fire({
         icon: 'warning',
