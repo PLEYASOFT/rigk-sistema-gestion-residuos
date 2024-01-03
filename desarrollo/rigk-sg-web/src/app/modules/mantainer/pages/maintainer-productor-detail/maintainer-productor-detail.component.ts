@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProductorService } from 'src/app/core/services/productor.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-maintainer-productor-detail',
@@ -53,5 +54,29 @@ export class MaintainerProductorDetailComponent implements OnInit {
         console.error('Error al descargar el archivo:', error);
       }
     );
+  }
+  descargarOC(){
+    const id_header = this.route.snapshot.params['id_header'];
+    console.log(this.listData);
+    this.productorService.downloadOC(id_header).subscribe({
+      next: (r) => {
+        if (r) {
+          const file = new Blob([r], { type: 'application/pdf' });
+          let link = document.createElement('a');
+          link.href = window.URL.createObjectURL(file);
+          link.download = `Orden_de_Compra_${this.listData.data[0].YEAR_STATEMENT}`;
+          document.body.appendChild(link);
+          link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+          link.remove();
+          window.URL.revokeObjectURL(link.href);
+        }
+      },
+      error: r => {
+        Swal.fire({
+          icon: 'error',
+          text: 'error'
+        })
+      }
+    })
   }
 }

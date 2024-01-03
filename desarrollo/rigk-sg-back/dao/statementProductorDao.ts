@@ -446,6 +446,15 @@ class statementProductorDao {
         conn?.end();
         return table0;
     }
+    public async findOC(id: any) {
+        const conn = mysqlcon.getConnection()!;
+        const res: any = await conn.query("SELECT FILE_OC FROM header_statement_form WHERE ID=?", [id]).then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        if (res.length == 0){
+            return false
+        }
+        return res[0].FILE_OC
+    }
 }
 const statementDao = new statementProductorDao();
 export default statementDao;
