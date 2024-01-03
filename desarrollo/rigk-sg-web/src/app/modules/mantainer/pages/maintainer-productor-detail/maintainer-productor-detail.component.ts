@@ -86,4 +86,24 @@ export class MaintainerProductorDetailComponent implements OnInit {
   volver() {
     this.router.navigate(['/mantenedor/productor']);
   }
+
+  downloadPDF(id: any, year: any) {
+    Swal.fire({
+      title: 'Espere',
+      text: 'Generando PDF',
+      showConfirmButton: false
+    });
+    Swal.showLoading();
+    this.productorService.downloadPDF(id, year).subscribe(r => {
+      const file = new Blob([r], { type: 'application/pdf' });
+      let link = document.createElement('a');
+      link.href = window.URL.createObjectURL(file);
+      link.download = `Reporte_${year}`;
+      document.body.appendChild(link);
+      link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+      link.remove();
+      window.URL.revokeObjectURL(link.href);
+      Swal.close();
+    });
+  }
 }

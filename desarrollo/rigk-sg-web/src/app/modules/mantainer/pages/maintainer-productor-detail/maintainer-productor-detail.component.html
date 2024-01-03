@@ -50,8 +50,12 @@
                                 Pendiente</span> </a></li>
                     <li data-bs-toggle="collapse"><a class="list-data__title btn btn-light "><span>Cambiar a estado
                                 Borrador</span> </a></li>
-                    <li data-bs-toggle="collapse"><a class="list-data__title btn btn-light "><span>Descargar PDF</span>
-                        </a></li>
+                    <li data-bs-toggle="collapse">
+                        <a class="list-data__title btn btn-light" [class.disabled-link]="!isDownloadOCEnabled()"
+                            (click)="isDownloadOCEnabled() && downloadPDF(this.listData.data[0].CODE_BUSINESS, this.listData.data[0].YEAR_STATEMENT)">
+                            <span>Descargar PDF</span>
+                        </a>
+                    </li>
                     <li data-bs-toggle="collapse">
                         <a class="list-data__title btn btn-light" [class.disabled-link]="!isDownloadOCEnabled()"
                             (click)="isDownloadOCEnabled() && descargarOC(this.listData.data[0].ID)">
