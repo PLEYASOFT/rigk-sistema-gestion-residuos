@@ -9,6 +9,8 @@ import {
 import { verifyRolProductor } from "../middleware/roles/rolesCustom";
 const router = Router();
 
+router.get('/statements', [validarJWT], statementProductorLogic.getStatements);
+router.get('/statements/:id_header', [validarJWT], statementProductorLogic.getDeclarationById);
 router.get('/byUser', [validarJWT], statementProductorLogic.getStatementsByUser);
 router.get('/:business/year/:year/isDraft/:draft', [validarJWT, verifyRolProductor, verifyParametersStatementByYear], statementProductorLogic.getStatmentByYear);
 router.get('/draft/:business/year/:year', [validarJWT, verifyRolProductor], statementProductorLogic.verifyDraft);
@@ -26,9 +28,12 @@ router.post('/', [validarJWT, verifyRolProductor, verifyParametersProductorForm]
 router.post('/saveFile', [validarJWT], statementProductorLogic.saveFile);
 router.post('/restapi', [validarJWT, verifyRolProductor], statementProductorLogic.respApiSaveStatement);
 router.post('/OC/:id', [validarJWT, verifyRolProductor], statementProductorLogic.uploadOC);
+router.get('/downloadOC/:id', [validarJWT], statementProductorLogic.downloadOC);
 router.put('/:id/state/:state', [validarJWT, verifyRolProductor, verifyParametersUpdateStateForm], statementProductorLogic.updateStateForm);
 router.put('/validate/:id', [validarJWT, verifyRolProductor], statementProductorLogic.validateStatement);
 router.put('/:id', [validarJWT, verifyRolProductor], statementProductorLogic.updateValuesForm);
+router.put('/updateToDraft/:idHeader', [validarJWT, verifyRolProductor], statementProductorLogic.updateToDraftStatus);
+router.put('/updateToPending/:idHeader', [validarJWT, verifyRolProductor], statementProductorLogic.updateToPendingStatus);
 router.delete('/dj/delete/:idEmpresa/:idUsuario', [validarJWT], statementProductorLogic.deleteDJ);
 router.delete('/detailMV/:id', [validarJWT], statementProductorLogic.deleteById);
 router.all('**', (req: Request, res: Response) => { res.status(500).json({ status: false, msg: "Ruta incorrecta" }) });
