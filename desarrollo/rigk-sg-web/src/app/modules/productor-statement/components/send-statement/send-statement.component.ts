@@ -33,7 +33,6 @@ export class SendStatementComponent implements OnInit, OnDestroy {
   invoice_name: string = "";
   invoice_email: string = "";
   invoice_phone: string = "";
-  amountString: string = "$0";
 
   amount_current_year: number = 0;
   amount_previous_year: number = 0;
@@ -59,9 +58,6 @@ export class SendStatementComponent implements OnInit, OnDestroy {
     this.getResume();
     this.getUf();
     this.getBusiness();
-    this.getAmountDiff();
-    this.totalCLP = sessionStorage.getItem('totalCLP')!
-    this.porcentajeDiff = sessionStorage.getItem('porcentajeDiff')!
     this.userForm = this.fb.group({
       ARCHIVO: [null, [Validators.required, this.fileTypeValidator, this.fileSizeValidator]],
     });
@@ -143,61 +139,6 @@ export class SendStatementComponent implements OnInit, OnDestroy {
           });
         }
       });
-    });
-  }
-
-  getAmountDiff() {
-    this.amount_previous_year = 0;
-    this.amount_current_year = 0;
-
-    this.productorService.getValueStatementByYear(this.id_business, this.year_statement - 1, 0).subscribe({
-      next: resp => {
-
-        if (resp.status) {
-          if (resp.data.detail.length > 0) {
-            for (let i = 0; i < resp.data.detail.length; i++) {
-              const reg = resp.data.detail[i];
-              if (reg.AMOUNT != 0) {
-                this.amount_previous_year = this.amount_previous_year + (parseFloat(reg.AMOUNT) * this.uf);
-              }
-            }
-            this.amount_previous_year = this.amount_previous_year * parseFloat(this.porcentajeDiff) * 0.01 * 1.19;
-            this.amountString = "$" + this.amount_previous_year.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-          }
-        }
-      },
-      error: r => {
-        Swal.close();
-        Swal.fire({
-          icon: 'error',
-          text: r.msg,
-          title: '¡Ups!'
-        });
-      }
-    });
-
-    this.productorService.getValueStatementByYear(this.id_business, this.year_statement, 1).subscribe({
-      next: resp => {
-        if (resp.status) {
-          if (resp.data.detail.length > 0) {
-            for (let i = 0; i < resp.data.detail.length; i++) {
-              const reg = resp.data.detail[i];
-              if (reg.AMOUNT != 0) {
-                this.amount_current_year = this.amount_current_year + (parseFloat(reg.AMOUNT) * this.uf);
-              }
-            }
-            this.amount_current_year = this.amount_current_year * parseFloat(this.porcentajeDiff) * 0.01 * 1.19
-          }
-        }
-      },
-      error: r => {
-        Swal.close();
-        Swal.fire({
-          icon: 'error',
-          text: r.msg,
-          title: '¡Ups!'
-        });
-      }
     });
   }
 

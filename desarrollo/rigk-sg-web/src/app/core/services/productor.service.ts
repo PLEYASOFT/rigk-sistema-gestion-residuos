@@ -90,4 +90,20 @@ export class ProductorService {
     headers = headers.set('Accept', 'application/pdf');
     return this.http.get<any>(`${environment.API_V1_URL}/utiles/download/${idEmpresa}/${idUsuario}`, { responseType: 'blob' as 'json' });
   }
+  saveFile(idDetail: any, fileName: string, file: string, typeMaterial: number) {
+    const formData = new FormData();
+    formData.append('idDetail', idDetail.toString());
+    formData.append('fileName', fileName);
+    formData.append('fileBuffer', file);
+    formData.append('typeMaterial', typeMaterial.toString());
+
+    const headers = new HttpHeaders().set('Content-Type', 'multipart/form-data');
+    return this.http.post<any>(`${this.url}/saveFile`, formData, { headers });
+  }
+  getMV(id: any) {
+    return this.http.get<any>(`${this.url}/detailMV/${id}`);
+  }
+  deleteById(id: any) {
+    return this.http.delete<any>(`${this.url}/detailMV/${id}`);
+  }
 }
