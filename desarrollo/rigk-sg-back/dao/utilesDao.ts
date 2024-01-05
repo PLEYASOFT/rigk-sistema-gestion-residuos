@@ -27,6 +27,16 @@ class UtilesDao {
         }
         return res[0].DJ_FILE
     }
+
+    async downloadMV(ID_ATTACHED: any) {
+        const conn = mysqlcon.getConnection()!;
+        const res: any = await conn.query("SELECT FILE FROM attached_productor_form WHERE ID=?", [ID_ATTACHED]).then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        if (res.length == 0){
+            return false
+        }
+        return res[0].FILE
+    }
 }
 const utilesDao = new UtilesDao();
 export default utilesDao;

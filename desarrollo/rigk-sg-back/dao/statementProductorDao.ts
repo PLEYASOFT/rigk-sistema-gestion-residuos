@@ -1,6 +1,18 @@
 import mysqlcon from '../db';
 import ratesDao from '../dao/ratesDao';
 class statementProductorDao {
+    public async getDeclaretions() {
+        const conn = mysqlcon.getConnection();
+        const statements = await conn?.execute("SELECT header_statement_form.ID, header_statement_form.ID_BUSINESS, header_statement_form.STATE, header_statement_form.CREATED_BY, header_statement_form.UPDATED_AT, header_statement_form.VALIDATED_AT, header_statement_form.YEAR_STATEMENT, business.NAME as NAME_BUSINESS, business.CODE_BUSINESS, SUM(detail_statement_form.AMOUNT) as AMOUNT FROM header_statement_form INNER JOIN business ON business.id = header_statement_form.ID_BUSINESS INNER JOIN detail_statement_form ON detail_statement_form.ID_HEADER = header_statement_form.ID GROUP BY header_statement_form.ID").then((res) => res[0]).catch(error => { undefined });
+        conn?.end();
+        return { statements };
+    }  
+    public async getDeclarationById(id_header: number) {
+        const conn = mysqlcon.getConnection();
+        const statement = await conn?.execute("SELECT header_statement_form.ID, header_statement_form.ID_BUSINESS, header_statement_form.STATE, header_statement_form.CREATED_BY, header_statement_form.UPDATED_AT, header_statement_form.VALIDATED_AT, header_statement_form.YEAR_STATEMENT, business.NAME as NAME_BUSINESS, business.CODE_BUSINESS, BUSINESS.EMAIL, SUM(detail_statement_form.AMOUNT) as AMOUNT FROM header_statement_form INNER JOIN business ON business.id = header_statement_form.ID_BUSINESS INNER JOIN detail_statement_form ON detail_statement_form.ID_HEADER = header_statement_form.ID WHERE header_statement_form.ID = ? GROUP BY header_statement_form.ID", [id_header]).then((res) => res[0]).catch(error => { undefined });
+        conn?.end();
+        return { statement };
+    }      
     public async getDeclaretionsByUser(user: string) {
         const conn = mysqlcon.getConnection();
         const statements = await conn?.execute("SELECT header_statement_form.ID, header_statement_form.ID_BUSINESS, header_statement_form.STATE, header_statement_form.CREATED_BY, header_statement_form.UPDATED_AT, header_statement_form.VALIDATED_AT,  header_statement_form.YEAR_STATEMENT, header_statement_form.AMOUNT_UF, business.NAME as NAME_BUSINESS, business.CODE_BUSINESS  FROM header_statement_form INNER JOIN business ON business.id = header_statement_form.ID_BUSINESS INNER JOIN detail_statement_form ON detail_statement_form.ID_HEADER = header_statement_form.ID WHERE ID_BUSINESS in (SELECT ID_BUSINESS FROM user_business WHERE ID_USER=?) GROUP BY header_statement_form.ID", [user]).then((res) => res[0]).catch(error => { undefined });
@@ -13,6 +25,30 @@ class statementProductorDao {
         conn?.end();
         return { statements };
     }
+    public async updateToDraftStatus(idHeader: string) {
+        const conn = mysqlcon.getConnection()!;
+        try {
+            await conn.execute("UPDATE header_statement_form SET STATE = 0, FILE_NAME = NULL, FILE_OC = NULL, VALIDATED_AT = NULL WHERE ID = ?", [idHeader]);
+            conn.end();
+            return { success: true };
+        } catch (error) {
+            console.log(error);
+            conn.end();
+            return { success: false, error };
+        }
+    }   
+    public async updateToPendingStatus(idHeader: string) {
+        const conn = mysqlcon.getConnection()!;
+        try {
+            await conn.execute("UPDATE header_statement_form SET STATE = 2, FILE_NAME = NULL, FILE_OC = NULL, UPDATED_AT = NOW() WHERE ID = ?", [idHeader]);
+            conn.end();
+            return { success: true };
+        } catch (error) {
+            console.log(error);
+            conn.end();
+            return { success: false, error };
+        }
+    }       
     public async saveFile(idDetail: number, fileName: string, fileBuffer: File, typeMaterial: number) {
         const conn = mysqlcon.getConnection()!;
         const attached: any = await conn.execute("INSERT INTO attached_productor_form(ID_HEADER, FILE_NAME, FILE, TYPE_MATERIAL) VALUES (?,?,?,?)", [idDetail, fileName, fileBuffer, typeMaterial]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
@@ -443,6 +479,15 @@ class statementProductorDao {
         const table0 = await conn?.execute("SELECT * FROM detail_statement_form WHERE ID_HEADER = ?", [id_header]).then((res) => res[0]).catch(error => { undefined });
         conn?.end();
         return table0;
+    }
+    public async findOC(id: any) {
+        const conn = mysqlcon.getConnection()!;
+        const res: any = await conn.query("SELECT FILE_OC FROM header_statement_form WHERE ID=?", [id]).then((res) => res[0]).catch(error => [{ undefined }]);
+        conn.end();
+        if (res.length == 0){
+            return false
+        }
+        return res[0].FILE_OC
     }
 }
 const statementDao = new statementProductorDao();

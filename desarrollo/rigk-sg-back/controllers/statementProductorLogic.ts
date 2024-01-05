@@ -105,6 +105,39 @@ class StatementProductorLogic {
             });
         }
     }
+    public async getStatements(req: any, res: Response) {
+        try {
+            const { statements } = await statementDao.getDeclaretions();
+            res.status(200).json({
+                status: true,
+                data: statements,
+                msg: ""
+            });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
+    public async getDeclarationById(req: any, res: Response) {
+        const user = req.params.id_header;
+        try {
+            const { statement } = await statementDao.getDeclarationById(user);
+            res.status(200).json({
+                status: true,
+                data: statement,
+                msg: ""
+            });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
     public async getStatmentByYear(req: Request, res: Response) {
         const { year, business, draft } = req.params;
         try {
@@ -285,6 +318,32 @@ class StatementProductorLogic {
         const { id, state } = req.params;
         try {
             await statementDao.changeStateHeader(Boolean(state), parseInt(id));
+            res.status(200).json({ status: true });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
+    public async updateToDraftStatus(req: Request, res: Response) {
+        const { idHeader} = req.params;
+        try {
+            await statementDao.updateToDraftStatus(idHeader);
+            res.status(200).json({ status: true });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
+    public async updateToPendingStatus(req: Request, res: Response) {
+        const { idHeader} = req.params;
+        try {
+            await statementDao.updateToPendingStatus(idHeader);
             res.status(200).json({ status: true });
         } catch (error) {
             console.log(error);
@@ -778,6 +837,23 @@ class StatementProductorLogic {
                 status: false,
                 msg: "Algo salió mal"
             });
+        }
+    }
+    public async downloadOC(req: any, res: Response) {
+        const { id } = req.params;
+        try {
+            const r: any = await statementDao.findOC(id);
+            if (r == false) {
+                return res.status(404).json({ status: false, msg: 'Documento no encontrado', data: {} });
+            }
+            const fileContent = Buffer.from(r, 'binary');
+
+            res.setHeader('Content-Type', "application/pdf");
+            res.setHeader('Content-Disposition', `attachment; filename=OrdenDeCompra.pdf`);
+            res.send(fileContent);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
         }
     }
 }
