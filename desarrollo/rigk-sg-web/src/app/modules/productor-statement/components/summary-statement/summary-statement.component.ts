@@ -1,5 +1,4 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { concatMap } from 'rxjs';
 import { ProductorService } from 'src/app/core/services/productor.service';
@@ -69,12 +68,13 @@ export class SummaryStatementComponent implements AfterViewInit {
     this.generateForm();
   }
 
-  generateForm() {
+  async generateForm() {
     this.detailLastForm = JSON.parse(sessionStorage.getItem("detailLastForm")!);
     this.detailForm = JSON.parse(sessionStorage.getItem('detailForm')!);
     this.hasMV_PapelCarton = JSON.parse(sessionStorage.getItem("hasMV_PapelCarton")!);
     this.hasMV_Metal = JSON.parse(sessionStorage.getItem('hasMV_Metal')!);
     this.hasMV_Plastico = JSON.parse(sessionStorage.getItem('hasMV_Plastico')!);
+    this.id_statement = JSON.parse(sessionStorage.getItem('id_statement')!);
     for (let i = 0; i < this.detailForm.length; i++) {
       const r = this.detailForm[i];
       if (r.recyclability == 3) {
@@ -168,7 +168,7 @@ export class SummaryStatementComponent implements AfterViewInit {
     document.getElementById(`total_ton`)!.innerHTML = this.setFormato(this.sumaAmount);
     document.getElementById(`pom_total`)!.innerHTML = document.getElementById(`total_ton`)!.innerHTML
     const yearRate = parseInt(this.year_statement.toString()) + 1;
-    this.ratesService.getRates(yearRate).pipe(
+    await this.ratesService.getRates(yearRate).pipe(
       concatMap(clp => {
         this.sumaAmount = 0;
         // Procesamiento de los datos de la primera suscripción
@@ -180,6 +180,8 @@ export class SummaryStatementComponent implements AfterViewInit {
           this.dif[i] = clp.data[i].price * this.costoAnual[i] + clp.data[i].price * this.ajuste[i];
         }
         document.getElementById(`anual_amount`)!.innerHTML = this.setFormato(this.sumaUF);
+        sessionStorage.setItem('uf_anual', this.sumaUF.toString());
+
         return this.ratesService.getUF;
       }),
     )
@@ -199,6 +201,11 @@ export class SummaryStatementComponent implements AfterViewInit {
         document.getElementById(`amount_clp`)!.innerHTML = '$' + this.setFormato(parseInt(this.sumaAmount.toFixed(0)));
         document.getElementById(`ajuste_amount`)!.innerHTML = '$' + this.setFormato(parseInt(this.sumaNeto.toFixed(0)));
         document.getElementById(`total_amount_iva`)!.innerHTML = '$' + this.setFormato(parseInt(this.sumaIva.toFixed(0)));
+
+        const amount_uf = JSON.parse(sessionStorage.getItem("uf_anual")!);
+        if (amount_uf !== null) {
+          this.productorService.updateUFStatement(this.id_statement, amount_uf).subscribe();
+        }
       });
   }
 

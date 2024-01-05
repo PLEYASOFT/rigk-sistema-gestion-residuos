@@ -30,6 +30,7 @@ router.post('/restapi', [validarJWT, verifyRolProductor], statementProductorLogi
 router.post('/OC/:id', [validarJWT, verifyRolProductor], statementProductorLogic.uploadOC);
 router.get('/downloadOC/:id', [validarJWT], statementProductorLogic.downloadOC);
 router.put('/:id/state/:state', [validarJWT, verifyRolProductor, verifyParametersUpdateStateForm], statementProductorLogic.updateStateForm);
+router.put('/:id_header/UF/:uf', [validarJWT], statementProductorLogic.updateUFStatement);
 router.put('/validate/:id', [validarJWT, verifyRolProductor], statementProductorLogic.validateStatement);
 router.put('/:id', [validarJWT, verifyRolProductor], statementProductorLogic.updateValuesForm);
 router.put('/updateToDraft/:idHeader', [validarJWT, verifyRolProductor], statementProductorLogic.updateToDraftStatus);

@@ -68,28 +68,31 @@ export class MaintainerProductorComponent implements OnInit {
   loadStatements() {
     this.productorService.getStatements.subscribe(r => {
       if (r.status) {
-        const rStatement = r.data.sort(((a: any, b: any) => b.YEAR_STATEMENT - a.YEAR_STATEMENT));
+        // Primero ordenamos por NAME_BUSINESS alfabéticamente y luego por YEAR_STATEMENT
+        const rStatement = r.data.sort((a: any, b: any) => {
+          if (a.NAME_BUSINESS < b.NAME_BUSINESS) return -1;
+          if (a.NAME_BUSINESS > b.NAME_BUSINESS) return 1;
+          return b.YEAR_STATEMENT - a.YEAR_STATEMENT; // Ordenamos por YEAR_STATEMENT si el nombre es igual
+        });
 
         let businessSet = new Set();
         let yearSet = new Set();
-        (rStatement as any[]).forEach(e => {
+        rStatement.forEach((e: any) => {
           businessSet.add(e.CODE_BUSINESS + ' — ' + e.NAME_BUSINESS);
-          if (this.years.indexOf(e.YEAR_STATEMENT) == -1) {
+          if (!this.years.includes(e.YEAR_STATEMENT)) {
             this.years.push(e.YEAR_STATEMENT);
             yearSet.add(e.YEAR_STATEMENT);
           }
         });
-        r.data = r.data.sort(((a: any, b: any) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime()));
-
         this.business_year = Array.from(yearSet).map(name => ({ label: name, value: name }));
         this.business_name = Array.from(businessSet).map(name => ({ label: name, value: name }));
         this.years.sort((a, b) => b - a);
         this.dbStatements = rStatement;
         this.filtered = r.data;
         this.cant = Math.ceil(this.dbStatements.length / 10);
-        this.db = this.dbStatements.slice(0, 10).sort((a, b) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime());
+        this.db = this.dbStatements.slice(0, 10);
       }
-    })
+    });
   }
 
   updateFiltersBusiness(event: any) {
@@ -111,13 +114,13 @@ export class MaintainerProductorComponent implements OnInit {
 
     else {
       let yearSet = new Set();
-      let aux = this.dbStatements.slice(); 
+      let aux = this.dbStatements.slice();
       this.dbStatements.sort((a, b) => b.YEAR_STATEMENT - a.YEAR_STATEMENT).forEach(e => {
         yearSet.add(e.YEAR_STATEMENT);
       });
 
       this.business_year = Array.from(yearSet).map(name => ({ label: name, value: name }));
-      this.dbStatements = aux; 
+      this.dbStatements = aux;
       return;
 
     }
@@ -318,17 +321,29 @@ export class MaintainerProductorComponent implements OnInit {
   }
   pagTo(i: number) {
     this.pos = i + 1;
-    this.db = this.filtered.slice((i * 10), (i + 1) * 10).sort((a, b) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime());
+    this.db = this.filtered.slice((i * 10), (i + 1) * 10).sort((a: any, b: any) => {
+      if (a.NAME_BUSINESS < b.NAME_BUSINESS) return -1;
+      if (a.NAME_BUSINESS > b.NAME_BUSINESS) return 1;
+      return b.YEAR_STATEMENT - a.YEAR_STATEMENT;
+    })
   }
   next() {
     if (this.pos >= this.cant) return;
     this.pos++;
-    this.db = this.filtered.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime());
+    this.db = this.filtered.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a: any, b: any) => {
+      if (a.NAME_BUSINESS < b.NAME_BUSINESS) return -1;
+      if (a.NAME_BUSINESS > b.NAME_BUSINESS) return 1;
+      return b.YEAR_STATEMENT - a.YEAR_STATEMENT;
+    })
   }
   previus() {
     if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
     this.pos = this.pos - 1;
-    this.db = this.filtered.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime());
+    this.db = this.filtered.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a: any, b: any) => {
+      if (a.NAME_BUSINESS < b.NAME_BUSINESS) return -1;
+      if (a.NAME_BUSINESS > b.NAME_BUSINESS) return 1;
+      return b.YEAR_STATEMENT - a.YEAR_STATEMENT;
+    })
   }
 
   downloadPDF(id: any, year: any) {
@@ -362,7 +377,7 @@ export class MaintainerProductorComponent implements OnInit {
   visiblePageNumbers() {
     const totalPages = this.setArrayFromNumber().length;
     const visiblePages = [];
-  
+
     if (totalPages <= 15) {
       // Si hay 20 o menos páginas, mostrar todas
       for (let i = 0; i < totalPages; i++) {
@@ -372,18 +387,18 @@ export class MaintainerProductorComponent implements OnInit {
       // Calcular las páginas visibles alrededor de la página actual
       let startPage = Math.max(0, this.pos - Math.floor(15 / 2));
       let endPage = Math.min(totalPages - 1, startPage + 14);
-  
+
       // Ajustar el cálculo si estamos cerca del final
       if (endPage - startPage + 1 < 15) {
         endPage = totalPages - 1;
         startPage = Math.max(0, endPage - 14);
       }
-  
+
       for (let i = startPage; i <= endPage; i++) {
         visiblePages.push(i);
       }
     }
-  
+
     return visiblePages;
   }
 

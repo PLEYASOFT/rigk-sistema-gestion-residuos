@@ -43,11 +43,13 @@ export class ProductorService {
     return this.http.get<any>(`${this.url}/statements`);
   }
   getStatementsById(id_header:any) {
-    console.log(id_header)
     return this.http.get<any>(`${this.url}/statements/${id_header}`);
   }
   updateStateStatement(id_header: any, state: any) {
     return this.http.put<any>(`${this.url}/${id_header}/state/${state}`, {});
+  }
+  updateUFStatement(id_header: any, uf: any) {
+    return this.http.put<any>(`${this.url}/${id_header}/UF/${uf}`, {});
   }
   updateValuesStatement(id_header: any, detail: any, header: any) {
     return this.http.put<any>(`${this.url}/${id_header}`, { header, detail });
