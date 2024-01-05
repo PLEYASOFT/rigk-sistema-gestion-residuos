@@ -71,12 +71,12 @@ export class StatementsComponent implements OnInit {
         const rStatement = r.data.sort((a: any, b: any) => {
           if (a.NAME_BUSINESS < b.NAME_BUSINESS) return -1;
           if (a.NAME_BUSINESS > b.NAME_BUSINESS) return 1;
-          return b.YEAR_STATEMENT - a.YEAR_STATEMENT; // Ordenamos por YEAR_STATEMENT si el nombre es igual
+          return b.YEAR_STATEMENT - a.YEAR_STATEMENT;
         });
 
         let businessSet = new Set();
         let yearSet = new Set();
-        rStatement.forEach((e:any) => {
+        rStatement.forEach((e: any) => {
           businessSet.add(e.CODE_BUSINESS + ' — ' + e.NAME_BUSINESS);
           if (!this.years.includes(e.YEAR_STATEMENT)) {
             this.years.push(e.YEAR_STATEMENT);
@@ -321,17 +321,29 @@ export class StatementsComponent implements OnInit {
   }
   pagTo(i: number) {
     this.pos = i + 1;
-    this.db = this.filtered.slice((i * 10), (i + 1) * 10).sort((a, b) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime());
+    this.db = this.filtered.slice((i * 10), (i + 1) * 10).sort((a: any, b: any) => {
+      if (a.NAME_BUSINESS < b.NAME_BUSINESS) return -1;
+      if (a.NAME_BUSINESS > b.NAME_BUSINESS) return 1;
+      return b.YEAR_STATEMENT - a.YEAR_STATEMENT;
+    })
   }
   next() {
     if (this.pos >= this.cant) return;
     this.pos++;
-    this.db = this.filtered.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime());
+    this.db = this.filtered.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a: any, b: any) => {
+      if (a.NAME_BUSINESS < b.NAME_BUSINESS) return -1;
+      if (a.NAME_BUSINESS > b.NAME_BUSINESS) return 1;
+      return b.YEAR_STATEMENT - a.YEAR_STATEMENT;
+    })
   }
   previus() {
     if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
     this.pos = this.pos - 1;
-    this.db = this.filtered.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(b.UPDATED_AT).getTime() - new Date(a.UPDATED_AT).getTime());
+    this.db = this.filtered.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a: any, b: any) => {
+      if (a.NAME_BUSINESS < b.NAME_BUSINESS) return -1;
+      if (a.NAME_BUSINESS > b.NAME_BUSINESS) return 1;
+      return b.YEAR_STATEMENT - a.YEAR_STATEMENT;
+    })
   }
 
   downloadPDF(id: any, year: any) {

@@ -124,22 +124,34 @@ export class SendStatementComponent implements OnInit, OnDestroy {
             this.isValidated = true;
             this.isButtonVisible = false;
           }
+          let netoAmount = this.parseMoney_two(this.resume?.neto);
+          const amount_uf = (parseFloat(netoAmount.toString()) / this.uf).toFixed(2);
+          const id_statement = sessionStorage.getItem('id_statement');
+          if (amount_uf !== null && id_statement) {
+            this.productorService.updateUFStatement(id_statement, amount_uf).subscribe();
+          }
         },
         error: r => {
           Swal.close();
-
           Swal.fire({
             icon: 'error',
             text: r.msg,
             title: '¡Ups!'
-          }).then(btn=>{
-            if(btn.isConfirmed) {
+          }).then(btn => {
+            if (btn.isConfirmed) {
               this.router.navigate(['/productor']);
             }
           });
         }
       });
     });
+  }
+
+  parseMoney_two(value: string) {
+    if (!value) {
+      return 0;
+    }
+    return parseInt(value.replace(/\D/g, ''), 10);
   }
 
   async validate() {
@@ -151,7 +163,7 @@ export class SendStatementComponent implements OnInit, OnDestroy {
       confirmButtonText: 'Aceptar',
       cancelButtonText: 'Cancelar',
       reverseButtons: true
-    })    
+    })
 
     if (result.isConfirmed) {
       const id_statement = sessionStorage.getItem('id_statement');

@@ -203,7 +203,6 @@ export class SummaryStatementComponent implements AfterViewInit {
         document.getElementById(`total_amount_iva`)!.innerHTML = '$' + this.setFormato(parseInt(this.sumaIva.toFixed(0)));
 
         const amount_uf = JSON.parse(sessionStorage.getItem("uf_anual")!);
-        // Asegúrate de que amount_uf no es null antes de llamar al servicio
         if (amount_uf !== null) {
           this.productorService.updateUFStatement(this.id_statement, amount_uf).subscribe();
         }

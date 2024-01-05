@@ -43,7 +43,6 @@ export class ProductorService {
     return this.http.get<any>(`${this.url}/statements`);
   }
   getStatementsById(id_header:any) {
-    console.log(id_header)
     return this.http.get<any>(`${this.url}/statements/${id_header}`);
   }
   updateStateStatement(id_header: any, state: any) {

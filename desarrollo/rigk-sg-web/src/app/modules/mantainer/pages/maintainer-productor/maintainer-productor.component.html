@@ -71,7 +71,7 @@
                         <td>{{s.NAME_BUSINESS}}</td>
                         <td>{{s.YEAR_STATEMENT}}</td>
                         <td>{{s.STATE == 1 ? 'Enviada': s.STATE == 0 ? 'Borrador':'Pendiente'}}</td>
-                        <td>{{s.AMOUNT.toFixed(2).replace(".",",")}}</td>
+                        <td>{{ s.AMOUNT_UF !== null ? (s.AMOUNT_UF.toFixed(2).replace(".", ",")) : '-' }}</td>
                         <td>{{(s.UPDATED_AT) | date: 'dd-MM-yyyy H:mm:ss'}}</td>
                         <td class="text-center text-nowrap">
                             <button class="btn" style="border-color: rgb(224, 224, 224);" (click)="navigateToForm(s.ID)">Ver detalle
