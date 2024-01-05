@@ -27,6 +27,7 @@ router.post('/saveFile', [validarJWT], statementProductorLogic.saveFile);
 router.post('/restapi', [validarJWT, verifyRolProductor], statementProductorLogic.respApiSaveStatement);
 router.post('/OC/:id', [validarJWT, verifyRolProductor], statementProductorLogic.uploadOC);
 router.put('/:id/state/:state', [validarJWT, verifyRolProductor, verifyParametersUpdateStateForm], statementProductorLogic.updateStateForm);
+router.put('/:id_header/UF/:uf', [validarJWT], statementProductorLogic.updateUFStatement);
 router.put('/validate/:id', [validarJWT, verifyRolProductor], statementProductorLogic.validateStatement);
 router.put('/:id', [validarJWT, verifyRolProductor], statementProductorLogic.updateValuesForm);
 router.delete('/dj/delete/:idEmpresa/:idUsuario', [validarJWT], statementProductorLogic.deleteDJ);

@@ -63,6 +63,7 @@ export class FormComponent implements OnInit, OnDestroy {
     sessionStorage.removeItem('hasMV_PapelCarton');
     sessionStorage.removeItem('hasMV_Metal');
     sessionStorage.removeItem('hasMV_Plastico');
+    sessionStorage.removeItem('uf_anual');
     if (this.sessionCheck !== null) {
       this.sessionCheck.unsubscribe();
     }

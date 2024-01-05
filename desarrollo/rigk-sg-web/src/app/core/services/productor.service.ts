@@ -42,6 +42,9 @@ export class ProductorService {
   updateStateStatement(id_header: any, state: any) {
     return this.http.put<any>(`${this.url}/${id_header}/state/${state}`, {});
   }
+  updateUFStatement(id_header: any, uf: any) {
+    return this.http.put<any>(`${this.url}/${id_header}/UF/${uf}`, {});
+  }
   updateValuesStatement(id_header: any, detail: any, header: any) {
     return this.http.put<any>(`${this.url}/${id_header}`, { header, detail });
   }
