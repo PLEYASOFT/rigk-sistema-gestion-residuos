@@ -3,14 +3,14 @@
     <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Consulta de Declaración</li>
+            <li class="breadcrumb-item active" aria-current="page">Mantenedor Declaraciones Productores</li>
         </ol>
     </nav>
     <!-- fin breadcrumbs -->
 
     <!-- inicio Registro de declaración -->
     <section class="declaracion">
-        <h1>Consulta Declaraciones</h1>
+        <h1>Mantenedor Declaraciones Productores</h1>
         <div class="d-sm-flex justify-content-between mb-3 mb-md-0">
         </div>
 
@@ -62,7 +62,7 @@
                         <th>Estado</th>
                         <th>Monto Total (UF)</th>
                         <th>Fecha Envío</th>
-                        <th class="text-uppercase text-center text-nowrap">Acción</th>
+                        <th class="text-center text-nowrap">Detalle</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -74,17 +74,9 @@
                         <td>{{s.AMOUNT.toFixed(2).replace(".",",")}}</td>
                         <td>{{(s.UPDATED_AT) | date: 'dd-MM-yyyy H:mm:ss'}}</td>
                         <td class="text-center text-nowrap">
-                            <button class="btn" (click)="downloadPDF(s.CODE_BUSINESS, s.YEAR_STATEMENT)"
-                                *ngIf="s.STATE == 1 "><i class="fa fa-file-pdf-o fa-fw fa-lg color-blue"
-                                    aria-hidden="true"></i></button>
-                            <button class="btn" *ngIf="s.STATE == 0"
-                                (click)="navigateToForm(s.CODE_BUSINESS, s.YEAR_STATEMENT, s.ID, s.STATE)">
-                                <i class="fa fa-file-text-o fa-fw fa-lg" style="color: red;" aria-hidden="true"></i>
-                            </button>
-                            <button class="btn" *ngIf="s.STATE == 2"
-                                (click)="navigateToForm(s.CODE_BUSINESS, s.YEAR_STATEMENT, s.ID, s.STATE)">
-                                <i class="fa fa-file-text-o fa-fw fa-lg" style="color: #DEC300;" aria-hidden="true"></i>
-                            </button>
+                            <button class="btn" style="border-color: rgb(224, 224, 224);" (click)="navigateToForm(s.ID)">Ver detalle
+                                <i class="fa fa-search fa-fw fa-lg" style="color: #4f9bff; font-size: medium;" aria-hidden="true"></i>
+                            </button>                            
                         </td>
                     </tr>
                 </tbody>

@@ -1,0 +1,15 @@
+:host {
+    width: 50% !important;
+    padding: 1%;
+}
+
+.file-link {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.disabled-link {
+    pointer-events: none;
+    color: #ccc
+}

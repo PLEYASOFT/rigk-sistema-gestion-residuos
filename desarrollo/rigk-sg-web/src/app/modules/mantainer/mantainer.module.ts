@@ -22,6 +22,9 @@ import { DashboardCiGestoresComponent } from './pages/dashboard-ci-gestores/dash
 import { MaintainerDeclarationsCiComponent } from './pages/maintainer-declarations-ci/maintainer-declarations-ci.component';
 import { VisualizarMvComponent } from './pages/visualizar-mv/visualizar-mv.component';
 import { VisualizarMvDetailComponent } from './pages/visualizar-mv-detail/visualizar-mv-detail.component';
+import { MaintainerProductorComponent } from './pages/maintainer-productor/maintainer-productor.component';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { MaintainerProductorDetailComponent } from './pages/maintainer-productor-detail/maintainer-productor-detail.component';
 
 
 @NgModule({
@@ -41,7 +44,9 @@ import { VisualizarMvDetailComponent } from './pages/visualizar-mv-detail/visual
     DashboardCiGestoresComponent,
     MaintainerDeclarationsCiComponent,
     VisualizarMvComponent,
-    VisualizarMvDetailComponent
+    VisualizarMvDetailComponent,
+    MaintainerProductorComponent,
+    MaintainerProductorDetailComponent
   ],
   imports: [
     CommonModule,
@@ -50,7 +55,8 @@ import { VisualizarMvDetailComponent } from './pages/visualizar-mv-detail/visual
     ReactiveFormsModule,
     MultiSelectModule,
     SharedModule,
-    NgxChartsModule
+    NgxChartsModule,
+    AutoCompleteModule,
   ]
 })
 export class MantainerModule { }

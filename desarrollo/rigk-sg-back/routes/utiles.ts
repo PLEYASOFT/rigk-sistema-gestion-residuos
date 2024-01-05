@@ -6,5 +6,6 @@ router.get('/download/pdf', [], UtilesLogic.downloadPdf);
 router.post('/verifyUser', [validarJWT], UtilesLogic.verifyUser);
 router.post('/upload/pdf/:idEmpresa/:idUsuario', [validarJWT], UtilesLogic.saveFile);
 router.get('/download/:idEmpresa/:idUsuario', [validarJWT], UtilesLogic.download);
+router.get('/downloadMV/:id_attached', [validarJWT], UtilesLogic.downloadMV);
 
 export default router;
