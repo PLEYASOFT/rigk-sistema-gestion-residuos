@@ -353,6 +353,20 @@ class StatementProductorLogic {
             });
         }
     }
+    public async updateUFStatement(req: Request, res: Response) {
+        const { id_header, uf } = req.params;
+        console.log(id_header,uf)
+        try {
+            await statementDao.changeUFHeader(uf, parseInt(id_header));
+            res.status(200).json({ status: true });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                msg: "Algo salió mal"
+            });
+        }
+    }
     public async updateValuesForm(req: Request | any, res: Response) {
         const { id } = req.params;
         const { detail } = req.body;
