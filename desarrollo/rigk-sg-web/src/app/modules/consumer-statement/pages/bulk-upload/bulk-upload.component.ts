@@ -426,13 +426,12 @@ export class BulkUploadComponent implements OnInit {
           });
           return;
         }
-        Swal.fire({
-          icon: 'success',
-          text: 'Se ha subido el archivo Excel correctamente y los datos se han guardado en la base de datos'
-        });
       });
     }
-    Swal.close();
+    Swal.fire({
+      icon: 'success',
+      text: 'Se ha subido el archivo Excel correctamente y los datos se han guardado en la base de datos'
+    });
   }
 
   isValidDate(dateString: string): { valid: boolean; message: string } {
