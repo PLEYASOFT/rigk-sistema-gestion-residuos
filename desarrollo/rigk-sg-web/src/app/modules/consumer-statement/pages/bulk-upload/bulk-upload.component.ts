@@ -122,6 +122,12 @@ export class BulkUploadComponent implements OnInit {
   }
 
   async processData(data: any[]) {
+    Swal.fire({
+      title: 'Espere',
+      text: 'Se están cargando los datos del archivo. Por favor, espere.',
+      showConfirmButton: false
+    });
+    Swal.showLoading();
     //Validación archivo
     if (data.length == 0) {
       Swal.fire({
@@ -426,6 +432,7 @@ export class BulkUploadComponent implements OnInit {
         });
       });
     }
+    Swal.close();
   }
 
   isValidDate(dateString: string): { valid: boolean; message: string } {
