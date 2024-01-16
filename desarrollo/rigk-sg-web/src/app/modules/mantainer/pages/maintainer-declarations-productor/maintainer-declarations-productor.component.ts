@@ -623,4 +623,25 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
       this.valores[29] = this.valores[29] + parseFloat(this.TotalBruto_IVA);
     }
   }
+
+  onChangeYear(): void {
+    if (this.selectedYear && this.selectedYear !== -1) {
+      const year = parseInt(this.selectedYear.toString()) + 1;
+      this.ratesService.getRates(year).subscribe({
+        next: r => {
+          this.rates = r.data;
+        },
+        error: error => {
+          Swal.close();
+          Swal.fire({
+            title: '¡Ups!',
+            icon: 'error',
+            text: 'No se logró obtener el valor de la UF',
+            showConfirmButton: true
+          });
+        }
+      });
+    }
+  }
+  
 }
