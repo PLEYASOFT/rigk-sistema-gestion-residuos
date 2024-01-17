@@ -92,6 +92,9 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
   EyE_NR: any = 0;
   EyE_Ret: any = 0;
   Total_EyE: any = 0;
+  EyE_UF_Papel: any = 0;
+  EyE_UF_Metal: any = 0;
+  EyE_UF_Plastico: any = 0;
 
   PapelCarton_Rec_Uf: any = 0;
   Metal_Rec_Uf: any = 0;
@@ -167,8 +170,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
   listStatements: any[] = [];
   filteredListBusiness: any[] = [];
   //Automatizado para años posteriores
-  constructor(private businesService: BusinessService,
-    public productorService: ProductorService,
+  constructor(public productorService: ProductorService,
     public ls: LogsService,
     public ratesService: RatesTsService) {
     const currentYear = new Date().getFullYear();
@@ -223,7 +225,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
         this.filteredListBusiness = this.listBusiness.filter(business => {
           return !this.listStatements.some(statement => statement.ID_BUSINESS === business.ID);
         });
-        
+
         const getDetailsAndValues = async (statement: { ID_HEADER: number; CODE_BUSINESS: any; CREATED_BY: number; ID_BUSINESS: number }) => {
           const f = allStatements.filter(r => r.ID_HEADER == statement.ID_HEADER);
           const lt = allStatements.filter(r => r.ID_BUSINESS == statement.ID_BUSINESS && r.YEAR_STATEMENT == y - 1 && r.STATE == 1);
@@ -246,12 +248,12 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
             this.ratesUF = await this.ratesService.getUfDate(fechaFormateada).toPromise();
             this.allUF.push({ date: fechaFormateada, data: this.ratesUF.data });
           }
-          this.calculoAjustes(fechaFormateada, statement.STATE);
+          this.calculoAjustes(fechaFormateada, statement.STATE, statement.HAS_PAPEL, statement.HAS_METAL, statement.HAS_PLASTICO);
           const fecha = statement.UPDATED_AT;
           const fechaFormateada__excel = new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-          
+
           this.datos.push({
-            'ID empresa': statement.CODE_BUSINESS, 'Rut Empresa':statement.VAT, 'Nombre empresa': statement.NAME, 'Año declaración': y.toString(), 'Estado declaración': statement.STATE == 1 ? 'Enviada' : statement.STATE == 2 ? 'Pendiente' : 'Borrador',
+            'ID empresa': statement.CODE_BUSINESS, 'Rut Empresa': statement.VAT, 'Nombre empresa': statement.NAME, 'Año declaración': y.toString(), 'Estado declaración': statement.STATE == 1 ? 'Enviada' : statement.STATE == 2 ? 'Pendiente' : 'Borrador',
             'Fecha de envío': fechaFormateada__excel, 'Usuario': user.FIRST_NAME + ' ' + user.LAST_NAME, 'R. Papel/cartón NP': this.setFormato(this.R_PapelCarton_NP),
             'R. Papel/cartón P': this.setFormato(this.R_PapelCarton_P), 'R. Papel/cartón Sec': this.setFormato(this.R_PapelCarton_Sec), 'R. Papel/cartón Ter': this.setFormato(this.R_PapelCarton_Ter), 'R. Papel/cartón TOTAL': this.setFormato(this.R_PapelCarton_Total), 'R. Metal NP': this.setFormato(this.R_Metal_NP), 'R. Metal P': this.setFormato(this.R_Metal_P), 'R. Metal Sec': this.setFormato(this.R_Metal_Sec), 'R. Metal Ter': this.setFormato(this.R_Metal_Ter), 'R. Metal TOTAL': this.setFormato(this.R_Metal_Total),
             'R. Plástico NP': this.setFormato(this.R_Plastico_NP), 'R. Plástico P': this.setFormato(this.R_Plastico_P), 'R. Plástico Sec': this.setFormato(this.R_Plastico_Sec), 'R. Plástico Ter': this.setFormato(this.R_Plastico_Ter), 'R. Plástico TOTAL': this.setFormato(this.R_Plastico_Total), 'R. Madera NP': this.setFormato(this.R_Madera_NP), 'R. Madera P': this.setFormato(this.R_Madera_P), 'R. Madera Sec': this.setFormato(this.R_Madera_Sec), 'R. Madera Ter': this.setFormato(this.R_Madera_Ter), 'R. Madera TOTAL': this.setFormato(this.R_Madera_Total),
@@ -273,17 +275,17 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
 
         for (let i = 0; i < this.filteredListBusiness.length; i++) {
           this.datos.push({
-            'ID empresa': this.filteredListBusiness[i].CODE_BUSINESS, 'Rut Empresa':this.filteredListBusiness[i].VAT, 'Nombre empresa': this.filteredListBusiness[i].NAME, 'Año declaración': '', 'Estado declaración': 'NA',
+            'ID empresa': this.filteredListBusiness[i].CODE_BUSINESS, 'Rut Empresa': this.filteredListBusiness[i].VAT, 'Nombre empresa': this.filteredListBusiness[i].NAME, 'Año declaración': '', 'Estado declaración': 'NA',
             'Fecha de envío': 'NA', 'Usuario': 'NA'
           });
         }
 
         let claves = [
-          'Total EyE Productores (Reciclables, No Reciclables, Retornables / Reutilizables)','Total EyE Puestos en el mercado (Reciclables, No Reciclables)','Papel / cartón TOTAL  (Reciclables, No Reciclables, Retornables / Reutilizables)','Metal TOTAL  (Reciclables, No Reciclables, Retornables / Reutilizables)','Plástico TOTAL  (Reciclables, No Reciclables, Retornables / Reutilizables)','Madera TOTAL  (Reciclables, No Reciclables, Retornables / Reutilizables)','Papel /  cartón TOTAL  (Reciclables, No Reciclables)',
-          'Metal  TOTAL (Reciclables, No Reciclables)','Plástico  TOTAL (Reciclables, No Reciclables)','Madera  TOTAL (Reciclables, No Reciclables)','Compuestos TOTAL (No Reciclables)','Papel /   cartón TOTAL (Reciclables)','Metal   TOTAL (Reciclables)','Plástico   TOTAL (Reciclables)','Total No Reciclable (No Reciclables)',
-          'Total Primarios No Peligrosos (Reciclables, No Reciclables)','Total Primarios Peligrosos (Reciclables, No Reciclables)','Total Secundarios (Reciclables, No Reciclables)','Total Terciarios (Reciclables, No Reciclables)','Papel / cartón UF TOTAL (Reciclables)',
-          'Metal UF TOTAL (Reciclables)','Plastico UF TOTAL (Reciclables)','NR.Total UF (No Reciclables)','Total UF (Reciclables, No Reciclables)','Papel / cartón Neto CLP (Reciclables)','Metal  Neto CLP (Reciclables)','Plastico Neto CLP (Reciclables)',
-          'NR Neto CLP (No Reciclables)','Total Neto(CLP) (Reciclables, No Reciclables)','TOTAL NETO + IVA (Reciclables, No Reciclables)'
+          'Total EyE Productores (Reciclables, No Reciclables, Retornables / Reutilizables)', 'Total EyE Puestos en el mercado (Reciclables, No Reciclables)', 'Papel / cartón TOTAL  (Reciclables, No Reciclables, Retornables / Reutilizables)', 'Metal TOTAL  (Reciclables, No Reciclables, Retornables / Reutilizables)', 'Plástico TOTAL  (Reciclables, No Reciclables, Retornables / Reutilizables)', 'Madera TOTAL  (Reciclables, No Reciclables, Retornables / Reutilizables)', 'Papel /  cartón TOTAL  (Reciclables, No Reciclables)',
+          'Metal  TOTAL (Reciclables, No Reciclables)', 'Plástico  TOTAL (Reciclables, No Reciclables)', 'Madera  TOTAL (Reciclables, No Reciclables)', 'Compuestos TOTAL (No Reciclables)', 'Papel /   cartón TOTAL (Reciclables)', 'Metal   TOTAL (Reciclables)', 'Plástico   TOTAL (Reciclables)', 'Total No Reciclable (No Reciclables)',
+          'Total Primarios No Peligrosos (Reciclables, No Reciclables)', 'Total Primarios Peligrosos (Reciclables, No Reciclables)', 'Total Secundarios (Reciclables, No Reciclables)', 'Total Terciarios (Reciclables, No Reciclables)', 'Papel / cartón UF TOTAL (Reciclables)',
+          'Metal UF TOTAL (Reciclables)', 'Plastico UF TOTAL (Reciclables)', 'NR.Total UF (No Reciclables)', 'Total UF (Reciclables, No Reciclables)', 'Papel / cartón Neto CLP (Reciclables)', 'Metal  Neto CLP (Reciclables)', 'Plastico Neto CLP (Reciclables)',
+          'NR Neto CLP (No Reciclables)', 'Total Neto(CLP) (Reciclables, No Reciclables)', 'TOTAL NETO + IVA (Reciclables, No Reciclables)'
         ];
 
         for (let i = 0; i < claves.length; i++) {
@@ -369,45 +371,44 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     const decimal = Math.round(numero * 100) / 100;
     const [entero, decimales] = decimal.toString().split('.');
     const enteroConPuntos = entero.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    
+
     return decimales && decimales !== '0' ? `${enteroConPuntos},${decimales.padEnd(2, '0')}` : enteroConPuntos;
   }
   setDeclaration(datos: any) {
-    const { RECYCLABILITY, TYPE_RESIDUE, HAZARD, PRECEDENCE, VALUE, AMOUNT } = datos;
-
+    const { RECYCLABILITY, TYPE_RESIDUE, HAZARD, PRECEDENCE, VALUE, AMOUNT} = datos;
     if (RECYCLABILITY == 1) {
       TYPE_RESIDUE == 1
         ? HAZARD == 1
           ? PRECEDENCE == 1
-            ? (this.R_PapelCarton_P = VALUE)
+            ? (this.R_PapelCarton_P += VALUE)
             : PRECEDENCE == 2
-              ? (this.R_PapelCarton_Sec = VALUE)
-              : (this.R_PapelCarton_Ter = VALUE)
-          : (this.R_PapelCarton_NP = VALUE)
+              ? (this.R_PapelCarton_Sec += VALUE)
+              : (this.R_PapelCarton_Ter += VALUE)
+          : (this.R_PapelCarton_NP += VALUE)
         : TYPE_RESIDUE == 2
           ? HAZARD == 1
             ? PRECEDENCE == 1
-              ? (this.R_Metal_P = VALUE)
+              ? (this.R_Metal_P += VALUE)
               : PRECEDENCE == 2
-                ? (this.R_Metal_Sec = VALUE)
-                : (this.R_Metal_Ter = VALUE)
-            : (this.R_Metal_NP = VALUE)
+                ? (this.R_Metal_Sec += VALUE)
+                : (this.R_Metal_Ter += VALUE)
+            : (this.R_Metal_NP += VALUE)
           : TYPE_RESIDUE == 3
             ? HAZARD == 1
               ? PRECEDENCE == 1
-                ? (this.R_Plastico_P = VALUE)
+                ? (this.R_Plastico_P += VALUE)
                 : PRECEDENCE == 2
-                  ? (this.R_Plastico_Sec = VALUE)
-                  : (this.R_Plastico_Ter = VALUE)
-              : (this.R_Plastico_NP = VALUE)
+                  ? (this.R_Plastico_Sec += VALUE)
+                  : (this.R_Plastico_Ter += VALUE)
+              : (this.R_Plastico_NP += VALUE)
             : TYPE_RESIDUE == 4 &&
             (HAZARD == 1
               ? PRECEDENCE == 1
-                ? (this.R_Madera_P = VALUE)
+                ? (this.R_Madera_P += VALUE)
                 : PRECEDENCE == 2
-                  ? (this.R_Madera_Sec = VALUE)
-                  : (this.R_Madera_Ter = VALUE)
-              : (this.R_Madera_NP = VALUE));
+                  ? (this.R_Madera_Sec += VALUE)
+                  : (this.R_Madera_Ter += VALUE)
+              : (this.R_Madera_NP += VALUE));
 
       this.R_Total_Ton += VALUE;
       if (TYPE_RESIDUE != 4) {
@@ -417,83 +418,83 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
       TYPE_RESIDUE == 1
         ? HAZARD == 1
           ? PRECEDENCE == 1
-            ? (this.NR_PapelCarton_P = VALUE)
+            ? (this.NR_PapelCarton_P += VALUE)
             : PRECEDENCE == 2
-              ? (this.NR_PapelCarton_Sec = VALUE)
-              : (this.NR_PapelCarton_Ter = VALUE)
-          : (this.NR_PapelCarton_NP = VALUE)
+              ? (this.NR_PapelCarton_Sec += VALUE)
+              : (this.NR_PapelCarton_Ter += VALUE)
+          : (this.NR_PapelCarton_NP += VALUE)
         : TYPE_RESIDUE == 2
           ? HAZARD == 1
             ? PRECEDENCE == 1
-              ? (this.NR_Metal_P = VALUE)
+              ? (this.NR_Metal_P += VALUE)
               : PRECEDENCE == 2
-                ? (this.NR_Metal_Sec = VALUE)
-                : (this.NR_Metal_Ter = VALUE)
-            : (this.NR_Metal_NP = VALUE)
+                ? (this.NR_Metal_Sec += VALUE)
+                : (this.NR_Metal_Ter += VALUE)
+            : (this.NR_Metal_NP += VALUE)
           : TYPE_RESIDUE == 3
             ? HAZARD == 1
               ? PRECEDENCE == 1
-                ? (this.NR_Plastico_P = VALUE)
+                ? (this.NR_Plastico_P += VALUE)
                 : PRECEDENCE == 2
-                  ? (this.NR_Plastico_Sec = VALUE)
-                  : (this.NR_Plastico_Ter = VALUE)
-              : (this.NR_Plastico_NP = VALUE)
+                  ? (this.NR_Plastico_Sec += VALUE)
+                  : (this.NR_Plastico_Ter += VALUE)
+              : (this.NR_Plastico_NP += VALUE)
             : TYPE_RESIDUE == 4
               ? HAZARD == 1
                 ? PRECEDENCE == 1
-                  ? (this.NR_Madera_P = VALUE)
+                  ? (this.NR_Madera_P += VALUE)
                   : PRECEDENCE == 2
-                    ? (this.NR_Madera_Sec = VALUE)
-                    : (this.NR_Madera_Ter = VALUE)
-                : (this.NR_Madera_NP = VALUE)
+                    ? (this.NR_Madera_Sec += VALUE)
+                    : (this.NR_Madera_Ter += VALUE)
+                : (this.NR_Madera_NP += VALUE)
               : TYPE_RESIDUE == 5 &&
               (HAZARD == 1
                 ? PRECEDENCE == 1
-                  ? (this.NR_Compuestos_P = VALUE)
+                  ? (this.NR_Compuestos_P += VALUE)
                   : PRECEDENCE == 2
-                    ? (this.NR_Compuestos_Sec = VALUE)
-                    : (this.NR_Compuestos_Ter = VALUE)
-                : (this.NR_Compuestos_NP = VALUE));
+                    ? (this.NR_Compuestos_Sec += VALUE)
+                    : (this.NR_Compuestos_Ter += VALUE)
+                : (this.NR_Compuestos_NP += VALUE));
 
       this.NR_Total_Ton += VALUE;
       if (TYPE_RESIDUE != 4) {
         this.NR_Total_UF += AMOUNT;
       }
     } else {
-      TYPE_RESIDUE == 1
-        ? HAZARD == 1
-          ? PRECEDENCE == 1
-            ? (this.RET_PapelCarton_P = VALUE)
-            : PRECEDENCE == 2
-              ? (this.RET_PapelCarton_Sec = VALUE)
-              : (this.RET_PapelCarton_Ter = VALUE)
-          : (this.RET_PapelCarton_NP = VALUE)
-        : TYPE_RESIDUE == 2
+        TYPE_RESIDUE == 1
           ? HAZARD == 1
             ? PRECEDENCE == 1
-              ? (this.RET_Metal_P = VALUE)
+              ? (this.RET_PapelCarton_P += VALUE)
               : PRECEDENCE == 2
-                ? (this.RET_Metal_Sec = VALUE)
-                : (this.RET_Metal_Ter = VALUE)
-            : (this.RET_Metal_NP = VALUE)
-          : TYPE_RESIDUE == 3
+                ? (this.RET_PapelCarton_Sec += VALUE)
+                : (this.RET_PapelCarton_Ter += VALUE)
+            : (this.RET_PapelCarton_NP += VALUE)
+          : TYPE_RESIDUE == 2
             ? HAZARD == 1
               ? PRECEDENCE == 1
-                ? (this.RET_Plastico_P = VALUE)
+                ? (this.RET_Metal_P += VALUE)
                 : PRECEDENCE == 2
-                  ? (this.RET_Plastico_Sec = VALUE)
-                  : (this.RET_Plastico_Ter = VALUE)
-              : (this.RET_Plastico_NP = VALUE)
-            : TYPE_RESIDUE == 4 &&
-            (HAZARD == 1
-              ? PRECEDENCE == 1
-                ? (this.RET_Madera_P = VALUE)
-                : PRECEDENCE == 2
-                  ? (this.RET_Madera_Sec = VALUE)
-                  : (this.RET_Madera_Ter = VALUE)
-              : (this.RET_Madera_NP = VALUE));
-      this.RET_Total_Ton += VALUE;
-      this.RET_Total_UF += AMOUNT;
+                  ? (this.RET_Metal_Sec += VALUE)
+                  : (this.RET_Metal_Ter += VALUE)
+              : (this.RET_Metal_NP += VALUE)
+            : TYPE_RESIDUE == 3
+              ? HAZARD == 1
+                ? PRECEDENCE == 1
+                  ? (this.RET_Plastico_P += VALUE)
+                  : PRECEDENCE == 2
+                    ? (this.RET_Plastico_Sec += VALUE)
+                    : (this.RET_Plastico_Ter += VALUE)
+                : (this.RET_Plastico_NP += VALUE)
+              : TYPE_RESIDUE == 4 &&
+              (HAZARD == 1
+                ? PRECEDENCE == 1
+                  ? (this.RET_Madera_P += VALUE)
+                  : PRECEDENCE == 2
+                    ? (this.RET_Madera_Sec += VALUE)
+                    : (this.RET_Madera_Ter += VALUE)
+                : (this.RET_Madera_NP += VALUE));
+        this.RET_Total_Ton += VALUE;
+        this.RET_Total_UF += AMOUNT;
     }
   }
 
@@ -526,7 +527,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     this.RET_Madera_Total = 0; this.EyE_PapelCarton_Rec = 0; this.EyE_Metal_Rec = 0;
     this.EyE_Plastico_Rec = 0; this.EyE_NR = 0; this.EyE_Ret = 0; this.PapelCarton_Rec_Uf = 0;
     this.Metal_Rec_Uf = 0; this.Plastico_Rec_Uf = 0; this.NR_Uf = 0;
-    this.Total_Uf = 0; 
+    this.Total_Uf = 0; this.EyE_UF_Papel = 0; this.EyE_UF_Metal = 0; this.EyE_UF_Plastico = 0;
 
     this.PapelCarton_Neto = 0; this.Metal_Neto = 0;
     this.Plastico_Neto = 0; this.NR_Neto = 0; this.PapelCarton_Bruto = 0;
@@ -539,7 +540,7 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     this.totalIVA = 0;
   }
 
-  calculoAjustes(year: string = "", state: number) {
+  calculoAjustes(year: string = "", state: number, has_papel: number, has_metal: number, has_plastico: number) {
     if (year != "") {
       this.ratesUF = this.allUF.find(r => r.date == year);
     }
@@ -565,10 +566,18 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
     this.EyE_Ret = this.RET_Total_Ton;
 
     this.Total_EyE = this.EyE_PapelCarton_Rec + this.EyE_Metal_Rec + this.EyE_Plastico_Rec + this.EyE_NR;
-
-   this.PapelCarton_Rec_Uf = this.EyE_PapelCarton_Rec * this.rates[0].price;
-    this.Metal_Rec_Uf = this.EyE_Metal_Rec * this.rates[1].price;
-    this.Plastico_Rec_Uf = this.EyE_Plastico_Rec * this.rates[2].price;
+    if (!has_papel) {
+      this.EyE_UF_Papel = this.EyE_PapelCarton_Rec + this.RET_PapelCarton_P + this.RET_PapelCarton_Sec + this.RET_PapelCarton_Ter + this.RET_PapelCarton_NP;
+    }
+    if (!has_metal) {
+      this.EyE_UF_Metal = this.EyE_Metal_Rec + this.RET_Metal_P + this.RET_Metal_Sec + this.RET_Metal_Ter + this.RET_Metal_NP;
+    }
+    if (!has_plastico) {
+      this.EyE_UF_Plastico = this.EyE_Plastico_Rec + this.RET_Plastico_P + this.RET_Plastico_Sec + this.RET_Plastico_Ter + this.RET_Plastico_NP;
+    }
+    this.PapelCarton_Rec_Uf = this.EyE_UF_Papel * this.rates[0].price;
+    this.Metal_Rec_Uf = this.EyE_UF_Metal * this.rates[1].price;
+    this.Plastico_Rec_Uf = this.EyE_UF_Plastico * this.rates[2].price;
     this.NR_Uf = this.EyE_NR * this.rates[3].price;
     this.Total_Uf = this.PapelCarton_Rec_Uf + this.Metal_Rec_Uf + this.Plastico_Rec_Uf + this.NR_Uf;
 
@@ -601,11 +610,11 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
       this.valores[7] = this.valores[7] + parseFloat(this.R_Metal_Total) + parseFloat(this.NR_Metal_Total);
       this.valores[8] = this.valores[8] + parseFloat(this.R_Plastico_Total) + parseFloat(this.NR_Plastico_Total);
       this.valores[9] = this.valores[9] + parseFloat(this.R_Madera_Total) + parseFloat(this.NR_Madera_Total);
-      this.valores[10] = this.valores[10] +  parseFloat(this.NR_Compuestos_Total);
+      this.valores[10] = this.valores[10] + parseFloat(this.NR_Compuestos_Total);
       this.valores[11] = this.valores[11] + parseFloat(this.R_PapelCarton_Total);
       this.valores[12] = this.valores[12] + parseFloat(this.R_Metal_Total);
       this.valores[13] = this.valores[13] + parseFloat(this.R_Plastico_Total);
-      this.valores[14] = this.valores[14] +  parseFloat(this.NR_PapelCarton_Total)+ parseFloat(this.NR_Metal_Total )+ parseFloat(this.NR_Plastico_Total)+ parseFloat(this.NR_Compuestos_Total);
+      this.valores[14] = this.valores[14] + parseFloat(this.NR_PapelCarton_Total) + parseFloat(this.NR_Metal_Total) + parseFloat(this.NR_Plastico_Total) + parseFloat(this.NR_Compuestos_Total);
       this.valores[15] = this.valores[15] + parseFloat(this.R_PapelCarton_NP) + parseFloat(this.R_Metal_NP) + parseFloat(this.R_Plastico_NP) + parseFloat(this.R_Madera_NP) + parseFloat(this.NR_PapelCarton_NP) + parseFloat(this.NR_Metal_NP) + parseFloat(this.NR_Plastico_NP) + parseFloat(this.NR_Madera_NP) + parseFloat(this.NR_Compuestos_NP);
       this.valores[16] = this.valores[16] + parseFloat(this.R_PapelCarton_P) + parseFloat(this.R_Metal_P) + parseFloat(this.R_Plastico_P) + parseFloat(this.R_Madera_P) + parseFloat(this.NR_PapelCarton_P) + parseFloat(this.NR_Metal_P) + parseFloat(this.NR_Plastico_P) + parseFloat(this.NR_Madera_P) + parseFloat(this.NR_Compuestos_P);
       this.valores[17] = this.valores[17] + parseFloat(this.R_PapelCarton_Sec) + parseFloat(this.R_Metal_Sec) + parseFloat(this.R_Plastico_Sec) + parseFloat(this.R_Madera_Sec) + parseFloat(this.NR_PapelCarton_Sec) + parseFloat(this.NR_Metal_Sec) + parseFloat(this.NR_Plastico_Sec) + parseFloat(this.NR_Madera_Sec) + parseFloat(this.NR_Compuestos_Sec);
