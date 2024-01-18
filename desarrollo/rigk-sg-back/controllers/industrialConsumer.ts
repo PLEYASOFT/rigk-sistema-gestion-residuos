@@ -186,6 +186,19 @@ class IndustrialConsumer {
             });
         }
     }
+    public async updateToDraftStatus(req: any, res: Response) {
+        const { id } = req.params;
+        try {
+            const id_header = await industrialConsumerDao.getMV(id);
+            res.json({ status: true, data: id_header });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
     public async deleteById(req: any, res: Response) {
         const { id } = req.params;
         try {

@@ -122,6 +122,12 @@ export class BulkUploadComponent implements OnInit {
   }
 
   async processData(data: any[]) {
+    Swal.fire({
+      title: 'Espere',
+      text: 'Se están cargando los datos del archivo. Por favor, espere.',
+      showConfirmButton: false
+    });
+    Swal.showLoading();
     //Validación archivo
     if (data.length == 0) {
       Swal.fire({
@@ -420,12 +426,12 @@ export class BulkUploadComponent implements OnInit {
           });
           return;
         }
-        Swal.fire({
-          icon: 'success',
-          text: 'Se ha subido el archivo Excel correctamente y los datos se han guardado en la base de datos'
-        });
       });
     }
+    Swal.fire({
+      icon: 'success',
+      text: 'Se ha subido el archivo Excel correctamente y los datos se han guardado en la base de datos'
+    });
   }
 
   isValidDate(dateString: string): { valid: boolean; message: string } {

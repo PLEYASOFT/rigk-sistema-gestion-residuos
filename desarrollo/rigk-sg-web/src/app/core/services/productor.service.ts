@@ -39,14 +39,29 @@ export class ProductorService {
   get getStatementByUser() {
     return this.http.get<any>(`${this.url}/byUser`);
   }
+  get getStatements() {
+    return this.http.get<any>(`${this.url}/statements`);
+  }
+  getStatementsById(id_header:any) {
+    return this.http.get<any>(`${this.url}/statements/${id_header}`);
+  }
   updateStateStatement(id_header: any, state: any) {
     return this.http.put<any>(`${this.url}/${id_header}/state/${state}`, {});
+  }
+  updateUFStatement(id_header: any, uf: any) {
+    return this.http.put<any>(`${this.url}/${id_header}/UF/${uf}`, {});
   }
   updateValuesStatement(id_header: any, detail: any, header: any) {
     return this.http.put<any>(`${this.url}/${id_header}`, { header, detail });
   }
   validateStatement(id: any) {
     return this.http.put<any>(`${this.url}/validate/${id}`, {});
+  }
+  updateToDraft(idHeader: any) {
+    return this.http.put<any>(`${this.url}/updateToDraft/${idHeader}`, {});
+  }
+  updateToPending(idHeader: any) {
+    return this.http.put<any>(`${this.url}/updateToPending/${idHeader}`, {});
   }
   verifyDraft(id_business: any, year: any) {
     return this.http.get<any>(`${this.url}/draft/${id_business}/year/${year}`);
@@ -90,4 +105,31 @@ export class ProductorService {
     headers = headers.set('Accept', 'application/pdf');
     return this.http.get<any>(`${environment.API_V1_URL}/utiles/download/${idEmpresa}/${idUsuario}`, { responseType: 'blob' as 'json' });
   }
+  downloadMV(id_attached: any) {
+    let headers = new HttpHeaders();
+    headers = headers.set('Accept', 'application/pdf');
+    return this.http.get<any>(`${environment.API_V1_URL}/utiles/downloadMV/${id_attached}`, { responseType: 'blob' as 'json' });
+  }
+  saveFile(idDetail: any, fileName: string, file: string, typeMaterial: number) {
+    const formData = new FormData();
+    formData.append('idDetail', idDetail.toString());
+    formData.append('fileName', fileName);
+    formData.append('fileBuffer', file);
+    formData.append('typeMaterial', typeMaterial.toString());
+
+    const headers = new HttpHeaders().set('Content-Type', 'multipart/form-data');
+    return this.http.post<any>(`${this.url}/saveFile`, formData, { headers });
+  }
+  getMV(id: any) {
+    return this.http.get<any>(`${this.url}/detailMV/${id}`);
+  }
+  deleteById(id: any) {
+    return this.http.delete<any>(`${this.url}/detailMV/${id}`);
+  }
+  downloadOC(id: any) {
+    let headers = new HttpHeaders();
+    headers = headers.set('Accept', 'application/pdf');
+    return this.http.get<any>(`${this.url}/downloadOC/${id}`, { headers: headers, responseType: 'blob' as 'json' });
+  }
+  
 }
