@@ -569,19 +569,22 @@ export class MaintainerDeclarationsProductorComponent implements OnInit {
       this.EyE_UF_Papel = this.EyE_PapelCarton_Rec + this.RET_PapelCarton_P + this.RET_PapelCarton_Sec + this.RET_PapelCarton_Ter + this.RET_PapelCarton_NP;
       this.EyE_PapelCarton_Rec += this.RET_PapelCarton_Total;
       this.EyE_Ret -= this.RET_PapelCarton_Total;
-      this.RET_PapelCarton_Total = 0;
+    }else{
+      this.EyE_UF_Papel = this.EyE_PapelCarton_Rec;
     }
     if (!has_metal) {
       this.EyE_UF_Metal = this.EyE_Metal_Rec + this.RET_Metal_P + this.RET_Metal_Sec + this.RET_Metal_Ter + this.RET_Metal_NP;
       this.EyE_Metal_Rec += this.RET_Metal_Total;
       this.EyE_Ret -= this.RET_Metal_Total;
-      this.RET_Metal_Total = 0;
+    }else{
+      this.EyE_UF_Metal = this.EyE_Metal_Rec;
     }
     if (!has_plastico) {
       this.EyE_UF_Plastico = this.EyE_Plastico_Rec + this.RET_Plastico_P + this.RET_Plastico_Sec + this.RET_Plastico_Ter + this.RET_Plastico_NP;
       this.EyE_Plastico_Rec += this.RET_Plastico_Total;
       this.EyE_Ret -= this.RET_Plastico_Total;
-      this.RET_Plastico_Total = 0;
+    }else{
+      this.EyE_UF_Plastico = this.EyE_Plastico_Rec;
     }
     this.Total_EyE = this.EyE_PapelCarton_Rec + this.EyE_Metal_Rec + this.EyE_Plastico_Rec + this.EyE_NR;
     this.PapelCarton_Rec_Uf = this.EyE_UF_Papel * this.rates[0].price;
