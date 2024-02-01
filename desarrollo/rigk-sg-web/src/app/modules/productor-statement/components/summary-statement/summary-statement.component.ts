@@ -111,8 +111,10 @@ export class SummaryStatementComponent implements AfterViewInit {
             document.getElementById(`ter_weight_${r?.type_residue}`)!.innerHTML = this.setFormato(this.result)
             this.costoAnual[r?.type_residue - 1] = this.result;
           }
+        }        
+        if (r?.type_residue != 4) {
+          this.costoAnual[r?.type_residue - 1] = this.tonSums.primario[r?.type_residue - 1] + this.tonSums.secundario[r?.type_residue - 1] + this.tonSums.terciario[r?.type_residue - 1];
         }
-        this.costoAnual[r?.type_residue - 1] = this.tonSums.primario[r?.type_residue - 1] + this.tonSums.secundario[r?.type_residue - 1] + this.tonSums.terciario[r?.type_residue - 1];
       }
       else if (r.recyclability == 2) {
         if (r?.type_residue != 4) {
