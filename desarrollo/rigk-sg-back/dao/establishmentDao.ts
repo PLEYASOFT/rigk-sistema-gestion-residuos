@@ -26,7 +26,7 @@ class EstablishmentDao {
         }
         conn.end();
         return establishment;
-    }    
+    }
     public async deleteEstablishment(ID: any) {
         const conn = mysqlcon.getConnection()!;
         await conn.query("DELETE FROM establishment_business WHERE ID_ESTABLISHMENT = ?", [ID]).then((res) => res[0]).catch(error => [{ undefined }]);
@@ -74,6 +74,49 @@ class EstablishmentDao {
         LEFT JOIN type_treatment ON type_treatment.ID = detail_industrial_consumer_form.TREATMENT_TYPE
         WHERE establishment_business.ID_ESTABLISHMENT IN (SELECT ID_ESTABLISHMENT FROM establishment_business WHERE ID_BUSINESS IN (SELECT ID_BUSINESS FROM user_business WHERE ID_USER = ?))
      `, [ID]).then(res => res[0]).catch(erro => { console.log(erro); return undefined });
+        conn.end();
+        return data;
+    }
+
+    public async getDeclarationEstablishmentByIdGestor(ID_GESTORs: any[]) {
+        const conn = mysqlcon.getConnection()!;
+        await conn.execute("SET lc_time_names = 'es_ES';");
+        const query = `
+        SELECT CONCAT(establishment.NAME_ESTABLISHMENT, ' - ', communes.NAME, ' - ', establishment.REGION ) AS NAME_ESTABLISHMENT_REGION,
+            header_industrial_consumer_form.CREATED_AT, header_industrial_consumer_form.YEAR_STATEMENT,
+            header_industrial_consumer_form.ID AS ID_HEADER, business.NAME as NAME_BUSINESS, detail_industrial_consumer_form.ID AS ID_DETAIL,
+            CASE
+            WHEN detail_industrial_consumer_form.PRECEDENCE = 4 THEN 1
+            WHEN EXISTS (SELECT 1
+                        FROM attached_industrial_consumer_form
+                        WHERE attached_industrial_consumer_form.ID_DETAIL = detail_industrial_consumer_form.ID)
+            THEN 1
+            ELSE 0
+        END AS semaforo,
+        detail_industrial_consumer_form.PRECEDENCE AS PRECEDENCE_NUMBER,
+        type_material.MATERIAL AS PRECEDENCE,
+        submaterial.SUBMATERIAL AS TYPE_RESIDUE,
+        detail_industrial_consumer_form.VALUE,
+        detail_industrial_consumer_form.STATE_GESTOR,
+        invoices_detail.VALUE AS VALUE_DECLARATE,
+        detail_industrial_consumer_form.DATE_WITHDRAW AS FechaRetiro,
+        CONCAT(UPPER(SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 1, 1)), SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 2)) AS FechaRetiroTipeada,
+        detail_industrial_consumer_form.ID_GESTOR AS IdGestor,
+        detail_industrial_consumer_form.LER,
+        detail_industrial_consumer_form.TREATMENT_TYPE AS TREATMENT_TYPE_NUMBER,
+        type_treatment.NAME AS TipoTratamiento
+    FROM header_industrial_consumer_form
+    INNER JOIN establishment ON establishment.ID = header_industrial_consumer_form.ID_ESTABLISHMENT
+    INNER JOIN establishment_business ON establishment_business.ID_ESTABLISHMENT = establishment.ID
+    INNER JOIN business ON business.ID = establishment_business.ID_BUSINESS
+    INNER JOIN detail_industrial_consumer_form ON detail_industrial_consumer_form.ID_HEADER = header_industrial_consumer_form.ID
+    INNER JOIN communes ON communes.ID = establishment.ID_COMUNA
+    LEFT JOIN invoices_detail ON invoices_detail.ID_DETAIL = detail_industrial_consumer_form.ID
+    LEFT JOIN type_material ON type_material.ID = detail_industrial_consumer_form.PRECEDENCE
+    LEFT JOIN submaterial ON submaterial.ID = detail_industrial_consumer_form.TYPE_RESIDUE
+    LEFT JOIN type_treatment ON type_treatment.ID = detail_industrial_consumer_form.TREATMENT_TYPE
+    WHERE detail_industrial_consumer_form.ID_GESTOR IN (?)`;
+        const data: any = await conn.query(query, [ID_GESTORs]).then(res => res[0]).catch(erro => { console.log(erro); return undefined });
         conn.end();
         return data;
     }
@@ -129,8 +172,8 @@ class EstablishmentDao {
         conn.end();
         return data;
     }
-    
-    public async getBusinessByRolConsumidor(){
+
+    public async getBusinessByRolConsumidor() {
         const conn = mysqlcon.getConnection();
 
         const res_business: any = await conn?.execute(`SELECT DISTINCT business.ID, business.NAME, business.VAT, business.CODE_BUSINESS
@@ -140,7 +183,7 @@ class EstablishmentDao {
         JOIN user_rol ON user.ID = user_rol.USER_ID
         JOIN rol ON user_rol.ROL_ID = rol.ID
         WHERE rol.NAME = 'Consumidor' AND user.STATE = '1';`).then((res) => res[0]).catch(error => { undefined });
-                                                
+
         if (res_business.length == 0) {
             return false;
         }
@@ -205,21 +248,21 @@ class EstablishmentDao {
         conn.end();
         return data;
     }
-    
+
 
     public async getEstablishmentByID(ID: any) {
         const conn = mysqlcon.getConnection()!;
         const establishment: any = await conn.query(
             "SELECT establishment.*, communes.NAME AS COMUNA_NAME FROM establishment " +
             "LEFT JOIN communes ON establishment.ID_COMUNA = communes.ID " +
-            "WHERE establishment.ID = ?", 
+            "WHERE establishment.ID = ?",
             [ID]
         ).then((res) => res[0]).catch(error => [{ undefined }]);
-        
+
         if (establishment == null || establishment.length == 0) {
             return false;
         }
-        
+
         conn.end();
         return establishment;
     }
@@ -234,9 +277,9 @@ class EstablishmentDao {
             AND e.REGION = ?
             AND e.NAME_ESTABLISHMENT = ?
             AND c.NAME = ?`;
-    
+
         try {
-            const results:any = await conn.query(query, [id_vu, region, name, comuna]);
+            const results: any = await conn.query(query, [id_vu, region, name, comuna]);
             conn.end();
             if (results.length > 0) {
                 return results[0];
@@ -247,15 +290,15 @@ class EstablishmentDao {
             conn.end();
             return false;
         }
-    }    
-    
+    }
+
     public async getInvoice(number: any, rut: any, treatment_type: number, material_type: number) {
         const conn = mysqlcon.getConnection()!;
         const business: any = await conn.execute("SELECT ID, NAME FROM business WHERE VAT = ?", [rut]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
         if (business == null || business.length == 0) {
             return []
         }
-        const data0:any = await conn.execute("SELECT ID, VALUED_TOTAL AS invoice_value,TREATMENT_TYPE,MATERIAL_TYPE FROM invoices WHERE INVOICE_NUMBER=? AND VAT=?", [number, rut]).then((res) => res[0]).catch(error => [{ undefined }]);
+        const data0: any = await conn.execute("SELECT ID, VALUED_TOTAL AS invoice_value,TREATMENT_TYPE,MATERIAL_TYPE FROM invoices WHERE INVOICE_NUMBER=? AND VAT=?", [number, rut]).then((res) => res[0]).catch(error => [{ undefined }]);
         // first invoice
         if (data0 == null || data0.length == 0) {
             return [{
@@ -265,9 +308,9 @@ class EstablishmentDao {
                 NAME: business
             }];
         }
-        
+
         //verify constraint
-        if(data0[0]['MATERIAL_TYPE'] != material_type || data0[0]['TREATMENT_TYPE'] != treatment_type) {
+        if (data0[0]['MATERIAL_TYPE'] != material_type || data0[0]['TREATMENT_TYPE'] != treatment_type) {
             return [];
         }
         //get invoice
@@ -281,7 +324,7 @@ class EstablishmentDao {
             NAME: business
         }];
     }
-    
+
     public async saveInvoice(vat: any, id_business: any, invoice_number: any, id_detail: any, date_pr: any, value: any, file: any, valued_total: any, id_user: any, treatment: any, material: any) {
         const file_name = file.name;
         const _file = file.data;
