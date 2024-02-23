@@ -88,6 +88,7 @@ export class StatementsComponent implements OnInit {
 
   loadStatements(): Promise<void> {
     return new Promise<void>((resolve) => {
+      const idGestors = JSON.parse(sessionStorage.getItem('user')!).ID_BUSINESS;
       Swal.fire({
         title: 'Cargando Datos',
         text: 'Se están recuperando datos',
@@ -97,10 +98,10 @@ export class StatementsComponent implements OnInit {
         allowOutsideClick: false
       });
       Swal.showLoading();
-      this.establishmentService.getDeclarationEstablishment().subscribe(r => {
+      this.establishmentService.getDeclarationEstablishmentByIdGestor(idGestors).subscribe(r => {
         if (r.status) {
-          r.status = r.status.filter((item: any) => item.TipoTratamiento != null);
-          r.status = r.status.sort((a: any, b: any) => {
+          r.data = r.data.filter((item: any) => item.TipoTratamiento != null);
+          r.data = r.data.sort((a: any, b: any) => {
             const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
 
             if (dateComparison === 0) {
@@ -110,7 +111,7 @@ export class StatementsComponent implements OnInit {
             }
           });
 
-          (r.status as any[]).forEach(e => {
+          (r.data as any[]).forEach(e => {
             e.isChecked = false;
             if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
               this.business_name.push(e.NAME_BUSINESS);
@@ -132,7 +133,7 @@ export class StatementsComponent implements OnInit {
             }
           });
           this.years.sort((a, b) => b - a);
-          this.dbStatements = r.status;
+          this.dbStatements = r.data;
           this.cant = Math.ceil(this.dbStatements.length / 10);
           this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a: any, b: any) => {
             const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();

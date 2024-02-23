@@ -2,20 +2,20 @@ import { Request, Response } from "express";
 import establishmentDao from '../dao/establishmentDao';
 import { createLog } from "../helpers/createLog";
 class EstablishmentLogic {
-    async addEstablishment(req: Request|any, res: Response) {
+    async addEstablishment(req: Request | any, res: Response) {
         const name = req.body.name;
         const name_region = req.body.name_region;
         const v_unica = req.body.v_unica;
         const id_region = req.body.id_region;
-        const id_comuna =req.body.id_comuna;
-        const address =req.body.address;
+        const id_comuna = req.body.id_comuna;
+        const address = req.body.address;
         const id_business = req.body.id_business;
         try {
             await establishmentDao.addEstablishment(name, name_region, v_unica, id_region, id_comuna, address, id_business);
             await createLog('AGREGA_ESTABLECIMIENTO', req.uid, null);
             res.status(200).json({ status: true, msg: 'Has creado un establecimiento', data: {} })
         }
-        catch (err:any) {
+        catch (err: any) {
             console.log(err);
             await createLog('AGREGA_ESTABLECIMIENTO', req.uid, err.message);
             res.status(500).json({ status: false, msg: 'Ocurrió un error', data: {} });
@@ -61,7 +61,7 @@ class EstablishmentLogic {
     }
 
     async getIdByEstablishment(req: any, res: Response) {
-        const {id_vu, region, comuna, name} = req.params;
+        const { id_vu, region, comuna, name } = req.params;
         try {
             const establishment = await establishmentDao.getIdByEstablishment(id_vu, region, comuna, name);
             res.status(200).json({ status: establishment, data: {}, msg: '' });
@@ -79,7 +79,7 @@ class EstablishmentLogic {
             const establishment = await establishmentDao.deleteEstablishment(id);
             await createLog('ELIMINA_ESTABLECIMIENTO', req.uid, null);
             res.status(200).json({ status: establishment, data: {}, msg: '' });
-        } catch (err:any) {
+        } catch (err: any) {
             console.log(err);
             await createLog('ELIMINA_ESTABLECIMIENTO', req.uid, err.message);
             res.status(500).json({
@@ -92,6 +92,20 @@ class EstablishmentLogic {
         try {
             const establishment = await establishmentDao.getDeclarationEstablishment(req.uid);
             res.status(200).json({ status: establishment, data: {}, msg: '' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
+
+    async getDeclarationEstablishmentByIdGestor(req: any, res: Response) {
+        try {
+            const idGestors = req.body.idGestors;
+            const data = await establishmentDao.getDeclarationEstablishmentByIdGestor(idGestors);
+            res.status(200).json({ status: true, data: data, msg: '' });
         } catch (err) {
             console.log(err);
             res.status(500).json({
@@ -128,7 +142,7 @@ class EstablishmentLogic {
                 await createLog('APRUEBA_DECLARACION_GESTOR', req.uid, 'error inserción en base de datos');
                 return res.status(500).json({ status: false, data: {}, msg: 'Algo salió mal' });
             }
-        } catch (error:any) {
+        } catch (error: any) {
             console.log(error);
             await createLog('APRUEBA_DECLARACION_GESTOR', req.uid, error.message);
             res.status(500).json({
@@ -138,7 +152,7 @@ class EstablishmentLogic {
         }
     }
     public async getInovice(req: any, res: Response) {
-    const { invoice_number, vat, treatment_type, material_type} = req.body;
+        const { invoice_number, vat, treatment_type, material_type } = req.body;
         try {
             const data: any = await establishmentDao.getInvoice(invoice_number, vat, treatment_type, material_type);
             if (data[0] == null) {
