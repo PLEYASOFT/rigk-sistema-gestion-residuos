@@ -46,8 +46,8 @@ export class StatementsComponent implements OnInit {
   index: number = 0;
   userForm = this.fb.group({
     invoiceNumber: ['', [Validators.required]],
-    rut: ['', [Validators.required, Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$'), this.verifyRut]],
-    reciclador: ['0', [Validators.required]],
+    rut: ['', [Validators.required, /*Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$'), this.verifyRut*/]],
+    reciclador: ['', Validators.required],
     treatmentType: ['', [Validators.required]],
     material: ['', [Validators.required]],
     entryDate: ['', [Validators.required, this.pastDateValidator()]],
@@ -292,11 +292,11 @@ export class StatementsComponent implements OnInit {
       this.filter();
       this.pagTo(this.pos - 1);
     });
-    this.userForm.reset({ reciclador: '0' })
+    this.userForm.reset({ reciclador: '' })
   }
 
   reset_nocheck() {
-    this.userForm.reset({ reciclador: '0' })
+    this.userForm.reset({ reciclador: '' })
   }
   pagTo(i: number) {
     this.pos = i + 1;
@@ -346,7 +346,7 @@ export class StatementsComponent implements OnInit {
   visiblePageNumbers() {
     const totalPages = this.setArrayFromNumber().length;
     const visiblePages = [];
-  
+
     if (totalPages <= 15) {
       // Si hay 20 o menos páginas, mostrar todas
       for (let i = 0; i < totalPages; i++) {
@@ -356,18 +356,18 @@ export class StatementsComponent implements OnInit {
       // Calcular las páginas visibles alrededor de la página actual
       let startPage = Math.max(0, this.pos - Math.floor(15 / 2));
       let endPage = Math.min(totalPages - 1, startPage + 14);
-  
+
       // Ajustar el cálculo si estamos cerca del final
       if (endPage - startPage + 1 < 15) {
         endPage = totalPages - 1;
         startPage = Math.max(0, endPage - 14);
       }
-  
+
       for (let i = startPage; i <= endPage; i++) {
         visiblePages.push(i);
       }
     }
-  
+
     return visiblePages;
   }
 
@@ -434,6 +434,7 @@ export class StatementsComponent implements OnInit {
   async saveInvoice(index: number): Promise<void> {
     if (this.selectedFile) {
       let { rut, invoiceNumber, entryDate, valuedWeight, reciclador } = this.userForm.value;
+      console.log(reciclador)
       const totalWeight = this.userForm.controls['totalWeight'].value;
       const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
       if (selectedItems.length > 0) {
@@ -511,7 +512,7 @@ export class StatementsComponent implements OnInit {
       console.error('No file selected');
     }
   }
-  businessNoFound = false;
+  businessNoFound = true;
   onChangeVAT(target: any) {
     this.dbBusiness = [];
     this.businessService.getBusinessByVAT(target.value).subscribe(r => {
@@ -520,7 +521,9 @@ export class StatementsComponent implements OnInit {
       this.businessNoFound = false;
       if (this.dbBusiness.length == 0) {
         this.businessNoFound = true;
-        this.userForm.controls['reciclador'].disable();
+        this.userForm.controls['reciclador'].setValue('');
+      } else {
+        this.businessNoFound = false;
         this.userForm.controls['reciclador'].setValue('0');
       }
     });
@@ -534,77 +537,103 @@ export class StatementsComponent implements OnInit {
       return value.toLocaleString('es');
     }
   }
+
+  numberOnly(event: KeyboardEvent): void {
+    const controlKeys = ['Backspace', 'Tab', 'End', 'Home', 'ArrowLeft', 'ArrowRight', 'Delete'];
+    if (controlKeys.includes(event.key)) {
+      return;
+    }
+    const regex = new RegExp('^[0-9]+$');
+    if (!regex.test(event.key)) {
+      event.preventDefault();
+    }
+  }
+
   async onRUTChange(index: number) {
-    const rut = this.userForm.controls['rut'].value;
     const invoiceNumber = this.userForm.controls['invoiceNumber'].value;
     const treatmentType = this.db[index].TREATMENT_TYPE_NUMBER;
     const material = this.db[index].PRECEDENCE_NUMBER;
-    const id_business = this.userForm.value.reciclador;
-    if (rut) {
-      try {
-        const businessResponse = await this.establishmentService.getInovice(invoiceNumber, rut, treatmentType, material).toPromise();
-        if (businessResponse.status) {
 
-          this.userForm.controls['totalWeight'].setValue(
-            this.formatNumber(businessResponse.data[0]?.invoice_value)
-          );
-          this.userForm.controls['declarateWeight'].setValue(
-            this.formatNumber(businessResponse.data[0].value_declarated)
-          );
-          if (this.selectedDeclarationsCount != 0) {
-            this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + this.selectedDeclarationsCount);
-          }
-          else {
-            this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + 1);
-          }
-          const asoc = this.userForm.controls['asoc'].value || "0";
-          if (parseInt(asoc) > 1 && this.selectedDeclarationsCount == 0) {
-            if (invoiceNumber) {
-              this.userForm.controls['valuedWeight'].enable();
-            } else {
-              this.userForm.controls['valuedWeight'].disable();
-            }
-          } else {
-            if (invoiceNumber) {
-              this.userForm.controls['valuedWeight'].enable();
-              this.userForm.controls['totalWeight'].enable();
-            } else {
-              this.userForm.controls['valuedWeight'].disable();
-              this.userForm.controls['totalWeight'].disable();
-            }
-          }
-
-        } else {
-          Swal.fire({
-            icon: 'error',
-            text: businessResponse.msg
-          });
-          this.userForm.controls['totalWeight'].setValue('');
-          this.userForm.controls['declarateWeight'].setValue('');
-          this.userForm.controls['asoc'].setValue('');
-          this.userForm.controls['remainingWeight'].setValue('');
-          this.userForm.controls['valuedWeight'].disable();
-          this.userForm.controls['totalWeight'].disable();
+    try {
+      const businessResponse = await this.establishmentService.getInovice(invoiceNumber, treatmentType, material).toPromise();
+      if (businessResponse.status) {
+        
+        this.businessNoFound = true;
+        this.userForm.controls['totalWeight'].setValue(
+          this.formatNumber(businessResponse.data[0]?.invoice_value)
+        );
+        this.userForm.controls['declarateWeight'].setValue(
+          this.formatNumber(businessResponse.data[0].value_declarated)
+        );
+        if (this.selectedDeclarationsCount != 0) {
+          this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + this.selectedDeclarationsCount);
         }
-      } catch (error) {
-
+        else {
+          this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + 1);
+        }
+        const asoc = this.userForm.controls['asoc'].value || "0";
+        //En aprobación masiva aquí nunca entra
+        if (parseInt(asoc) > 1 && this.selectedDeclarationsCount == 0) {
+          if (invoiceNumber) {
+            this.userForm.controls['reciclador'].setValue(businessResponse.data[0]?.NAME
+            );
+            this.userForm.controls['rut'].setValue(businessResponse.data[0]?.RUT
+            );
+            this.userForm.controls['valuedWeight'].enable();
+            this.userForm.controls['reciclador'].enable();
+            this.userForm.controls['rut'].enable()
+          } else {
+            this.userForm.controls['reciclador'].enable();
+            this.userForm.controls['rut'].enable();
+            this.userForm.controls['reciclador'].setValue('');
+            this.userForm.controls['rut'].setValue('');
+            this.userForm.controls['valuedWeight'].disable();
+          }
+        } else {
+          if (invoiceNumber) {
+            this.userForm.controls['valuedWeight'].enable();
+            this.userForm.controls['totalWeight'].enable();
+            this.userForm.controls['reciclador'].setValue(businessResponse.data[0]?.NAME
+            );
+            this.userForm.controls['rut'].setValue(businessResponse.data[0]?.RUT
+            );
+            this.userForm.controls['reciclador'].enable();
+            this.userForm.controls['rut'].enable();
+          } else {
+            this.userForm.controls['valuedWeight'].disable();
+            this.userForm.controls['totalWeight'].disable();
+            this.userForm.controls['reciclador'].enable();
+            this.userForm.controls['rut'].enable();
+            this.userForm.controls['reciclador'].setValue('');
+            this.userForm.controls['rut'].setValue('');
+          }
+        }
+      } else {
+        Swal.fire({
+          icon: 'error',
+          text: businessResponse.msg
+        });
         this.userForm.controls['totalWeight'].setValue('');
         this.userForm.controls['declarateWeight'].setValue('');
+        this.userForm.controls['reciclador'].setValue('');
+        this.userForm.controls['rut'].setValue('');
         this.userForm.controls['asoc'].setValue('');
         this.userForm.controls['remainingWeight'].setValue('');
         this.userForm.controls['valuedWeight'].disable();
         this.userForm.controls['totalWeight'].disable();
+        this.userForm.controls['reciclador'].disable();
+        this.userForm.controls['rut'].disable(); 
       }
-    } else {
-      // this.userForm.controls['reciclador'].setValue('0');
+    } catch (error) {
       this.userForm.controls['totalWeight'].setValue('');
       this.userForm.controls['declarateWeight'].setValue('');
+      this.userForm.controls['reciclador'].setValue('');
+      this.userForm.controls['rut'].setValue('');
       this.userForm.controls['asoc'].setValue('');
       this.userForm.controls['remainingWeight'].setValue('');
       this.userForm.controls['valuedWeight'].disable();
       this.userForm.controls['totalWeight'].disable();
     }
-
     this.userForm.controls['valuedWeight'].updateValueAndValidity();
     this.userForm.controls['totalWeight'].updateValueAndValidity();
   }
@@ -764,7 +793,7 @@ export class StatementsComponent implements OnInit {
     if (this.selectedDeclarationsCount == 0) {
       this.disableFilters = false
     }
-    else{
+    else {
       this.disableFilters = true
     }
 

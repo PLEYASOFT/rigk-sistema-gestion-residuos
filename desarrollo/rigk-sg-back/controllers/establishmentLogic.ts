@@ -152,16 +152,14 @@ class EstablishmentLogic {
         }
     }
     public async getInovice(req: any, res: Response) {
-        const { invoice_number, vat, treatment_type, material_type } = req.body;
+        const { invoice_number, treatment_type, material_type } = req.body;
         try {
-            const data: any = await establishmentDao.getInvoice(invoice_number, vat, treatment_type, material_type);
+            const data: any = await establishmentDao.getInvoice(invoice_number, treatment_type, material_type);
             if (data[0] == null) {
                 return res.status(200).json({ status: false, data, msg: 'Factura ingresada para otro material y/o tratamiento' });
             }
-            if (data[0]?.NAME) {
+            else{
                 return res.status(200).json({ status: true, data, msg: '' });
-            } else {
-                return res.status(400).json({ status: false, data, msg: 'Reciclador no encontrado' });
             }
         } catch (error) {
             console.log(error);

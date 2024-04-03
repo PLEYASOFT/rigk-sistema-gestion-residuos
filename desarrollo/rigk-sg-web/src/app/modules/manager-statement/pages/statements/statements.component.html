@@ -158,15 +158,15 @@
         <!-- Pagination -->
         <nav aria-label="Navegación resultados">
             <ul class="pagination">
-              <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
-              <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
-              <li *ngFor="let i of visiblePageNumbers(); let j = index">
-                <button class="border btn btn-sm"
+                <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
+                <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
+                <li *ngFor="let i of visiblePageNumbers(); let j = index">
+                    <button class="border btn btn-sm"
                         [ngClass]="{ 'btn-info': pos === (i+1), 'btn-primary': pos !== (i+1) }"
                         (click)="pagTo(i)">{{i+1}}</button>
-              </li>
-              <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
-              <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
+                </li>
+                <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
+                <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
             </ul>
         </nav>
     </section>
@@ -186,44 +186,44 @@
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Núm. Factura Reciclador</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" placeholder="1234" formControlName="invoiceNumber"
-                                (input)="onRUTChange(this.index)">
-                            <div *ngIf="userForm.controls['invoiceNumber'].errors && userForm.controls['invoiceNumber'].touched"
-                                class="text-danger">
-                                <p *ngIf="userForm.controls['invoiceNumber'].errors['required']">Debe ingresar un número
-                                    de factura.</p>
-                            </div>
+                          <input type="text" class="form-control" placeholder="1234" formControlName="invoiceNumber"
+                              (keypress)="numberOnly($event)" (change)="onRUTChange(this.index)">
+                          <div *ngIf="userForm.controls['invoiceNumber'].errors && userForm.controls['invoiceNumber'].touched"
+                              class="text-danger">
+                            <p *ngIf="userForm.controls['invoiceNumber'].errors['required']">Debe ingresar un número de factura.</p>
+                          </div>
                         </div>
-                    </div>
+                      </div>                      
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">RUT Reciclador</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control"
                                 [readonly]="userForm.controls['invoiceNumber'].invalid" placeholder="1-9"
-                                formControlName="rut" (change)="onChangeVAT($event.target)">
+                                formControlName="rut" (input)="onChangeVAT($event.target)">
                             <div *ngIf="userForm.controls['rut'].errors && userForm.controls['rut'].touched"
                                 class="text-danger pl-0">
                                 <p *ngIf="userForm.controls['rut'].errors['required']">El rut de la empresa es
                                     requerido.</p>
-                                <p *ngIf="userForm.controls['rut'].errors['pattern']">El formato del RUT es inválido
+                                <!-- <p *ngIf="userForm.controls['rut'].errors['pattern']">El formato del RUT es inválido
                                     (Sin puntos y con guión).</p>
                                 <p *ngIf="userForm.controls['rut'].errors['rut']">El digito verificador es incorrecto.
-                                </p>
+                                </p>-->
                             </div>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Reciclador</label>
                         <div class="col-sm-8">
-                            <select [disabled]="userForm.controls['invoiceNumber'].value == ''" class="form-select"
-                                formControlName="reciclador" (change)="onRUTChange(this.index)">
+                            <input *ngIf="businessNoFound || dbBusiness.length === 0" type="text" class="form-control"
+                                placeholder="Ingrese Reciclador" formControlName="reciclador">
+                            <select *ngIf="!businessNoFound && dbBusiness.length > 0"
+                                [disabled]="userForm.controls['invoiceNumber'].value == ''" class="form-select"
+                                formControlName="reciclador">
                                 <option value="0">Seleccione Reciclador</option>
-                                <option *ngFor="let b of dbBusiness" value="{{b['ID']}}">{{b['NAME']}}</option>
+                                <option *ngFor="let b of dbBusiness" [value]="b['ID']">{{b['NAME']}}</option>
                             </select>
                             <div class="text-danger pl-0">
-                                <p *ngIf="businessNoFound && userForm.controls['rut'].touched">Rut no se encuentra
-                                    registrado en el sistema.
-                                </p>
+                                <p *ngIf="userForm.get('reciclador')?.errors?.['required']">Reciclador es requerido.</p>
                             </div>
                         </div>
                     </div>
