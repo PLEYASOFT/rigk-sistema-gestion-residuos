@@ -384,7 +384,7 @@ export class BulkUploadComponent implements OnInit {
       }
 
       let idBusiness;
-      const foundCompany = allBusiness.status.find((item: { NAME: string; VAT: string; ID: number; }) => item.NAME === vatCompanyName && item.VAT === vat);
+      /*const foundCompany = allBusiness.status.find((item: { NAME: string; VAT: string; ID: number; }) => item.NAME === vatCompanyName && item.VAT === vat);
 
       if (!foundCompany) {
         Swal.fire({
@@ -395,7 +395,9 @@ export class BulkUploadComponent implements OnInit {
       }
       if (foundCompany) {
         idBusiness = foundCompany.ID;
-      }
+      }*/
+      idBusiness = row[8];
+
 
       // FECHA INGRESO PR [9] -> validar
       const admissionDate = row[9];
