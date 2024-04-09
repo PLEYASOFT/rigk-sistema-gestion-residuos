@@ -124,7 +124,7 @@
                         <td>
                             <section class="example-section">
                                 <input type="checkbox" [disabled]="s.STATE_GESTOR != 0" [(ngModel)]="s.isChecked"
-                                    (change)="updateCheckboxSelection()">
+                                    (change)="updateCheckboxSelection(); this.index = 0">
                             </section>
                         </td>
                         <td>{{s.NAME_BUSINESS}}</td>

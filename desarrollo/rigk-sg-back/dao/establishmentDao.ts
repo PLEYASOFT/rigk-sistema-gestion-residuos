@@ -343,7 +343,7 @@ class EstablishmentDao {
         const _file = file.data;
         const conn = mysqlcon.getConnection()!;
         try {
-            const invoice: any = await conn.execute("SELECT ID FROM invoices WHERE INVOICE_NUMBER=?", [invoice_number]).then((res) => res[0]).catch(error => [{ undefined }]);
+            const invoice: any = await conn.execute("SELECT ID FROM invoices WHERE INVOICE_NUMBER=? AND ID_USER=?", [invoice_number,id_user]).then((res) => res[0]).catch(error => [{ undefined }]);
             let ID;
             if (invoice.length == 0) {
                 const _ID: any = await conn.execute("INSERT INTO invoices(INVOICE_NUMBER,VAT,VALUED_TOTAL,ID_USER,TREATMENT_TYPE,MATERIAL_TYPE,ID_BUSINESS) VALUES(?,?,?,?,?,?,?)", [invoice_number, vat, valued_total, id_user, treatment, material, id_business]).then((res) => res[0]).catch(error => [{ undefined }]);
