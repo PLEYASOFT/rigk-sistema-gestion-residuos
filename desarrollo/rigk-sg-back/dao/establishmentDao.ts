@@ -292,10 +292,10 @@ class EstablishmentDao {
         }
     }
 
-    public async getInvoice(number: any, treatment_type: number, material_type: number) {
+    public async getInvoice(number: any, treatment_type: number, material_type: number, id_user: number) {
         const conn = mysqlcon.getConnection()!;
-        const data0: any = await conn.execute("SELECT ID, VALUED_TOTAL AS invoice_value,TREATMENT_TYPE,MATERIAL_TYPE, ID_BUSINESS, VAT FROM invoices WHERE INVOICE_NUMBER=?", [number]).then((res) => res[0]).catch(error => [{ undefined }]);
-
+        const data0: any = await conn.execute("SELECT ID, VALUED_TOTAL AS invoice_value,TREATMENT_TYPE,MATERIAL_TYPE, ID_BUSINESS, VAT FROM invoices WHERE INVOICE_NUMBER=? AND ID_USER=?", [number, id_user]).then((res) => res[0]).catch(error => [{ undefined }]);
+        
         if (data0 == null || data0.length == 0) {
             return [{
                 invoice_value: null,

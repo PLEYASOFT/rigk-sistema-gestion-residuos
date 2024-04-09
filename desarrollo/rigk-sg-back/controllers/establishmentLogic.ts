@@ -154,7 +154,7 @@ class EstablishmentLogic {
     public async getInovice(req: any, res: Response) {
         const { invoice_number, treatment_type, material_type } = req.body;
         try {
-            const data: any = await establishmentDao.getInvoice(invoice_number, treatment_type, material_type);
+            const data: any = await establishmentDao.getInvoice(invoice_number, treatment_type, material_type,req.uid);
             if (data[0] == null) {
                 return res.status(200).json({ status: false, data, msg: 'Factura ingresada para otro material y/o tratamiento' });
             }

@@ -172,59 +172,60 @@ export class StatementsComponent implements OnInit {
 
   filter(auto: boolean = false) {
     if (auto && !this.autoFilter) return;
+
+    const selectedStateNum = parseInt(this.selectedState);
+
     this.filteredStatements = this.dbStatements.filter(r => {
+      const rStateGestorNum = parseInt(r.STATE_GESTOR);
       return (
         (this.selectedBusiness === '-1' || r.NAME_BUSINESS === this.selectedBusiness) &&
         (this.selectedMaterial === '-1' || r.PRECEDENCE === this.selectedMaterial) &&
         (this.selectedTreatment === '-1' || r.TipoTratamiento === this.selectedTreatment) &&
         (this.selectedYear === '-1' || r.FechaRetiroTipeada === this.selectedYear) &&
-        (this.selectedState === '-1' || parseInt(r.STATE_GESTOR) === parseInt(this.selectedState))
+        (this.selectedState === '-1' || rStateGestorNum === selectedStateNum)
       );
     });
-    this.db = this.filteredStatements.slice(0, 10).sort((a: any, b: any) => {
-      const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
 
-      if (dateComparison === 0) {
-        return b.ID_DETAIL - a.ID_DETAIL;
-      } else {
-        return dateComparison;
-      }
-    });
+    this.db = this.filteredStatements.slice(0, 10).sort((a, b) =>
+      new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime() || b.ID_DETAIL - a.ID_DETAIL
+    );
+
     this.cant = Math.ceil(this.filteredStatements.length / 10);
     this.selectedDeclarationsCount = 0;
     this.selectedWeight = 0;
     this.selectAllChecked = false;
+
     this.filteredStatements.forEach(s => {
-      if (s.STATE_GESTOR == 0) {
-        s.isChecked = false;
-      }
+      s.isChecked = s.STATE_GESTOR == 0 ? false : s.isChecked;
     });
-    this.anyCheckboxSelected = this.filteredStatements.some(s => s.isChecked && s.STATE_GESTOR == 0);
+
+    this.anyCheckboxSelected = this.filteredStatements.some(s => s.isChecked && parseInt(s.STATE_GESTOR) == 0);
     this.cdr.detectChanges();
   }
 
+
   filter_two(auto: boolean = false) {
     if (auto && !this.autoFilter) return;
+
+    const selectedStateNum = parseInt(this.selectedState);
     this.filteredStatements = this.dbStatements.filter(r => {
+      const rStateGestorNum = parseInt(r.STATE_GESTOR);
       return (
         (this.selectedBusiness === '-1' || r.NAME_BUSINESS === this.selectedBusiness) &&
         (this.selectedMaterial === '-1' || r.PRECEDENCE === this.selectedMaterial) &&
         (this.selectedTreatment === '-1' || r.TipoTratamiento === this.selectedTreatment) &&
         (this.selectedYear === '-1' || r.FechaRetiroTipeada === this.selectedYear) &&
-        (this.selectedState === '-1' || parseInt(r.STATE_GESTOR) === parseInt(this.selectedState))
+        (this.selectedState === '-1' || rStateGestorNum === selectedStateNum)
       );
     });
-    this.db = this.filteredStatements.slice(0, 10).sort((a: any, b: any) => {
-      const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
 
-      if (dateComparison === 0) {
-        return b.ID_DETAIL - a.ID_DETAIL;
-      } else {
-        return dateComparison;
-      }
-    });
+    this.db = this.filteredStatements.slice(0, 10).sort((a, b) =>
+      new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime() || b.ID_DETAIL - a.ID_DETAIL
+    );
+
     this.cant = Math.ceil(this.filteredStatements.length / 10);
   }
+
 
 
   updateFilters() {
@@ -432,86 +433,65 @@ export class StatementsComponent implements OnInit {
   }
 
   async saveInvoice(index: number): Promise<void> {
-    if (this.selectedFile) {
-      let { rut, invoiceNumber, entryDate, valuedWeight, reciclador } = this.userForm.value;
-      console.log(reciclador)
-      const totalWeight = this.userForm.controls['totalWeight'].value;
-      const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
-      if (selectedItems.length > 0) {
-        try {
-          valuedWeight = (parseFloat(valuedWeight!.replace(",", ".")) / selectedItems.length).toFixed(2);
-          Swal.fire({
-            title: 'Cargando Datos',
-            text: 'Se están recuperando datos',
-            timerProgressBar: true,
-            showConfirmButton: false,
-            allowEscapeKey: false,
-            allowOutsideClick: false
-          });
-          for (let i = 0; i < selectedItems.length; i++) {
-            const treatmentType = selectedItems[i].TREATMENT_TYPE_NUMBER
-            const material = selectedItems[i].PRECEDENCE_NUMBER
-            const id_detail = selectedItems[i].ID_DETAIL
-            const response = await this.establishmentService.saveInvoice(rut, reciclador, invoiceNumber, id_detail, entryDate, valuedWeight, totalWeight!.replace(",", "."), treatmentType, material, this.selectedFile).toPromise();
-            if (response.status) {
-              // Encuentra y actualiza el elemento en la lista db
-              const updatedItem = this.db.find(item => item.ID_DETAIL === id_detail);
-              if (updatedItem) {
-                updatedItem.STATE_GESTOR = 1; // Actualiza el estado a "Aprobado"
-                updatedItem.VALUE_DECLARATE = valuedWeight.replace('.', ',');
-              }
-              // Notifica a Angular que debe verificar cambios en la vista
-              this.cdr.detectChanges();
-            }
-          }
-          // Cerrar mensaje de carga
-          Swal.close();
-          setTimeout(async () => {
-            await Swal.fire({
-              title: "Las facturas fueron guardadas exitosamente",
-              text: "",
-              icon: "success",
-              showConfirmButton: true, // Muestra el botón de confirmación.
-            });
-          }, 1500);
-        }
-        catch (error) {
-          console.error('Error:', error);
+    if (!this.selectedFile) {
+      console.error('No hay archivo seleccionado');
+      return;
+    }
+
+    let { rut, invoiceNumber, entryDate, valuedWeight, reciclador } = this.userForm.value;
+    const totalWeight = this.userForm.controls['totalWeight'].value!.replace(",", ".");
+    valuedWeight = parseFloat(valuedWeight!.replace(",", ".")).toFixed(2);
+
+    const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
+    const itemsToProcess = selectedItems.length > 0 ? selectedItems : [this.db[index]];
+
+    if (selectedItems.length > 0) {
+      valuedWeight = (parseFloat(valuedWeight) / selectedItems.length).toFixed(2);
+    }
+    Swal.fire({
+      title: 'Cargando Datos',
+      text: 'Se están recuperando datos',
+      timerProgressBar: true,
+      showConfirmButton: false,
+      allowEscapeKey: false,
+      allowOutsideClick: false
+    });
+
+    try {
+      for (const item of itemsToProcess) {
+        const { TREATMENT_TYPE_NUMBER: treatmentType, PRECEDENCE_NUMBER: material, ID_DETAIL: id_detail } = item;
+        const response = await this.establishmentService.saveInvoice(
+          rut, reciclador, invoiceNumber, id_detail, entryDate, valuedWeight, totalWeight, treatmentType, material, this.selectedFile
+        ).toPromise();
+
+        if (response.status) {
+          this.updateItemState(id_detail, valuedWeight);
         }
       }
-      else {
-        const treatmentType = this.db[index].TREATMENT_TYPE_NUMBER
-        const material = this.db[index].PRECEDENCE_NUMBER
-        const id_detail = this.db[index].ID_DETAIL
-        try {
-          const response = await this.establishmentService.saveInvoice(rut, reciclador, invoiceNumber, id_detail, entryDate, valuedWeight!.replace(",", "."), totalWeight!.replace(",", "."), treatmentType, material, this.selectedFile).toPromise();
-          if (response.status) {
-            // Encuentra y actualiza el elemento en la lista db
-            const updatedItem = this.db.find(item => item.ID_DETAIL === id_detail);
-            if (updatedItem) {
-              updatedItem.STATE_GESTOR = 1; // Actualiza el estado a "Aprobado"
-              updatedItem.VALUE_DECLARATE = parseFloat(valuedWeight!.replace(',', '.')).toFixed(2).replace('.', ',');
-            }
-            // Notifica a Angular que debe verificar cambios en la vista
-            this.cdr.detectChanges();
-            Swal.close();
-            setTimeout(async () => {
-              await Swal.fire({
-                title: "La factura fue guardada exitosamente",
-                text: "",
-                icon: "success",
-                showConfirmButton: true, // Muestra el botón de confirmación.
-              });
-            }, 1500);
-          }
-        } catch (error) {
-          console.error('Error:', error);
-        }
-      }
-    } else {
-      console.error('No file selected');
+      Swal.close();
+      await this.showSuccessMessage(itemsToProcess.length > 1);
+    } catch (error) {
+      console.error('Error:', error);
     }
   }
+
+  updateItemState(id_detail: number, valuedWeight: string): void {
+    const updatedItem = this.db.find(item => item.ID_DETAIL === id_detail);
+    if (updatedItem) {
+      updatedItem.STATE_GESTOR = 1;
+      updatedItem.VALUE_DECLARATE = valuedWeight.replace('.', ',');
+    }
+    this.cdr.detectChanges();
+  }
+
+  async showSuccessMessage(multiple: boolean) {
+    await Swal.fire({
+      title: multiple ? "Las facturas fueron guardadas exitosamente" : "La factura fue guardada exitosamente",
+      icon: "success",
+      showConfirmButton: true,
+    });
+  }
+
   businessNoFound = true;
   onChangeVAT(target: any) {
     this.dbBusiness = [];
@@ -557,7 +537,7 @@ export class StatementsComponent implements OnInit {
     try {
       const businessResponse = await this.establishmentService.getInovice(invoiceNumber, treatmentType, material).toPromise();
       if (businessResponse.status) {
-        
+
         this.businessNoFound = true;
         this.userForm.controls['totalWeight'].setValue(
           this.formatNumber(businessResponse.data[0]?.invoice_value)
@@ -622,7 +602,7 @@ export class StatementsComponent implements OnInit {
         this.userForm.controls['valuedWeight'].disable();
         this.userForm.controls['totalWeight'].disable();
         this.userForm.controls['reciclador'].disable();
-        this.userForm.controls['rut'].disable(); 
+        this.userForm.controls['rut'].disable();
       }
     } catch (error) {
       this.userForm.controls['totalWeight'].setValue('');
@@ -654,7 +634,7 @@ export class StatementsComponent implements OnInit {
   }
 
   isTotalWeightEditable(): boolean {
-    const numDeclarations = 0; // Cambiar esto para obtener el valor real de Num. Declaraciones asociadas
+    const numDeclarations = 0;
     const invoiceNumber = this.userForm.controls['invoiceNumber'].value;
     const rut = this.userForm.controls['rut'].value;
 
