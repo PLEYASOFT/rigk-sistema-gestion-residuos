@@ -292,36 +292,49 @@ class EstablishmentDao {
         }
     }
 
-    public async getInvoice(number: any, rut: any, treatment_type: number, material_type: number) {
+    public async getInvoice(number: any, treatment_type: number, material_type: number, id_user: number) {
         const conn = mysqlcon.getConnection()!;
-        const business: any = await conn.execute("SELECT ID, NAME FROM business WHERE VAT = ?", [rut]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
-        if (business == null || business.length == 0) {
-            return []
-        }
-        const data0: any = await conn.execute("SELECT ID, VALUED_TOTAL AS invoice_value,TREATMENT_TYPE,MATERIAL_TYPE FROM invoices WHERE INVOICE_NUMBER=? AND VAT=?", [number, rut]).then((res) => res[0]).catch(error => [{ undefined }]);
-        // first invoice
+        const data0: any = await conn.execute("SELECT ID, VALUED_TOTAL AS invoice_value,TREATMENT_TYPE,MATERIAL_TYPE, ID_BUSINESS, VAT FROM invoices WHERE INVOICE_NUMBER=? AND ID_USER=?", [number, id_user]).then((res) => res[0]).catch(error => [{ undefined }]);
+        
         if (data0 == null || data0.length == 0) {
             return [{
                 invoice_value: null,
                 num_asoc: 0,
                 value_declarated: 0,
-                NAME: business
+                NAME: '',
+                RUT: ''
             }];
         }
 
-        //verify constraint
         if (data0[0]['MATERIAL_TYPE'] != material_type || data0[0]['TREATMENT_TYPE'] != treatment_type) {
             return [];
         }
-        //get invoice
+        
         const ID_INVOICE = data0[0].ID;
+        let businessName = ''; 
+        let vat = ''; 
+        
+        if (!isNaN(data0[0]['ID_BUSINESS'])) {
+            const business: any = await conn.execute("SELECT NAME FROM business WHERE ID = ?", [data0[0]['ID_BUSINESS']]).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
+            if (business != null && business.length > 0) {
+                businessName = business[0].NAME; 
+                vat = data0[0]['VAT']; 
+            } else {
+                businessName = data0[0]['ID_BUSINESS'].toString();
+                vat = data0[0]['VAT'];  
+            }
+        } else {
+            businessName = data0[0]['ID_BUSINESS']; 
+            vat = data0[0]['VAT'];  
+        }
         const data2: any = await conn.execute("SELECT SUM(VALUE) AS value_declarated, COUNT(VALUE) as num_asoc FROM invoices_detail WHERE ID_INVOICE=?", [ID_INVOICE]).then((res) => res[0]).catch(error => console.log(error));
         conn.end();
         return [{
             invoice_value: data0[0].invoice_value,
             num_asoc: data2[0].num_asoc || 0,
             value_declarated: data2[0].value_declarated || 0,
-            NAME: business
+            NAME: businessName,
+            RUT: vat
         }];
     }
 
@@ -330,7 +343,7 @@ class EstablishmentDao {
         const _file = file.data;
         const conn = mysqlcon.getConnection()!;
         try {
-            const invoice: any = await conn.execute("SELECT ID FROM invoices WHERE INVOICE_NUMBER=? AND VAT=?", [invoice_number, vat]).then((res) => res[0]).catch(error => [{ undefined }]);
+            const invoice: any = await conn.execute("SELECT ID FROM invoices WHERE INVOICE_NUMBER=? AND ID_USER=?", [invoice_number,id_user]).then((res) => res[0]).catch(error => [{ undefined }]);
             let ID;
             if (invoice.length == 0) {
                 const _ID: any = await conn.execute("INSERT INTO invoices(INVOICE_NUMBER,VAT,VALUED_TOTAL,ID_USER,TREATMENT_TYPE,MATERIAL_TYPE,ID_BUSINESS) VALUES(?,?,?,?,?,?,?)", [invoice_number, vat, valued_total, id_user, treatment, material, id_business]).then((res) => res[0]).catch(error => [{ undefined }]);
