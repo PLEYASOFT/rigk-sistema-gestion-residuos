@@ -219,12 +219,17 @@
                             <select *ngIf="!businessNoFound && dbBusiness.length > 0"
                                 [disabled]="userForm.controls['invoiceNumber'].value == ''" class="form-select"
                                 formControlName="reciclador">
-                                <option value="0">Seleccione Reciclador</option>
+                                <option value="">Seleccione Reciclador</option>
                                 <option *ngFor="let b of dbBusiness" [value]="b['ID']">{{b['NAME']}}</option>
                             </select>
                             <div class="text-danger pl-0">
-                                <p *ngIf="userForm.get('reciclador')?.errors?.['required']">Reciclador es requerido.</p>
-                            </div>
+                                <p *ngIf="(businessNoFound || dbBusiness.length === 0) && userForm.get('reciclador')?.errors?.['invalidRecycler']">
+                                    Reciclador requerido.
+                                </p>
+                                <p *ngIf="(!businessNoFound && dbBusiness.length > 0) && userForm.get('reciclador')?.errors?.['invalidRecycler']">
+                                    Por favor, seleccione un reciclador.
+                                </p>
+                            </div> 
                         </div>
                     </div>
                     <div class="row mb-3">
