@@ -47,7 +47,7 @@ export class StatementsComponent implements OnInit {
   userForm = this.fb.group({
     invoiceNumber: ['', [Validators.required]],
     rut: ['', [Validators.required, /*Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$'), this.verifyRut*/]],
-    reciclador: ['', Validators.required],
+    reciclador: ['', [this.validRecycler]],
     treatmentType: ['', [Validators.required]],
     material: ['', [Validators.required]],
     entryDate: ['', [Validators.required, this.pastDateValidator()]],
@@ -504,7 +504,7 @@ export class StatementsComponent implements OnInit {
         this.userForm.controls['reciclador'].setValue('');
       } else {
         this.businessNoFound = false;
-        this.userForm.controls['reciclador'].setValue('0');
+        this.userForm.controls['reciclador'].setValue('');
       }
     });
   }
@@ -788,6 +788,13 @@ export class StatementsComponent implements OnInit {
       // Tiene decimales
       this.selectedWeight = totalWeight.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
+  }
+
+  validRecycler(control: AbstractControl): { [key: string]: boolean } | null {
+    if (control.value === '') {
+      return { 'invalidRecycler': true }; 
+    }
+    return null;
   }
 
 }
