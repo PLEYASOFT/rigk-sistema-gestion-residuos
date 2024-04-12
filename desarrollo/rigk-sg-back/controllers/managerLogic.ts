@@ -106,9 +106,10 @@ class ManagerLogic {
     public async downloadBulkUploadFileInvoice(req: any, res: Response) {
 
         try {
+            const idGestors = req.body.idGestors;
             const path = require('path');
             const outputPath = path.join(__dirname, `../../files/templates/_carga_masiva_z.xlsx`);
-            const invoices = await establishmentDao.getDeclarationEstablishment(req.uid);
+            const invoices = await establishmentDao.getDeclarationEstablishmentByIdGestor(idGestors);
             if (invoices == false) {
                 return res.status(500).json({
                     status: false,
@@ -124,13 +125,7 @@ class ManagerLogic {
             }
 
             const businesses = await businessDao.getAllIndividualBusinessVAT();
-
-            /**
-             * DATA VALIDATION
-             */
-
             const workbook = new ExcelJS.Workbook();
-
             const worksheetInfo = workbook.addWorksheet("info");
 
             const VATS = [];
@@ -175,10 +170,7 @@ class ManagerLogic {
 
             worksheetInfo.state = "veryHidden";
 
-            // /**
-            //  * WORKSHEET DATA
-            //  */
-
+            
             const worksheet = workbook.addWorksheet('Carga Masiva');
             const row = worksheet.getRow(1);
             row.getCell(1).value = "EMPRESA CI";
@@ -243,12 +235,11 @@ class ManagerLogic {
                     rowdata.commit();
                 }
             }
-
+            
             const VATdropdown = ["Info!$A$2:$A$" + VATS.length];
 
             for (let i = 1; i <= noaprovediv.length; i++) {
                 worksheetInfo.getRow(1).getCell(2);
-
                 worksheet.getCell(`J${i + 1}`).dataValidation = {
                     type: 'textLength',
                     allowBlank: false,
@@ -265,11 +256,11 @@ class ManagerLogic {
                     allowBlank: false,
                     formulae: VATdropdown
                 };
-                ///METODO PROPIO
                 worksheet.getCell(`I${i + 1}`).dataValidation = {
                     type: 'list',
                     allowBlank: false,
                     formulae: [`=INDIRECT("_"&SUBSTITUTE(H${i + 1},"-","_"))`],
+                
                 };
                 worksheet.getCell(`K${i + 1}`).numFmt = '@';
                 worksheet.getCell(`L${i + 1}`).numFmt = '@';
