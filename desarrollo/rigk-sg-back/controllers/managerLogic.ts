@@ -123,7 +123,52 @@ class ManagerLogic {
                     message: "No existen facturas pendientes"
                 });
             }
+
+            const businesses = await businessDao.getAllIndividualBusinessVAT();
             const workbook = new ExcelJS.Workbook();
+            const worksheetInfo = workbook.addWorksheet("info");
+
+            const VATS = [];
+            for (let i = 0; i < businesses.length; i++) {
+                const business = businesses[i];
+                VATS.push([`${business.VAT}`]);
+            }
+
+            worksheetInfo.addTable({
+                name: 'VAT',
+                ref: "A1",
+                headerRow: true,
+                columns: [
+                    { name: 'VAT', filterButton: false },
+                ],
+                rows: VATS,
+            });
+
+            for (let i = 0; i < businesses.length; i++) {
+                const business = await businesses[i];
+                const reference = getReferenceExcel(i);
+                let nameVAT = "_"+business.VAT.replace(/-/g, "_");
+
+                const emp = await businessDao.getBusinessByVAT(business.VAT);
+
+                let empName = []
+                for (let i = 0; i < emp.length; i++) {
+                    const empresa = emp[i];
+                    empName.push([`${empresa.NAME}`])
+                }
+
+                worksheetInfo.addTable({
+                    name: nameVAT,
+                    ref: reference,
+                    headerRow: true,
+                    columns: [
+                        { name: nameVAT, filterButton: false },
+                    ],
+                    rows: empName,
+                });
+            }
+
+            worksheetInfo.state = "veryHidden";
 
             
             const worksheet = workbook.addWorksheet('Carga Masiva');
@@ -190,9 +235,11 @@ class ManagerLogic {
                     rowdata.commit();
                 }
             }
+            
+            const VATdropdown = ["Info!$A$2:$A$" + VATS.length];
 
             for (let i = 1; i <= noaprovediv.length; i++) {
-
+                worksheetInfo.getRow(1).getCell(2);
                 worksheet.getCell(`J${i + 1}`).dataValidation = {
                     type: 'textLength',
                     allowBlank: false,
@@ -204,6 +251,17 @@ class ManagerLogic {
                     formulae: [10, 10]
                 };
                 worksheet.getCell(`J${i + 1}`).numFmt = '@';;
+                worksheet.getCell(`H${i + 1}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: false,
+                    formulae: VATdropdown
+                };
+                worksheet.getCell(`I${i + 1}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: false,
+                    formulae: [`=INDIRECT("_"&SUBSTITUTE(H${i + 1},"-","_"))`],
+                
+                };
                 worksheet.getCell(`K${i + 1}`).numFmt = '@';
                 worksheet.getCell(`L${i + 1}`).numFmt = '@';
                 worksheet.getCell(`M${i + 1}`).numFmt = '@';
