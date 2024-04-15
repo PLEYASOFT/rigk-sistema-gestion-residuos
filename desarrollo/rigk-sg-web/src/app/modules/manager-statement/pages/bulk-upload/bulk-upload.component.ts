@@ -629,18 +629,17 @@ export class BulkUploadComponent implements OnInit {
       }
     }
 
-    const groupedData: { [key: string]: { tipo_tratamiento: string, material: string, numero_factura: string, rut_reciclador: string, remanente_total: number } } = {};
+    const groupedData: { [key: string]: { tipo_tratamiento: string, material: string, numero_factura: string, remanente_total: number } } = {};
     let valorTotal = null;
     let facturaInicial = null;
 
     for (const value of rowsDataDuplicated) {
-      const key = `${value.vat}`;
+      const key = `${value.numberInvoice}`;
       if (!groupedData[key]) {
         groupedData[key] = {
           tipo_tratamiento: value.treatmentType,
           material: value.material,
           numero_factura: value.numberInvoice,
-          rut_reciclador: value.vat,
           remanente_total: 0
         };
       }
@@ -652,9 +651,9 @@ export class BulkUploadComponent implements OnInit {
         }else{
           valorTotal = parseFloat(value.totalWeight.replace(",", "."));
         }
-        facturaInicial = value.vat;
+        facturaInicial = value.numberInvoice;
       }    
-      if (facturaInicial != value.vat) {
+      if (facturaInicial != value.numberInvoice) {
         if (parseFloat(value.declaratedWeightResponse) !== 0) {
           let numericTotalWeight = parseFloat(value.totalWeight.toString().replace(",", "."));
           let numericDeclaratedWeight = parseFloat(value.declaratedWeightResponse.toString().replace(",", "."));
@@ -662,7 +661,7 @@ export class BulkUploadComponent implements OnInit {
         }else{
           valorTotal = parseFloat(value.totalWeight.replace(",", "."));
         }
-        facturaInicial = value.vat;
+        facturaInicial = value.numberInvoice;
       }
       const valorizadoSuma = parseFloat(value.valuedWeight.replace(",", "."));
       valorTotal! -= valorizadoSuma;
