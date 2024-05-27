@@ -21,6 +21,15 @@
                     </div>
                 </div>
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <label class="form-label">Empresa Gestor:</label>
+                    <div class="input-group">
+                        <select id="f_gestor" class="form-select" [(ngModel)]="selectedGestor" (change)="updateFilters()" [disabled]="disableFilters">
+                            <option value="-1" selected>Todos</option>
+                            <option *ngFor="let gestor of gestor_name" value="{{gestor}}">{{gestor}}</option>
+                        </select>
+                    </div>
+                </div>                
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Tipo de tratamiento:</label>
                     <div class="input-group">
                         <select id="f_establishment" class="form-select" [(ngModel)]="selectedTreatment"
@@ -30,7 +39,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                <div class="col-12 col-xl-1 mb-3 mb-xl-0">
                     <label class="form-label">Material:</label>
                     <div class="input-group">
                         <select id="f_material" class="form-select" [(ngModel)]="selectedMaterial"
@@ -49,7 +58,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                <div class="col-12 col-xl-1 mb-3 mb-xl-0">
                     <label class="form-label">Estado:</label>
                     <div class="input-group">
                         <select id="f_state" class="form-select" [(ngModel)]="selectedState" (change)="updateFilters()"
