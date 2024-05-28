@@ -464,53 +464,61 @@ export class StatementsComponent implements OnInit {
       console.error('No hay archivo seleccionado');
       return;
     }
-
+  
     let { rut, invoiceNumber, entryDate, valuedWeight, reciclador } = this.userForm.value;
-    const totalWeight = this.userForm.controls['totalWeight'].value!.replace(",", ".");
-    valuedWeight = parseFloat(valuedWeight!.replace(",", ".")).toFixed(2);
-
+    const totalWeight = parseFloat(this.userForm.controls['totalWeight'].value!.replace(",", "."));
+    const valuedWeightFloat = parseFloat(valuedWeight!.replace(",", "."));
+  
     const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
     const itemsToProcess = selectedItems.length > 0 ? selectedItems : [this.db[index]];
-
-    console.log(selectedItems)
-    /*if (selectedItems.length > 0) {
-      valuedWeight = (parseFloat(valuedWeight) / selectedItems.length).toFixed(2);
-    }
-    Swal.fire({
-      title: 'Cargando Datos',
-      text: 'Se están recuperando datos',
-      timerProgressBar: true,
-      showConfirmButton: false,
-      allowEscapeKey: false,
-      allowOutsideClick: false
-    });
-
-    try {
-      for (const item of itemsToProcess) {
-        const { TREATMENT_TYPE_NUMBER: treatmentType, PRECEDENCE_NUMBER: material, ID_DETAIL: id_detail } = item;
-        const response = await this.establishmentService.saveInvoice(
-          rut, reciclador, invoiceNumber, id_detail, entryDate, valuedWeight, totalWeight, treatmentType, material, this.selectedFile
-        ).toPromise();
-
-        if (response.status) {
-          this.updateItemState(id_detail, valuedWeight);
+  
+    if (selectedItems.length > 0) {
+      const totalDeclaredWeight = selectedItems.reduce((sum, current) => sum + parseFloat(current.VALUE), 0);
+  
+      Swal.fire({
+        title: 'Cargando Datos',
+        text: 'Se están recuperando datos',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowEscapeKey: false,
+        allowOutsideClick: false
+      });
+  
+      try {
+        for (const item of itemsToProcess) {
+          const { TREATMENT_TYPE_NUMBER: treatmentType, PRECEDENCE_NUMBER: material, ID_DETAIL: id_detail, VALUE } = item;
+          const declaredWeight = parseFloat(VALUE);
+          const proportionalValuedWeight = ((declaredWeight / totalDeclaredWeight) * valuedWeightFloat).toFixed(2);
+          const response = await this.establishmentService.saveInvoice(
+            rut, reciclador, invoiceNumber, id_detail, entryDate, proportionalValuedWeight, totalWeight, treatmentType, material, this.selectedFile
+          ).toPromise();
+  
+          if (response.status) {
+            this.updateItemState(id_detail, proportionalValuedWeight);
+          }
         }
+        Swal.close();
+        await this.showSuccessMessage(itemsToProcess.length > 1);
+      } catch (error) {
+        console.error('Error:', error);
       }
-      Swal.close();
-      await this.showSuccessMessage(itemsToProcess.length > 1);
-    } catch (error) {
-      console.error('Error:', error);
-    }*/
+    }
   }
 
   updateItemState(id_detail: number, valuedWeight: string): void {
     const updatedItem = this.db.find(item => item.ID_DETAIL === id_detail);
     if (updatedItem) {
       updatedItem.STATE_GESTOR = 1;
-      updatedItem.VALUE_DECLARATE = valuedWeight.replace('.', ',');
+      const valuedWeightNum = parseFloat(valuedWeight);
+      if (valuedWeightNum % 1 === 0) {
+        updatedItem.VALUE_DECLARATE = valuedWeightNum.toString().replace('.', ',');
+      } else {
+        updatedItem.VALUE_DECLARATE = valuedWeightNum.toFixed(2).replace('.', ',');
+      }
     }
     this.cdr.detectChanges();
   }
+  
 
   async showSuccessMessage(multiple: boolean) {
     await Swal.fire({
