@@ -47,7 +47,7 @@ export class StatementsComponent implements OnInit {
 
   index: number = 0;
   userForm = this.fb.group({
-    empresaGestor: [{ value: '', disabled: true }, Validators.required],
+    empresaGestor: ['', Validators.required],
     invoiceNumber: ['', [Validators.required]],
     rut: ['', [Validators.required, /*Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$'), this.verifyRut*/]],
     reciclador: ['', [this.validRecycler]],
@@ -472,7 +472,8 @@ export class StatementsComponent implements OnInit {
     const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
     const itemsToProcess = selectedItems.length > 0 ? selectedItems : [this.db[index]];
 
-    if (selectedItems.length > 0) {
+    console.log(selectedItems)
+    /*if (selectedItems.length > 0) {
       valuedWeight = (parseFloat(valuedWeight) / selectedItems.length).toFixed(2);
     }
     Swal.fire({
@@ -499,7 +500,7 @@ export class StatementsComponent implements OnInit {
       await this.showSuccessMessage(itemsToProcess.length > 1);
     } catch (error) {
       console.error('Error:', error);
-    }
+    }*/
   }
 
   updateItemState(id_detail: number, valuedWeight: string): void {
@@ -568,7 +569,6 @@ export class StatementsComponent implements OnInit {
         this.businessNoFound = true;
         this.userForm.controls['totalWeight'].setValue(this.formatNumber(businessResponse.data[0]?.invoice_value));
         this.userForm.controls['declarateWeight'].setValue(this.formatNumber(businessResponse.data[0].value_declarated));
-        this.userForm.controls['empresaGestor'].setValue(businessResponse.data[0]?.NAME_GESTOR || '');
 
         if (this.selectedDeclarationsCount != 0) {
           this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + this.selectedDeclarationsCount);
