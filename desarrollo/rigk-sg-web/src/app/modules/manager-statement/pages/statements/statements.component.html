@@ -33,7 +33,7 @@
                     <label class="form-label">Tipo de tratamiento:</label>
                     <div class="input-group">
                         <select id="f_establishment" class="form-select" [(ngModel)]="selectedTreatment"
-                            (change)="updateFilters()" [disabled]="disableFilters">
+                            (change)="updateFilters()">
                             <option value="-1" selected>Todos</option>
                             <option *ngFor="let es of treatment_name" value="{{es}}">{{es}}</option>
                         </select>
@@ -43,7 +43,7 @@
                     <label class="form-label">Material:</label>
                     <div class="input-group">
                         <select id="f_material" class="form-select" [(ngModel)]="selectedMaterial"
-                            (change)="updateFilters()" [disabled]="disableFilters">
+                            (change)="updateFilters()">
                             <option value="-1" selected>Todos</option>
                             <option *ngFor="let ma of material_name" value="{{ma}}">{{ma}}</option>
                         </select>
