@@ -722,49 +722,44 @@ export class StatementsComponent implements OnInit {
   }
 
   updateCheckboxSelection() {
-    const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
-    this.anyCheckboxSelected = selectedItems.length > 0;
-    // Actualizar el número de declaraciones seleccionadas
-    this.selectedDeclarationsCount = selectedItems.length;
-
-    // Calcular y actualizar el peso total declarado seleccionado
-    let totalWeight = selectedItems.reduce((sum, current) => sum + parseFloat(current.VALUE), 0);
-
-    // Formatear el peso total para usar coma como separador decimal y quitar decimales si es entero
-    if (totalWeight % 1 === 0) {
-      // Es un número entero
-      this.selectedWeight = totalWeight.toLocaleString('es-ES');
+    const selectedGestor = this.db.find(item => item.isChecked)?.NAME_GESTOR;
+  
+    if (selectedGestor) {
+      this.filteredStatements = this.dbStatements.filter(r => 
+        r.STATE_GESTOR === 0 && r.NAME_GESTOR === selectedGestor
+      );
+  
+      this.db = this.filteredStatements.slice(0, 10).sort((a, b) =>
+        new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime() || b.ID_DETAIL - a.ID_DETAIL
+      );
+  
+      this.cant = Math.ceil(this.filteredStatements.length / 10);
+      this.selectedDeclarationsCount = 0;
+      this.selectedWeight = 0;
+      this.selectAllChecked = false;
+  
+      this.filteredStatements.forEach(s => {
+        s.isChecked = s.STATE_GESTOR == 0 ? false : s.isChecked;
+      });
+  
+      this.anyCheckboxSelected = this.filteredStatements.some(s => s.isChecked && s.STATE_GESTOR == 0);
+      this.cdr.detectChanges();
     } else {
-      // Tiene decimales
-      this.selectedWeight = totalWeight.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-    if (selectedItems.length > 0) {
-      // Si hay elementos seleccionados, establecer los filtros según el primer elemento seleccionado
-      const selectedItem = selectedItems[0];
-      this.selectedTreatment = selectedItem.TipoTratamiento;
-      this.selectedMaterial = selectedItem.PRECEDENCE;
-      this.selectedState = '0'; // Estado "Por aprobar"
-      this.disableFilters = true; // Deshabilitar filtros
-      this.updateFilters();
-    } else {
-      // Si no hay elementos seleccionados, restablecer los filtros y habilitarlos
-      this.selectedTreatment = '-1';
-      this.selectedMaterial = '-1';
-      this.selectedState = '-1';
-      this.disableFilters = false;
-      this.filter_two();
-      this.updateFilters();
-      this.pagTo(0);
-    }
-
-    this.isAnyCheckboxSelected = selectedItems.length > 0;
-
-    if (selectedItems.length == 1) {
-      this.filter_two();
-      this.updateFilters();
-      this.pagTo(0);
+      this.resetFilters();
     }
   }
+  
+  resetFilters() {
+    this.selectedTreatment = '-1';
+    this.selectedMaterial = '-1';
+    this.selectedState = '-1';
+    this.selectedGestor = '-1';
+    this.disableFilters = false;
+    this.filter_two();
+    this.updateFilters();
+    this.pagTo(0);
+  }
+  
 
   selectAllCheckboxes(isSelected: boolean) {
     this.filteredStatements.forEach(s => {
