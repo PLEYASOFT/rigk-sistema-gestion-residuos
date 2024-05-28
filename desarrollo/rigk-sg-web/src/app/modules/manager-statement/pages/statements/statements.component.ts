@@ -47,6 +47,7 @@ export class StatementsComponent implements OnInit {
 
   index: number = 0;
   userForm = this.fb.group({
+    empresaGestor: [{ value: '', disabled: true }, Validators.required],
     invoiceNumber: ['', [Validators.required]],
     rut: ['', [Validators.required, /*Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$'), this.verifyRut*/]],
     reciclador: ['', [this.validRecycler]],
@@ -165,7 +166,8 @@ export class StatementsComponent implements OnInit {
       this.userForm.patchValue({
         declarated: this.selectedWeight,
         treatmentType: selectedItems[0].TipoTratamiento,
-        material: selectedItems[0].PRECEDENCE
+        material: selectedItems[0].PRECEDENCE,
+        empresaGestor: selectedItems[0].NAME_GESTOR
       });
 
       // Simular un clic en el botón que abre el modal
@@ -398,7 +400,7 @@ export class StatementsComponent implements OnInit {
   }
 
   getStateText(state: number): string {
-    return state === 0 ? 'Por aprobar' : 'Aprobado';
+    return state === 0 ? 'Por Aprobar' : 'Aprobado';
   }
 
   handleClick(index: number, stateGestor: number): void {
@@ -564,12 +566,10 @@ export class StatementsComponent implements OnInit {
       if (businessResponse.status) {
 
         this.businessNoFound = true;
-        this.userForm.controls['totalWeight'].setValue(
-          this.formatNumber(businessResponse.data[0]?.invoice_value)
-        );
-        this.userForm.controls['declarateWeight'].setValue(
-          this.formatNumber(businessResponse.data[0].value_declarated)
-        );
+        this.userForm.controls['totalWeight'].setValue(this.formatNumber(businessResponse.data[0]?.invoice_value));
+        this.userForm.controls['declarateWeight'].setValue(this.formatNumber(businessResponse.data[0].value_declarated));
+        this.userForm.controls['empresaGestor'].setValue(businessResponse.data[0]?.NAME_GESTOR || '');
+
         if (this.selectedDeclarationsCount != 0) {
           this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + this.selectedDeclarationsCount);
         }
@@ -646,6 +646,7 @@ export class StatementsComponent implements OnInit {
   async onMaterialTreatmentChange(index: any) {
     this.userForm.controls['treatmentType'].setValue(this.db[index].TipoTratamiento);
     this.userForm.controls['material'].setValue(this.db[index].PRECEDENCE);
+    this.userForm.controls['empresaGestor'].setValue(this.db[index].NAME_GESTOR);
     this.userForm.controls['declarated'].setValue(this.db[index].VALUE?.toString().replace(".", ","));
   }
 
