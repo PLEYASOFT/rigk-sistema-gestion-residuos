@@ -104,7 +104,8 @@ class EstablishmentDao {
         detail_industrial_consumer_form.ID_GESTOR AS IdGestor,
         detail_industrial_consumer_form.LER,
         detail_industrial_consumer_form.TREATMENT_TYPE AS TREATMENT_TYPE_NUMBER,
-        type_treatment.NAME AS TipoTratamiento
+        type_treatment.NAME AS TipoTratamiento,
+        gestor.NAME AS NAME_GESTOR
     FROM header_industrial_consumer_form
     INNER JOIN establishment ON establishment.ID = header_industrial_consumer_form.ID_ESTABLISHMENT
     INNER JOIN establishment_business ON establishment_business.ID_ESTABLISHMENT = establishment.ID
@@ -115,11 +116,13 @@ class EstablishmentDao {
     LEFT JOIN type_material ON type_material.ID = detail_industrial_consumer_form.PRECEDENCE
     LEFT JOIN submaterial ON submaterial.ID = detail_industrial_consumer_form.TYPE_RESIDUE
     LEFT JOIN type_treatment ON type_treatment.ID = detail_industrial_consumer_form.TREATMENT_TYPE
+    LEFT JOIN business AS gestor ON gestor.ID = detail_industrial_consumer_form.ID_GESTOR
     WHERE detail_industrial_consumer_form.ID_GESTOR IN (?)`;
         const data: any = await conn.query(query, [ID_GESTORs]).then(res => res[0]).catch(erro => { console.log(erro); return undefined });
         conn.end();
         return data;
     }
+    
 
     public async getAllDeclarationEstablishments() {
         const conn = mysqlcon.getConnection()!;
