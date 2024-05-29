@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { BulkUploadComponent } from './bulk-upload.component';
 
 describe('BulkUploadComponent', () => {
