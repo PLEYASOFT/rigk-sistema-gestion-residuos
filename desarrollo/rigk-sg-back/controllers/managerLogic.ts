@@ -174,34 +174,36 @@ class ManagerLogic {
             const worksheet = workbook.addWorksheet('Carga Masiva');
             const row = worksheet.getRow(1);
             row.getCell(1).value = "EMPRESA CI";
-            row.getCell(2).value = "ESTABLECIMIENTO";
-            row.getCell(3).value = "TIPO TRATAMIENTO";
-            row.getCell(4).value = "MATERIAL";
-            row.getCell(5).value = "SUBTIPO";
-            row.getCell(6).value = "FECHA RETIRO";
-            row.getCell(7).value = "NÚM. FACTURA RECICLADOR";
-            row.getCell(8).value = "RUT RECICLADOR";
-            row.getCell(9).value = "RECICLADOR";
-            row.getCell(10).value = "FECHA INGRESO PR";
-            row.getCell(11).value = "PESO TOTAL";
-            row.getCell(12).value = "PESO DECLARADO";
-            row.getCell(13).value = "PESO VALORIZADO";
+            row.getCell(2).value = "EMPRESA GESTOR";
+            row.getCell(3).value = "ESTABLECIMIENTO";
+            row.getCell(4).value = "TIPO TRATAMIENTO";
+            row.getCell(5).value = "MATERIAL";
+            row.getCell(6).value = "SUBTIPO";
+            row.getCell(7).value = "FECHA RETIRO";
+            row.getCell(8).value = "NÚM. FACTURA RECICLADOR";
+            row.getCell(9).value = "RUT RECICLADOR";
+            row.getCell(10).value = "RECICLADOR";
+            row.getCell(11).value = "FECHA INGRESO PR";
+            row.getCell(12).value = "PESO TOTAL";
+            row.getCell(13).value = "PESO DECLARADO";
+            row.getCell(14).value = "PESO VALORIZADO";
             row.commit();
 
             const col = worksheet.columns;
             col[0].width = 23, 43;      //A
-            col[1].width = 36;          //B
-            col[2].width = 21, 14;      //C
-            col[3].width = 12;          //D
-            col[4].width = 33, 71;      //E
-            col[5].width = 12, 71;      //F
-            col[6].width = 25, 71;      //G
-            col[7].width = 15, 14;      //H
-            col[8].width = 22, 86;      //I
-            col[9].width = 17, 14;      //J
-            col[10].width = 10, 86;     //K
-            col[11].width = 17;         //L
-            col[12].width = 17;         //M
+            col[1].width = 23, 43;      //A
+            col[2].width = 36;          //B
+            col[3].width = 21, 14;      //C
+            col[4].width = 12;          //D
+            col[5].width = 33, 71;      //E
+            col[6].width = 12, 71;      //F
+            col[7].width = 25, 71;      //G
+            col[8].width = 15, 14;      //H
+            col[9].width = 22, 86;      //I
+            col[10].width = 17, 14;      //J
+            col[11].width = 10, 86;     //K
+            col[12].width = 17;         //L
+            col[13].width = 17;         //M
             
             for (let i = 0; i < noaprovediv.length; i++) {
                 const invoice = noaprovediv[i];
@@ -219,19 +221,20 @@ class ManagerLogic {
 
                     const rowdata = worksheet.getRow(i + 2);
                     rowdata.getCell(1).value = `${invoice.NAME_BUSINESS}`;
-                    rowdata.getCell(2).value = `${invoice.NAME_ESTABLISHMENT_REGION}`;
-                    rowdata.getCell(3).value = `${invoice.TipoTratamiento}`;
-                    rowdata.getCell(4).value = `${invoice.PRECEDENCE}`;
-                    rowdata.getCell(5).value = `${invoice.TYPE_RESIDUE}`;
-                    rowdata.getCell(6).value = `${format1}`;
-                    rowdata.getCell(7).value = "";
+                    rowdata.getCell(2).value = `${invoice.NAME_GESTOR}`;
+                    rowdata.getCell(3).value = `${invoice.NAME_ESTABLISHMENT_REGION}`;
+                    rowdata.getCell(4).value = `${invoice.TipoTratamiento}`;
+                    rowdata.getCell(5).value = `${invoice.PRECEDENCE}`;
+                    rowdata.getCell(6).value = `${invoice.TYPE_RESIDUE}`;
+                    rowdata.getCell(7).value = `${format1}`;
                     rowdata.getCell(8).value = "";
                     rowdata.getCell(9).value = "";
                     rowdata.getCell(10).value = "";
                     rowdata.getCell(11).value = "";
-                    rowdata.getCell(12).value = `${invoice.VALUE}`;
-                    rowdata.getCell(13).value = "";
-                    rowdata.getCell(14).value = `${invoice.ID_DETAIL}`;
+                    rowdata.getCell(12).value = "";
+                    rowdata.getCell(13).value = `${invoice.VALUE}`;
+                    rowdata.getCell(14).value = "";
+                    rowdata.getCell(15).value = `${invoice.ID_DETAIL}`;
                     rowdata.commit();
                 }
             }
@@ -240,7 +243,7 @@ class ManagerLogic {
 
             for (let i = 1; i <= noaprovediv.length; i++) {
                 worksheetInfo.getRow(1).getCell(2);
-                worksheet.getCell(`J${i + 1}`).dataValidation = {
+                worksheet.getCell(`K${i + 1}`).dataValidation = {
                     type: 'textLength',
                     allowBlank: false,
                     operator: 'between',
@@ -250,21 +253,21 @@ class ManagerLogic {
                     error: 'Por favor, ingrese una fecha válida en formato DD/MM/AAAA.',
                     formulae: [10, 10]
                 };
-                worksheet.getCell(`J${i + 1}`).numFmt = '@';;
-                worksheet.getCell(`H${i + 1}`).dataValidation = {
+                worksheet.getCell(`K${i + 1}`).numFmt = '@';;
+                worksheet.getCell(`I${i + 1}`).dataValidation = {
                     type: 'list',
                     allowBlank: false,
                     formulae: VATdropdown
                 };
-                worksheet.getCell(`I${i + 1}`).dataValidation = {
+                worksheet.getCell(`J${i + 1}`).dataValidation = {
                     type: 'list',
                     allowBlank: false,
                     formulae: [`=INDIRECT("_"&SUBSTITUTE(H${i + 1},"-","_"))`],
                 
                 };
-                worksheet.getCell(`K${i + 1}`).numFmt = '@';
                 worksheet.getCell(`L${i + 1}`).numFmt = '@';
                 worksheet.getCell(`M${i + 1}`).numFmt = '@';
+                worksheet.getCell(`N${i + 1}`).numFmt = '@';
             }
 
             const nameCol = worksheet.getColumn('N');

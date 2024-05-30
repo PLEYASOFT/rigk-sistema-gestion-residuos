@@ -571,6 +571,10 @@ export class StatementsComponent implements OnInit {
     const material = this.db[index].PRECEDENCE_NUMBER;
 
     try {
+      console.log(invoiceNumber);
+      console.log(treatmentType);
+      console.log(material);
+      console.log(index)
       const businessResponse = await this.establishmentService.getInovice(invoiceNumber, treatmentType, material).toPromise();
       if (businessResponse.status) {
 
