@@ -14,11 +14,11 @@ export class EstablishmentService {
     return this.http.get<any>(`${this.url}/all/`);
   }
 
-  getInovice(invoice_number: any, treatment_type: any, material_type: any) {
-    return this.http.post<any>(`${this.url}/get/invoice/`, { invoice_number, treatment_type, material_type});
+  getInovice(invoice_number: any, treatment_type: any, material_type: any, idGestor: any) {
+    return this.http.post<any>(`${this.url}/get/invoice/`, { invoice_number, treatment_type, material_type,idGestor});
   }
 
-  saveInvoice(vat: any, id_business: any, invoice_number: any, id_detail: any, date_pr: any, value: any, valued_total: any, treatment: any, id_material: any, file: File) {
+  saveInvoice(vat: any, id_business: any, invoice_number: any, id_detail: any, date_pr: any, value: any, valued_total: any, treatment: any, id_material: any, file: File, IdGestor: any) {
     const formData: FormData = new FormData();
     formData.append('vat', vat);
     formData.append('id_business', id_business);
@@ -29,6 +29,7 @@ export class EstablishmentService {
     formData.append('valued_total', valued_total);
     formData.append('treatment', treatment);
     formData.append('id_material', id_material);
+    formData.append('IdGestor', IdGestor);
     formData.append('file', file, file.name);
 
     return this.http.post<any>(`${this.url}/invoice/`, formData);

@@ -322,7 +322,6 @@ export class BulkUploadComponent implements OnInit {
 
       // FECHA RETIRO [6]
       const withdrawalDate = row[6];
-      console.log(withdrawalDate)
       if (!withdrawalDate) {
         Swal.fire({
           icon: 'error',
@@ -421,7 +420,7 @@ export class BulkUploadComponent implements OnInit {
       // PESO DECLARADO [12] -> validar
       let declaratedWeight: string | number;
       let declaratedWeightResponse;
-      const businessResponse = await this.establishmentService.getInovice(numberInvoice, treatmentTypeNum, materialTypeNum/*, idBusiness*/).toPromise();
+      const businessResponse = await this.establishmentService.getInovice(numberInvoice, treatmentTypeNum, materialTypeNum, idBusiness).toPromise();
       if (businessResponse.status) {
         totalWeight = (this.formatNumber(businessResponse.data[0]?.invoice_value));
         declaratedWeightResponse = (this.formatNumber(businessResponse.data[0].value_declarated));
@@ -627,7 +626,6 @@ export class BulkUploadComponent implements OnInit {
         nameGestor,
       };
       let included = false;
-      console.log(sameRowsVerf)     
       for (const arreglo of sameRowsVerf) {
         const arregloD = arreglo as any[];
         if (arregloD.includes(vat)) {
@@ -641,8 +639,6 @@ export class BulkUploadComponent implements OnInit {
         rowsDataDuplicated.push(rowData);
       }
     }
-    console.log(rowsData)
-    console.log(rowsDataDuplicated)
     const groupedData: { [key: string]: { tipo_tratamiento: string, material: string, numero_factura: string, remanente_total: number } } = {};
     let valorTotal = null;
     let facturaInicial = null;
@@ -718,7 +714,7 @@ export class BulkUploadComponent implements OnInit {
       if (this.allInvoices.length == Object.keys(this.fileNames).length && this.fileNames[i]) {
         try {
           const response = await Promise.race([
-            this.establishmentService.saveInvoice(element.vat, element.idBusiness, element.numberInvoice, element.idDetail, element.backAdmissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), element.treatmentTypeNum, element.materialTypeNum, this.fileToUpload[i]).toPromise(),
+            this.establishmentService.saveInvoice(element.vat, element.idBusiness, element.numberInvoice, element.idDetail, element.backAdmissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), element.treatmentTypeNum, element.materialTypeNum, this.fileToUpload[i], element.IdGestor).toPromise(),
             new Promise((_resolve, reject) => {
                 setTimeout(() => reject(new Error('Timeout')), 30000); // 30 segundos
             })

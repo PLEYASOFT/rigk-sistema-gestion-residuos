@@ -464,47 +464,47 @@ export class StatementsComponent implements OnInit {
       console.error('No hay archivo seleccionado');
       return;
     }
-  
+
     let { rut, invoiceNumber, entryDate, valuedWeight, reciclador } = this.userForm.value;
     const totalWeight = parseFloat(this.userForm.controls['totalWeight'].value!.replace(",", "."));
     const valuedWeightFloat = parseFloat(valuedWeight!.replace(",", "."));
-  
+
     const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
     const itemsToProcess = selectedItems.length > 0 ? selectedItems : [this.db[index]];
-  
-    if (selectedItems.length > 0) {
-      const totalDeclaredWeight = selectedItems.reduce((sum, current) => sum + parseFloat(current.VALUE), 0);
-  
-      Swal.fire({
-        title: 'Cargando Datos',
-        text: 'Se están recuperando datos',
-        timerProgressBar: true,
-        showConfirmButton: false,
-        allowEscapeKey: false,
-        allowOutsideClick: false
-      });
-  
-      try {
-        for (const item of itemsToProcess) {
-          const { TREATMENT_TYPE_NUMBER: treatmentType, PRECEDENCE_NUMBER: material, ID_DETAIL: id_detail, VALUE } = item;
-          const declaredWeight = parseFloat(VALUE);
-          const proportionalValuedWeight = ((declaredWeight / totalDeclaredWeight) * valuedWeightFloat).toFixed(2);
-          const response = await this.establishmentService.saveInvoice(
-            rut, reciclador, invoiceNumber, id_detail, entryDate, proportionalValuedWeight, totalWeight, treatmentType, material, this.selectedFile
-          ).toPromise();
-  
-          if (response.status) {
-            this.updateItemState(id_detail, proportionalValuedWeight);
-          }
+
+    Swal.fire({
+      title: 'Cargando Datos',
+      text: 'Se están recuperando datos',
+      timerProgressBar: true,
+      showConfirmButton: false,
+      allowEscapeKey: false,
+      allowOutsideClick: false
+    });
+
+    try {
+      const totalDeclaredWeight = itemsToProcess.reduce((sum, current) => sum + parseFloat(current.VALUE), 0);
+
+      for (const item of itemsToProcess) {
+        console
+        const { TREATMENT_TYPE_NUMBER: treatmentType, PRECEDENCE_NUMBER: material, ID_DETAIL: id_detail, VALUE, IdGestor: IdGestor } = item;
+        const declaredWeight = parseFloat(VALUE);
+        const proportionalValuedWeight = ((declaredWeight / totalDeclaredWeight) * valuedWeightFloat).toFixed(2);
+        const response = await this.establishmentService.saveInvoice(
+          rut, reciclador, invoiceNumber, id_detail, entryDate, proportionalValuedWeight, totalWeight, treatmentType, material, this.selectedFile, IdGestor
+        ).toPromise();
+        if (response.status) {
+          this.updateItemState(id_detail, proportionalValuedWeight);
         }
-        Swal.close();
-        await this.showSuccessMessage(itemsToProcess.length > 1);
-      } catch (error) {
-        console.error('Error:', error);
       }
+
+      Swal.close();
+      await this.showSuccessMessage(itemsToProcess.length > 1);
+    } catch (error) {
+      Swal.close();
+      console.error('Error:', error);
     }
   }
-
+ 
   updateItemState(id_detail: number, valuedWeight: string): void {
     const updatedItem = this.db.find(item => item.ID_DETAIL === id_detail);
     if (updatedItem) {
@@ -518,7 +518,7 @@ export class StatementsComponent implements OnInit {
     }
     this.cdr.detectChanges();
   }
-  
+
 
   async showSuccessMessage(multiple: boolean) {
     await Swal.fire({
@@ -569,15 +569,10 @@ export class StatementsComponent implements OnInit {
     const invoiceNumber = this.userForm.controls['invoiceNumber'].value;
     const treatmentType = this.db[index].TREATMENT_TYPE_NUMBER;
     const material = this.db[index].PRECEDENCE_NUMBER;
-
+    const IdGestor = this.db[index].IdGestor;
     try {
-      console.log(invoiceNumber);
-      console.log(treatmentType);
-      console.log(material);
-      console.log(index)
-      const businessResponse = await this.establishmentService.getInovice(invoiceNumber, treatmentType, material).toPromise();
+      const businessResponse = await this.establishmentService.getInovice(invoiceNumber, treatmentType, material, IdGestor).toPromise();
       if (businessResponse.status) {
-
         this.businessNoFound = true;
         this.userForm.controls['totalWeight'].setValue(this.formatNumber(businessResponse.data[0]?.invoice_value));
         this.userForm.controls['declarateWeight'].setValue(this.formatNumber(businessResponse.data[0].value_declarated));
@@ -739,8 +734,6 @@ export class StatementsComponent implements OnInit {
   updateCheckboxSelection() {
 
     const selectedGestor = this.db.find(item => item.isChecked)?.NAME_GESTOR;
-
-    console.log(selectedGestor)
     this.filteredStatements = this.dbStatements.filter(r =>
       r.STATE_GESTOR === 0 && r.NAME_GESTOR === selectedGestor
     );
