@@ -235,6 +235,7 @@ class ManagerLogic {
                     rowdata.getCell(13).value = `${invoice.VALUE}`;
                     rowdata.getCell(14).value = "";
                     rowdata.getCell(15).value = `${invoice.ID_DETAIL}`;
+                    rowdata.getCell(16).value = `${invoice.IdGestor}`;
                     rowdata.commit();
                 }
             }
@@ -270,7 +271,9 @@ class ManagerLogic {
                 worksheet.getCell(`N${i + 1}`).numFmt = '@';
             }
 
-            const nameCol = worksheet.getColumn('N');
+            let nameCol = worksheet.getColumn('O');
+            nameCol.hidden = true;
+            nameCol = worksheet.getColumn('P');
             nameCol.hidden = true;
 
             await workbook.xlsx.writeFile(outputPath);
