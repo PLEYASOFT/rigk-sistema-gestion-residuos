@@ -420,9 +420,7 @@ export class BulkUploadComponent implements OnInit {
       // PESO DECLARADO [12] -> validar
       let declaratedWeight: string | number;
       let declaratedWeightResponse;
-      console.log(numberInvoice, treatmentTypeNum, materialTypeNum, idGestor)
       const businessResponse = await this.establishmentService.getInovice(numberInvoice, treatmentTypeNum, materialTypeNum, idGestor).toPromise();
-      console.log(businessResponse)
       if (businessResponse.status) {
         totalWeight = (this.formatNumber(businessResponse.data[0]?.invoice_value));
         declaratedWeightResponse = (this.formatNumber(businessResponse.data[0].value_declarated));
@@ -509,7 +507,6 @@ export class BulkUploadComponent implements OnInit {
       const numericTotalWeight = parseFloat(totalWeight.toString().replace(",", "."));
       const numericValuedWeight = parseFloat(valuedWeight.toString().replace(",", "."));
       let fixedRemainingWeight;
-      console.log('peso declarado: ', declaratedWeightResponse)
       if (declaratedWeightResponse !== 0) {
         const numericDeclaratedWeight = parseFloat(declaratedWeightResponse.toString().replace(",", "."));
         const PrevRemainingWeight = numericTotalWeight - numericDeclaratedWeight;
@@ -569,7 +566,6 @@ export class BulkUploadComponent implements OnInit {
       const frontAdmissionDate = `${tempFrontAdmissionDate[2]}-${tempFrontAdmissionDate[1]}-${tempFrontAdmissionDate[0]}`;
 
       const foundInvoice = noAprovedInvoices.find((item: {ID_DETAIL: number; }) => item.ID_DETAIL == parseInt(idDetail));
-      console.log(noAprovedInvoices)
       if (!foundInvoice) {
         Swal.fire({
           icon: 'error',
@@ -618,7 +614,6 @@ export class BulkUploadComponent implements OnInit {
         idGestor
       };
       let included = false;
-      console.log('SAME: ',sameRowsVerf)
       for (const arreglo of sameRowsVerf) {
         const arregloD = arreglo as any[];
         if (arregloD.includes(idGestor)) {
@@ -707,7 +702,6 @@ export class BulkUploadComponent implements OnInit {
     Swal.showLoading();
     let errores = false
     for (let i = 0; i < this.allInvoices.length; i++) {
-      console.log(this.allInvoices)
       const element = this.allInvoices[i];
       if (this.allInvoices.length == Object.keys(this.fileNames).length && this.fileNames[i]) {
         try {

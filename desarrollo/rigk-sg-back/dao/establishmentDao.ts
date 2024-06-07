@@ -306,7 +306,6 @@ class EstablishmentDao {
             [number, idGestor]
         ).then((res) => res[0]).catch(error => [{ undefined }]);
 
-        console.log(data0)
         if (data0 == null || data0.length == 0) {
             return [{
                 invoice_value: null,
