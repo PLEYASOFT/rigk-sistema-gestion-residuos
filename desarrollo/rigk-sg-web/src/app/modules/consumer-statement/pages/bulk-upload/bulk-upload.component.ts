@@ -80,7 +80,8 @@ export class BulkUploadComponent implements OnInit {
     const query = event.query.toLowerCase();
     this.filteredBusiness = this.dbBusiness
         .filter(b => b.NAME.toLowerCase().includes(query))
-        .map(b => ({ label: `${b.CODE_BUSINESS} - ${b.NAME}`, value: b.ID }));
+        .map(b => ({ label: `${b.CODE_BUSINESS} - ${b.NAME}`, value: b.ID }))
+        .sort((a, b) => a.label.localeCompare(b.label));
         
       if (this.filteredBusiness.length > 0) {
           this.filteredBusiness.unshift({ label: 'Seleccionar Empresa', value: '-1' });
@@ -92,7 +93,6 @@ export class BulkUploadComponent implements OnInit {
   }
 
   onBusinessSelect(event: any) {
-    // Asignar el nombre de la empresa seleccionada al cuadro de texto
     this.selectedBusiness = event;
     console.log("Selected Business Name: ", this.selectedBusiness);
   }

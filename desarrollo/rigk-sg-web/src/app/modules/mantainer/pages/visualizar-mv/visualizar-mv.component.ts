@@ -166,39 +166,39 @@ export class VisualizarMvComponent implements OnInit {
     this.filteredBusinesses = this.business_name
         .filter((na: string) => na.toLowerCase().includes(query))
         .map((na: string) => ({ label: na, value: na }))
-        .sort((a, b) => a.label.localeCompare(b.label)); // Orden alfanumérico
+        .sort((a, b) => a.label.localeCompare(b.label));
     if (this.filteredBusinesses.length === 0) {
         this.filteredBusinesses = [{ label: 'Todos', value: '-1' }];
     } else {
         this.filteredBusinesses.unshift({ label: 'Todos', value: '-1' });
     }
-}
+  }
 
-filterEstablishments(event: any) {
-    const query = event.query.toLowerCase();
-    this.filteredEstablishments = this.establishment_name
-        .filter((na: string) => na.toLowerCase().includes(query))
-        .map((na: string) => ({ label: na, value: na }))
-        .sort((a, b) => a.label.localeCompare(b.label)); // Orden alfanumérico
-    if (this.filteredEstablishments.length === 0) {
-        this.filteredEstablishments = [{ label: 'Todos', value: '-1' }];
-    } else {
-        this.filteredEstablishments.unshift({ label: 'Todos', value: '-1' });
-    }
-}
+  filterEstablishments(event: any) {
+      const query = event.query.toLowerCase();
+      this.filteredEstablishments = this.establishment_name
+          .filter((na: string) => na.toLowerCase().includes(query))
+          .map((na: string) => ({ label: na, value: na }))
+          .sort((a, b) => a.label.localeCompare(b.label));
+      if (this.filteredEstablishments.length === 0) {
+          this.filteredEstablishments = [{ label: 'Todos', value: '-1' }];
+      } else {
+          this.filteredEstablishments.unshift({ label: 'Todos', value: '-1' });
+      }
+  }
 
-filterMaterial(event: any) {
-    const query = event.query.toLowerCase();
-    this.filteredMaterial = this.material_name
-        .filter((na: string) => na.toLowerCase().includes(query))
-        .map((na: string) => ({ label: na, value: na }))
-        .sort((a, b) => a.label.localeCompare(b.label)); // Orden alfanumérico
-    if (this.filteredMaterial.length === 0) {
-        this.filteredMaterial = [{ label: 'Todos', value: '-1' }];
-    } else {
-        this.filteredMaterial.unshift({ label: 'Todos', value: '-1' });
-    }
-}
+  filterMaterial(event: any) {
+      const query = event.query.toLowerCase();
+      this.filteredMaterial = this.material_name
+          .filter((na: string) => na.toLowerCase().includes(query))
+          .map((na: string) => ({ label: na, value: na }))
+          .sort((a, b) => a.label.localeCompare(b.label));
+      if (this.filteredMaterial.length === 0) {
+          this.filteredMaterial = [{ label: 'Todos', value: '-1' }];
+      } else {
+          this.filteredMaterial.unshift({ label: 'Todos', value: '-1' });
+      }
+  }
 
   filterYear(event: any) {
     const query = event.query.toString();

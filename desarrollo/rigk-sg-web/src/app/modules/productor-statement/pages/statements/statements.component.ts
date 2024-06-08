@@ -42,7 +42,7 @@ export class StatementsComponent implements OnInit {
     const query = event.query.toLowerCase();
     this.filteredBusinesses = this.business_name.filter(business => {
       return business.label.toLowerCase().includes(query);
-    });
+    }).sort((a, b) => a.label.localeCompare(b.label));
 
     if (this.filteredBusinesses.length > 0) {
       this.filteredBusinesses.unshift({ label: 'Todos', value: '-1' });

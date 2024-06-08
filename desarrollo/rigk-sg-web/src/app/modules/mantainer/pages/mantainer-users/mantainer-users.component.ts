@@ -67,6 +67,7 @@ export class MantainerUsersComponent implements OnInit {
         this.business.map(r => {
           r.view_name = `${r.CODE_BUSINESS} | ${r.NAME}`;
         });
+        this.business.sort((a, b) => a.view_name.localeCompare(b.view_name));
       }
     });
   }
@@ -113,6 +114,7 @@ export class MantainerUsersComponent implements OnInit {
         this.listRoles.map(r => {
           r.view_name = `${r.NAME}`;
         });
+        this.listRoles.sort((a, b) => a.view_name.localeCompare(b.view_name));
       }
     });
   }

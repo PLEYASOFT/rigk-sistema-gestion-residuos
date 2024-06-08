@@ -19,11 +19,14 @@
                 <div class="col-12 col-xl-6 mb-3">
                     <label class="form-label">Empresa:</label>
                     <div class="input-group">
-                      <p-autoComplete [(ngModel)]="selectedBusiness" 
-                        [suggestions]="filteredBusiness" (completeMethod)="filterBusiness($event)" field="NAME" 
-                        [dropdown]="true" placeholder="Seleccionar Empresa" [forceSelection]="true" (onSelect)="onBusinessSelect($event)">
+                      <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedBusiness" 
+                        [suggestions]="filteredBusiness" (completeMethod)="filterBusiness($event)" field="label" 
+                        [dropdown]="true" placeholder="Seleccionar Empresa" (onSelect)="onBusinessSelect($event)">
                         <ng-template let-business pTemplate="item">
                           <div>{{ business.label }}</div>
+                        </ng-template>  
+                        <ng-template let-business pTemplate="selectedItem">
+                          <div>{{business.label}}</div>
                         </ng-template>
                       </p-autoComplete>
                     </div>
