@@ -104,7 +104,8 @@ class EstablishmentDao {
         detail_industrial_consumer_form.ID_GESTOR AS IdGestor,
         detail_industrial_consumer_form.LER,
         detail_industrial_consumer_form.TREATMENT_TYPE AS TREATMENT_TYPE_NUMBER,
-        type_treatment.NAME AS TipoTratamiento
+        type_treatment.NAME AS TipoTratamiento,
+        gestor.NAME AS NAME_GESTOR
     FROM header_industrial_consumer_form
     INNER JOIN establishment ON establishment.ID = header_industrial_consumer_form.ID_ESTABLISHMENT
     INNER JOIN establishment_business ON establishment_business.ID_ESTABLISHMENT = establishment.ID
@@ -115,11 +116,13 @@ class EstablishmentDao {
     LEFT JOIN type_material ON type_material.ID = detail_industrial_consumer_form.PRECEDENCE
     LEFT JOIN submaterial ON submaterial.ID = detail_industrial_consumer_form.TYPE_RESIDUE
     LEFT JOIN type_treatment ON type_treatment.ID = detail_industrial_consumer_form.TREATMENT_TYPE
+    LEFT JOIN business AS gestor ON gestor.ID = detail_industrial_consumer_form.ID_GESTOR
     WHERE detail_industrial_consumer_form.ID_GESTOR IN (?)`;
         const data: any = await conn.query(query, [ID_GESTORs]).then(res => res[0]).catch(erro => { console.log(erro); return undefined });
         conn.end();
         return data;
     }
+    
 
     public async getAllDeclarationEstablishments() {
         const conn = mysqlcon.getConnection()!;
@@ -292,10 +295,17 @@ class EstablishmentDao {
         }
     }
 
-    public async getInvoice(number: any, treatment_type: number, material_type: number, id_user: number) {
+    public async getInvoice(number: any, idGestor: number) {
         const conn = mysqlcon.getConnection()!;
-        const data0: any = await conn.execute("SELECT ID, VALUED_TOTAL AS invoice_value,TREATMENT_TYPE,MATERIAL_TYPE, ID_BUSINESS, VAT FROM invoices WHERE INVOICE_NUMBER=? AND ID_USER=?", [number, id_user]).then((res) => res[0]).catch(error => [{ undefined }]);
-        
+        const data0: any = await conn.execute(
+            `SELECT invoices.ID, invoices.VALUED_TOTAL AS invoice_value, invoices.TREATMENT_TYPE, invoices.MATERIAL_TYPE, invoices.ID_BUSINESS, invoices.VAT
+             FROM invoices
+             JOIN invoices_detail ON invoices.ID = invoices_detail.ID_INVOICE
+             JOIN detail_industrial_consumer_form ON invoices_detail.ID_DETAIL = detail_industrial_consumer_form.ID
+             WHERE invoices.INVOICE_NUMBER = ? AND detail_industrial_consumer_form.ID_GESTOR = ?`,
+            [number, idGestor]
+        ).then((res) => res[0]).catch(error => [{ undefined }]);
+
         if (data0 == null || data0.length == 0) {
             return [{
                 invoice_value: null,
@@ -304,10 +314,6 @@ class EstablishmentDao {
                 NAME: '',
                 RUT: ''
             }];
-        }
-
-        if (data0[0]['MATERIAL_TYPE'] != material_type || data0[0]['TREATMENT_TYPE'] != treatment_type) {
-            return [];
         }
         
         const ID_INVOICE = data0[0].ID;
@@ -338,12 +344,16 @@ class EstablishmentDao {
         }];
     }
 
-    public async saveInvoice(vat: any, id_business: any, invoice_number: any, id_detail: any, date_pr: any, value: any, file: any, valued_total: any, id_user: any, treatment: any, material: any) {
+    public async saveInvoice(vat: any, id_business: any, invoice_number: any, id_detail: any, date_pr: any, value: any, file: any, valued_total: any, id_user: any, treatment: any, material: any, IdGestor: any) {
         const file_name = file.name;
         const _file = file.data;
         const conn = mysqlcon.getConnection()!;
         try {
-            const invoice: any = await conn.execute("SELECT ID FROM invoices WHERE INVOICE_NUMBER=? AND ID_USER=?", [invoice_number,id_user]).then((res) => res[0]).catch(error => [{ undefined }]);
+            const invoice: any = await conn.execute(`SELECT invoices.ID, invoices.VALUED_TOTAL AS invoice_value, invoices.TREATMENT_TYPE, invoices.MATERIAL_TYPE, invoices.ID_BUSINESS, invoices.VAT
+            FROM invoices
+            JOIN invoices_detail ON invoices.ID = invoices_detail.ID_INVOICE
+            JOIN detail_industrial_consumer_form ON invoices_detail.ID_DETAIL = detail_industrial_consumer_form.ID
+            WHERE invoices.INVOICE_NUMBER = ? AND detail_industrial_consumer_form.ID_GESTOR = ?`, [invoice_number,IdGestor]).then((res) => res[0]).catch(error => [{ undefined }]);
             let ID;
             if (invoice.length == 0) {
                 const _ID: any = await conn.execute("INSERT INTO invoices(INVOICE_NUMBER,VAT,VALUED_TOTAL,ID_USER,TREATMENT_TYPE,MATERIAL_TYPE,ID_BUSINESS) VALUES(?,?,?,?,?,?,?)", [invoice_number, vat, valued_total, id_user, treatment, material, id_business]).then((res) => res[0]).catch(error => [{ undefined }]);
