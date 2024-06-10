@@ -88,13 +88,10 @@ export class BulkUploadComponent implements OnInit {
       } else {
           this.filteredBusiness = [{ label: 'Seleccionar Empresa', value: '-1' }];
       }
-        console.log("Datos originales: ", this.dbBusiness);
-        console.log("Datos filtrados: ", this.filteredBusiness);
   }
 
   onBusinessSelect(event: any) {
     this.selectedBusiness = event;
-    console.log("Selected Business Name: ", this.selectedBusiness);
   }
   
   onFileChange(event: any) {

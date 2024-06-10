@@ -222,10 +222,6 @@ export class StatementsComponent implements OnInit {
 
     this.anyCheckboxSelected = this.filteredStatements.some(s => s.isChecked && parseInt(s.STATE_GESTOR) == 0);
     this.cdr.detectChanges();
-
-    console.log("this.selectedState "+this.selectedState);
-    console.log("selectedStateValue "+selectedStateValue);
-    console.log("selectedStateNum "+selectedStateNum);
   }
 
   filterBusinesses(event: any) {
