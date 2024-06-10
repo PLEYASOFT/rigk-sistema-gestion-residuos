@@ -103,7 +103,6 @@ export class MaintainerRatesComponent implements OnInit {
         next: r=> {
           if(r.status){
             this.getAllRates();
-            console.log("ifff");
             document.getElementById('closeModallll')?.click();
             document.getElementById('closeModallll2')?.click();
           } else {
@@ -176,7 +175,6 @@ export class MaintainerRatesComponent implements OnInit {
 
   getPrice(val:any,type:number){
     const r = val.data.findIndex((e:any)=>e.type == type);
-    console.log(val.data[r].price);
     return val.data[r].price || 0;
   }
   

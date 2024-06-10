@@ -39,6 +39,7 @@
 				<thead>
 					<tr align="center">
 						<th>Empresa CI</th>
+						<th>Empresa Gestor</th>
 						<th>Establecimiento</th>
 						<th>Tipo Tratamiento</th>
 						<th>Material</th>
@@ -59,6 +60,7 @@
 				<tbody>
 					<tr *ngFor="let s of allInvoices; let x = index">
 						<td>{{s.nameBusiness}}</td>
+						<td>{{s.nameGestor}}</td>
 						<td>{{s.establishment}}</td>
 						<td>{{s.treatmentType}}</td>
 						<td>{{s.material}}</td>
