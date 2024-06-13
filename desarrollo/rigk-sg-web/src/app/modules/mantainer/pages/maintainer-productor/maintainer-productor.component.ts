@@ -41,14 +41,14 @@ export class MaintainerProductorComponent implements OnInit {
 
   filterBusinesses(event: any) {
     const query = event.query.toLowerCase();
-    this.filteredBusinesses = this.business_name.filter(business => {
-      return business.label.toLowerCase().includes(query);
-    });
+    this.filteredBusinesses = this.business_name
+        .filter(business => business.label.toLowerCase().includes(query))
+        .sort((a, b) => a.label.localeCompare(b.label));
 
     if (this.filteredBusinesses.length > 0) {
-      this.filteredBusinesses.unshift({ label: 'Todos', value: '-1' });
+        this.filteredBusinesses.unshift({ label: 'Todos', value: '-1' });
     } else {
-      this.filteredBusinesses = [{ label: 'Todos', value: '-1' }];
+        this.filteredBusinesses = [{ label: 'Todos', value: '-1' }];
     }
   }
 

@@ -31,6 +31,12 @@ export class StatementsComponent implements OnInit {
   state: number[] = [];
   cant: number = 0;
   filteredStatements: any[] = [];
+  filteredBusinesses: any[] = [];
+  filteredMaterial: any[] = [];
+  filteredYear: any[] = [];
+  filteredBusinessesManager: any[] = [];
+  filteredTreatment: any[] = [];
+  filteredState: any[] = [];
 
   selectedBusiness: string = '-1';
   selectedMaterial: string = '-1';
@@ -178,19 +184,26 @@ export class StatementsComponent implements OnInit {
   }
 
   filter(auto: boolean = false) {
+    const selectedBusinessValue = (this.selectedBusiness as any)?.value || this.selectedBusiness;
+    const selectedBusinessManagerValue = (this.selectedGestor as any)?.value || this.selectedGestor;
+    const selectedTreatmentValue = (this.selectedTreatment as any)?.value || this.selectedTreatment;
+    const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
+    const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
+    const selectedStateValue = (this.selectedState as any)?.value || this.selectedState;
+    
     if (auto && !this.autoFilter) return;
 
-    const selectedStateNum = parseInt(this.selectedState);
+    const selectedStateNum = parseInt(selectedStateValue);
 
     this.filteredStatements = this.dbStatements.filter(r => {
       const rStateGestorNum = parseInt(r.STATE_GESTOR);
       return (
-        (this.selectedBusiness === '-1' || r.NAME_BUSINESS === this.selectedBusiness) &&
-        (this.selectedMaterial === '-1' || r.PRECEDENCE === this.selectedMaterial) &&
-        (this.selectedTreatment === '-1' || r.TipoTratamiento === this.selectedTreatment) &&
-        (this.selectedYear === '-1' || r.FechaRetiroTipeada === this.selectedYear) &&
-        (this.selectedState === '-1' || rStateGestorNum === selectedStateNum) &&
-        (this.selectedGestor === '-1' || r.NAME_GESTOR === this.selectedGestor)
+        (selectedBusinessValue === '-1' || r.NAME_BUSINESS === selectedBusinessValue) &&
+        (selectedMaterialValue === '-1' || r.PRECEDENCE === selectedMaterialValue) &&
+        (selectedTreatmentValue === '-1' || r.TipoTratamiento === selectedTreatmentValue) &&
+        (selectedYearValue === '-1' || r.FechaRetiroTipeada === selectedYearValue) &&
+        (selectedStateValue === '-1' || rStateGestorNum === selectedStateNum) &&
+        (selectedBusinessManagerValue === '-1' || r.NAME_GESTOR === selectedBusinessManagerValue)
       );
     });
 
@@ -211,21 +224,104 @@ export class StatementsComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  filterBusinesses(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredBusinesses = this.business_name
+        .filter((na: string) => na.toLowerCase().includes(query))
+        .map((na: string) => ({ label: na, value: na }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+    if (this.filteredBusinesses.length === 0) {
+        this.filteredBusinesses = [{ label: 'Todos', value: '-1' }];
+    } else {
+        this.filteredBusinesses.unshift({ label: 'Todos', value: '-1' });
+    }
+  }
+
+  filterBusinessesManager(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredBusinessesManager = this.gestor_name
+        .filter((na: string) => na.toLowerCase().includes(query))
+        .map((na: string) => ({ label: na, value: na }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+    if (this.filteredBusinessesManager.length === 0) {
+        this.filteredBusinessesManager = [{ label: 'Todos', value: '-1' }];
+    } else {
+        this.filteredBusinessesManager.unshift({ label: 'Todos', value: '-1' });
+    }
+  }
+  
+  filterTreatment(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredTreatment = this.treatment_name
+        .filter((na: string) => na.toLowerCase().includes(query))
+        .map((na: string) => ({ label: na, value: na }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+    if (this.filteredTreatment.length === 0) {
+        this.filteredTreatment = [{ label: 'Todos', value: '-1' }];
+    } else {
+        this.filteredTreatment.unshift({ label: 'Todos', value: '-1' });
+    }
+  }
+
+  filterMaterial(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredMaterial = this.material_name
+        .filter((na: string) => na.toLowerCase().includes(query))
+        .map((na: string) => ({ label: na, value: na }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+    if (this.filteredMaterial.length === 0) {
+        this.filteredMaterial = [{ label: 'Todos', value: '-1' }];
+    } else {
+        this.filteredMaterial.unshift({ label: 'Todos', value: '-1' });
+    }
+  }
+
+  filterYear(event: any) {
+    const query = event.query.toString();
+    this.filteredYear = this.years
+      .filter((year: number) => year.toString().includes(query))
+      .map((year: number) => ({ label: year.toString(), value: year.toString() }));
+    if (this.filteredYear.length > 0) {
+      this.filteredYear.unshift({ label: 'Todos', value: '-1' });
+    } else {
+      this.filteredYear = [{ label: 'Todos', value: '-1' }];
+    }
+  }
+
+  filterState(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredState = this.state
+      .filter((state: number) => this.getStateText(state).toLowerCase().includes(query))
+      .map((state: number) => ({ label: this.getStateText(state), value: state.toString() }));
+    
+    if (this.filteredState.length > 0) {
+      this.filteredState.unshift({ label: 'Todos', value: '-1' });
+    } else {
+      this.filteredState = [{ label: 'Todos', value: '-1' }];
+    }
+}
 
   filter_two(auto: boolean = false) {
+    const selectedBusinessValue = (this.selectedBusiness as any)?.value || this.selectedBusiness;
+    const selectedBusinessManagerValue = (this.selectedGestor as any)?.value || this.selectedGestor;
+    const selectedTreatmentValue = (this.selectedTreatment as any)?.value || this.selectedTreatment;
+    const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
+    const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
+    const selectedStateValue = (this.selectedState as any)?.value || this.selectedState;
+
     if (auto && !this.autoFilter) return;
 
-    const selectedStateNum = parseInt(this.selectedState);
+    const selectedStateNum = parseInt(selectedStateValue);
 
     this.filteredStatements = this.dbStatements.filter(r => {
       const rStateGestorNum = parseInt(r.STATE_GESTOR);
       return (
-        (this.selectedBusiness === '-1' || r.NAME_BUSINESS === this.selectedBusiness) &&
-        (this.selectedMaterial === '-1' || r.PRECEDENCE === this.selectedMaterial) &&
-        (this.selectedTreatment === '-1' || r.TipoTratamiento === this.selectedTreatment) &&
-        (this.selectedYear === '-1' || r.FechaRetiroTipeada === this.selectedYear) &&
-        (this.selectedState === '-1' || rStateGestorNum === selectedStateNum) &&
-        (this.selectedGestor === '-1' || r.NAME_GESTOR === this.selectedGestor)
+        (selectedBusinessValue === '-1' || r.NAME_BUSINESS === selectedBusinessValue) &&
+        (selectedMaterialValue === '-1' || r.PRECEDENCE === selectedMaterialValue) &&
+        (selectedTreatmentValue === '-1' || r.TipoTratamiento === selectedTreatmentValue) &&
+        (selectedYearValue === '-1' || r.FechaRetiroTipeada === selectedYearValue) &&
+        (selectedStateValue === '-1' || rStateGestorNum === selectedStateNum) &&
+        (selectedBusinessManagerValue === '-1' || r.NAME_GESTOR === selectedBusinessManagerValue)
       );
     });
 
@@ -239,16 +335,22 @@ export class StatementsComponent implements OnInit {
 
 
   updateFilters() {
+    const selectedBusinessValue = (this.selectedBusiness as any)?.value || this.selectedBusiness;
+    const selectedBusinessManagerValue = (this.selectedGestor as any)?.value || this.selectedGestor;
+    const selectedTreatmentValue = (this.selectedTreatment as any)?.value || this.selectedTreatment;
+    const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
+    const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
+    const selectedStateValue = (this.selectedState as any)?.value || this.selectedState;
+
     // Filtrar las opciones de business_name
     this.business_name = this.dbStatements
       .filter(
         (r) =>
-          (this.selectedTreatment === "-1" ||
-            r.TipoTratamiento === this.selectedTreatment) &&
-          (this.selectedMaterial === "-1" || r.PRECEDENCE === this.selectedMaterial) &&
-          (this.selectedYear === "-1" || r.FechaRetiroTipeada === this.selectedYear) &&
-          (this.selectedState === "-1" || parseInt(r.STATE_GESTOR) === parseInt(this.selectedState) || r.STATE_GESTOR === undefined) &&
-          (this.selectedGestor === "-1" || r.NAME_GESTOR === this.selectedGestor)
+          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue) &&
+          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue) &&
+          (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
+          (selectedBusinessManagerValue === "-1" || r.NAME_GESTOR === selectedBusinessManagerValue)
       )
       .map((r) => r.NAME_BUSINESS)
       .filter((value, index, self) => self.indexOf(value) === index);
@@ -256,11 +358,11 @@ export class StatementsComponent implements OnInit {
     this.treatment_name = this.dbStatements
       .filter(
         (r) =>
-          (this.selectedBusiness === "-1" || r.NAME_BUSINESS === this.selectedBusiness) &&
-          (this.selectedMaterial === "-1" || r.PRECEDENCE === this.selectedMaterial) &&
-          (this.selectedYear === "-1" || r.FechaRetiroTipeada === this.selectedYear) &&
-          (this.selectedState === "-1" || parseInt(r.STATE_GESTOR) === parseInt(this.selectedState) || r.STATE_GESTOR === undefined) &&
-          (this.selectedGestor === "-1" || r.NAME_GESTOR === this.selectedGestor)
+          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue) &&
+          (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
+          (selectedBusinessManagerValue === "-1" || r.NAME_GESTOR === selectedBusinessManagerValue)
       )
       .map((r) => r.TipoTratamiento)
       .filter((value, index, self) => self.indexOf(value) === index);
@@ -268,11 +370,11 @@ export class StatementsComponent implements OnInit {
     this.material_name = this.dbStatements
       .filter(
         (r) =>
-          (this.selectedBusiness === "-1" || r.NAME_BUSINESS === this.selectedBusiness) &&
-          (this.selectedTreatment === "-1" || r.TipoTratamiento === this.selectedTreatment) &&
-          (this.selectedYear === "-1" || r.FechaRetiroTipeada === this.selectedYear) &&
-          (this.selectedState === "-1" || parseInt(r.STATE_GESTOR) === parseInt(this.selectedState) || r.STATE_GESTOR === undefined) &&
-          (this.selectedGestor === "-1" || r.NAME_GESTOR === this.selectedGestor)
+          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue) &&
+          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue) &&
+          (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
+          (selectedBusinessManagerValue === "-1" || r.NAME_GESTOR === selectedBusinessManagerValue)
       )
       .map((r) => r.PRECEDENCE)
       .filter((value, index, self) => self.indexOf(value) === index);
@@ -280,11 +382,11 @@ export class StatementsComponent implements OnInit {
     this.years = this.dbStatements
       .filter(
         (r) =>
-          (this.selectedBusiness === "-1" || r.NAME_BUSINESS === this.selectedBusiness) &&
-          (this.selectedTreatment === "-1" || r.TipoTratamiento === this.selectedTreatment) &&
-          (this.selectedMaterial === "-1" || r.PRECEDENCE === this.selectedMaterial) &&
-          (this.selectedState === "-1" || parseInt(r.STATE_GESTOR) === parseInt(this.selectedState) || r.STATE_GESTOR === undefined) &&
-          (this.selectedGestor === "-1" || r.NAME_GESTOR === this.selectedGestor)
+          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue) &&
+          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+          (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
+          (selectedBusinessManagerValue === "-1" || r.NAME_GESTOR === selectedBusinessManagerValue)
       )
       .map((r) => r.FechaRetiroTipeada)
       .filter((value, index, self) => self.indexOf(value) === index)
@@ -293,11 +395,11 @@ export class StatementsComponent implements OnInit {
     this.state = this.dbStatements
       .filter(
         (r) =>
-          (this.selectedBusiness === "-1" || r.NAME_BUSINESS === this.selectedBusiness) &&
-          (this.selectedTreatment === "-1" || r.TipoTratamiento === this.selectedTreatment) &&
-          (this.selectedMaterial === "-1" || r.PRECEDENCE === this.selectedMaterial) &&
-          (this.selectedYear === "-1" || r.FechaRetiroTipeada === this.selectedYear) &&
-          (this.selectedGestor === "-1" || r.NAME_GESTOR === this.selectedGestor)
+          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue) &&
+          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue) &&
+          (selectedBusinessManagerValue === "-1" || r.NAME_GESTOR === selectedBusinessManagerValue)
       )
       .map((r) => parseInt(r.STATE_GESTOR))
       .filter((value, index, self) => self.indexOf(value) === index);
@@ -305,11 +407,11 @@ export class StatementsComponent implements OnInit {
     this.gestor_name = this.dbStatements
       .filter(
         (r) =>
-          (this.selectedBusiness === "-1" || r.NAME_BUSINESS === this.selectedBusiness) &&
-          (this.selectedTreatment === "-1" || r.TipoTratamiento === this.selectedTreatment) &&
-          (this.selectedMaterial === "-1" || r.PRECEDENCE === this.selectedMaterial) &&
-          (this.selectedYear === "-1" || r.FechaRetiroTipeada === this.selectedYear) &&
-          (this.selectedState === "-1" || parseInt(r.STATE_GESTOR) === parseInt(this.selectedState) || r.STATE_GESTOR === undefined)
+          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue) &&
+          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue) &&
+          (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined)
       )
       .map((r) => r.NAME_GESTOR)
       .filter((value, index, self) => self.indexOf(value) === index);

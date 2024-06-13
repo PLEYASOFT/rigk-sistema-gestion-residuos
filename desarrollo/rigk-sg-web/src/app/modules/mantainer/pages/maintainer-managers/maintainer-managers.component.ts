@@ -76,6 +76,7 @@ export class MaintainerManagersComponent implements OnInit {
     this.managerService.getAllMaterials().subscribe({
       next: resp => {
         this.listMateriales = resp.status.map((material: { MATERIAL: any; }) => material.MATERIAL);
+        this.listMateriales.sort((a, b) => a.localeCompare(b));
       },
       error: r => {
         Swal.close();
