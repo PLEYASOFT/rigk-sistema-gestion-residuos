@@ -600,8 +600,11 @@ class IndustrialConsumer {
                 rowdata.getCell(10).value = `${invoice.SUBCATEGORIA}`;
                 rowdata.getCell(11).value = `${invoice.TRATAMIENTO}`;
                 rowdata.getCell(12).value = `${invoice.SUBTIPO}`;
-                rowdata.getCell(13).value = `${parseFloat(invoice.PESO_DECLARADO.toFixed(2).replace(",", ".")).toString().replace(".", ',')}`;
-                rowdata.getCell(14).value = invoice.PESO_VALORIZADO !== null ? `${parseFloat(invoice.PESO_VALORIZADO.toFixed(2).replace(",", ".")).toString().replace(".", ',')}` : ``;
+                rowdata.getCell(13).value = invoice.PESO_DECLARADO % 1 === 0 ? Math.round(invoice.PESO_DECLARADO) : parseFloat(invoice.PESO_DECLARADO.toFixed(2));
+                rowdata.getCell(13).numFmt = invoice.PESO_DECLARADO % 1 === 0 ? '0' : '0.00';
+                rowdata.getCell(14).value = invoice.PESO_VALORIZADO !== null ? (invoice.PESO_VALORIZADO % 1 === 0 ? Math.round(invoice.PESO_VALORIZADO) : parseFloat(invoice.PESO_VALORIZADO.toFixed(2))) : null;
+                rowdata.getCell(14).numFmt = invoice.PESO_VALORIZADO !== null && invoice.PESO_VALORIZADO % 1 === 0 ? '0' : '0.00';
+
 
                 const fechaOriginal = new Date(invoice.FECHA_DE_RETIRO);
 
@@ -738,89 +741,93 @@ class IndustrialConsumer {
 
             worksheetResumen.getCell('A6').value = 'Peso Total Declarado';
             const pesoDeclaradoTotal = response.reduce((suma: any, item: { PESO_DECLARADO: any; }) => suma + item.PESO_DECLARADO, 0);
-            worksheetResumen.getCell('B6').value = parseFloat(pesoDeclaradoTotal).toFixed(2).replace(",", ".").toString().replace(".", ',');
-
+            worksheetResumen.getCell('B6').value = pesoDeclaradoTotal;
             worksheetResumen.getCell('A7').value = 'Peso Total Valorizado';
             const pesoValorizadoTotal = response.reduce((suma: any, item: { PESO_VALORIZADO: any; }) => suma + item.PESO_VALORIZADO, 0);
-            worksheetResumen.getCell('B7').value = parseFloat(pesoValorizadoTotal).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B7').value = pesoValorizadoTotal;
 
             // -------------------------------------------------------------------
 
             worksheetResumen.getCell('A8').value = 'Total Reciclaje Papel/Cartón (Reciclaje Mecánico + Reciclaje Interno) ';
-            worksheetResumen.getCell('B8').value = parseFloat(calcularSumaPesoDeclarado(response, "Papel/Cartón")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B8').value = calcularSumaPesoDeclarado(response, "Papel/Cartón");
             worksheetResumen.getCell('A9').value = 'Total Reciclaje Plástico (Reciclaje Mecánico + Reciclaje Interno) ';
-            worksheetResumen.getCell('B9').value = parseFloat(calcularSumaPesoDeclarado(response, "Plástico")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B9').value = calcularSumaPesoDeclarado(response, "Plástico");
             worksheetResumen.getCell('A10').value = 'Total Reciclaje Metal (Reciclaje Mecánico + Reciclaje Interno) ';
-            worksheetResumen.getCell('B10').value = parseFloat(calcularSumaPesoDeclarado(response, "Metal")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B10').value = calcularSumaPesoDeclarado(response, "Metal");
             worksheetResumen.getCell('A11').value = 'Total Reciclaje Madera (Reciclaje Mecánico + Reciclaje Interno) ';
-            worksheetResumen.getCell('B11').value = parseFloat(calcularSumaPesoDeclarado(response, "Madera")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B11').value = calcularSumaPesoDeclarado(response, "Madera");
             worksheetResumen.getCell('A12').value = 'Total Reciclaje Mezclados (Reciclaje Mecánico + Reciclaje Interno) ';
-            worksheetResumen.getCell('B12').value = parseFloat(calcularSumaPesoDeclarado(response, "Mezclados")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B12').value = calcularSumaPesoDeclarado(response, "Mezclados");
 
             worksheetResumen.getCell('A13').value = 'Valorización Total Papel/Cartón (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B13').value = parseFloat(calcularSumaPesoValorizado(response, "Papel/Cartón")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B13').value = calcularSumaPesoValorizado(response, "Papel/Cartón");
             worksheetResumen.getCell('A14').value = 'Valorización Total Plástico (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B14').value = parseFloat(calcularSumaPesoValorizado(response, "Plástico")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B14').value = calcularSumaPesoValorizado(response, "Plástico");
             worksheetResumen.getCell('A15').value = 'Valorización Total Metal (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B15').value = parseFloat(calcularSumaPesoValorizado(response, "Metal")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B15').value = calcularSumaPesoValorizado(response, "Metal");
             worksheetResumen.getCell('A16').value = 'Valorización Total Madera (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B16').value = parseFloat(calcularSumaPesoValorizado(response, "Madera")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B16').value = calcularSumaPesoValorizado(response, "Madera");
             worksheetResumen.getCell('A17').value = 'Valorización Total Mezclados (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B17').value = parseFloat(calcularSumaPesoValorizado(response, "Mezclados")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B17').value = calcularSumaPesoValorizado(response, "Mezclados");
 
             worksheetResumen.getCell('A18').value = 'Total no valorizado Papel/Cartón (Disposicion Final en RS +  DF en Relleno Seguridad)';
             const sumaPapelCarton = calcularSumaPesoNoValorizado(response, "Papel/Cartón");
-            worksheetResumen.getCell('B18').value = parseFloat(sumaPapelCarton).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B18').value = sumaPapelCarton;
             worksheetResumen.getCell('A19').value = 'Total no valorizado Plastico (Disposicion Final en RS + DF en Relleno Seguridad)';
             const sumaPlastico = calcularSumaPesoNoValorizado(response, "Plástico")
-            worksheetResumen.getCell('B19').value = parseFloat(sumaPlastico).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B19').value = sumaPlastico;
             worksheetResumen.getCell('A20').value = 'Total no valorizado Metal (Disposicion Final en RS + DF en Relleno Seguridad)';
             const sumaMetal = calcularSumaPesoNoValorizado(response, "Metal")
-            worksheetResumen.getCell('B20').value = parseFloat(sumaMetal).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B20').value = sumaMetal;
             worksheetResumen.getCell('A21').value = 'Total no valorizado Madera (Disposicion Final en RS + DF en Relleno Seguridad)';
             const sumaMadera = calcularSumaPesoNoValorizado(response, "Madera");
-            worksheetResumen.getCell('B21').value = parseFloat(sumaMadera).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B21').value = sumaMadera;
             worksheetResumen.getCell('A22').value = 'Total no valorizado Mezclados (Disposicion Final en RS + DF en Relleno Seguridad)';
             const sumaMezclados = calcularSumaPesoNoValorizado(response, "Mezclados");
-            worksheetResumen.getCell('B22').value = parseFloat(sumaMezclados).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B22').value = sumaMezclados;
 
             worksheetResumen.getCell('A23').value = 'Total preparación para reutilización por todas las subcategoría (Disposicion Final en RS + DF en Relleno Seguridad)';
             const sumaReutilizacion = parseFloat(sumaPapelCarton) + parseFloat(sumaPlastico) + parseFloat(sumaMetal) + parseFloat(sumaMadera) + parseFloat(sumaMezclados);
-            worksheetResumen.getCell('B23').value = sumaReutilizacion.toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B23').value = sumaReutilizacion;
 
             worksheetResumen.getCell('A24').value = 'Total Valorización Región de Arica y Parinacota  (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B24').value = parseFloat(calcularSumaPesoRegion(response, "Región de Arica y Parinacota")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B24').value = calcularSumaPesoRegion(response, "Región de Arica y Parinacota");
             worksheetResumen.getCell('A25').value = 'Total Valorización Región de Tarapacá (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B25').value = parseFloat(calcularSumaPesoRegion(response, "Región de Tarapacá")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B25').value = calcularSumaPesoRegion(response, "Región de Tarapacá");
             worksheetResumen.getCell('A26').value = 'Total Valorización Región de Antofagasta (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B26').value = parseFloat(calcularSumaPesoRegion(response, "Región de Antofagasta")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B26').value = calcularSumaPesoRegion(response, "Región de Antofagasta");
             worksheetResumen.getCell('A27').value = 'Total Valorización Región de Atacama (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B27').value = parseFloat(calcularSumaPesoRegion(response, "Región de Atacama")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B27').value = calcularSumaPesoRegion(response, "Región de Atacama");
             worksheetResumen.getCell('A28').value = 'Total Valorización Región de Coquimbo (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B28').value = parseFloat(calcularSumaPesoRegion(response, "Región de Coquimbo")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B28').value = calcularSumaPesoRegion(response, "Región de Coquimbo");
             worksheetResumen.getCell('A29').value = 'Total Valorización Región de Valparaíso (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B29').value = parseFloat(calcularSumaPesoRegion(response, "Región de Valparaíso")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B29').value = calcularSumaPesoRegion(response, "Región de Valparaíso");
             worksheetResumen.getCell('A30').value = 'Total Valorización Región de O’Higgins (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B30').value = parseFloat(calcularSumaPesoRegion(response, "Región de O’Higgins")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B30').value = calcularSumaPesoRegion(response, "Región de O’Higgins");
             worksheetResumen.getCell('A31').value = 'Total Valorización Región del Maule (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B31').value = parseFloat(calcularSumaPesoRegion(response, "Región del Maules")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B31').value = calcularSumaPesoRegion(response, "Región del Maules");
             worksheetResumen.getCell('A32').value = 'Total Valorización Región de Ñuble (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B32').value = parseFloat(calcularSumaPesoRegion(response, "Región de Ñuble")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B32').value = calcularSumaPesoRegion(response, "Región de Ñuble");
             worksheetResumen.getCell('A33').value = 'Total Valorización Región del Biobío (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B33').value = parseFloat(calcularSumaPesoRegion(response, "Región del Biobío")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B33').value = calcularSumaPesoRegion(response, "Región del Biobío");
             worksheetResumen.getCell('A34').value = 'Total Valorización Región de la Araucanía (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B34').value = parseFloat(calcularSumaPesoRegion(response, "Región de la Araucanía")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B34').value = calcularSumaPesoRegion(response, "Región de la Araucanía");
             worksheetResumen.getCell('A35').value = 'Total Valorización Región de Los Ríos (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B35').value = parseFloat(calcularSumaPesoRegion(response, "Región de Los Ríos")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B35').value = calcularSumaPesoRegion(response, "Región de Los Ríos");
             worksheetResumen.getCell('A36').value = 'Total Valorización Región de Los Lagos (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B36').value = parseFloat(calcularSumaPesoRegion(response, "Región de Los Lagos")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B36').value = calcularSumaPesoRegion(response, "Región de Los Lagos");
             worksheetResumen.getCell('A37').value = 'Total Valorización Región de Aysén (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B37').value = parseFloat(calcularSumaPesoRegion(response, "Región de Aysén")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B37').value = calcularSumaPesoRegion(response, "Región de Aysén");
             worksheetResumen.getCell('A38').value = 'Total Valorización Región de Magallanes (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B38').value = parseFloat(calcularSumaPesoRegion(response, "Región de Magallanes")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B38').value = calcularSumaPesoRegion(response, "Región de Magallanes");
             worksheetResumen.getCell('A39').value = 'Total Valorización Región Metropolitana (Reciclaje Mecánico + Reciclaje Interno + Valorizacion Energetica) ';
-            worksheetResumen.getCell('B39').value = parseFloat(calcularSumaPesoRegion(response, "Región Metropolitana")).toFixed(2).replace(",", ".").toString().replace(".", ',');
+            worksheetResumen.getCell('B39').value = calcularSumaPesoRegion(response, "Región Metropolitana");
 
+            // Aplicar formato numérico a toda la columna B
+            worksheetResumen.getColumn('B').numFmt = '0.00';
+            worksheetResumen.getCell('B3').numFmt = '0';
+            worksheetResumen.getCell('B4').numFmt = '0';
+            worksheetResumen.getCell('B5').numFmt = '0';
             await workbook.xlsx.writeFile(outputPath);
             return res.download(outputPath);
         } catch (error) {
