@@ -24,6 +24,10 @@ export class StatementsComponent implements OnInit {
   years: number[] = [];
   cant: number = 0;
   filteredStatements: any[] = [];
+  filteredBusinesses: any[] = [];
+  filteredEstablishments: any[] = [];
+  filteredMaterial: any[] = [];
+  filteredYear: any[] = [];
 
   selectedBusiness: string = '-1';
   selectedEstablishment: string = '-1';
@@ -122,14 +126,19 @@ export class StatementsComponent implements OnInit {
 
 
   filter(auto: boolean = false) {
+    const selectedBusinessValue = (this.selectedBusiness as any)?.value || this.selectedBusiness;
+    const selectedEstablishmentValue = (this.selectedEstablishment as any)?.value || this.selectedEstablishment;
+    const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
+    const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
+
     if (auto && !this.autoFilter) return;
 
     this.filteredStatements = this.dbStatements.filter(r => {
       return (
-        (this.selectedBusiness === '-1' || r.NAME_BUSINESS === this.selectedBusiness) &&
-        (this.selectedEstablishment === '-1' || r.NAME_ESTABLISHMENT_REGION === this.selectedEstablishment) &&
-        (this.selectedMaterial === '-1' || r.PRECEDENCE === this.selectedMaterial) &&
-        (this.selectedYear === '-1' || r.FechaRetiroTipeada === this.selectedYear)
+        (selectedBusinessValue === '-1' || r.NAME_BUSINESS === selectedBusinessValue) &&
+        (selectedEstablishmentValue === '-1' || r.NAME_ESTABLISHMENT_REGION === selectedEstablishmentValue) &&
+        (selectedMaterialValue === '-1' || r.PRECEDENCE === selectedMaterialValue) &&
+        (selectedYearValue === '-1' || r.FechaRetiroTipeada === selectedYearValue)
       );
     });
     this.db = this.filteredStatements.slice(0, 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();;
@@ -138,16 +147,70 @@ export class StatementsComponent implements OnInit {
     this.filtersApplied = false;
   }
 
+  filterBusinesses(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredBusinesses = this.business_name
+        .filter((na: string) => na.toLowerCase().includes(query))
+        .map((na: string) => ({ label: na, value: na }))
+        .sort((a, b) => a.label.localeCompare(b.label)); // Orden alfanumérico
+    if (this.filteredBusinesses.length === 0) {
+        this.filteredBusinesses = [{ label: 'Todos', value: '-1' }];
+    } else {
+        this.filteredBusinesses.unshift({ label: 'Todos', value: '-1' });
+    }
+}
+
+filterEstablishments(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredEstablishments = this.establishment_name
+        .filter((na: string) => na.toLowerCase().includes(query))
+        .map((na: string) => ({ label: na, value: na }))
+        .sort((a, b) => a.label.localeCompare(b.label)); // Orden alfanumérico
+    if (this.filteredEstablishments.length === 0) {
+        this.filteredEstablishments = [{ label: 'Todos', value: '-1' }];
+    } else {
+        this.filteredEstablishments.unshift({ label: 'Todos', value: '-1' });
+    }
+}
+
+filterMaterial(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredMaterial = this.material_name
+        .filter((na: string) => na.toLowerCase().includes(query))
+        .map((na: string) => ({ label: na, value: na }))
+        .sort((a, b) => a.label.localeCompare(b.label)); // Orden alfanumérico
+    if (this.filteredMaterial.length === 0) {
+        this.filteredMaterial = [{ label: 'Todos', value: '-1' }];
+    } else {
+        this.filteredMaterial.unshift({ label: 'Todos', value: '-1' });
+    }
+}
+
+  filterYear(event: any) {
+    const query = event.query.toString();
+    this.filteredYear = this.years
+      .filter((year: number) => year.toString().includes(query))
+      .map((year: number) => ({ label: year.toString(), value: year.toString() }));
+    if (this.filteredYear.length > 0) {
+      this.filteredYear.unshift({ label: 'Todos', value: '-1' });
+    } else {
+      this.filteredYear = [{ label: 'Todos', value: '-1' }];
+    }
+  }
 
   updateFilters() {
+    const selectedBusinessValue = (this.selectedBusiness as any)?.value || this.selectedBusiness;
+    const selectedEstablishmentValue = (this.selectedEstablishment as any)?.value || this.selectedEstablishment;
+    const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
+    const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
+    
     // Filtrar las opciones de business_name
     this.business_name = this.dbStatements
       .filter(
         (r) =>
-          (this.selectedEstablishment === "-1" ||
-            r.NAME_ESTABLISHMENT_REGION === this.selectedEstablishment) &&
-          (this.selectedMaterial === "-1" || r.PRECEDENCE === this.selectedMaterial) &&
-          (this.selectedYear === "-1" || r.FechaRetiroTipeada === this.selectedYear)
+          (selectedEstablishmentValue === "-1" || r.NAME_ESTABLISHMENT_REGION === selectedEstablishmentValue) &&
+          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue)
       )
       .map((r) => r.NAME_BUSINESS)
       .filter((value, index, self) => self.indexOf(value) === index);
@@ -156,9 +219,9 @@ export class StatementsComponent implements OnInit {
     this.establishment_name = this.dbStatements
       .filter(
         (r) =>
-          (this.selectedBusiness === "-1" || r.NAME_BUSINESS === this.selectedBusiness) &&
-          (this.selectedMaterial === "-1" || r.PRECEDENCE === this.selectedMaterial) &&
-          (this.selectedYear === "-1" || r.FechaRetiroTipeada === this.selectedYear)
+          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue)
       )
       .map((r) => r.NAME_ESTABLISHMENT_REGION)
       .filter((value, index, self) => self.indexOf(value) === index);
@@ -167,10 +230,9 @@ export class StatementsComponent implements OnInit {
     this.material_name = this.dbStatements
       .filter(
         (r) =>
-          (this.selectedBusiness === "-1" || r.NAME_BUSINESS === this.selectedBusiness) &&
-          (this.selectedEstablishment === "-1" ||
-            r.NAME_ESTABLISHMENT_REGION === this.selectedEstablishment) &&
-          (this.selectedYear === "-1" || r.FechaRetiroTipeada === this.selectedYear)
+          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedEstablishmentValue === "-1" || r.NAME_ESTABLISHMENT_REGION === selectedEstablishmentValue) &&
+          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue)
       )
       .map((r) => r.PRECEDENCE)
       .filter((value, index, self) => self.indexOf(value) === index);
@@ -179,10 +241,9 @@ export class StatementsComponent implements OnInit {
     this.years = this.dbStatements
       .filter(
         (r) =>
-          (this.selectedBusiness === "-1" || r.NAME_BUSINESS === this.selectedBusiness) &&
-          (this.selectedEstablishment === "-1" ||
-            r.NAME_ESTABLISHMENT_REGION === this.selectedEstablishment) &&
-          (this.selectedMaterial === "-1" || r.PRECEDENCE === this.selectedMaterial)
+          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedEstablishmentValue === "-1" || r.NAME_ESTABLISHMENT_REGION === selectedEstablishmentValue) &&
+          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue)
       )
       .map((r) => r.FechaRetiroTipeada)
       .filter((value, index, self) => self.indexOf(value) === index)

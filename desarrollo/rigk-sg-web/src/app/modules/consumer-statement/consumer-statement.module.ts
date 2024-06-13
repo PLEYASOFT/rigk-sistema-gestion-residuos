@@ -12,6 +12,7 @@ import { BulkUploadComponent } from './pages/bulk-upload/bulk-upload.component';
 import { StatementsDetailComponent } from './pages/statements-detail/statements-detail.component';
 import { NgxChartsModule }from '@swimlane/ngx-charts';
 import { DashboardCiGestorComponent } from './pages/dashboard-ci-gestor/dashboard-ci-gestor.component';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { DashboardCiGestorComponent } from './pages/dashboard-ci-gestor/dashboar
     FormsModule,
     ReactiveFormsModule,
     MultiSelectModule,
-    NgxChartsModule
+    NgxChartsModule,
+    AutoCompleteModule 
   ]
 })
 export class ConsumerStatementModule { }

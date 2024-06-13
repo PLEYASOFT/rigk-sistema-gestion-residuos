@@ -105,6 +105,7 @@ export class MaintainerEstablishmentComponent implements OnInit {
     }
     // Filtrar la lista de comunas por regions_id
     this.listComunas = this.listCommunesFormated.filter(item => item.regions_id === selectedRegionId);
+    this.listComunas.sort((a, b) => a.communes_name.localeCompare(b.communes_name));
     this.userForm.patchValue({ ID_COMUNA: '' });
   }
 

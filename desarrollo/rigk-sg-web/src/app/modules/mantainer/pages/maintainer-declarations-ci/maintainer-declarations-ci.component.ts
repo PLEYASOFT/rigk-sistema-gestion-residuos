@@ -31,6 +31,7 @@ export class MaintainerDeclarationsCiComponent implements OnInit {
     for (let year = 2022; year <= currentYear; year++) {
       this.years.push(year);
     }
+    this.years.sort((a, b) => b - a);
   }
 
   getAllBusiness() {
