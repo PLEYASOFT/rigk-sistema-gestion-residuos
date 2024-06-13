@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import { ConsumerService } from '../../../../core/services/consumer.service';
 import * as XLSX from 'xlsx';
 import { EstablishmentService } from '../../../../core/services/establishment.service';
+
 @Component({
   selector: 'app-bulk-upload',
   templateUrl: './bulk-upload.component.html',
@@ -12,6 +13,8 @@ import { EstablishmentService } from '../../../../core/services/establishment.se
 export class BulkUploadComponent implements OnInit {
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef;
   dbBusiness: any[] = [];
+  filteredBusiness: any[] = [];
+  selectedBusiness: any;
   userData: any;
 
   constructor(public consumer: ConsumerService,
@@ -25,33 +28,33 @@ export class BulkUploadComponent implements OnInit {
   }
 
   downloadExcel() {
-    const id = (document.getElementById('f_name') as HTMLInputElement).value
-    if (id == "-1") {
-      Swal.fire({
-        icon: 'error',
-        text: 'Debe seleccionar empresa'
-      });
-      return;
+    const id = this.selectedBusiness?.value;
+    if (!id || id == "-1") {
+        Swal.fire({
+            icon: 'error',
+            text: 'Debe seleccionar empresa'
+        });
+        return;
     }
     this.consumer.downloadExcel(id).subscribe({
-      next: r => {
-        if (r) {
-          const file = new Blob([r], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
-          let link = document.createElement('a');
-          link.href = window.URL.createObjectURL(file);
-          link.download = `carga masiva`;
-          document.body.appendChild(link);
-          link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
-          link.remove();
-          window.URL.revokeObjectURL(link.href);
+        next: r => {
+            if (r) {
+                const file = new Blob([r], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+                let link = document.createElement('a');
+                link.href = window.URL.createObjectURL(file);
+                link.download = `carga masiva`;
+                document.body.appendChild(link);
+                link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+                link.remove();
+                window.URL.revokeObjectURL(link.href);
+            }
+        },
+        error: r => {
+            Swal.fire({
+                icon: 'error',
+                text: 'Empresa no tiene ningún establecimiento creado en el sistema. En caso de ser necesario, contacte al administrador del sistema.'
+            });
         }
-      },
-      error: r => {
-        Swal.fire({
-          icon: 'error',
-          text: 'Empresa no tiene ningún establecimiento creado en el sistema . En caso de ser necesario, contacte al administrador del sistema.'
-        })
-      }
     });
   }
   loadStatements() {
@@ -73,6 +76,24 @@ export class BulkUploadComponent implements OnInit {
     });
   }
 
+  filterBusiness(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredBusiness = this.dbBusiness
+        .filter(b => b.NAME.toLowerCase().includes(query))
+        .map(b => ({ label: `${b.CODE_BUSINESS} - ${b.NAME}`, value: b.ID }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+        
+      if (this.filteredBusiness.length > 0) {
+          this.filteredBusiness.unshift({ label: 'Seleccionar Empresa', value: '-1' });
+      } else {
+          this.filteredBusiness = [{ label: 'Seleccionar Empresa', value: '-1' }];
+      }
+  }
+
+  onBusinessSelect(event: any) {
+    this.selectedBusiness = event;
+  }
+  
   onFileChange(event: any) {
     const allowedMimeTypes = [
       'application/vnd.ms-excel',

@@ -8,6 +8,7 @@ import { StatementsComponent } from './pages/statements/statements.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { BulkUploadComponent } from './pages/bulk-upload/bulk-upload.component';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 
 
 @NgModule({
@@ -22,6 +23,7 @@ import { BulkUploadComponent } from './pages/bulk-upload/bulk-upload.component';
     ManagerStatementRoutingModule,
     ReactiveFormsModule,
     FormsModule,
+    AutoCompleteModule
   ]
 })
 export class ManagerStatementModule { }
