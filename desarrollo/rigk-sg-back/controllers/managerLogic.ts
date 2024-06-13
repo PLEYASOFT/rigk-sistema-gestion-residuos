@@ -259,11 +259,10 @@ class ManagerLogic {
                     type: 'list',
                     allowBlank: false,
                     formulae: VATdropdown
-                };
-                worksheet.getCell(`J${i + 1}`).dataValidation = {
+                };worksheet.getCell(`J${i + 1}`).dataValidation = {
                     type: 'list',
                     allowBlank: false,
-                    formulae: [`=INDIRECT("_"&SUBSTITUTE(H${i + 1},"-","_"))`],
+                    formulae: [`=INDIRECT("_"&SUBSTITUTE(I${i + 1},"-","_"))`],
                 
                 };
                 worksheet.getCell(`L${i + 1}`).numFmt = '@';
