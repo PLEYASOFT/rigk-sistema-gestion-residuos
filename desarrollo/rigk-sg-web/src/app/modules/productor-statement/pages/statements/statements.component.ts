@@ -56,7 +56,7 @@ export class StatementsComponent implements OnInit {
     this.filteredYear = this.business_year.filter(year => {
       return year.label.toString().startsWith(query);
     });
-
+    this.filteredYear.sort((a, b) => b.label - a.label);
     if (this.filteredYear.length > 0) {
       this.filteredYear.unshift({ label: 'Todos', value: '-1' });
     } else {
