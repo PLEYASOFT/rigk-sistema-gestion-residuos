@@ -190,7 +190,7 @@ export class StatementsComponent implements OnInit {
     const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
     const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
     const selectedStateValue = (this.selectedState as any)?.value || this.selectedState;
-    
+
     if (auto && !this.autoFilter) return;
 
     const selectedStateNum = parseInt(selectedStateValue);
@@ -227,52 +227,52 @@ export class StatementsComponent implements OnInit {
   filterBusinesses(event: any) {
     const query = event.query.toLowerCase();
     this.filteredBusinesses = this.business_name
-        .filter((na: string) => na.toLowerCase().includes(query))
-        .map((na: string) => ({ label: na, value: na }))
-        .sort((a, b) => a.label.localeCompare(b.label));
+      .filter((na: string) => na.toLowerCase().includes(query))
+      .map((na: string) => ({ label: na, value: na }))
+      .sort((a, b) => a.label.localeCompare(b.label));
     if (this.filteredBusinesses.length === 0) {
-        this.filteredBusinesses = [{ label: 'Todos', value: '-1' }];
+      this.filteredBusinesses = [{ label: 'Todos', value: '-1' }];
     } else {
-        this.filteredBusinesses.unshift({ label: 'Todos', value: '-1' });
+      this.filteredBusinesses.unshift({ label: 'Todos', value: '-1' });
     }
   }
 
   filterBusinessesManager(event: any) {
     const query = event.query.toLowerCase();
     this.filteredBusinessesManager = this.gestor_name
-        .filter((na: string) => na.toLowerCase().includes(query))
-        .map((na: string) => ({ label: na, value: na }))
-        .sort((a, b) => a.label.localeCompare(b.label));
+      .filter((na: string) => na.toLowerCase().includes(query))
+      .map((na: string) => ({ label: na, value: na }))
+      .sort((a, b) => a.label.localeCompare(b.label));
     if (this.filteredBusinessesManager.length === 0) {
-        this.filteredBusinessesManager = [{ label: 'Todos', value: '-1' }];
+      this.filteredBusinessesManager = [{ label: 'Todos', value: '-1' }];
     } else {
-        this.filteredBusinessesManager.unshift({ label: 'Todos', value: '-1' });
+      this.filteredBusinessesManager.unshift({ label: 'Todos', value: '-1' });
     }
   }
-  
+
   filterTreatment(event: any) {
     const query = event.query.toLowerCase();
     this.filteredTreatment = this.treatment_name
-        .filter((na: string) => na.toLowerCase().includes(query))
-        .map((na: string) => ({ label: na, value: na }))
-        .sort((a, b) => a.label.localeCompare(b.label));
+      .filter((na: string) => na.toLowerCase().includes(query))
+      .map((na: string) => ({ label: na, value: na }))
+      .sort((a, b) => a.label.localeCompare(b.label));
     if (this.filteredTreatment.length === 0) {
-        this.filteredTreatment = [{ label: 'Todos', value: '-1' }];
+      this.filteredTreatment = [{ label: 'Todos', value: '-1' }];
     } else {
-        this.filteredTreatment.unshift({ label: 'Todos', value: '-1' });
+      this.filteredTreatment.unshift({ label: 'Todos', value: '-1' });
     }
   }
 
   filterMaterial(event: any) {
     const query = event.query.toLowerCase();
     this.filteredMaterial = this.material_name
-        .filter((na: string) => na.toLowerCase().includes(query))
-        .map((na: string) => ({ label: na, value: na }))
-        .sort((a, b) => a.label.localeCompare(b.label));
+      .filter((na: string) => na.toLowerCase().includes(query))
+      .map((na: string) => ({ label: na, value: na }))
+      .sort((a, b) => a.label.localeCompare(b.label));
     if (this.filteredMaterial.length === 0) {
-        this.filteredMaterial = [{ label: 'Todos', value: '-1' }];
+      this.filteredMaterial = [{ label: 'Todos', value: '-1' }];
     } else {
-        this.filteredMaterial.unshift({ label: 'Todos', value: '-1' });
+      this.filteredMaterial.unshift({ label: 'Todos', value: '-1' });
     }
   }
 
@@ -293,13 +293,13 @@ export class StatementsComponent implements OnInit {
     this.filteredState = this.state
       .filter((state: number) => this.getStateText(state).toLowerCase().includes(query))
       .map((state: number) => ({ label: this.getStateText(state), value: state.toString() }));
-    
+
     if (this.filteredState.length > 0) {
       this.filteredState.unshift({ label: 'Todos', value: '-1' });
     } else {
       this.filteredState = [{ label: 'Todos', value: '-1' }];
     }
-}
+  }
 
   filter_two(auto: boolean = false) {
     const selectedBusinessValue = (this.selectedBusiness as any)?.value || this.selectedBusiness;
@@ -606,7 +606,7 @@ export class StatementsComponent implements OnInit {
       console.error('Error:', error);
     }
   }
- 
+
   updateItemState(id_detail: number, valuedWeight: string): void {
     const updatedItem = this.db.find(item => item.ID_DETAIL === id_detail);
     if (updatedItem) {
@@ -681,21 +681,18 @@ export class StatementsComponent implements OnInit {
 
         if (this.selectedDeclarationsCount != 0) {
           this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + this.selectedDeclarationsCount);
-        }
-        else {
+        } else {
           this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + 1);
         }
         const asoc = this.userForm.controls['asoc'].value || "0";
-        //En aprobación masiva aquí nunca entra
         if (parseInt(asoc) > 1 && this.selectedDeclarationsCount == 0) {
           if (invoiceNumber) {
-            this.userForm.controls['reciclador'].setValue(businessResponse.data[0]?.NAME
-            );
-            this.userForm.controls['rut'].setValue(businessResponse.data[0]?.RUT
-            );
+            this.userForm.controls['reciclador'].setValue(businessResponse.data[0]?.NAME);
+            this.userForm.controls['rut'].setValue(businessResponse.data[0]?.RUT);
             this.userForm.controls['valuedWeight'].enable();
             this.userForm.controls['reciclador'].enable();
-            this.userForm.controls['rut'].enable()
+            this.userForm.controls['totalWeight'].disable();
+            this.userForm.controls['rut'].enable();
           } else {
             this.userForm.controls['reciclador'].enable();
             this.userForm.controls['rut'].enable();
@@ -703,14 +700,28 @@ export class StatementsComponent implements OnInit {
             this.userForm.controls['rut'].setValue('');
             this.userForm.controls['valuedWeight'].disable();
           }
-        } else {
+        } else if (businessResponse.data[0].num_asoc > 0){
+          if (invoiceNumber) {
+            this.userForm.controls['reciclador'].setValue(businessResponse.data[0]?.NAME);
+            this.userForm.controls['rut'].setValue(businessResponse.data[0]?.RUT);
+            this.userForm.controls['valuedWeight'].enable();
+            this.userForm.controls['reciclador'].enable();
+            this.userForm.controls['totalWeight'].disable();
+            this.userForm.controls['rut'].enable();
+          } else {
+            this.userForm.controls['reciclador'].enable();
+            this.userForm.controls['rut'].enable();
+            this.userForm.controls['reciclador'].setValue('');
+            this.userForm.controls['rut'].setValue('');
+            this.userForm.controls['valuedWeight'].disable();
+          }
+        }
+        else{
           if (invoiceNumber) {
             this.userForm.controls['valuedWeight'].enable();
             this.userForm.controls['totalWeight'].enable();
-            this.userForm.controls['reciclador'].setValue(businessResponse.data[0]?.NAME
-            );
-            this.userForm.controls['rut'].setValue(businessResponse.data[0]?.RUT
-            );
+            this.userForm.controls['reciclador'].setValue(businessResponse.data[0]?.NAME);
+            this.userForm.controls['rut'].setValue(businessResponse.data[0]?.RUT);
             this.userForm.controls['reciclador'].enable();
             this.userForm.controls['rut'].enable();
           } else {
@@ -723,33 +734,31 @@ export class StatementsComponent implements OnInit {
           }
         }
       } else {
+        this.resetFormControls();
         Swal.fire({
           icon: 'error',
           text: businessResponse.msg
         });
-        this.userForm.controls['totalWeight'].setValue('');
-        this.userForm.controls['declarateWeight'].setValue('');
-        this.userForm.controls['reciclador'].setValue('');
-        this.userForm.controls['rut'].setValue('');
-        this.userForm.controls['asoc'].setValue('');
-        this.userForm.controls['remainingWeight'].setValue('');
-        this.userForm.controls['valuedWeight'].disable();
-        this.userForm.controls['totalWeight'].disable();
-        this.userForm.controls['reciclador'].disable();
-        this.userForm.controls['rut'].disable();
       }
     } catch (error) {
-      this.userForm.controls['totalWeight'].setValue('');
-      this.userForm.controls['declarateWeight'].setValue('');
-      this.userForm.controls['reciclador'].setValue('');
-      this.userForm.controls['rut'].setValue('');
-      this.userForm.controls['asoc'].setValue('');
-      this.userForm.controls['remainingWeight'].setValue('');
-      this.userForm.controls['valuedWeight'].disable();
-      this.userForm.controls['totalWeight'].disable();
+      this.resetFormControls();
     }
+
     this.userForm.controls['valuedWeight'].updateValueAndValidity();
     this.userForm.controls['totalWeight'].updateValueAndValidity();
+  }
+
+  private resetFormControls() {
+    this.userForm.controls['totalWeight'].setValue('');
+    this.userForm.controls['declarateWeight'].setValue('');
+    this.userForm.controls['reciclador'].setValue('');
+    this.userForm.controls['rut'].setValue('');
+    this.userForm.controls['asoc'].setValue('');
+    this.userForm.controls['remainingWeight'].setValue('');
+    this.userForm.controls['valuedWeight'].disable();
+    this.userForm.controls['totalWeight'].disable();
+    this.userForm.controls['reciclador'].disable();
+    this.userForm.controls['rut'].disable();
   }
 
   async onMaterialTreatmentChange(index: any) {
