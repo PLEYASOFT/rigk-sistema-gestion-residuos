@@ -13,40 +13,49 @@
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Empresa:</label>
                     <div class="input-group">
-                        <select id="f_name" class="form-select" [(ngModel)]="selectedBusiness"
-                            (change)="updateFilters()">
-                            <option value="-1" selected>Todos</option>
-                            <option *ngFor="let na of business_name" value="{{na}}">{{na}}</option>
-                        </select>
+                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedBusiness"
+                                        [suggestions]="filteredBusinesses" (completeMethod)="filterBusinesses($event)" field="label"
+                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                            <ng-template let-business pTemplate="item">
+                                <div>{{ business.label }}</div>
+                            </ng-template>
+                        </p-autoComplete>
                     </div>
                 </div>
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Establecimiento</label>
                     <div class="input-group">
-                        <select id="f_establishment" class="form-select" [(ngModel)]="selectedEstablishment"
-                            (change)="updateFilters()">
-                            <option value="-1" selected>Todos</option>
-                            <option *ngFor="let es of establishment_name" value="{{es}}">{{es}}</option>
-                        </select>
+                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedEstablishment"
+                                        [suggestions]="filteredEstablishments" (completeMethod)="filterEstablishments($event)" field="label"
+                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                            <ng-template let-establishment pTemplate="item">
+                                <div>{{ establishment.label }}</div>
+                            </ng-template>
+                        </p-autoComplete>
                     </div>
                 </div>
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Material:</label>
                     <div class="input-group">
-                        <select id="f_material" class="form-select" [(ngModel)]="selectedMaterial"
-                            (change)="updateFilters()">
-                            <option value="-1" selected>Todos</option>
-                            <option *ngFor="let ma of material_name" value="{{ma}}">{{ma}}</option>
-                        </select>
+                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedMaterial"
+                                        [suggestions]="filteredMaterial" (completeMethod)="filterMaterial($event)" field="label"
+                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                            <ng-template let-material pTemplate="item">
+                                <div>{{ material.label }}</div>
+                            </ng-template>
+                        </p-autoComplete>
                     </div>
                 </div>
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Año/Mes de retiro:</label>
                     <div class="input-group">
-                        <select id="f_year" class="form-select" [(ngModel)]="selectedYear" (change)="updateFilters()">
-                            <option value="-1" selected>Todos</option>
-                            <option *ngFor="let y of years" value="{{y}}">{{y}}</option>
-                        </select>
+                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedYear"
+                                        [suggestions]="filteredYear" (completeMethod)="filterYear($event)" field="label"
+                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                            <ng-template let-year pTemplate="item">
+                                <div>{{ year.label }}</div>
+                            </ng-template>
+                        </p-autoComplete>
                     </div>
                 </div>
                 <div class="col-12 col-xl-4 mb-3 mb-xl-0">

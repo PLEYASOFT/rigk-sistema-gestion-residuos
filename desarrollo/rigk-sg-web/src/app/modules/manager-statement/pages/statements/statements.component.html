@@ -13,53 +13,76 @@
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Empresa CI:</label>
                     <div class="input-group">
-                        <select id="f_name" class="form-select" [(ngModel)]="selectedBusiness"
-                            (change)="updateFilters()">
-                            <option value="-1" selected>Todos</option>
-                            <option *ngFor="let na of business_name" value="{{na}}">{{na}}</option>
-                        </select>
+                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedBusiness"
+                                        [suggestions]="filteredBusinesses" (completeMethod)="filterBusinesses($event)" field="label"
+                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                            <ng-template let-business pTemplate="item">
+                                <div>{{ business.label }}</div>
+                            </ng-template>
+                        </p-autoComplete>
                     </div>
                 </div>
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <label class="form-label">Empresa Gestor:</label>
+                    <div class="input-group">
+                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedGestor"
+                                        [suggestions]="filteredBusinessesManager" (completeMethod)="filterBusinessesManager($event)" field="label"
+                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                            <ng-template let-gestor pTemplate="item">
+                                <div>{{ gestor.label }}</div>
+                            </ng-template>
+                        </p-autoComplete>
+                    </div>
+                </div>                
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Tipo de tratamiento:</label>
                     <div class="input-group">
-                        <select id="f_establishment" class="form-select" [(ngModel)]="selectedTreatment"
-                            (change)="updateFilters()" [disabled]="disableFilters">
-                            <option value="-1" selected>Todos</option>
-                            <option *ngFor="let es of treatment_name" value="{{es}}">{{es}}</option>
-                        </select>
+                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedTreatment"
+                                        [suggestions]="filteredTreatment" (completeMethod)="filterTreatment($event)" field="label"
+                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                            <ng-template let-treatment pTemplate="item">
+                                <div>{{ treatment.label }}</div>
+                            </ng-template>
+                        </p-autoComplete>
                     </div>
                 </div>
-                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                <div class="col-12 col-xl-1 mb-3 mb-xl-0">
                     <label class="form-label">Material:</label>
                     <div class="input-group">
-                        <select id="f_material" class="form-select" [(ngModel)]="selectedMaterial"
-                            (change)="updateFilters()" [disabled]="disableFilters">
-                            <option value="-1" selected>Todos</option>
-                            <option *ngFor="let ma of material_name" value="{{ma}}">{{ma}}</option>
-                        </select>
+                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedMaterial"
+                                        [suggestions]="filteredMaterial" (completeMethod)="filterMaterial($event)" field="label"
+                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                            <ng-template let-material pTemplate="item">
+                                <div>{{ material.label }}</div>
+                            </ng-template>
+                        </p-autoComplete>
                     </div>
                 </div>
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Fecha de retiro:</label>
                     <div class="input-group">
-                        <select id="f_year" class="form-select" [(ngModel)]="selectedYear" (change)="updateFilters()">
-                            <option value="-1" selected>Todos</option>
-                            <option *ngFor="let y of years" value="{{y}}">{{y}}</option>
-                        </select>
+                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedYear"
+                                        [suggestions]="filteredYear" (completeMethod)="filterYear($event)" field="label"
+                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                            <ng-template let-year pTemplate="item">
+                                <div>{{ year.label }}</div>
+                            </ng-template>
+                        </p-autoComplete>
                     </div>
                 </div>
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Estado:</label>
                     <div class="input-group">
-                        <select id="f_state" class="form-select" [(ngModel)]="selectedState" (change)="updateFilters()"
-                            [disabled]="disableFilters">
-                            <option value="-1" selected>Todos</option>
-                            <option *ngFor="let s of state" [value]="s">{{getStateText(s)}}</option>
-                        </select>
+                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedState"
+                                        [suggestions]="filteredState" (completeMethod)="filterState($event)" field="label"
+                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                            <ng-template let-state pTemplate="item">
+                                <div>{{ state.label }}</div>
+                            </ng-template>
+                        </p-autoComplete>
                     </div>
                 </div>
-                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                <div class="col-12 col-xl-1 mb-3 mb-xl-0">
                     <label class="form-label">&nbsp;</label>
                     <!-- Añade un espacio vacío para alinear el botón correctamente -->
                     <div class="input-group">
@@ -106,6 +129,7 @@
                             Seleccionar todo
                         </th>
                         <th>Empresa CI</th>
+                        <th>Empresa Gestor</th>
                         <th>Establecimiento CI</th>
                         <th>Tipo de tratamiento</th>
                         <th>Material</th>
@@ -128,6 +152,7 @@
                             </section>
                         </td>
                         <td>{{s.NAME_BUSINESS}}</td>
+                        <td>{{s.NAME_GESTOR}}</td>
                         <td>{{s.NAME_ESTABLISHMENT_REGION}}</td>
                         <td>{{s.TipoTratamiento}}</td>
                         <td>{{s.PRECEDENCE}}</td>
@@ -183,6 +208,12 @@
             </div>
             <div class="modal-body">
                 <form #miFormulario="ngForm" [formGroup]="userForm">
+                    <div class="row mb-3">
+                        <label class="col-sm-4 col-form-label">Empresa Gestor</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" formControlName="empresaGestor" readonly>
+                        </div>
+                    </div>                 
                     <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Núm. Factura Reciclador</label>
                         <div class="col-sm-8">

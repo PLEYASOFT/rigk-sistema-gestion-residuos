@@ -231,13 +231,14 @@ export class BulkUploadComponent implements OnInit {
       return;
     }
 
-    if (data[0].length != 13) {
+    if (data[0].length != 14) {
       Swal.fire({
         icon: 'error',
         text: 'Archivo inválido, no tiene todas las columnas necesarias.'
       });
       return;
     }
+    
     
     const idGestors = JSON.parse(sessionStorage.getItem('user')!).ID_BUSINESS;
     const invoices: any = await this.establishmentService.getDeclarationEstablishmentByIdGestor(idGestors).toPromise();
@@ -249,7 +250,6 @@ export class BulkUploadComponent implements OnInit {
 
     // Recorrer cada fila del excel
     for (let i = 0; i < rows.length; i++) {
-
       const row = rows[i];
       const excelRowNumber = i + 2; // Se agrega 2 para considerar el encabezado y el índice base 1 de Excel
       if (row.length == 0 && i == 0) {
@@ -270,8 +270,17 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
 
-      // ESTABLECIMIENTO [1]
-      const establishment = row[1];
+      // EMPRESA GESTOR [1]
+      const nameGestor = row[1];
+      if (!nameGestor) {
+        Swal.fire({
+          icon: 'error',
+          text: `Empresa Gestor no ingresado en la fila ${excelRowNumber}`
+        });
+        return;
+      }
+      // ESTABLECIMIENTO [2]
+      const establishment = row[2];
       if (!establishment) {
         Swal.fire({
           icon: 'error',
@@ -280,8 +289,8 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
 
-      // TIPO TRATAMIENTO [2]
-      const treatmentType = row[2];
+      // TIPO TRATAMIENTO [3]
+      const treatmentType = row[3];
       if (!treatmentType) {
         Swal.fire({
           icon: 'error',
@@ -290,8 +299,8 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
 
-      // MATERIAL [3]
-      const material = row[3];
+      // MATERIAL [4]
+      const material = row[4];
       if (!material) {
         Swal.fire({
           icon: 'error',
@@ -300,8 +309,8 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
 
-      // SUBTIPO [4]
-      const subMaterial = row[4];
+      // SUBTIPO [5]
+      const subMaterial = row[5];
       if (!subMaterial) {
         Swal.fire({
           icon: 'error',
@@ -310,8 +319,8 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
 
-      // FECHA RETIRO [5]
-      const withdrawalDate = row[5];
+      // FECHA RETIRO [6]
+      const withdrawalDate = row[6];
       if (!withdrawalDate) {
         Swal.fire({
           icon: 'error',
@@ -320,8 +329,8 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
 
-      // NÚM. FACTURA RECICLADOR [6] -> validar
-      const numberInvoice = row[6];
+      // NÚM. FACTURA RECICLADOR [7] -> validar
+      const numberInvoice = row[7];
       if (!numberInvoice) {
         Swal.fire({
           icon: 'error',
@@ -337,8 +346,8 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
 
-      // RUT RECICLADOR [7] -> validar
-      const vat = row[7];
+      // RUT RECICLADOR [8] -> validar
+      const vat = row[8];
       if (!vat) {
         Swal.fire({
           icon: 'error',
@@ -373,8 +382,8 @@ export class BulkUploadComponent implements OnInit {
         treatmentTypeNum = TT.ID;
       }
 
-      // RECICLADOR [8] -> validar
-      const vatCompanyName = row[8];
+      // RECICLADOR [9] -> validar
+      const vatCompanyName = row[9];
       if (!vatCompanyName) {
         Swal.fire({
           icon: 'error',
@@ -384,10 +393,11 @@ export class BulkUploadComponent implements OnInit {
       }
 
       let idBusiness;
-      idBusiness = row[8];
+      idBusiness = row[9];
+      let idGestor = row[15];
 
-      // FECHA INGRESO PR [9] -> validar
-      const admissionDate = row[9];
+      // FECHA INGRESO PR [10] -> validar
+      const admissionDate = row[10];
       if (!admissionDate) {
         Swal.fire({
           icon: 'error',
@@ -405,12 +415,12 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
 
-      // PESO TOTAL [10] -> validar
+      // PESO TOTAL [11] -> validar
       let totalWeight;
-      // PESO DECLARADO [11] -> validar
+      // PESO DECLARADO [12] -> validar
       let declaratedWeight: string | number;
       let declaratedWeightResponse;
-      const businessResponse = await this.establishmentService.getInovice(numberInvoice, treatmentTypeNum, materialTypeNum/*, idBusiness*/).toPromise();
+      const businessResponse = await this.establishmentService.getInovice(numberInvoice, treatmentTypeNum, materialTypeNum, idGestor).toPromise();
       if (businessResponse.status) {
         totalWeight = (this.formatNumber(businessResponse.data[0]?.invoice_value));
         declaratedWeightResponse = (this.formatNumber(businessResponse.data[0].value_declarated));
@@ -422,7 +432,7 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-      if (totalWeight == 0 && !row[10]) {
+      if (totalWeight == 0 && !row[11]) {
         Swal.fire({
           icon: 'error',
           text: `Peso total no ingresado en la fila ${excelRowNumber}`
@@ -430,12 +440,14 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
       if (totalWeight == 0) {
-        totalWeight = row[10];
+        totalWeight = row[11];
       }
-      if (totalWeight !== 0 && totalWeight !== row[10]) {
+
+      //PREVIO A ESTO DEBO IDENTIFICAR SI LA FACTURA CORRESPONDE AL GESTOR
+      if (totalWeight !== 0 && totalWeight !== row[11]) {
         Swal.fire({
           icon: 'info',
-          text: `La factura con numero ${numberInvoice} de la fila ${excelRowNumber} ya cuenta con datos existentes, favor de ingresar el peso total registrado previamente (${totalWeight})`
+          text: `La factura con numero ${numberInvoice} de la fila ${excelRowNumber} perteneciente al gestor ${nameGestor} ya cuenta con datos existentes, favor de ingresar el peso total registrado previamente (${totalWeight})`
         });
         return;
       }
@@ -455,9 +467,9 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-      // PESO DECLARADO [11]
-      declaratedWeight = row[11];
-      if (declaratedWeight == 0 && !row[11]) {
+      // PESO DECLARADO [12]
+      declaratedWeight = row[12];
+      if (declaratedWeight == 0 && !row[12]) {
         Swal.fire({
           icon: 'error',
           text: `Peso declarado no ingresado en la fila ${excelRowNumber}`
@@ -465,10 +477,10 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
       if (declaratedWeight == 0) {
-        declaratedWeight = row[11];
+        declaratedWeight = row[12];
       }
-      // PESO VALORIZADO [12] -> validar
-      const valuedWeight = row[12];
+      // PESO VALORIZADO [13] -> validar
+      const valuedWeight = row[13];
       if (!valuedWeight) {
         Swal.fire({
           icon: 'error',
@@ -522,43 +534,28 @@ export class BulkUploadComponent implements OnInit {
 
       for (let j = i + 1; j < rows.length; j++) {
         const w = rows[j];
-        // cuando las facturas tienen valores iguales
-        if (w[2] !== row[2] && w[3] === row[3] && w[6] === row[6]) {
+        if (w[7] === row[7] && w[11] !== row[11]  && w[15] == row[15] ) {
           Swal.fire({
             icon: 'info',
-            text: `Distintos tipos de tratamiento con el mismo tipo de material y Núm de factura reciclador en las filas ${i+2} y ${j+2}`
+            text: `Ingresar el mismo peso total para todas las facturas iguales con numero ${row[7]} del gestor ${nameGestor}`
           });
           return;
         }
-        if (w[2] === row[2] && w[3] !== row[3] && w[6] === row[6]) {
+        if (w[14] == row[14] ) {
           Swal.fire({
             icon: 'info',
-            text: `Distintos tipos de material con el mismo tipo de tratamiento y Núm de factura reciclador en las filas ${i+2} y ${j+2}`
-          });
-          return;
-        }
-        if (w[2] !== row[2] && w[3] !== row[3] && w[6] === row[6]) {
-          Swal.fire({
-            icon: 'info',
-            text: `Distintos tipos de tratamiento y material con el mismo Núm de factura reciclador en las filas ${i+2} y ${j+2}`
-          });
-          return;
-        }
-        if (w[2] === row[2] && w[3] === row[3] && w[6] === row[6] && w[10] !== row[10]) {
-          Swal.fire({
-            icon: 'info',
-            text: `Ingresar el mismo peso total para todas las facturas iguales con numero ${row[6]}`
+            text: `Error en fila ${excelRowNumber}, No se puede aprobar más de una vez una misma declaración`
           });
           return;
         }
         // LOGICA DE SUMAR TODOS LOS PESOS... VER COMO MANEJAR 
-        if (w[2] === row[2] && w[3] === row[3] && w[6] === row[6] && w[10] === row[10]) {
+        if (w[7] === row[7] && w[15] == row[15]) {
           sameRowsVerf.add(row);
           sameRowsVerf.add(w);
         }
       }
 
-      const idDetail = row[13];
+      const idDetail = row[14];
 
       const dateParts = admissionDate.split('/');
       const formatedDateString = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
@@ -613,11 +610,13 @@ export class BulkUploadComponent implements OnInit {
         declaratedWeightResponse,
         materialTypeNum,
         treatmentTypeNum,
+        nameGestor,
+        idGestor
       };
-      let included = false;     
+      let included = false;
       for (const arreglo of sameRowsVerf) {
         const arregloD = arreglo as any[];
-        if (arregloD.includes(vat)) {
+        if (arregloD.includes(idGestor)) {
           included = true;
         }
       }
@@ -628,58 +627,61 @@ export class BulkUploadComponent implements OnInit {
         rowsDataDuplicated.push(rowData);
       }
     }
-
     const groupedData: { [key: string]: { tipo_tratamiento: string, material: string, numero_factura: string, remanente_total: number } } = {};
-    let valorTotal = null;
-    let facturaInicial = null;
+    const valorTotalPorFactura: { [key: string]: number } = {};
+    const facturaInicialPorGestor: { [key: string]: string | null } = {};
 
     for (const value of rowsDataDuplicated) {
-      const key = `${value.numberInvoice}`;
-      if (!groupedData[key]) {
-        groupedData[key] = {
-          tipo_tratamiento: value.treatmentType,
-          material: value.material,
-          numero_factura: value.numberInvoice,
-          remanente_total: 0
-        };
-      }
-      if (valorTotal === null && facturaInicial === null) {
-        if (parseFloat(value.declaratedWeightResponse) !== 0) {
-          let numericTotalWeight = parseFloat(value.totalWeight.toString().replace(",", "."));
-          let numericDeclaratedWeight = parseFloat(value.declaratedWeightResponse.toString().replace(",", "."));
-          valorTotal = numericTotalWeight - numericDeclaratedWeight;
-        }else{
-          valorTotal = parseFloat(value.totalWeight.replace(",", "."));
+        const key = `${value.numberInvoice} ${value.nameGestor}`;
+
+        if (!groupedData[key]) {
+            groupedData[key] = {
+                tipo_tratamiento: value.treatmentType,
+                material: value.material,
+                numero_factura: value.numberInvoice,
+                remanente_total: 0
+            };
         }
-        facturaInicial = value.numberInvoice;
-      }    
-      if (facturaInicial != value.numberInvoice) {
-        if (parseFloat(value.declaratedWeightResponse) !== 0) {
-          let numericTotalWeight = parseFloat(value.totalWeight.toString().replace(",", "."));
-          let numericDeclaratedWeight = parseFloat(value.declaratedWeightResponse.toString().replace(",", "."));
-          valorTotal = numericTotalWeight - numericDeclaratedWeight;
-        }else{
-          valorTotal = parseFloat(value.totalWeight.replace(",", "."));
+
+        if (valorTotalPorFactura[key] === undefined && facturaInicialPorGestor[key] === undefined) {
+            if (parseFloat(value.declaratedWeightResponse) !== 0) {
+                let numericTotalWeight = parseFloat(value.totalWeight.toString().replace(",", "."));
+                let numericDeclaratedWeight = parseFloat(value.declaratedWeightResponse.toString().replace(",", "."));
+                valorTotalPorFactura[key] = numericTotalWeight - numericDeclaratedWeight;
+            } else {
+                valorTotalPorFactura[key] = parseFloat(value.totalWeight.replace(",", "."));
+            }
+            facturaInicialPorGestor[key] = value.numberInvoice;
         }
-        facturaInicial = value.numberInvoice;
-      }
-      const valorizadoSuma = parseFloat(value.valuedWeight.replace(",", "."));
-      valorTotal! -= valorizadoSuma;
-      value.fixedRemainingWeight = valorTotal!.toFixed(2).replace(".", ",").toString();
-      groupedData[key].remanente_total = valorTotal!;
+
+        if (facturaInicialPorGestor[key] !== value.numberInvoice) {
+            if (parseFloat(value.declaratedWeightResponse) !== 0) {
+                let numericTotalWeight = parseFloat(value.totalWeight.toString().replace(",", "."));
+                let numericDeclaratedWeight = parseFloat(value.declaratedWeightResponse.toString().replace(",", "."));
+                valorTotalPorFactura[key] = numericTotalWeight - numericDeclaratedWeight;
+            } else {
+                valorTotalPorFactura[key] = parseFloat(value.totalWeight.replace(",", "."));
+            }
+            facturaInicialPorGestor[key] = value.numberInvoice;
+        }
+
+        const valorizadoSuma = parseFloat(value.valuedWeight.replace(",", "."));
+        valorTotalPorFactura[key]! -= valorizadoSuma;
+        value.fixedRemainingWeight = valorTotalPorFactura[key]!.toFixed(2).replace(".", ",").toString();
+        groupedData[key].remanente_total = valorTotalPorFactura[key]!;
     }
 
     for (const key in groupedData) {
-      if (groupedData.hasOwnProperty(key)) {
-        const remanenteTotal = groupedData[key].remanente_total;
-        if (remanenteTotal < 0) {
-          Swal.fire({
-            icon: 'error',
-            text: `Los remanentes totales para las facturas con numero ${key} son menores a cero: ${remanenteTotal}`,
-          });
-          return;
+        if (groupedData.hasOwnProperty(key)) {
+            const remanenteTotal = groupedData[key].remanente_total;
+            if (remanenteTotal < 0) {
+                Swal.fire({
+                    icon: 'error',
+                    text: `Los remanentes totales para las facturas con numero ${key} son menores a cero: ${remanenteTotal}`,
+                });
+                return;
+            }
         }
-      }
     }
     //groupedData contiene los datos agrupados con la suma correspondiente
     this.invoices = rowsData;
@@ -704,7 +706,7 @@ export class BulkUploadComponent implements OnInit {
       if (this.allInvoices.length == Object.keys(this.fileNames).length && this.fileNames[i]) {
         try {
           const response = await Promise.race([
-            this.establishmentService.saveInvoice(element.vat, element.idBusiness, element.numberInvoice, element.idDetail, element.backAdmissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), element.treatmentTypeNum, element.materialTypeNum, this.fileToUpload[i]).toPromise(),
+            this.establishmentService.saveInvoice(element.vat, element.idBusiness, element.numberInvoice, element.idDetail, element.backAdmissionDate, element.valuedWeight!.replace(",", "."), element.totalWeight!.replace(",", "."), element.treatmentTypeNum, element.materialTypeNum, this.fileToUpload[i], element.idGestor).toPromise(),
             new Promise((_resolve, reject) => {
                 setTimeout(() => reject(new Error('Timeout')), 30000); // 30 segundos
             })

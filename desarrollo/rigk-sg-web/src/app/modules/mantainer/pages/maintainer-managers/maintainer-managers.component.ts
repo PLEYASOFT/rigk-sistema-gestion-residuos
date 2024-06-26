@@ -76,6 +76,7 @@ export class MaintainerManagersComponent implements OnInit {
     this.managerService.getAllMaterials().subscribe({
       next: resp => {
         this.listMateriales = resp.status.map((material: { MATERIAL: any; }) => material.MATERIAL);
+        this.listMateriales.sort((a, b) => a.localeCompare(b));
       },
       error: r => {
         Swal.close();
@@ -133,7 +134,17 @@ export class MaintainerManagersComponent implements OnInit {
   getMaterialID(materialName: string) {
     const material = this.listMateriales.find(m => m === materialName);
     const index = this.listMateriales.indexOf(material);
-    const id = index >= 0 ? index + 1 : null; // sumar 1 al índice para obtener el ID correspondiente
+    let id = index >= 0 ? index + 1 : null; // sumar 1 al índice para obtener el ID correspondiente
+    switch(id){
+      case 1 : id = 4;
+      break;
+      case 3 : id = 5;
+      break;
+      case 4 : id = 1;
+      break;
+      case 5 : id = 3;
+      break;
+    }
     return id;
   }
 

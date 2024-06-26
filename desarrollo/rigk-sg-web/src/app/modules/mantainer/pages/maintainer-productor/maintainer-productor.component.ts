@@ -41,14 +41,14 @@ export class MaintainerProductorComponent implements OnInit {
 
   filterBusinesses(event: any) {
     const query = event.query.toLowerCase();
-    this.filteredBusinesses = this.business_name.filter(business => {
-      return business.label.toLowerCase().includes(query);
-    });
+    this.filteredBusinesses = this.business_name
+        .filter(business => business.label.toLowerCase().includes(query))
+        .sort((a, b) => a.label.localeCompare(b.label));
 
     if (this.filteredBusinesses.length > 0) {
-      this.filteredBusinesses.unshift({ label: 'Todos', value: '-1' });
+        this.filteredBusinesses.unshift({ label: 'Todos', value: '-1' });
     } else {
-      this.filteredBusinesses = [{ label: 'Todos', value: '-1' }];
+        this.filteredBusinesses = [{ label: 'Todos', value: '-1' }];
     }
   }
 
@@ -57,7 +57,7 @@ export class MaintainerProductorComponent implements OnInit {
     this.filteredYear = this.business_year.filter(year => {
       return year.label.toString().startsWith(query);
     });
-
+    this.filteredYear.sort((a, b) => b.label - a.label);
     if (this.filteredYear.length > 0) {
       this.filteredYear.unshift({ label: 'Todos', value: '-1' });
     } else {

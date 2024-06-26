@@ -31,6 +31,12 @@ export class StatementsComponent implements OnInit {
   state: number[] = [];
   cant: number = 0;
   filteredStatements: any[] = [];
+  filteredBusinesses: any[] = [];
+  filteredMaterial: any[] = [];
+  filteredYear: any[] = [];
+  filteredBusinessesManager: any[] = [];
+  filteredTreatment: any[] = [];
+  filteredState: any[] = [];
 
   selectedBusiness: string = '-1';
   selectedMaterial: string = '-1';
@@ -42,9 +48,12 @@ export class StatementsComponent implements OnInit {
   isRemainingWeightNegative: boolean = false;
   anyCheckboxSelected: boolean = false;
 
+  gestor_name: any[] = [];
+  selectedGestor: string = '-1';
 
   index: number = 0;
   userForm = this.fb.group({
+    empresaGestor: ['', Validators.required],
     invoiceNumber: ['', [Validators.required]],
     rut: ['', [Validators.required, /*Validators.pattern('^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9Kk]{1}$'), this.verifyRut*/]],
     reciclador: ['', [this.validRecycler]],
@@ -131,6 +140,9 @@ export class StatementsComponent implements OnInit {
             if (this.state.indexOf(e.STATE_GESTOR) == -1) {
               this.state.push(e.STATE_GESTOR)
             }
+            if (this.gestor_name.indexOf(e.NAME_GESTOR) == -1) {
+              this.gestor_name.push(e.NAME_GESTOR)
+            }
           });
           this.years.sort((a, b) => b - a);
           this.dbStatements = r.data;
@@ -160,7 +172,8 @@ export class StatementsComponent implements OnInit {
       this.userForm.patchValue({
         declarated: this.selectedWeight,
         treatmentType: selectedItems[0].TipoTratamiento,
-        material: selectedItems[0].PRECEDENCE
+        material: selectedItems[0].PRECEDENCE,
+        empresaGestor: selectedItems[0].NAME_GESTOR
       });
 
       // Simular un clic en el botón que abre el modal
@@ -171,18 +184,26 @@ export class StatementsComponent implements OnInit {
   }
 
   filter(auto: boolean = false) {
+    const selectedBusinessValue = (this.selectedBusiness as any)?.value || this.selectedBusiness;
+    const selectedBusinessManagerValue = (this.selectedGestor as any)?.value || this.selectedGestor;
+    const selectedTreatmentValue = (this.selectedTreatment as any)?.value || this.selectedTreatment;
+    const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
+    const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
+    const selectedStateValue = (this.selectedState as any)?.value || this.selectedState;
+
     if (auto && !this.autoFilter) return;
 
-    const selectedStateNum = parseInt(this.selectedState);
+    const selectedStateNum = parseInt(selectedStateValue);
 
     this.filteredStatements = this.dbStatements.filter(r => {
       const rStateGestorNum = parseInt(r.STATE_GESTOR);
       return (
-        (this.selectedBusiness === '-1' || r.NAME_BUSINESS === this.selectedBusiness) &&
-        (this.selectedMaterial === '-1' || r.PRECEDENCE === this.selectedMaterial) &&
-        (this.selectedTreatment === '-1' || r.TipoTratamiento === this.selectedTreatment) &&
-        (this.selectedYear === '-1' || r.FechaRetiroTipeada === this.selectedYear) &&
-        (this.selectedState === '-1' || rStateGestorNum === selectedStateNum)
+        (selectedBusinessValue === '-1' || r.NAME_BUSINESS === selectedBusinessValue) &&
+        (selectedMaterialValue === '-1' || r.PRECEDENCE === selectedMaterialValue) &&
+        (selectedTreatmentValue === '-1' || r.TipoTratamiento === selectedTreatmentValue) &&
+        (selectedYearValue === '-1' || r.FechaRetiroTipeada === selectedYearValue) &&
+        (selectedStateValue === '-1' || rStateGestorNum === selectedStateNum) &&
+        (selectedBusinessManagerValue === '-1' || r.NAME_GESTOR === selectedBusinessManagerValue)
       );
     });
 
@@ -203,19 +224,104 @@ export class StatementsComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  filterBusinesses(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredBusinesses = this.business_name
+      .filter((na: string) => na.toLowerCase().includes(query))
+      .map((na: string) => ({ label: na, value: na }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+    if (this.filteredBusinesses.length === 0) {
+      this.filteredBusinesses = [{ label: 'Todos', value: '-1' }];
+    } else {
+      this.filteredBusinesses.unshift({ label: 'Todos', value: '-1' });
+    }
+  }
+
+  filterBusinessesManager(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredBusinessesManager = this.gestor_name
+      .filter((na: string) => na.toLowerCase().includes(query))
+      .map((na: string) => ({ label: na, value: na }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+    if (this.filteredBusinessesManager.length === 0) {
+      this.filteredBusinessesManager = [{ label: 'Todos', value: '-1' }];
+    } else {
+      this.filteredBusinessesManager.unshift({ label: 'Todos', value: '-1' });
+    }
+  }
+
+  filterTreatment(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredTreatment = this.treatment_name
+      .filter((na: string) => na.toLowerCase().includes(query))
+      .map((na: string) => ({ label: na, value: na }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+    if (this.filteredTreatment.length === 0) {
+      this.filteredTreatment = [{ label: 'Todos', value: '-1' }];
+    } else {
+      this.filteredTreatment.unshift({ label: 'Todos', value: '-1' });
+    }
+  }
+
+  filterMaterial(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredMaterial = this.material_name
+      .filter((na: string) => na.toLowerCase().includes(query))
+      .map((na: string) => ({ label: na, value: na }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+    if (this.filteredMaterial.length === 0) {
+      this.filteredMaterial = [{ label: 'Todos', value: '-1' }];
+    } else {
+      this.filteredMaterial.unshift({ label: 'Todos', value: '-1' });
+    }
+  }
+
+  filterYear(event: any) {
+    const query = event.query.toString();
+    this.filteredYear = this.years
+      .filter((year: number) => year.toString().includes(query))
+      .map((year: number) => ({ label: year.toString(), value: year.toString() }));
+    if (this.filteredYear.length > 0) {
+      this.filteredYear.unshift({ label: 'Todos', value: '-1' });
+    } else {
+      this.filteredYear = [{ label: 'Todos', value: '-1' }];
+    }
+  }
+
+  filterState(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredState = this.state
+      .filter((state: number) => this.getStateText(state).toLowerCase().includes(query))
+      .map((state: number) => ({ label: this.getStateText(state), value: state.toString() }));
+
+    if (this.filteredState.length > 0) {
+      this.filteredState.unshift({ label: 'Todos', value: '-1' });
+    } else {
+      this.filteredState = [{ label: 'Todos', value: '-1' }];
+    }
+  }
 
   filter_two(auto: boolean = false) {
+    const selectedBusinessValue = (this.selectedBusiness as any)?.value || this.selectedBusiness;
+    const selectedBusinessManagerValue = (this.selectedGestor as any)?.value || this.selectedGestor;
+    const selectedTreatmentValue = (this.selectedTreatment as any)?.value || this.selectedTreatment;
+    const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
+    const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
+    const selectedStateValue = (this.selectedState as any)?.value || this.selectedState;
+
     if (auto && !this.autoFilter) return;
 
-    const selectedStateNum = parseInt(this.selectedState);
+    const selectedStateNum = parseInt(selectedStateValue);
+
     this.filteredStatements = this.dbStatements.filter(r => {
       const rStateGestorNum = parseInt(r.STATE_GESTOR);
       return (
-        (this.selectedBusiness === '-1' || r.NAME_BUSINESS === this.selectedBusiness) &&
-        (this.selectedMaterial === '-1' || r.PRECEDENCE === this.selectedMaterial) &&
-        (this.selectedTreatment === '-1' || r.TipoTratamiento === this.selectedTreatment) &&
-        (this.selectedYear === '-1' || r.FechaRetiroTipeada === this.selectedYear) &&
-        (this.selectedState === '-1' || rStateGestorNum === selectedStateNum)
+        (selectedBusinessValue === '-1' || r.NAME_BUSINESS === selectedBusinessValue) &&
+        (selectedMaterialValue === '-1' || r.PRECEDENCE === selectedMaterialValue) &&
+        (selectedTreatmentValue === '-1' || r.TipoTratamiento === selectedTreatmentValue) &&
+        (selectedYearValue === '-1' || r.FechaRetiroTipeada === selectedYearValue) &&
+        (selectedStateValue === '-1' || rStateGestorNum === selectedStateNum) &&
+        (selectedBusinessManagerValue === '-1' || r.NAME_GESTOR === selectedBusinessManagerValue)
       );
     });
 
@@ -229,15 +335,22 @@ export class StatementsComponent implements OnInit {
 
 
   updateFilters() {
+    const selectedBusinessValue = (this.selectedBusiness as any)?.value || this.selectedBusiness;
+    const selectedBusinessManagerValue = (this.selectedGestor as any)?.value || this.selectedGestor;
+    const selectedTreatmentValue = (this.selectedTreatment as any)?.value || this.selectedTreatment;
+    const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
+    const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
+    const selectedStateValue = (this.selectedState as any)?.value || this.selectedState;
+
     // Filtrar las opciones de business_name
     this.business_name = this.dbStatements
       .filter(
         (r) =>
-          (this.selectedTreatment === "-1" ||
-            r.TipoTratamiento === this.selectedTreatment) &&
-          (this.selectedMaterial === "-1" || r.PRECEDENCE === this.selectedMaterial) &&
-          (this.selectedYear === "-1" || r.FechaRetiroTipeada === this.selectedYear) &&
-          (this.selectedState === "-1" || parseInt(r.STATE_GESTOR) === parseInt(this.selectedState) || r.STATE_GESTOR === undefined)
+          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue) &&
+          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue) &&
+          (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
+          (selectedBusinessManagerValue === "-1" || r.NAME_GESTOR === selectedBusinessManagerValue)
       )
       .map((r) => r.NAME_BUSINESS)
       .filter((value, index, self) => self.indexOf(value) === index);
@@ -245,10 +358,11 @@ export class StatementsComponent implements OnInit {
     this.treatment_name = this.dbStatements
       .filter(
         (r) =>
-          (this.selectedBusiness === "-1" || r.NAME_BUSINESS === this.selectedBusiness) &&
-          (this.selectedMaterial === "-1" || r.PRECEDENCE === this.selectedMaterial) &&
-          (this.selectedYear === "-1" || r.FechaRetiroTipeada === this.selectedYear) &&
-          (this.selectedState === "-1" || parseInt(r.STATE_GESTOR) === parseInt(this.selectedState) || r.STATE_GESTOR === undefined)
+          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue) &&
+          (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
+          (selectedBusinessManagerValue === "-1" || r.NAME_GESTOR === selectedBusinessManagerValue)
       )
       .map((r) => r.TipoTratamiento)
       .filter((value, index, self) => self.indexOf(value) === index);
@@ -256,10 +370,11 @@ export class StatementsComponent implements OnInit {
     this.material_name = this.dbStatements
       .filter(
         (r) =>
-          (this.selectedBusiness === "-1" || r.NAME_BUSINESS === this.selectedBusiness) &&
-          (this.selectedTreatment === "-1" || r.TipoTratamiento === this.selectedTreatment) &&
-          (this.selectedYear === "-1" || r.FechaRetiroTipeada === this.selectedYear) &&
-          (this.selectedState === "-1" || parseInt(r.STATE_GESTOR) === parseInt(this.selectedState) || r.STATE_GESTOR === undefined)
+          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue) &&
+          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue) &&
+          (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
+          (selectedBusinessManagerValue === "-1" || r.NAME_GESTOR === selectedBusinessManagerValue)
       )
       .map((r) => r.PRECEDENCE)
       .filter((value, index, self) => self.indexOf(value) === index);
@@ -267,10 +382,11 @@ export class StatementsComponent implements OnInit {
     this.years = this.dbStatements
       .filter(
         (r) =>
-          (this.selectedBusiness === "-1" || r.NAME_BUSINESS === this.selectedBusiness) &&
-          (this.selectedTreatment === "-1" || r.TipoTratamiento === this.selectedTreatment) &&
-          (this.selectedMaterial === "-1" || r.PRECEDENCE === this.selectedMaterial) &&
-          (this.selectedState === "-1" || parseInt(r.STATE_GESTOR) === parseInt(this.selectedState) || r.STATE_GESTOR === undefined)
+          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue) &&
+          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+          (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
+          (selectedBusinessManagerValue === "-1" || r.NAME_GESTOR === selectedBusinessManagerValue)
       )
       .map((r) => r.FechaRetiroTipeada)
       .filter((value, index, self) => self.indexOf(value) === index)
@@ -279,12 +395,25 @@ export class StatementsComponent implements OnInit {
     this.state = this.dbStatements
       .filter(
         (r) =>
-          (this.selectedBusiness === "-1" || r.NAME_BUSINESS === this.selectedBusiness) &&
-          (this.selectedTreatment === "-1" || r.TipoTratamiento === this.selectedTreatment) &&
-          (this.selectedMaterial === "-1" || r.PRECEDENCE === this.selectedMaterial) &&
-          (this.selectedYear === "-1" || r.FechaRetiroTipeada === this.selectedYear)
+          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue) &&
+          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue) &&
+          (selectedBusinessManagerValue === "-1" || r.NAME_GESTOR === selectedBusinessManagerValue)
       )
       .map((r) => parseInt(r.STATE_GESTOR))
+      .filter((value, index, self) => self.indexOf(value) === index);
+    // Filtrar las opciones de gestor_name
+    this.gestor_name = this.dbStatements
+      .filter(
+        (r) =>
+          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue) &&
+          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue) &&
+          (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined)
+      )
+      .map((r) => r.NAME_GESTOR)
       .filter((value, index, self) => self.indexOf(value) === index);
   }
 
@@ -373,7 +502,7 @@ export class StatementsComponent implements OnInit {
   }
 
   getStateText(state: number): string {
-    return state === 0 ? 'Por aprobar' : 'Aprobado';
+    return state === 0 ? 'Por Aprobar' : 'Aprobado';
   }
 
   handleClick(index: number, stateGestor: number): void {
@@ -439,15 +568,12 @@ export class StatementsComponent implements OnInit {
     }
 
     let { rut, invoiceNumber, entryDate, valuedWeight, reciclador } = this.userForm.value;
-    const totalWeight = this.userForm.controls['totalWeight'].value!.replace(",", ".");
-    valuedWeight = parseFloat(valuedWeight!.replace(",", ".")).toFixed(2);
+    const totalWeight = parseFloat(this.userForm.controls['totalWeight'].value!.replace(",", "."));
+    const valuedWeightFloat = parseFloat(valuedWeight!.replace(",", "."));
 
     const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
     const itemsToProcess = selectedItems.length > 0 ? selectedItems : [this.db[index]];
 
-    if (selectedItems.length > 0) {
-      valuedWeight = (parseFloat(valuedWeight) / selectedItems.length).toFixed(2);
-    }
     Swal.fire({
       title: 'Cargando Datos',
       text: 'Se están recuperando datos',
@@ -458,19 +584,25 @@ export class StatementsComponent implements OnInit {
     });
 
     try {
-      for (const item of itemsToProcess) {
-        const { TREATMENT_TYPE_NUMBER: treatmentType, PRECEDENCE_NUMBER: material, ID_DETAIL: id_detail } = item;
-        const response = await this.establishmentService.saveInvoice(
-          rut, reciclador, invoiceNumber, id_detail, entryDate, valuedWeight, totalWeight, treatmentType, material, this.selectedFile
-        ).toPromise();
+      const totalDeclaredWeight = itemsToProcess.reduce((sum, current) => sum + parseFloat(current.VALUE), 0);
 
+      for (const item of itemsToProcess) {
+        console
+        const { TREATMENT_TYPE_NUMBER: treatmentType, PRECEDENCE_NUMBER: material, ID_DETAIL: id_detail, VALUE, IdGestor: IdGestor } = item;
+        const declaredWeight = parseFloat(VALUE);
+        const proportionalValuedWeight = ((declaredWeight / totalDeclaredWeight) * valuedWeightFloat).toFixed(2);
+        const response = await this.establishmentService.saveInvoice(
+          rut, reciclador, invoiceNumber, id_detail, entryDate, proportionalValuedWeight, totalWeight, treatmentType, material, this.selectedFile, IdGestor
+        ).toPromise();
         if (response.status) {
-          this.updateItemState(id_detail, valuedWeight);
+          this.updateItemState(id_detail, proportionalValuedWeight);
         }
       }
+
       Swal.close();
       await this.showSuccessMessage(itemsToProcess.length > 1);
     } catch (error) {
+      Swal.close();
       console.error('Error:', error);
     }
   }
@@ -479,10 +611,16 @@ export class StatementsComponent implements OnInit {
     const updatedItem = this.db.find(item => item.ID_DETAIL === id_detail);
     if (updatedItem) {
       updatedItem.STATE_GESTOR = 1;
-      updatedItem.VALUE_DECLARATE = valuedWeight.replace('.', ',');
+      const valuedWeightNum = parseFloat(valuedWeight);
+      if (valuedWeightNum % 1 === 0) {
+        updatedItem.VALUE_DECLARATE = valuedWeightNum.toString().replace('.', ',');
+      } else {
+        updatedItem.VALUE_DECLARATE = valuedWeightNum.toFixed(2).replace('.', ',');
+      }
     }
     this.cdr.detectChanges();
   }
+
 
   async showSuccessMessage(multiple: boolean) {
     await Swal.fire({
@@ -533,35 +671,28 @@ export class StatementsComponent implements OnInit {
     const invoiceNumber = this.userForm.controls['invoiceNumber'].value;
     const treatmentType = this.db[index].TREATMENT_TYPE_NUMBER;
     const material = this.db[index].PRECEDENCE_NUMBER;
-
+    const IdGestor = this.db[index].IdGestor;
     try {
-      const businessResponse = await this.establishmentService.getInovice(invoiceNumber, treatmentType, material).toPromise();
+      const businessResponse = await this.establishmentService.getInovice(invoiceNumber, treatmentType, material, IdGestor).toPromise();
       if (businessResponse.status) {
-
         this.businessNoFound = true;
-        this.userForm.controls['totalWeight'].setValue(
-          this.formatNumber(businessResponse.data[0]?.invoice_value)
-        );
-        this.userForm.controls['declarateWeight'].setValue(
-          this.formatNumber(businessResponse.data[0].value_declarated)
-        );
+        this.userForm.controls['totalWeight'].setValue(this.formatNumber(businessResponse.data[0]?.invoice_value));
+        this.userForm.controls['declarateWeight'].setValue(this.formatNumber(businessResponse.data[0].value_declarated));
+
         if (this.selectedDeclarationsCount != 0) {
           this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + this.selectedDeclarationsCount);
-        }
-        else {
+        } else {
           this.userForm.controls['asoc'].setValue(businessResponse.data[0].num_asoc + 1);
         }
         const asoc = this.userForm.controls['asoc'].value || "0";
-        //En aprobación masiva aquí nunca entra
         if (parseInt(asoc) > 1 && this.selectedDeclarationsCount == 0) {
           if (invoiceNumber) {
-            this.userForm.controls['reciclador'].setValue(businessResponse.data[0]?.NAME
-            );
-            this.userForm.controls['rut'].setValue(businessResponse.data[0]?.RUT
-            );
+            this.userForm.controls['reciclador'].setValue(businessResponse.data[0]?.NAME);
+            this.userForm.controls['rut'].setValue(businessResponse.data[0]?.RUT);
             this.userForm.controls['valuedWeight'].enable();
             this.userForm.controls['reciclador'].enable();
-            this.userForm.controls['rut'].enable()
+            this.userForm.controls['totalWeight'].disable();
+            this.userForm.controls['rut'].enable();
           } else {
             this.userForm.controls['reciclador'].enable();
             this.userForm.controls['rut'].enable();
@@ -569,14 +700,28 @@ export class StatementsComponent implements OnInit {
             this.userForm.controls['rut'].setValue('');
             this.userForm.controls['valuedWeight'].disable();
           }
-        } else {
+        } else if (businessResponse.data[0].num_asoc > 0){
+          if (invoiceNumber) {
+            this.userForm.controls['reciclador'].setValue(businessResponse.data[0]?.NAME);
+            this.userForm.controls['rut'].setValue(businessResponse.data[0]?.RUT);
+            this.userForm.controls['valuedWeight'].enable();
+            this.userForm.controls['reciclador'].enable();
+            this.userForm.controls['totalWeight'].disable();
+            this.userForm.controls['rut'].enable();
+          } else {
+            this.userForm.controls['reciclador'].enable();
+            this.userForm.controls['rut'].enable();
+            this.userForm.controls['reciclador'].setValue('');
+            this.userForm.controls['rut'].setValue('');
+            this.userForm.controls['valuedWeight'].disable();
+          }
+        }
+        else{
           if (invoiceNumber) {
             this.userForm.controls['valuedWeight'].enable();
             this.userForm.controls['totalWeight'].enable();
-            this.userForm.controls['reciclador'].setValue(businessResponse.data[0]?.NAME
-            );
-            this.userForm.controls['rut'].setValue(businessResponse.data[0]?.RUT
-            );
+            this.userForm.controls['reciclador'].setValue(businessResponse.data[0]?.NAME);
+            this.userForm.controls['rut'].setValue(businessResponse.data[0]?.RUT);
             this.userForm.controls['reciclador'].enable();
             this.userForm.controls['rut'].enable();
           } else {
@@ -589,38 +734,37 @@ export class StatementsComponent implements OnInit {
           }
         }
       } else {
+        this.resetFormControls();
         Swal.fire({
           icon: 'error',
           text: businessResponse.msg
         });
-        this.userForm.controls['totalWeight'].setValue('');
-        this.userForm.controls['declarateWeight'].setValue('');
-        this.userForm.controls['reciclador'].setValue('');
-        this.userForm.controls['rut'].setValue('');
-        this.userForm.controls['asoc'].setValue('');
-        this.userForm.controls['remainingWeight'].setValue('');
-        this.userForm.controls['valuedWeight'].disable();
-        this.userForm.controls['totalWeight'].disable();
-        this.userForm.controls['reciclador'].disable();
-        this.userForm.controls['rut'].disable();
       }
     } catch (error) {
-      this.userForm.controls['totalWeight'].setValue('');
-      this.userForm.controls['declarateWeight'].setValue('');
-      this.userForm.controls['reciclador'].setValue('');
-      this.userForm.controls['rut'].setValue('');
-      this.userForm.controls['asoc'].setValue('');
-      this.userForm.controls['remainingWeight'].setValue('');
-      this.userForm.controls['valuedWeight'].disable();
-      this.userForm.controls['totalWeight'].disable();
+      this.resetFormControls();
     }
+
     this.userForm.controls['valuedWeight'].updateValueAndValidity();
     this.userForm.controls['totalWeight'].updateValueAndValidity();
+  }
+
+  private resetFormControls() {
+    this.userForm.controls['totalWeight'].setValue('');
+    this.userForm.controls['declarateWeight'].setValue('');
+    this.userForm.controls['reciclador'].setValue('');
+    this.userForm.controls['rut'].setValue('');
+    this.userForm.controls['asoc'].setValue('');
+    this.userForm.controls['remainingWeight'].setValue('');
+    this.userForm.controls['valuedWeight'].disable();
+    this.userForm.controls['totalWeight'].disable();
+    this.userForm.controls['reciclador'].disable();
+    this.userForm.controls['rut'].disable();
   }
 
   async onMaterialTreatmentChange(index: any) {
     this.userForm.controls['treatmentType'].setValue(this.db[index].TipoTratamiento);
     this.userForm.controls['material'].setValue(this.db[index].PRECEDENCE);
+    this.userForm.controls['empresaGestor'].setValue(this.db[index].NAME_GESTOR);
     this.userForm.controls['declarated'].setValue(this.db[index].VALUE?.toString().replace(".", ","));
   }
 
@@ -699,6 +843,11 @@ export class StatementsComponent implements OnInit {
   }
 
   updateCheckboxSelection() {
+
+    const selectedGestor = this.db.find(item => item.isChecked)?.NAME_GESTOR;
+    this.filteredStatements = this.dbStatements.filter(r =>
+      r.STATE_GESTOR === 0 && r.NAME_GESTOR === selectedGestor
+    );
     const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
     this.anyCheckboxSelected = selectedItems.length > 0;
     // Actualizar el número de declaraciones seleccionadas
@@ -716,10 +865,8 @@ export class StatementsComponent implements OnInit {
       this.selectedWeight = totalWeight.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
     if (selectedItems.length > 0) {
-      // Si hay elementos seleccionados, establecer los filtros según el primer elemento seleccionado
-      const selectedItem = selectedItems[0];
-      this.selectedTreatment = selectedItem.TipoTratamiento;
-      this.selectedMaterial = selectedItem.PRECEDENCE;
+
+      this.selectedGestor = selectedGestor;
       this.selectedState = '0'; // Estado "Por aprobar"
       this.disableFilters = true; // Deshabilitar filtros
       this.updateFilters();
@@ -728,6 +875,7 @@ export class StatementsComponent implements OnInit {
       this.selectedTreatment = '-1';
       this.selectedMaterial = '-1';
       this.selectedState = '-1';
+      this.selectedGestor = '-1';
       this.disableFilters = false;
       this.filter_two();
       this.updateFilters();
@@ -742,6 +890,8 @@ export class StatementsComponent implements OnInit {
       this.pagTo(0);
     }
   }
+
+
 
   selectAllCheckboxes(isSelected: boolean) {
     this.filteredStatements.forEach(s => {
@@ -792,7 +942,7 @@ export class StatementsComponent implements OnInit {
 
   validRecycler(control: AbstractControl): { [key: string]: boolean } | null {
     if (control.value === '') {
-      return { 'invalidRecycler': true }; 
+      return { 'invalidRecycler': true };
     }
     return null;
   }
