@@ -219,7 +219,6 @@ class IndustrialConsumer {
         try {
             await createLog('ELIMINA_DECLARACION_CI', req.uid, null);
             const resp = await industrialConsumerDao.deleteDeclarationCI(id);
-            console.log(resp);
             res.json({ status: true, data: resp });
         } catch (error: any) {
             console.log(error);
