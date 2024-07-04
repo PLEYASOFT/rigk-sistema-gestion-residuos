@@ -16,7 +16,7 @@ export class VisualizarMvComponent implements OnInit {
   dbStatements: any[] = [];
   db: any[] = [];
   pos = 1;
-  
+
   business_name: any[] = [];
   establishment_name: any[] = [];
   material_name: any[] = [];
@@ -50,7 +50,7 @@ export class VisualizarMvComponent implements OnInit {
         this.saveState(); // Guarda el estado reseteado
       }
     });
-   }
+  }
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
@@ -69,8 +69,8 @@ export class VisualizarMvComponent implements OnInit {
 
   isRelevantRoute(url: string): boolean {
     // Definir las rutas relevantes
-    return url === '/mantenedor/visualizar-mv' || 
-           url.startsWith('/mantenedor/visualizar-mv/') && !url.endsWith('/visualizar-mv');
+    return url === '/mantenedor/visualizar-mv' ||
+      url.startsWith('/mantenedor/visualizar-mv/') && !url.endsWith('/visualizar-mv');
   }
 
   formatValue(value: number): string {
@@ -164,40 +164,40 @@ export class VisualizarMvComponent implements OnInit {
   filterBusinesses(event: any) {
     const query = event.query.toLowerCase();
     this.filteredBusinesses = this.business_name
-        .filter((na: string) => na.toLowerCase().includes(query))
-        .map((na: string) => ({ label: na, value: na }))
-        .sort((a, b) => a.label.localeCompare(b.label));
+      .filter((na: string) => na.toLowerCase().includes(query))
+      .map((na: string) => ({ label: na, value: na }))
+      .sort((a, b) => a.label.localeCompare(b.label));
     if (this.filteredBusinesses.length === 0) {
-        this.filteredBusinesses = [{ label: 'Todos', value: '-1' }];
+      this.filteredBusinesses = [{ label: 'Todos', value: '-1' }];
     } else {
-        this.filteredBusinesses.unshift({ label: 'Todos', value: '-1' });
+      this.filteredBusinesses.unshift({ label: 'Todos', value: '-1' });
     }
   }
 
   filterEstablishments(event: any) {
-      const query = event.query.toLowerCase();
-      this.filteredEstablishments = this.establishment_name
-          .filter((na: string) => na.toLowerCase().includes(query))
-          .map((na: string) => ({ label: na, value: na }))
-          .sort((a, b) => a.label.localeCompare(b.label));
-      if (this.filteredEstablishments.length === 0) {
-          this.filteredEstablishments = [{ label: 'Todos', value: '-1' }];
-      } else {
-          this.filteredEstablishments.unshift({ label: 'Todos', value: '-1' });
-      }
+    const query = event.query.toLowerCase();
+    this.filteredEstablishments = this.establishment_name
+      .filter((na: string) => na.toLowerCase().includes(query))
+      .map((na: string) => ({ label: na, value: na }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+    if (this.filteredEstablishments.length === 0) {
+      this.filteredEstablishments = [{ label: 'Todos', value: '-1' }];
+    } else {
+      this.filteredEstablishments.unshift({ label: 'Todos', value: '-1' });
+    }
   }
 
   filterMaterial(event: any) {
-      const query = event.query.toLowerCase();
-      this.filteredMaterial = this.material_name
-          .filter((na: string) => na.toLowerCase().includes(query))
-          .map((na: string) => ({ label: na, value: na }))
-          .sort((a, b) => a.label.localeCompare(b.label));
-      if (this.filteredMaterial.length === 0) {
-          this.filteredMaterial = [{ label: 'Todos', value: '-1' }];
-      } else {
-          this.filteredMaterial.unshift({ label: 'Todos', value: '-1' });
-      }
+    const query = event.query.toLowerCase();
+    this.filteredMaterial = this.material_name
+      .filter((na: string) => na.toLowerCase().includes(query))
+      .map((na: string) => ({ label: na, value: na }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+    if (this.filteredMaterial.length === 0) {
+      this.filteredMaterial = [{ label: 'Todos', value: '-1' }];
+    } else {
+      this.filteredMaterial.unshift({ label: 'Todos', value: '-1' });
+    }
   }
 
   filterYear(event: any) {
@@ -217,51 +217,51 @@ export class VisualizarMvComponent implements OnInit {
     const selectedEstablishmentValue = (this.selectedEstablishment as any)?.value || this.selectedEstablishment;
     const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
     const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
-    
+
     // Filtrar las opciones de business_name
     this.business_name = this.dbStatements
-        .filter(
-            (r) =>
-                (selectedEstablishmentValue === "-1" || r.NAME_ESTABLISHMENT_REGION === selectedEstablishmentValue) &&
-                (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
-                (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue)
-        )
-        .map((r) => r.NAME_BUSINESS)
-        .filter((value, index, self) => self.indexOf(value) === index);
+      .filter(
+        (r) =>
+          (selectedEstablishmentValue === "-1" || r.NAME_ESTABLISHMENT_REGION === selectedEstablishmentValue) &&
+          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue)
+      )
+      .map((r) => r.NAME_BUSINESS)
+      .filter((value, index, self) => self.indexOf(value) === index);
 
     // Filtrar las opciones de establishment_name
     this.establishment_name = this.dbStatements
-        .filter(
-            (r) =>
-                (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
-                (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
-                (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue)
-        )
-        .map((r) => r.NAME_ESTABLISHMENT_REGION)
-        .filter((value, index, self) => self.indexOf(value) === index);
+      .filter(
+        (r) =>
+          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue)
+      )
+      .map((r) => r.NAME_ESTABLISHMENT_REGION)
+      .filter((value, index, self) => self.indexOf(value) === index);
 
     // Filtrar las opciones de material_name
     this.material_name = this.dbStatements
-        .filter(
-            (r) =>
-                (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
-                (selectedEstablishmentValue === "-1" || r.NAME_ESTABLISHMENT_REGION === selectedEstablishmentValue) &&
-                (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue)
-        )
-        .map((r) => r.PRECEDENCE)
-        .filter((value, index, self) => self.indexOf(value) === index);
+      .filter(
+        (r) =>
+          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedEstablishmentValue === "-1" || r.NAME_ESTABLISHMENT_REGION === selectedEstablishmentValue) &&
+          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue)
+      )
+      .map((r) => r.PRECEDENCE)
+      .filter((value, index, self) => self.indexOf(value) === index);
 
     // Filtrar las opciones de years
     this.years = this.dbStatements
-        .filter(
-            (r) =>
-                (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
-                (selectedEstablishmentValue === "-1" || r.NAME_ESTABLISHMENT_REGION === selectedEstablishmentValue) &&
-                (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue)
-        )
-        .map((r) => r.FechaRetiroTipeada)
-        .filter((value, index, self) => self.indexOf(value) === index)
-        .sort((a, b) => b - a);
+      .filter(
+        (r) =>
+          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedEstablishmentValue === "-1" || r.NAME_ESTABLISHMENT_REGION === selectedEstablishmentValue) &&
+          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue)
+      )
+      .map((r) => r.FechaRetiroTipeada)
+      .filter((value, index, self) => self.indexOf(value) === index)
+      .sort((a, b) => b - a);
   }
 
   reset() {
@@ -340,7 +340,7 @@ export class VisualizarMvComponent implements OnInit {
 
   goToDetails(headerId: string, detailId: string) {
     this.saveState();
-    this.router.navigate(['/mantenedor/visualizar-mv/', headerId, detailId]);
+    this.router.navigate(['/mantenedor/ci/', headerId, detailId]);
   }
 
   isAnyCheckboxSelected(): boolean {
@@ -399,5 +399,39 @@ export class VisualizarMvComponent implements OnInit {
     this.deselectAllCheckboxes();
     this.filter();
     this.pagTo(0);
+  }
+
+  deleteEntry(id: string) {
+    Swal.fire({
+      title: '¿Desea eliminar la declaración?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Aceptar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.consumer.deleteDeclarationCI(id).subscribe((response: any) => {
+          if (response.status) {
+            Swal.fire(
+              'Eliminado!',
+              'La declaración ha sido eliminada.',
+              'success'
+            );
+            // Actualizar la lista manualmente después de la eliminación
+            this.dbStatements = this.dbStatements.filter(statement => statement.ID_HEADER !== id);
+            this.filteredStatements = this.filteredStatements.filter(statement => statement.ID_HEADER !== id);
+            this.pagTo(this.pos - 1);
+          } else {
+            Swal.fire(
+              'Error!',
+              'No se pudo eliminar la declaración.',
+              'error'
+            );
+          }
+        });
+      }
+    });
   }
 }

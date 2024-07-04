@@ -250,7 +250,43 @@ class IndustrialConsumerDao {
         conn.end();
         return res.length !== 0; 
     }
-    
+
+    public async deleteDeclarationCI(ID: any) {
+        const conn = mysqlcon.getConnection()!;
+        
+        // Eliminar archivos adjuntos asociados a los detalles
+        const deleteAttachedQuery = `
+            DELETE attached_industrial_consumer_form 
+            FROM attached_industrial_consumer_form 
+            INNER JOIN detail_industrial_consumer_form 
+            ON attached_industrial_consumer_form.ID_DETAIL = detail_industrial_consumer_form.ID
+            WHERE detail_industrial_consumer_form.ID_HEADER = ?
+        `;
+        await conn.query(deleteAttachedQuery, [ID])
+                  .then((res) => res[0])
+                  .catch(error => [{ undefined }]);
+        
+        // Eliminar detalles de la declaración
+        const deleteDetailQuery = `
+            DELETE FROM detail_industrial_consumer_form 
+            WHERE ID_HEADER = ?
+        `;
+        await conn.query(deleteDetailQuery, [ID])
+                  .then((res) => res[0])
+                  .catch(error => [{ undefined }]);
+        
+        // Eliminar declaración en header_industrial_consumer_form
+        const deleteHeaderQuery = `
+            DELETE FROM header_industrial_consumer_form 
+            WHERE ID = ?
+        `;
+        const res: any = await conn.query(deleteHeaderQuery, [ID])
+                                   .then((res) => res[0])
+                                   .catch(error => [{ undefined }]);
+        
+        conn.end();
+        return res;
+    }
 }
 const industrialConsumerDao = new IndustrialConsumerDao();
 export default industrialConsumerDao;

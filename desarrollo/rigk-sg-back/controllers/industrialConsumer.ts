@@ -214,6 +214,21 @@ class IndustrialConsumer {
             });
         }
     }
+    public async deleteDeclarationCI(req: any, res: Response) {
+        const { id } = req.params;
+        try {
+            await createLog('ELIMINA_DECLARACION_CI', req.uid, null);
+            const resp = await industrialConsumerDao.deleteDeclarationCI(id);
+            res.json({ status: true, data: resp });
+        } catch (error: any) {
+            console.log(error);
+            await createLog('ELIMINA_DECLARACION_CI', req.uid, error.message);
+            res.status(500).json({
+                status: false,
+                message: "Algo salió mal"
+            });
+        }
+    }
     public async getForm(req: any, res: Response) {
         const { id } = req.params;
         try {
