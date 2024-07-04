@@ -403,13 +403,12 @@ export class VisualizarMvComponent implements OnInit {
 
   deleteEntry(id: string) {
     Swal.fire({
-      title: '¿Estás seguro?',
-      text: "Esta acción no se puede deshacer",
+      title: '¿Desea eliminar la declaración?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
+      confirmButtonText: 'Aceptar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
