@@ -1,0 +1,56 @@
+<header class="header py-3 px-4 border-bottom">
+    <div class="d-flex flex-wrap align-items-center justify-content-between">
+        
+        <div class="d-flex align-items-center">
+            <!-- boton para mobile -->
+            <button (click)="toggleMenuMobile()" class="btn d-inline-block d-lg-none me-3 navbar-btn" id="sidebarCollapse" role="button">
+                <i class="fa fa-bars fa-lg" aria-hidden="true"></i>
+            </button>
+            <!-- boton para desktop -->
+            <button (click)="toggleMenu()" class="btn d-none d-lg-inline-block me-3" href="#">
+                <span class="shrink-btn"><i class="fa fa-bars fa-lg" aria-hidden="true"></i></span>
+            </button>
+            <!-- sitename -->
+            <div class="d-lg-flex align-items-center">
+                <a class="logo-h me-3 d-block" href="#"><img class="img-fluid" src="assets/images/logo-prorep-w.png" width="200" alt="Ir al inicio"></a>
+                <span class="site-name">Plataforma de declaración de EyE no domiciliarios puesto en el mercado</span>
+            </div>
+            
+        </div>
+
+        <div class="menu-h-2 d-flex text-end align-items-center position-relative">
+            <!-- Perfil -->
+            <div class="profile me-2 me-lg-4">
+            </div>
+
+            <!-- Notificaciones-->
+            <div class="info-profile collapse" id="info-profile">
+                <div class="info-profile__header">
+                    <img src="assets/images/foto-usuario-h.png" alt="" class="rounded-circle" width="70" height="70">
+                </div>
+                <div class="info-profile__body">
+                    <ul class="list-profile list-unstyled">
+                        <li class="list-profile__title">Nombre Usuario</li>
+                        <li class="list-profile__text">{{userData.FIRST_NAME}} {{userData.LAST_NAME}}</li>
+                    </ul>
+                    <ul class="list-profile list-unstyled">
+                        <li class="list-profile__title">Perfil</li>
+                        <li class="list-profile__text">{{userData.ROL_NAME}}</li>
+                    </ul>
+                    <ul class="list-profile list-unstyled">
+                        <li class="list-profile__title">Institución</li>
+                        <li class="list-profile__text">{{userData.BUSINESS}}</li>
+                    </ul>
+                    <ul class="list-profile list-unstyled">
+                        <li class="list-profile__title">Fecha/ Hora ingreso</li>
+                        <li class="list-profile__text">{{horaIngreso | date:'dd/MM/yyyy HH:mm:ss'}}</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Botón salir -->
+            <button class="btn btn-sign-out" (click)="logout()" ><i class="fa fa-sign-out fa-lg" aria-hidden="true"></i></button>
+        </div>
+
+    </div>
+
+</header>

@@ -1,0 +1,34 @@
+.select-container {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+label {
+    display: inline-block;    /* Asegura que se respeta el ancho asignado */
+    width: 80px;             /* Ancho fijo para las etiquetas */
+    font-size: 18px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.select-btn {
+    background-color: #08a47c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    width: 250px;
+    appearance: none;
+    position: relative;
+}
+
+.gauge-container {
+    border: 1px solid #08a47c;
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}

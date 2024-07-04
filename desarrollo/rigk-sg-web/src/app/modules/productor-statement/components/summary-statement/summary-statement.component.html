@@ -1,0 +1,176 @@
+<h1> Tabla Resumen {{+year_statement}} </h1>
+
+<!-- Excel -->
+<div class="d-md-flex justify-content-end">
+    <a class="btn" (click)="tableToExcel()">Exportar Excel <i class="fa fa-file-excel-o fa-fw fa-lg"
+            aria-hidden="true"></i></a>
+</div>
+<div #table1 class="table-responsive mb-4">
+    <!-- inicio Consulta de Declaración -->
+    <section>
+        <div class="row w-100">
+            <!-- Columna 1 -->
+            <div class="w-100">
+                <div class="w-100 table-responsive-md">
+                    <!-- Tabla Desktop -->
+                    <table
+                        class="table table-even table-section table-borderless table-align-middle table-border table-radius d-lg-table table-statement">
+                        <thead>
+                            <tr>
+                                <th colspan="13" style="margin-bottom: 100px;">Resumen de EyE por subcategoría</th>
+                            </tr>
+                        </thead>
+                        <p></p>
+                        <thead>
+                            <tr class="text-center w-100">
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Subcategoría</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Primarios</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Secundarios</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Terciarios</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Peso Total (Ton)</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr class="text-end w-100" *ngFor="let r of residuos; let x = index">
+                                <td class="text-start">{{r}}</td>
+                                <td id="prim_weight_{{x+1}}">0</td>
+                                <td id="sec_weight_{{x+1}}">0</td>
+                                <td id="ter_weight_{{x+1}}">0</td>
+                                <td style="background-color: rgb(217, 217, 217);" id="total_category_weight_{{x+1}}">0
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="text-end w-100">
+                                <td style="background-color: rgb(8, 148, 110);color: white;" class="text-start"
+                                    colspan="4">Total (Peso)</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;" id="total_ton">0</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <tr>
+            <td colspan="13">
+                No se considera los EyE de madera
+            </td>
+        </tr>
+        <p></p>
+        <p></p>
+        <div class="row w-100">
+            <!-- Columna 1 -->
+            <div id="table" #table1 class="w-100">
+                <div class="w-100 table-responsive-md">
+                    <!-- Tabla Desktop -->
+                    <table
+                        class="table table-even table-section table-borderless table-align-middle table-border table-radius d-lg-table table-statement">
+                        <thead>
+                            <tr>
+                                <th colspan="13" style="margin-bottom: 100px;">Resumen de costos (UF)
+                                    {{+year_statement+1}}</th>
+                            </tr>
+                        </thead>
+                        <p></p>
+                        <thead>
+                            <tr class="text-center w-100">
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Subcategoría</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Tarifa {{+year_statement
+                                    + 1}} (UF)</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Costo Anual
+                                    {{year_statement}} (UF)</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Total Neto (CL$)</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">IVA</th>
+                                <th class="mi-columna" style="background-color: rgb(8, 148, 110);color: white;">Total (CL$)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text-end w-100" *ngFor="let r of residuos; let x = index">
+                                <ng-container *ngIf="r !== 'Retornables'">
+                                    <td class="text-start">{{r}}</td>
+                                    <td id="actual_amount_{{x}}">0</td>
+                                    <td id="amount_anual_{{x}}">0</td>
+                                    <td id="total_neto{{x}}">0</td>
+                                    <td style="background-color: rgb(217, 217, 217);" id="iva_{{x}}">0
+                                    </td>
+                                    <td style="background-color: rgb(217, 217, 217);" id="uf_clp_{{x}}">$0</td>
+                                </ng-container>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="text-end w-100">
+                                <td style="background-color: rgb(8, 148, 110);color: white;" class="text-start"
+                                    colspan="2">Total (Costo)</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;" id="anual_amount">0</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;" id="ajuste_amount">0</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;" id="total_amount_iva">0</td>
+                                <td style="background-color: rgb(8, 148, 110);color: white;" id="total_uf_clp">$0</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        La factura se enviará con el valor de la UF al momento de enviar la declaración.
+        <p></p>
+        <div id="mi-tabla">
+            <!-- Tabla Desktop -->
+            <table
+                class="table table-even table-section table-borderless table-align-middle table-border table-radius d-lg-table table-statement">
+                <thead>
+                    <tr>
+                        <th colspan="2">Total EyE declarados {{year_statement}} (Ton)</th>
+                    </tr>
+                </thead>
+                <p></p>
+                <thead>
+                    <tr class="text-center w-100">
+                        <th style="background-color: rgb(8, 148, 110);color: white;">Total Subcategorías de EyE</th>
+                        <th style="background-color: rgb(8, 148, 110);color: white;">Total EyE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="text-center w-100">
+                        <td class="text-start">Total EyE (Ton)</td>
+                        <td id="pom_total">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p></p>
+        <p></p>
+        <div id="mi-tabla">
+            <!-- Tabla Desktop -->
+            <table
+                class="table table-even table-section table-borderless table-align-middle table-border table-radius d-lg-table table-statement">
+                <thead>
+                    <tr>
+                        <th colspan="2">Costo total {{+year_statement+1 }}</th>
+                    </tr>
+                </thead>
+                <p></p>
+                <thead>
+                    <tr class="text-center w-100">
+                        <th style="background-color: rgb(8, 148, 110);color: white;">Material</th>
+                        <th style="background-color: rgb(8, 148, 110);color: white;">Total UF</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="text-center w-100">
+                        <td class="text-start">Costo Total</td>
+                        <td id="amount_clp">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <tr>
+            <td colspan="13">
+                El Costo Total en $CL se factura con el valor de la UF al momento de enviar la declaración. A ese Monto Neto se le agrega el IVA.
+            </td>
+        </tr>
+    </section>
+    <!-- fin Consulta de Declaración -->
+</div>

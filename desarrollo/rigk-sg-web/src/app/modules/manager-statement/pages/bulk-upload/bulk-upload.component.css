@@ -1,0 +1,29 @@
+:host
+{
+    width: 90% !important;
+    padding: 1%;
+}
+
+.color-verde {
+    color: green;
+}
+
+.color-verde-opaco {
+    color: rgba(0, 128, 0, 0.3);
+}
+
+.circle {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+  }
+  
+.green-circle {
+    background-color: green;
+}
+  
+.red-circle {
+    background-color: red;
+}

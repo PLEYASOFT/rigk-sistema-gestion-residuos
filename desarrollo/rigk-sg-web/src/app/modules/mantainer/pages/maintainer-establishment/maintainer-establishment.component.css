@@ -1,0 +1,21 @@
+:host
+{
+    width: 70% !important;
+    padding: 1%;
+}
+
+th {
+    cursor: pointer;
+  }
+
+  .arrow-up:before {
+    content: "\25B2";
+    display: inline-block;
+    margin-right: 5px;
+  }
+
+  .arrow-down:before {
+    content: "\25BC";
+    display: inline-block;
+    margin-right: 5px;
+  }

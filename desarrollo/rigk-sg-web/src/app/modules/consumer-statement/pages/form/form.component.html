@@ -1,0 +1,172 @@
+<div id="">
+    <!-- inicio breadcrumbs -->
+    <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Formulario Consumidor Industrial</li>
+        </ol>
+    </nav>
+    <!-- fin breadcrumbs -->
+    <!-- inicio Formulario CI -->
+    <section class="formulario-ci">
+        <button class="btn btn-primary" (click)="goBack()">Volver</button>
+        <h1>Formulario Consumidor Industrial</h1>
+        <div class="row mb-3">
+            <div class="container text-end">
+                <button class="btn btn-sm btn-warning" (click)="reset()">Borrar Formulario</button>
+            </div>
+            <table
+                class="table table-even table-section table-borderless table-border table-header-green table-align-middle text-nowrap">
+                <thead>
+                    <tr>
+                        <th class="th">Nombre Empresa</th>
+                        <td class="td">{{business_name}}</td>
+                    </tr>
+                    <tr>
+                        <th>ID Consumidor Industrial</th>
+                        <td class="td">{{business_code}}</td>
+                    </tr>
+                    <tr>
+                        <th>Establecimiento</th>
+                        <td class="td"><p-multiSelect [readonly]="id_establishment != -1" *ngIf="!disableAll"
+                                [options]="establishments" optionLabel="name" [(ngModel)]="selectedEstablishment"
+                                optionValue="ID_ESTABLISHMENT" [selectionLimit]="1"
+                                defaultLabel="Seleccione Establecimiento"
+                                [selectedItemsLabel]="'{0} Empresas seleccionadas'"
+                                (onChange)="onEstablishmentChange($event)"></p-multiSelect></td>
+                    </tr>
+                    <tr>
+                        <th>ID Establecimiento VU</th>
+                        <td class="td">{{id_establishment != -1 ? id_establishment:''}}</td>
+                    </tr>
+                    <tr>
+                        <th>Región</th>
+                        <td class="td">{{id_establishment != -1 ? region: ''}}</td>
+                    </tr>
+                    <tr>
+                        <th>Comuna</th>
+                        <td class="td">{{id_establishment != -1 ? comuna: ''}}</td>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <!-- inicio Nombre tabla -->
+        <div class="table-responsive mb-4" *ngFor="let x of tables; let i = index">
+            <div class="text-end">
+                <button class="btn btn-primary mb-1" [disabled]="id_establishment == -1" (click)="addRow(i)">Agregar
+                    línea</button>
+            </div>
+            <h2 class="table-header-div table-header-div-blue">{{x}} </h2>
+            <table id="table_{{i+1}}"
+                class="table table-even table-section table-borderless table-border table-header-green table-align-middle text-nowrap">
+                <thead>
+                    <tr>
+                        <th>Subcategoría</th>
+                        <th>Tipo Tratamiento</th>
+                        <th>Subtipo</th>
+                        <th><span class="d-none d-lg-block">Peso (kg)</span><span class="d-lg-none">Kg.</span></th>
+                        <th><span class="d-none d-lg-block">Fecha Retiro</span><span class="d-lg-none">Fec. de
+                                retiro</span></th>
+                        <th>Gestor</th>
+                        <th>Medios de verificación</th>
+                        <th>Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody id="tr_{{i+1}}">
+                    <tr>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="1">TOTAL:</td>
+                        <td colspan="2"></td>
+                        <td colspan="1" id="table_td_{{i+1}}" class="text-end">0</td>
+                        <td colspan="5"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <button class="btn btn-primary px-5 mb-4" (click)="saveForm()" *ngIf="!disableAll">Enviar Declaración</button>
+    </section>
+    <!-- fin Formulario CI -->
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Medios de Verificación</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p id="id_table_none" class="d-none">eee</p>
+                            <p id="id_row_none" class="d-none">eee</p>
+                            <table
+                                class="table table-even table-section table-borderless table-border table-header-green table-align-middle text-nowrap">
+                                <thead>
+                                    <tr>
+                                        <th>Tipo MV</th>
+                                        <th>Archivo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <select id="inp_select_mv" class="form-select">
+                                                <option value="0">Seleccione Tipo MV</option>
+                                                <option value="1">Guia de Despacho</option>
+                                                <option value="2">Factura Gestor</option>
+                                                <option value="3">Registro de peso</option>
+                                                <option value="4">Fotografía Retiro</option>
+                                                <option value="5">Balance de masas</option>
+                                                <option value="6">Otro</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input id="inp_file_0" type="file" (change)="selectFile($event)"
+                                                class="form-control">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-12 text-end">
+                            <button class="btn btn-sm btn-primary" (click)="addFile()">Agregar</button>
+                        </div>
+                    </div>
+                    <div class="row mt-5">
+                        <div class="col-md-12">
+                            <table
+                                class="table table-even table-section table-borderless table-border table-header-green table-align-middle text-nowrap">
+                                <thead>
+                                    <tr>
+                                        <th>Tipo MV</th>
+                                        <th>Nombre Archivo</th>
+                                        <th>Eliminar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let f of filess">
+                                        <td>
+                                            {{lable_type[f.type-1]}}
+                                        </td>
+                                        <td>
+                                            {{f.file.name}}
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-danger" (click)="deleteFile(f)">X</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary mt-3" data-bs-dismiss="modal" aria-label="Close">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

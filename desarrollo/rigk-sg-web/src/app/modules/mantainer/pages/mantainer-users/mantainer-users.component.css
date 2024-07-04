@@ -1,0 +1,46 @@
+:host {
+  width: 100% !important;
+  padding: 1%;
+}
+.buttonRight {
+  position: absolute;
+  right: 40px;
+}
+:host ::ng-deep .p-multiselect {
+  min-width: 15rem;
+  width: 100%;
+  border-radius: 100px !important;
+}
+:host ::ng-deep .p-multiselect .p-multiselect-label {
+  padding: 8px !important;
+  border-radius: 100px !important;
+  border-color: red !important;
+}
+
+.accordion {
+  border: none !important;
+}
+.accordion-item {
+  border: none;
+}
+
+.accordion .accordion-item:last-child {
+  border: none;
+}
+.accordion .accordion-body {
+  border: none;
+}
+
+a {
+  cursor: pointer;
+}
+a:hover {
+  color: #09a57b;
+}
+.swal-icon img{
+  width: 20px;
+  height: 20px;
+}
+.centered-td {
+  text-align: center;
+}

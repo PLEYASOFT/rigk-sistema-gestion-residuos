@@ -1,0 +1,126 @@
+<div class="container mt-4">
+    <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Consulta de Declaración</li>
+        </ol>
+    </nav>
+    <!-- inicio Consulta de declaración -->
+    <section class="declaracion">
+        <h1>Consulta de Declaración</h1>
+        <div class="box box-form mb-4">
+            <div class="row align-items-end">
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <label class="form-label">Empresa:</label>
+                    <div class="input-group">
+                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedBusiness"
+                                        [suggestions]="filteredBusinesses" (completeMethod)="filterBusinesses($event)" field="label"
+                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                            <ng-template let-business pTemplate="item">
+                                <div>{{ business.label }}</div>
+                            </ng-template>
+                        </p-autoComplete>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <label class="form-label">Establecimiento</label>
+                    <div class="input-group">
+                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedEstablishment"
+                                        [suggestions]="filteredEstablishments" (completeMethod)="filterEstablishments($event)" field="label"
+                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                            <ng-template let-establishment pTemplate="item">
+                                <div>{{ establishment.label }}</div>
+                            </ng-template>
+                        </p-autoComplete>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <label class="form-label">Material:</label>
+                    <div class="input-group">
+                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedMaterial"
+                                        [suggestions]="filteredMaterial" (completeMethod)="filterMaterial($event)" field="label"
+                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                            <ng-template let-material pTemplate="item">
+                                <div>{{ material.label }}</div>
+                            </ng-template>
+                        </p-autoComplete>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <label class="form-label">Año/Mes de retiro:</label>
+                    <div class="input-group">
+                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedYear"
+                                        [suggestions]="filteredYear" (completeMethod)="filterYear($event)" field="label"
+                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                            <ng-template let-year pTemplate="item">
+                                <div>{{ year.label }}</div>
+                            </ng-template>
+                        </p-autoComplete>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 mb-3 mb-xl-0">
+                    <div class="row">
+                        <div class="col-6">
+                            <button class="btn btn-primary col-12"
+                                (click)="autoFilter = false; filter(); pagTo(0)">Mostrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-even table-section table-borderless table-radius">
+                <thead class="vertical-middle">
+                    <tr>
+                        <th>Empresa</th>
+                        <th>Establecimiento</th>
+                        <th>Tipo de tratamiento</th>
+                        <th>Material</th>
+                        <th>Subtipo</th>
+                        <th>Peso</th>
+                        <th>Fecha Retiro</th>
+                        <th>Estado</th>
+                        <th>Ver detalle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let s of db">
+                        <td>{{s.NAME_BUSINESS}}</td>
+                        <td>{{s.NAME_ESTABLISHMENT_REGION}}</td>
+                        <td>{{s.TipoTratamiento}}</td>
+                        <td>{{s.PRECEDENCE}}</td>
+                        <td>{{s.TYPE_RESIDUE}}</td>
+                        <td>
+                            {{formatValue(s.VALUE)}}
+                        </td>
+                        <td>{{s.FechaRetiro | date: 'dd-MM-yyyy'}}</td>
+                        <td>
+                            <span [ngClass]="s.semaforo ? 'circle green-circle' : 'circle red-circle'"></span>
+                        </td>
+                        <td>
+                            <a (click)="goToDetails(s.ID_HEADER, s.ID_DETAIL)" class="custom-cursor">
+                                <i class="fa fa-eye fa-lg fa-fw color-verde" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Pagination -->
+        <nav aria-label="Navegación resultados">
+            <ul class="pagination">
+              <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
+              <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
+              <li *ngFor="let i of visiblePageNumbers(); let j = index">
+                <button class="border btn btn-sm"
+                        [ngClass]="{ 'btn-info': pos === (i+1), 'btn-primary': pos !== (i+1) }"
+                        (click)="pagTo(i)">{{i+1}}</button>
+              </li>
+              <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
+              <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
+            </ul>
+        </nav>
+    </section>
+    <!-- fin Monitor Inicio -->
+</div>

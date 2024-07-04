@@ -1,0 +1,15 @@
+:host {
+    width: 90% !important;
+    padding: 1%;
+}
+:host ::ng-deep .p-multiselect {
+    min-width: 15rem;
+    font-size: 10px;
+    border-radius: 100px !important;
+}
+.td {
+    background-color: antiquewhite;
+}
+.th {
+    width: 150px !important;
+}

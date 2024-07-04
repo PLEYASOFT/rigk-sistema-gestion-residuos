@@ -1,0 +1,111 @@
+<div class="container mt-4">
+    <!-- inicio breadcrumbs -->
+    <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Consulta de Declaración</li>
+        </ol>
+    </nav>
+    <!-- fin breadcrumbs -->
+
+    <!-- inicio Registro de declaración -->
+    <section class="declaracion">
+        <h1>Consulta Declaraciones</h1>
+        <div class="d-sm-flex justify-content-between mb-3 mb-md-0">
+        </div>
+
+        <div class="box box-form mb-4" [formGroup]="form">
+            <div class="row align-items-end">
+                <div class="col-12 col-xl-4 mb-3 mb-xl-0">
+                    <label class="form-label">EMPRESAS:</label> <br>
+                    <p-autoComplete class="custom-autocomplete" formControlName="BUSINESS"
+                        [suggestions]="filteredBusinesses" (completeMethod)="filterBusinesses($event)" field="label"
+                        [dropdown]="true" placeholder="Buscar empresa" (input)="updateFiltersBusiness($event)" (onSelect)="updateFiltersBusiness($event)">
+                        <ng-template let-business pTemplate="item">
+                            <div>{{business.label}}</div>
+                        </ng-template>
+                        <ng-template let-business pTemplate="selectedItem">
+                            <div>{{business.label}}</div>
+                        </ng-template>
+                    </p-autoComplete>
+                </div>                             
+                <div class="col-12 col-xl-4 mb-3 mb-xl-0">
+                    <label class="form-label">Año:</label> <br>
+                    <p-autoComplete class="custom-autocomplete" formControlName="YEAR"
+                        [suggestions]="filteredYear" (completeMethod)="filterYear($event)" field="label"
+                        [dropdown]="true" placeholder="Buscar Año" (input)="updateFiltersYears($event)" (onSelect)="updateFiltersYears($event)">
+                        <ng-template let-business pTemplate="item">
+                            <div>{{business.label}}</div>
+                        </ng-template>
+                        <ng-template let-business pTemplate="selectedItem">
+                            <div>{{business.label}}</div>
+                        </ng-template>
+                    </p-autoComplete>
+                </div>
+                <div class="col-12 col-xl-4 mb-3 mb-xl-0">
+                    <div class="row">
+                        <div class="col-6">
+                            <button class="btn btn-primary col-12" style="height: 2.875rem; border-radius: .25rem;" (click)="filter()">Mostrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-even table-section table-borderless table-radius">
+                <thead class="vertical-middle">
+                    <tr>
+                        <th>ID Empresa</th>
+                        <th>Nombre Empresa</th>
+                        <th>Año Declaración</th>
+                        <th>Estado</th>
+                        <th>Monto Total (UF)</th>
+                        <th>Fecha Envío</th>
+                        <th class="text-uppercase text-center text-nowrap">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let s of db">
+                        <td>{{s.CODE_BUSINESS}}</td>
+                        <td>{{s.NAME_BUSINESS}}</td>
+                        <td>{{s.YEAR_STATEMENT}}</td>
+                        <td>{{s.STATE == 1 ? 'Enviada': s.STATE == 0 ? 'Borrador':'Pendiente'}}</td>
+                        <td>{{ s.AMOUNT_UF !== null ? (s.AMOUNT_UF.toFixed(2).replace(".", ",")) : '-' }}</td>
+                        <td>{{(s.UPDATED_AT) | date: 'dd-MM-yyyy H:mm:ss'}}</td>
+                        <td class="text-center text-nowrap">
+                            <button class="btn" (click)="downloadPDF(s.CODE_BUSINESS, s.YEAR_STATEMENT)"
+                                *ngIf="s.STATE == 1 "><i class="fa fa-file-pdf-o fa-fw fa-lg color-blue"
+                                    aria-hidden="true"></i></button>
+                            <button class="btn" *ngIf="s.STATE == 0"
+                                (click)="navigateToForm(s.CODE_BUSINESS, s.YEAR_STATEMENT, s.ID, s.STATE)">
+                                <i class="fa fa-file-text-o fa-fw fa-lg" style="color: red;" aria-hidden="true"></i>
+                            </button>
+                            <button class="btn" *ngIf="s.STATE == 2"
+                                (click)="navigateToForm(s.CODE_BUSINESS, s.YEAR_STATEMENT, s.ID, s.STATE)">
+                                <i class="fa fa-file-text-o fa-fw fa-lg" style="color: #DEC300;" aria-hidden="true"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Navegación resultados">
+            <ul class="pagination">
+              <li><button class="btn btn-primary" (click)="pagTo(0)">Primero</button></li>
+              <li><button class="btn btn-primary" (click)="previus()">Anterior</button></li>
+              <li *ngFor="let i of visiblePageNumbers(); let j = index">
+                <button class="border btn btn-sm"
+                        [ngClass]="{ 'btn-info': pos === (i+1), 'btn-primary': pos !== (i+1) }"
+                        (click)="pagTo(i)">{{i+1}}</button>
+              </li>
+              <li><button class="btn btn-primary" (click)="next()">Siguiente</button></li>
+              <li><button class="btn btn-primary" (click)="pagTo(cant-1)">Último</button></li>
+            </ul>
+        </nav>
+
+    </section>
+    <!-- fin Monitor Inicio -->
+</div>

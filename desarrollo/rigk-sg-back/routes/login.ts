@@ -1,14 +1,21 @@
 import { Router } from "express";
-import loginLogic from "../controllers/loginLogic";
-import recoveryLogic from "../controllers/recoveryLogic";
-import sendCodeLogic from '../controllers/sendCodeLogic';
-
-
+import authLogic from '../controllers/authLogic';
+import { validarJWT } from "../middleware/validar-jwt";
+import { validateLogin } from "../middleware/validateLogin";
+import { verifyParametersModifyPassword } from "../middleware/validators/modifyPassword";
+import { recoveryPassword } from "../middleware/validators/recoveyPassword";
+import { validaRegisterUser } from "../middleware/validators/usersManagementForm";
 const router = Router();
-
-router.post('/login', [ ], loginLogic.login);
-router.post('/recovery', [ ], recoveryLogic.recovery);
-router.post('/sendCode', [ ], sendCodeLogic.sendCode);
-
-
+router.get('/', [], authLogic.getUsers);
+router.get('/roles', [], authLogic.getRoles);
+router.get('/profile/:email', [validarJWT], authLogic.profile);
+router.get('/logout', [validarJWT], authLogic.logout);
+router.post('/', [validateLogin], authLogic.login);
+router.post('/modifyPassword', [validarJWT, verifyParametersModifyPassword], authLogic.modifyPassword);
+router.post('/sendCode', [], authLogic.sendCode);
+router.post('/sendCode/verify', [], authLogic.sendCodeVerify);
+router.post('/sendCode/recovery', [recoveryPassword], authLogic.recoveryPassword);
+router.post('/register', [validarJWT, validaRegisterUser], authLogic.register);
+router.put('/', [validarJWT, validaRegisterUser], authLogic.updateUser);
+router.delete('/:id', [validarJWT], authLogic.deleteUserByID);
 export default router;

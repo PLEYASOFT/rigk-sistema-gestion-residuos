@@ -1,0 +1,186 @@
+<div class="table-responsive mb-4" *ngFor="let t of tablas; let i = index">
+    <!-- DESKTOP -->
+    <table
+        class="table table-even table-section table-borderless table-align-middle table-border table-radius table-statement">
+        <thead>
+            <tr>
+                <th colspan="13">Declaración REP {{t}} año {{year_statement}} en toneladas</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="text-center fw-bold bg-green-light">
+                <td width="16%" class="text-start bg-green color-white" style="font-size: 18px;" rowspan="2">{{t}}</td>
+                <td colspan="2">Primarios No Peligrosos</td>
+                <td colspan="2">Primarios Peligrosos</td>
+                <td colspan="2">Secundarios</td>
+                <td colspan="2">Terciarios</td>
+                <td>Dif. {{year_statement -1}} vs {{year_statement}} (%)</td>
+                <td colspan="2">Peso Total</td>
+            </tr>
+            <tr class="text-center bg-green-light-2">
+                <td width="7%" class="color-red">{{year_statement - 1}}</td>
+                <td width="7%">{{year_statement}}</td>
+                <td width="7%" class="color-red">{{year_statement - 1}}</td>
+                <td width="7%">{{year_statement}}</td>
+                <td width="7%" class="color-red">{{year_statement - 1}}</td>
+                <td width="7%">{{year_statement}}</td>
+                <td width="7%" class="color-red">{{year_statement - 1}}</td>
+                <td width="7%">{{year_statement}}</td>
+                <td width="7%" class="color-red"></td>
+                <td width="7%">{{year_statement}}</td>
+            </tr>
+            <tr class="text-end" *ngFor="let r of residuos; let x = index">
+                <ng-container>
+                    <ng-template
+                        [ngIf]="r !== 'Envases compuestos' || (r === 'Envases compuestos' && t === 'EyE No Reciclables')">
+                        <td>{{r}}</td>
+                        <td id="inp_l_{{i+1}}_{{(x+1)}}_1_2" class="bg-grey-light">0</td>
+                        <td> <input value="0" id="inp_{{i+1}}_{{(x+1)}}_1_2" type="text" min="0" class="form-control"
+                                (change)="updateValue((i+1),(x+1),1,2,$event.target)"> </td>
+                        <td id="inp_l_{{i+1}}_{{(x+1)}}_1_1" class="bg-grey-light">0</td>
+                        <td> <input value="0" id="inp_{{i+1}}_{{(x+1)}}_1_1" type="text" min="0"
+                                class="form-control form-control-sm"
+                                (change)="updateValue((i+1),(x+1),1,1,$event.target)"></td>
+                        <td id="inp_l_{{i+1}}_{{(x+1)}}_2_1" class="bg-grey-light">0</td>
+                        <td> <input value="0" id="inp_{{i+1}}_{{(x+1)}}_2_1" type="text" min="0"
+                                class="form-control form-control-sm"
+                                (change)="updateValue((i+1),(x+1),2,1,$event.target)"></td>
+                        <td id="inp_l_{{i+1}}_{{(x+1)}}_3_1" class="bg-grey-light">0</td>
+                        <td> <input value="0" id="inp_{{i+1}}_{{(x+1)}}_3_1" type="text" min="0"
+                                class="form-control form-control-sm"
+                                (change)="updateValue((i+1),(x+1),3,1,$event.target)"></td>
+                        <td><input value="0" id="actual_dif_{{i+1}}_{{x+1}}" readonly type="text"
+                                style='border: none; background-color: transparent; text-align: center;'></td>
+                        <td style="display: none;" id="last_weight_{{i+1}}_{{x+1}}" class="bg-grey-light">0</td>
+                        <td>
+                            <input value="0" id="actual_weight_{{i+1}}_{{x+1}}" readonly
+                                style='border: none; background-color: transparent; text-align: center; font-weight: bold;'>
+                        </td>
+                    </ng-template>
+                    <ng-template
+                        [ngIf]="!(r !== 'Envases compuestos' || (r === 'Envases compuestos' && t === 'EyE No Reciclables'))">
+                        <td style="display: none;" id="inp_l_{{i+1}}_{{(x+1)}}_1_2" class="bg-grey-light">0</td>
+                        <td style="display: none;"> <input value="0" id="inp_{{i+1}}_{{(x+1)}}_1_2" type="text" min="0"
+                                class="form-control" (change)="updateValue((i+1),(x+1),1,2,$event.target)"> </td>
+                        <td style="display: none;" id="inp_l_{{i+1}}_{{(x+1)}}_1_1" class="bg-grey-light">0</td>
+                        <td style="display: none;"> <input value="0" id="inp_{{i+1}}_{{(x+1)}}_1_1" type="text" min="0"
+                                class="form-control form-control-sm"
+                                (change)="updateValue((i+1),(x+1),1,1,$event.target)">
+                        </td>
+                        <td style="display: none;" id="inp_l_{{i+1}}_{{(x+1)}}_2_1" class="bg-grey-light">0</td>
+                        <td style="display: none;"> <input value="0" id="inp_{{i+1}}_{{(x+1)}}_2_1" type="text" min="0"
+                                class="form-control form-control-sm"
+                                (change)="updateValue((i+1),(x+1),2,1,$event.target)">
+                        </td>
+                        <td style="display: none;" id="inp_l_{{i+1}}_{{(x+1)}}_3_1" class="bg-grey-light">0</td>
+                        <td style="display: none;"> <input value="0" id="inp_{{i+1}}_{{(x+1)}}_3_1" type="text" min="0"
+                                class="form-control form-control-sm"
+                                (change)="updateValue((i+1),(x+1),3,1,$event.target)">
+                        </td>
+                        <td style="display: none;"> <input value="0" readonly id="actual_dif_{{i+1}}_{{x+1}}"
+                                type="text" class="form-control form-control-sm"> </td>
+                        <td style="display: none;" id="last_weight_{{i+1}}_{{x+1}}" class="bg-grey-light">0</td>
+                        <td style="display: none;"> <input value="0" readonly id="actual_weight_{{i+1}}_{{x+1}}"
+                                type="text" class="form-control form-control-sm"> </td>
+
+                    </ng-template>
+                </ng-container>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="10"></td>
+                <span style="display: none;" id="total_amount_{{i+1}}"></span>
+                <td colspan="2">
+                    <div class="d-flex justify-content-between">
+                        <span>Peso (ton):</span>
+                        <span id="total_weight_{{i+1}}"></span>
+                    </div>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Agregar Medios de Verificación para Retornables/Reutilizables</button>
+<p></p>
+<p><strong>Si ingresa materiales Retornables/Reutilizables, con excepción de Madera, debe adjuntar medios de verificación o de lo contrario se aplicarán las tarifas de EyE Reciclables.</strong></p>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+  (hidden.bs.modal)="reset()">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Medios de Verificación</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <form #miFormulario="ngForm" [formGroup]="userForm">
+            <div class="row">
+              <div class="col-md-6">
+                <label for="inp_nom">Tipo MV</label>
+                <select formControlName="MV" id="inp_mv" class="form-select" required>
+                  <option value="">Selecciona MV</option>
+                  <option *ngFor="let r of listMV" [value]="r.value">{{r.name}}</option>
+                </select>
+                <div *ngIf="userForm.controls['MV'].errors && userForm.controls['MV'].touched" class="text-danger pl-0">
+                  <p *ngIf="userForm.controls['MV'].errors['required']">Debe seleccionar algun tipo de MV.</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="inp_archivo">Archivo</label>
+                <input type="file" formControlName="ARCHIVO" id="inp_archivo" class="form-control"
+                  accept="application/pdf, image/jpeg" required (change)="onFileSelected($event)">
+                <div *ngIf="userForm.controls['ARCHIVO'].errors && userForm.controls['ARCHIVO'].touched"
+                  class="text-danger pl-0">
+                  <p *ngIf="userForm.controls['ARCHIVO'].errors['invalidFileType']">El formato del archivo debe ser PDF,
+                    JPEG o JPG.</p>
+                  <p *ngIf="userForm.controls['ARCHIVO'].errors['invalidFileSize']">El tamaño del archivo no debe
+                    superar 1 MB.</p>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="MV_consulta.length >= maxFiles" class="text-danger mt-2 text-end">
+              No se pueden subir más de 9 archivos de verificación.
+            </div>
+            <div class="modal-footer">
+              <button type="button" id="btnCloseModal" class="btn btn-secondary" data-bs-dismiss="modal"
+                (click)="reset()">Cerrar</button>
+              <button type="button" class="btn btn-primary"
+                [disabled]="miFormulario.invalid || MV_consulta.length >= maxFiles"
+                (click)="saveFile() ; reset()">Agregar</button>
+            </div>
+            <div style="visibility: hidden;">a</div>
+            <div style="visibility: hidden;">a</div>
+            <div *ngIf="this.MV_consulta && this.MV_consulta.length > 0">
+              <div style="height: 50px;"></div>
+              <table
+                class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
+                <thead>
+                  <tr class="text-center w-100">
+                    <th>Tipo MV</th>
+                    <th>Nombre Archivo</th>
+                    <th>Eliminar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="text-center w-100" *ngFor="let r of MV_consulta; let x = index">
+                    <td>{{r.TYPE_MATERIAL_TIPEADO}}</td>
+                    <td>
+                      <a class="file-link">{{r.FILE_NAME}}</a>
+                    </td>
+                    <td>
+                      <button type="button" class="btn btn-danger btn-sm rounded-pill" (click)="deleteMV(r.ID)">
+                        X
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

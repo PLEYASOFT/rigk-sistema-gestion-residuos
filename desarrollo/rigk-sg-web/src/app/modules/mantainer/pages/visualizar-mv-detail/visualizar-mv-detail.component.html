@@ -1,0 +1,128 @@
+<div class="container mt-4">
+  <!-- inicio breadcrumbs -->
+  <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+      <li class="breadcrumb-item"><a href="#/mantenedor/ci"><i class="fa fa-home" aria-hidden="true"></i>
+          Mantenedor Declaraciones CI</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Detalle Declaración Consumidor Industrial</li>
+    </ol>
+  </nav>
+  <!-- fin breadcrumbs -->
+
+  <!-- inicio Consulta de declaración -->
+  <section class="declaracion">
+    <h1>Detalle Declaración Consumidor Industrial</h1>
+
+
+    <div class="box box-mi-perfil mb-5 d-flex align-items-start" style="margin-left: 20px;">
+      <ul class="list list-data list-data-title-green gap-0 column-md-2 list-unstyled">
+        <li>
+          <span class="list-data__title" style="margin-left: 10px">Nombre de Empresa</span>
+          <span class="list-data__text" style="margin-left: 10px">{{data_consulta.NombreEmpresa}}</span>
+        </li>
+        <li>
+          <span class="list-data__title" style="margin-left: 10px">ID Consumidor Industrial</span>
+          <span class="list-data__text" style="margin-left: 10px">{{data_consulta.CodigoEmpresa}}</span>
+        </li>
+        <li>
+          <span class="list-data__title" style="margin-left: 10px">Establecimiento</span>
+          <span class="list-data__text" style="margin-left: 10px">{{data_consulta.Establecimiento}}</span>
+        </li>
+        <li>
+          <span class="list-data__title" style="margin-left: 10px">ID Establecimiento VU</span>
+          <span class="list-data__text" style="margin-left: 10px">{{data_consulta.ID_VU}}</span>
+        </li>
+        <li>
+          <span class="list-data__title" style="margin-left: 10px">Región</span>
+          <span class="list-data__text" style="margin-left: 10px">{{data_consulta.Region}}</span>
+        </li>
+        <li>
+          <span class="list-data__title" style="margin-left: 10px">Comuna</span>
+          <span class="list-data__text" style="margin-left: 10px">{{data_consulta.Comuna}}</span>
+        </li>
+        <li>
+          <span class="list-data__title" style="margin-left: 10px">Gestor</span>
+          <span class="list-data__text" style="margin-left: 10px">{{detail_consulta.NombreGestor}}</span>
+        </li>
+        <li>
+          <span class="list-data__title" style="margin-left: 10px; visibility: hidden;">Gestor</span>
+          <span class="list-data__text"
+            style="margin-left: 10px; visibility: hidden;">{{detail_consulta.NombreGestor}}</span>
+        </li>
+      </ul>
+    </div>
+    <div class="separador"></div>
+
+    <h2 class="color-verde">Acciones</h2>
+    <ul class="list list-links list-unstyled">
+      <div class="accordion accordion-flush" id="accordionPanelsStayOpenExample">
+        <div class="accordion-item">
+          <li><a class="list-data__title btn btn-light " data-bs-toggle="modal" data-bs-target="#exampleModal"><span>Ver
+                Medios de
+                Verificación</span> </a></li>
+          <li data-bs-toggle="collapse"> <button class="list-data__title btn btn-primary btn-rounded "
+              style="margin-left: 90%; width: 85px;" (click)="volver()">
+              Volver
+            </button>
+          </li>
+          <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse "
+            aria-labelledby="panelsStayOpen-headingOne">
+            <div class="accordion-body">
+            </div>
+          </div>
+        </div>
+      </div>
+    </ul>
+  </section>
+</div>
+
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Medios de Verificación</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="container">
+                  <form>
+                      <div class="row">
+                          <div class="col-md-6">
+                              <p></p>
+                          </div>
+                          <div *ngIf="this.MV_consulta && this.MV_consulta.length > 0">
+                              <table
+                                  class="table-container table table-even table-section table-borderless table-border table-radius d-lg-table">
+                                  <thead>
+                                      <tr class="text-center w-100">
+                                          <th>Tipo MV</th>
+                                          <th>Nombre Archivo</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr class="text-center w-100" *ngFor="let r of MV_consulta; let x = index">
+                                      <td>{{r.TYPE_FILE_TIPEADO}}</td>
+                                      <td>
+                                        <a class="file-link" (click)="downloadFile(r.ID, r.FILE_NAME)">{{r.FILE_NAME}}</a>
+                                      </td>
+                                    </tr>
+                                  </tbody>                                  
+                              </table>
+                          </div>
+                          <div *ngIf="(!MV_consulta || MV_consulta.length === 0)" class="alert alert-danger">
+                              No existen medios de verificación para esta declaración.
+                          </div>
+                      </div>
+                  </form>
+              </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" id="btnCloseModal" class="btn btn-secondary"
+                  data-bs-dismiss="modal">Cerrar</button>
+          </div>
+      </div>
+  </div>
+</div>

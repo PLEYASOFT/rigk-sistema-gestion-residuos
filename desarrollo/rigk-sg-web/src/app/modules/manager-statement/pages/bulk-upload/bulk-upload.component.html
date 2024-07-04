@@ -1,0 +1,121 @@
+<div class="container mt-4">
+	<!-- inicio breadcrumbs -->
+	<nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+			<li class="breadcrumb-item active" aria-current="page">Carga Masiva Factura Reciclador</li>
+		</ol>
+	</nav>
+	<!-- fin breadcrumbs -->
+
+	<!-- inicio Consulta de declaración -->
+	<section class="declaracion">
+		<h1>Carga Masiva Factura Reciclador</h1>
+		<div class="d-sm-flex justify-content-between mb-3 mb-md-0">
+		</div>
+		<div class="box box-form mb-4">
+			<div class="row align-items-end">
+				<div class="col-12 col-xl-12 ">
+					<div class="row">
+						<div class="col-6">
+							<button class="btn btn-primary col-12" (click)="downloadExcel()">
+								<i class="fas fa-download"></i> Descargar declaraciones pendientes por aprobar
+							</button>
+						</div>
+						<div class="col-6">
+							<input type="file" #fileInput id="file-input" (change)="onFileChange($event)"
+								style="display:none;"
+								accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+							<button class="btn btn-primary col-12" (click)="fileInput.click()">
+								<i class="fas fa-upload"></i> Cargar declaraciones
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="box box-form mb-12" *ngIf="allInvoices.length > 0">
+			<table class="table table-even table-section table-borderless table-radius">
+				<thead>
+					<tr align="center">
+						<th>Empresa CI</th>
+						<th>Empresa Gestor</th>
+						<th>Establecimiento</th>
+						<th>Tipo Tratamiento</th>
+						<th>Material</th>
+						<th>Subtipo</th>
+						<th>Fecha Retiro</th>
+						<th>Núm. Factura Reciclador</th>
+						<th>Rut Reciclador</th>
+						<th>Reciclador</th>
+						<th>Fecha ingreso PR</th>
+						<th>Peso Total</th>
+						<th>Peso Declarado</th>
+						<th>Peso Valorizado</th>
+						<th>Peso Remanente</th>
+						<th>Carga Factura</th>
+						<th>Estado</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let s of allInvoices; let x = index">
+						<td>{{s.nameBusiness}}</td>
+						<td>{{s.nameGestor}}</td>
+						<td>{{s.establishment}}</td>
+						<td>{{s.treatmentType}}</td>
+						<td>{{s.material}}</td>
+						<td>{{s.subMaterial}}</td>
+						<td>{{s.withdrawalDate.replaceAll("/", "-")}}</td>
+						<td>{{s.numberInvoice}}</td>
+						<td>{{s.vat}}</td>
+						<td>{{s.vatCompanyName}}</td>
+						<td>{{s.frontAdmissionDate}}</td>
+						<td>{{s.totalWeightFormated}}</td>
+						<td>{{s.declaratedWeightFormated}}</td>
+						<td>{{s.valuedWeightFormated}}</td>
+						<td>{{s.fixedRemainingWeight.replace(".", ",")}}</td>
+						<td style="width: 1000px;">
+							<input type="file" #fileInput id="file-input" (change)="onInvoiceChange($event, x)"
+								style="display:none;" accept=".pdf,.jpeg,.jpg">
+							<button class="btn btn-primary col-12" (click)="fileInput.click()">
+								<i class="fas fa-upload"></i> Cargar Factura
+							</button>
+							<p>{{ fileNames[x] }}</p>
+						</td>
+						<td>
+							<i class="fa fa-check fa-lg fa-fw"
+								[ngClass]="!fileNames[x] ? 'color-verde-opaco' : 'color-verde'" aria-hidden="true"
+								id="submit">
+							</i>
+						</td>
+
+					</tr>
+				</tbody>
+				<tbody>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td colspan="2">
+							<button class="btn btn-primary col-12" (click) = "saveAllInvoices()"
+								[ngClass]="verification==allInvoices.length ? '' : 'disabled'">
+								Finalizar
+							</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</section>
+</div>

@@ -1,0 +1,43 @@
+<div class="container mt-4">
+    <!-- inicio breadcrumbs -->
+    <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Declaraciones productores</li>
+        </ol>
+    </nav>
+    <!-- fin breadcrumbs -->
+
+    <!-- inicio Registro de declaración -->
+    <section class="declaracion">
+        <h1>Declaraciones productores</h1>
+        <div class="d-sm-flex justify-content-between mb-3 mb-md-0">
+        </div>
+
+        <div class="box box-form mb-4">
+            <div class="row align-items-end">
+                <div class="col-12 col-xl-8 mb-5 mb-xl-0">
+                    <label class="form-label">Año:</label>
+                    <div class="input-group">
+                        <select id="f_year" class="form-select col-12 w-100" [(ngModel)]="selectedYear" (change)="onChangeYear()">
+                            <option value="-1" selected>Seleccionar año de declaración</option>
+                            <option *ngFor="let y of years" [value]="y">{{y}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 mb-3 mb-xl-0">
+                    <div class="row">
+                        <div class="col-12">
+                            <button class="btn btn-primary col-12 btn-lg" (click)="generarExcel('Declaraciones_productores')"
+                                [disabled]="selectedYear === -1 || selectedYear.toString() === '-1'">
+                                Generar Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+    <!-- fin Monitor Inicio -->
+</div>
