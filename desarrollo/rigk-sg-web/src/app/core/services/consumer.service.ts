@@ -52,6 +52,9 @@ export class ConsumerService {
   deleteById(id: any) {
     return this.http.delete<any>(`${this.url}/detailMV/${id}`);
   }
+  deleteDeclarationCI(id: any) {
+    return this.http.delete<any>(`${this.url}/declarationCI/${id}`);
+  }
   getFormConsulta(id: any) {
     return this.http.get<any>(`${this.url}/consult/${id}`);
   }

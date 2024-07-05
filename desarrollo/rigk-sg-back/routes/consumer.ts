@@ -19,5 +19,6 @@ router.post('/saveFile', [validarJWT], IndustrialConsumer.saveFile);
 router.post('/headerForm', [validarJWT], IndustrialConsumer.saveHeaderData);
 router.post('/detailForm', validarJWT, IndustrialConsumer.saveDetailData);
 router.delete('/detailMV/:id', [validarJWT], IndustrialConsumer.deleteById);
+router.delete('/declarationCI/:id', [validarJWT], IndustrialConsumer.deleteDeclarationCI);
 export default router;
 
