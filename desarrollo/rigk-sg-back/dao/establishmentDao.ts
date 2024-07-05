@@ -134,6 +134,7 @@ class EstablishmentDao {
         header_industrial_consumer_form.YEAR_STATEMENT,
         header_industrial_consumer_form.ID AS ID_HEADER, 
         business.NAME as NAME_BUSINESS, 
+        business.CODE_BUSINESS,
         detail_industrial_consumer_form.ID AS ID_DETAIL,
         CASE
             WHEN EXISTS (SELECT 1

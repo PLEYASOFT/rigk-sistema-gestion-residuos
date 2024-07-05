@@ -113,11 +113,12 @@
                         </td>
                         <td>{{s.FechaRetiro | date: 'dd-MM-yyyy'}}</td>
                         <td class="text-center text-nowrap">
-                            <button class="btn" style="border-color: rgb(192, 192, 192); box-shadow: 0 0 5px rgba(0, 0, 0, 0.3)" (click)="goToDetails(s.ID_HEADER, s.ID_DETAIL)">
-                                <i class="fa fa-search fa-fw fa-lg" 
-                                   [ngStyle]="{'color': s.semaforo === 1 ? 'green' : 'red'}" 
-                                   style="font-size: medium;" 
-                                   aria-hidden="true">
+                            <button class="btn"
+                                style="border-color: rgb(192, 192, 192); box-shadow: 0 0 5px rgba(0, 0, 0, 0.3)"
+                                (click)="goToDetails(s.ID_HEADER, s.ID_DETAIL)">
+                                <i class="fa fa-search fa-fw fa-lg"
+                                    [ngStyle]="{'color': s.semaforo === 1 ? 'green' : 'red'}" style="font-size: medium;"
+                                    aria-hidden="true">
                                 </i>
                             </button>
                         </td>
@@ -127,7 +128,7 @@
                             </button>
                         </td>
                     </tr>
-                </tbody>                
+                </tbody>
             </table>
         </div>
         <!-- Pagination -->
