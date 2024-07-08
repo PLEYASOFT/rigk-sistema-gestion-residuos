@@ -27,9 +27,9 @@ class IndustrialConsumer {
         }
     }
     public async verifyRow(req: any, res: Response) {
-        const { treatment, sub, gestor, date, idEstablishment } = req.body;
+        const { treatment, sub, gestor, date, idEstablishment, mdate } = req.body;
         try {
-            const data: any = await industrialConsumerDao.verifyRow(treatment, sub, gestor, date, idEstablishment);
+            const data: any = await industrialConsumerDao.verifyRow(treatment, sub, gestor, date, idEstablishment, mdate);
             if (data.length > 0) {
                 return res.json({
                     status: false
@@ -85,7 +85,7 @@ class IndustrialConsumer {
     }
 
     public async saveDetailData(req: any, res: Response) {
-        const { ID_HEADER, PRECEDENCE, TYPE_RESIDUE, VALUE, DATE_WITHDRAW, ID_GESTOR, LER, TREATMENT_TYPE } = req.body;
+        const { ID_HEADER, PRECEDENCE, TYPE_RESIDUE, VALUE, DATE_WITHDRAW, MDATE_WITHDRAW, ID_GESTOR, LER, TREATMENT_TYPE } = req.body;
 
         try {
             const idDetail = await industrialConsumerDao.saveDetailData(
@@ -94,6 +94,7 @@ class IndustrialConsumer {
                 TYPE_RESIDUE,
                 VALUE,
                 DATE_WITHDRAW,
+                MDATE_WITHDRAW,
                 ID_GESTOR,
                 LER,
                 TREATMENT_TYPE
@@ -388,11 +389,13 @@ class IndustrialConsumer {
             row.getCell(2).value = "SUBCATEGORIA";
             row.getCell(3).value = "TIPO TRATAMIENTO";
             row.getCell(4).value = "SUBTIPO";
-            row.getCell(5).value = "FECHA DE RETIRO";
-            row.getCell(6).value = "NUM GUIA DESPACHO";
-            row.getCell(7).value = "GESTOR";
-            row.getCell(8).value = "ID VU GESTOR";
-            row.getCell(9).value = "CANTIDAD (KG)";
+            row.getCell(5).value = "TIPO DE FECHA";
+            row.getCell(6).value = "FECHA DE RETIRO";
+            row.getCell(7).value = "MES DE RETIRO";
+            row.getCell(8).value = "NUM GUIA DESPACHO";
+            row.getCell(9).value = "GESTOR";
+            row.getCell(10).value = "ID VU GESTOR";
+            row.getCell(11).value = "CANTIDAD (KG)";
             row.commit();
             const col = worksheet.columns;
             col[0].width = 26;
@@ -404,6 +407,8 @@ class IndustrialConsumer {
             col[6].width = 26;
             col[7].width = 26;
             col[8].width = 26;
+            col[9].width = 26;
+            col[10].width = 26;
 
             const maxRows = 150;
             const lastRowMaterials = 1 + materialNames.length;
@@ -558,7 +563,16 @@ class IndustrialConsumer {
                     error: 'Por favor selecciona un subtipo válido.',
                     formulae: [`=INDIRECT(SUBSTITUTE(B${i + 3}, "/", "_"))`]
                 };
+
                 worksheet.getCell(`E${i + 3}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: false,
+                    showErrorMessage: true,
+                    error: 'Por favor selecciona un tipo de fecha válido.',
+                    formulae: ['"FECHA PRECISA, TODO EL MES"']
+                };
+
+                worksheet.getCell(`F${i + 3}`).dataValidation = {
                     type: 'textLength',
                     allowBlank: false,
                     operator: 'between',
@@ -568,15 +582,27 @@ class IndustrialConsumer {
                     error: 'Por favor, ingrese una fecha válida en formato DD/MM/AAAA',
                     formulae: [10, 10]
                 };
-                worksheet.getCell(`E${i + 3}`).numFmt = '@';
+                worksheet.getCell(`F${i + 3}`).numFmt = '@';
+
                 worksheet.getCell(`G${i + 3}`).dataValidation = {
+                    type: 'custom',
+                    allowBlank: false,
+                    showErrorMessage: true,
+                    errorStyle: 'error',
+                    errorTitle: 'Formato de fecha inválido',
+                    error: 'Por favor, ingrese una fecha válida en formato MM/YYYY',
+                    formulae: ['AND(LEN(G'+(i + 3)+')=7, ISNUMBER(VALUE(LEFT(G'+(i + 3)+',2))), VALUE(LEFT(G'+(i + 3)+',2)) >= 1, VALUE(LEFT(G'+(i + 3)+',2)) <= 12)']
+                };
+                worksheet.getCell(`G${i + 3}`).numFmt = '@';
+
+                worksheet.getCell(`I${i + 3}`).dataValidation = {
                     type: 'list',
                     allowBlank: false,
                     showErrorMessage: true,
                     error: 'Por favor selecciona un RUT válido.',
                     formulae: [`=IF(OR(B${i + 3}="", A${i + 3}=""), "", OFFSET(INDIRECT("Info!$I$2"),MATCH(B${i + 3},INDIRECT("Info!$L$2:$L$"&${uniqueCombinedRutNames.length + 1}),0)-1,0,COUNTIF(INDIRECT("Info!$L$2:$L$"&${uniqueCombinedRutNames.length + 1}),B${i + 3})))`]
                 };
-                worksheet.getCell(`I${i + 1}`).numFmt = '@';
+                worksheet.getCell(`J${i + 1}`).numFmt = '@';
             }
             await workbook.xlsx.writeFile(outputPath);
             return res.download(outputPath);

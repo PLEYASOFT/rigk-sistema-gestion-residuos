@@ -5,8 +5,8 @@ class IndustrialConsumerDao {
         const resp_header: any = await conn.execute("INSERT INTO header_industrial_consumer_form(ID_ESTABLISHMENT,CREATED_BY,YEAR_STATEMENT) VALUES(?,?,?)", [header.establishment, header.created_by, header.year]).then((res) => res[0]).catch(error => [{ undefined }]);
         const id_header = resp_header.insertId;
         // for (let i = 0; i < detail.length; i++) {
-            const { residue, sub, value, date, gestor, ler, treatment } = detail;
-            const resp: any = await conn?.execute("INSERT INTO detail_industrial_consumer_form(ID_HEADER,PRECEDENCE,TYPE_RESIDUE,VALUE, DATE_WITHDRAW,ID_GESTOR, LER,TREATMENT_TYPE) VALUES (?,?,?,?,?,?,?,?)", [id_header, residue, sub, value.toString().replace(",","."), date, gestor, (ler || null), treatment]).then((res) => res[0]).catch(error => {console.log(error); return [{ undefined }];});
+            const { residue, sub, value, date, gestor, ler, treatment, mdate} = detail;
+            const resp: any = await conn?.execute("INSERT INTO detail_industrial_consumer_form(ID_HEADER,PRECEDENCE,TYPE_RESIDUE,VALUE, DATE_WITHDRAW,ID_GESTOR, LER,TREATMENT_TYPE, DATE_MONTH) VALUES (?,?,?,?,?,?,?,?,?)", [id_header, residue, sub, value.toString().replace(",","."), date, gestor, (ler || null), treatment, mdate]).then((res) => res[0]).catch(error => {console.log(error); return [{ undefined }];});
             const id_detail = resp.insertId;
 
             for (var key in attached) {
@@ -28,17 +28,30 @@ class IndustrialConsumerDao {
         conn.end();
         return { attached };
     }
-    public async verifyRow(treatment: any, sub: any, gestor: any, date: any, idEstablishment: any) {
+    public async verifyRow(treatment: any, sub: any, gestor: any, date: any, idEstablishment: any, mdate: any) {
         const conn = mysqlcon.getConnection()!;
-        const data: any = await conn.execute(
-            `SELECT detail.* FROM detail_industrial_consumer_form as detail
-            JOIN header_industrial_consumer_form as header ON detail.ID_HEADER = header.ID
-            WHERE detail.TREATMENT_TYPE=? AND detail.TYPE_RESIDUE=? AND detail.ID_GESTOR=? AND detail.DATE_WITHDRAW=? AND header.ID_ESTABLISHMENT=?`, 
-            [treatment, sub, gestor, date, idEstablishment]
-        ).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
+        if (mdate == "") {
+            const data: any = await conn.execute(
+                `SELECT detail.* FROM detail_industrial_consumer_form as detail
+                JOIN header_industrial_consumer_form as header ON detail.ID_HEADER = header.ID
+                WHERE detail.TREATMENT_TYPE=? AND detail.TYPE_RESIDUE=? AND detail.ID_GESTOR=? AND detail.DATE_WITHDRAW=? AND header.ID_ESTABLISHMENT=?`, 
+                [treatment, sub, gestor, date, idEstablishment]
+            ).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
+            
+            conn.end();
+            return data;
+        } else{
+            const data: any = await conn.execute(
+                `SELECT detail.* FROM detail_industrial_consumer_form as detail
+                JOIN header_industrial_consumer_form as header ON detail.ID_HEADER = header.ID
+                WHERE detail.TREATMENT_TYPE=? AND detail.TYPE_RESIDUE=? AND detail.ID_GESTOR=? AND detail.DATE_MONTH=? AND header.ID_ESTABLISHMENT=?`, 
+                [treatment, sub, gestor, mdate, idEstablishment]
+            ).then((res) => res[0]).catch(error => { console.log(error); return [{ undefined }] });
+            
+            conn.end();
+            return data;
+        }
         
-        conn.end();
-        return data;
     }    
     public async saveHeaderData(establishmentId: any, createdBy: any, createdAt: Date, yearStatement: any) {
         const conn = mysqlcon.getConnection()!;
@@ -51,9 +64,9 @@ class IndustrialConsumerDao {
         conn.end();
         return { header };
     }
-    public async saveDetailData(ID_HEADER: any, PRECEDENCE: any, TYPE_RESIDUE: any, VALUE: any, DATE_WITHDRAW: any, ID_GESTOR: any, LER: any, TREATMENT_TYPE: any) {
+    public async saveDetailData(ID_HEADER: any, PRECEDENCE: any, TYPE_RESIDUE: any, VALUE: any, DATE_WITHDRAW: any, MDATE_WITHDRAW: any, ID_GESTOR: any, LER: any, TREATMENT_TYPE: any) {
         const conn = mysqlcon.getConnection()!;
-        const detail: any = await conn.execute("INSERT INTO detail_industrial_consumer_form(ID_HEADER, PRECEDENCE, TYPE_RESIDUE, VALUE, DATE_WITHDRAW, ID_GESTOR, LER, TREATMENT_TYPE) VALUES (?,?,?,?,?,?,?,?)", [ID_HEADER, PRECEDENCE, TYPE_RESIDUE, VALUE, DATE_WITHDRAW, ID_GESTOR, (LER||''), TREATMENT_TYPE])
+        const detail: any = await conn.execute("INSERT INTO detail_industrial_consumer_form(ID_HEADER, PRECEDENCE, TYPE_RESIDUE, VALUE, DATE_WITHDRAW, ID_GESTOR, LER, TREATMENT_TYPE, DATE_MONTH) VALUES (?,?,?,?,?,?,?,?,?)", [ID_HEADER, PRECEDENCE, TYPE_RESIDUE, VALUE, DATE_WITHDRAW, ID_GESTOR, (LER||''), TREATMENT_TYPE, MDATE_WITHDRAW])
             .then((res) => res[0])
             .catch((error) => {
                 console.log(error);
