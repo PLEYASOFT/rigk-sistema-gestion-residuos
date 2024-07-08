@@ -142,7 +142,7 @@ export class VisualizarMvComponent implements OnInit {
   }
 
   filter(auto: boolean = false) {
-    const selectedBusinessValue = (this.selectedBusiness as any)?.label || this.selectedBusiness;
+    const selectedBusinessValue = (this.selectedBusiness as any)?.value === '-1' ? '-1' : (this.selectedBusiness as any)?.label || this.selectedBusiness;
     const selectedEstablishmentValue = (this.selectedEstablishment as any)?.value || this.selectedEstablishment;
     const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
     const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
@@ -161,6 +161,7 @@ export class VisualizarMvComponent implements OnInit {
     this.cant = Math.ceil(this.filteredStatements.length / 10);
     this.saveState();
     this.filtersApplied = false;
+    this.updateFilters();
   }
 
   filterBusinesses(event: any) {
@@ -214,7 +215,7 @@ export class VisualizarMvComponent implements OnInit {
   }
 
   updateFilters() {
-    const selectedBusinessValue = (this.selectedBusiness as any)?.label || this.selectedBusiness;
+    const selectedBusinessValue = (this.selectedBusiness as any)?.value === '-1' ? '-1' : (this.selectedBusiness as any)?.label || this.selectedBusiness;
     const selectedEstablishmentValue = (this.selectedEstablishment as any)?.value || this.selectedEstablishment;
     const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
     const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
@@ -268,6 +269,7 @@ export class VisualizarMvComponent implements OnInit {
   reset() {
     this.loadStatements();
   }
+
   pagTo(i: number) {
     this.pos = i + 1;
     this.db = this.filteredStatements.slice((i * 10), (i + 1) * 10).sort((a, b) => new Date(a.FechaRetiro).getTime() - new Date(b.FechaRetiro).getTime()).reverse();
@@ -276,13 +278,13 @@ export class VisualizarMvComponent implements OnInit {
   next() {
     if (this.pos >= this.cant) return;
     this.pos++;
-    this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(a.FechaRetiro).getTime() - new Date(b.FechaRetiro).getTime()).reverse();
+    this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();
   }
 
   previus() {
     if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
     this.pos = this.pos - 1;
-    this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(a.FechaRetiro).getTime() - new Date(b.FechaRetiro).getTime()).reverse();
+    this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();
   }
 
   setArrayFromNumber() {
