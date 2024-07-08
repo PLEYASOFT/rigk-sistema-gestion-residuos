@@ -48,12 +48,12 @@ export class SidebarComponent implements OnInit {
     { title: "Mantenedor Tarifas", path: "#/mantenedor/rates", icon: "fa-money-bill-1" },
     { title: "Mantenedor Metas", path: "#/mantenedor/goals", icon: "fa fa-flag-checkered" },
     { title: "Mantenedor Declaraciones Productores", path: "#/mantenedor/productor", icon: "fa-file-lines" },
+    { title: "Mantenedor Declaraciones CI", path: "#/mantenedor/ci", icon: "fa-file-lines" },
     { title: "Declaraciones Productores", path: "#/mantenedor/declarations", icon: "fa fa-database" },
     { title: "Declaraciones Consumidores Industriales", path: "#/mantenedor/declarations-ci", icon: "fa fa-database" },
     { title: "Logs del Sistema", path: "#/mantenedor/logs", icon: "fa fa-database" },
     { title: "Dashboard CI / Productor", path: "#/mantenedor/dashboard-ci-productor", icon: "fa-chart-pie" },
     { title: "Dashboard CI / Gestor", path: "#/mantenedor/dashboard-ci-gestor", icon: "fa-chart-pie" },
-    { title: "Visualizar Medios de Verificación", path: "#/mantenedor/visualizar-mv", icon: "fas fa-folder-open" },
   ];
 
   menuGestor = [

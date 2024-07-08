@@ -38,8 +38,8 @@ const routes: Routes = [{
   { path: 'logs', component: LogsComponent },
   { path: 'dashboard-ci-productor', component: DashboardComponent },
   { path: 'dashboard-ci-gestor', component: DashboardCiGestoresComponent },
-  { path: 'visualizar-mv', component: VisualizarMvComponent },
-  { path: 'visualizar-mv/:id_header_/:id_detail', component: VisualizarMvDetailComponent },
+  { path: 'ci', component: VisualizarMvComponent },
+  { path: 'ci/:id_header_/:id_detail', component: VisualizarMvDetailComponent },
   { path: 'productor', component: MaintainerProductorComponent },
   { path: 'productor/:id_header', component: MaintainerProductorDetailComponent },
   { path: '**', redirectTo: 'home', pathMatch: 'full' }]

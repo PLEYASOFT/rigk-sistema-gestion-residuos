@@ -134,9 +134,9 @@ class EstablishmentDao {
         header_industrial_consumer_form.YEAR_STATEMENT,
         header_industrial_consumer_form.ID AS ID_HEADER, 
         business.NAME as NAME_BUSINESS, 
+        business.CODE_BUSINESS,
         detail_industrial_consumer_form.ID AS ID_DETAIL,
         CASE
-            WHEN detail_industrial_consumer_form.PRECEDENCE = 4 THEN 1
             WHEN EXISTS (SELECT 1
                 FROM attached_industrial_consumer_form
                 WHERE attached_industrial_consumer_form.ID_DETAIL = detail_industrial_consumer_form.ID)
