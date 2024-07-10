@@ -184,12 +184,18 @@ export class FormComponent implements OnInit {
     if (!this.selectedEstablishment[0] || this.selectedEstablishment[0] == 0) {
       error = 'Falta establecimiento';
     }
+    let flag = "";
 
+    Swal.fire({
+      icon: 'info',
+      title: 'Espere...',
+      text: `Enviando formulario`
+    });
+    Swal.showLoading();
     for (let i = 0; i < this.newData.length; i++) {
       const reg = this.newData[i];
       const selectedDateType = reg.dateType;
       let dateToValidate = '';
-
       if (selectedDateType === '0') { // Fecha precisa
         dateToValidate = reg.date;
         reg.mdate = "";
@@ -197,27 +203,21 @@ export class FormComponent implements OnInit {
         if (reg.value == 0 || reg.date == "" || reg.gestor == "-1" || reg.treatment == "-1" || reg.sub == "-1" || reg.precedence == "-1") {
           if (reg.precedence == "-1") {
             error = "Debe seleccionar una Subcategoria";
-            break;
           }
           if (reg.treatment == "-1") {
             error = "Debe seleccionar un Tipo Tratamiento";
-            break;
           }
           if (reg.sub == "-1") {
             error = "Debe seleccionar un SubTipo";
-            break;
           }
           if (reg.value == 0) {
             error = "Debe ingresar un peso correcto";
-            break;
           }
           if (reg.date == "") {
             error = "Debe ingresar una fecha de retiro";
-            break;
           }
           if (reg.gestor == "-1") {
             error = "Debe seleccionar un gestor";
-            break;
           }
         }
 
@@ -229,49 +229,27 @@ export class FormComponent implements OnInit {
           return;
         }
 
-        Swal.fire({
-          icon: 'info',
-          title: 'Espere...',
-          text: `Enviando formulario`
-        });
-        Swal.showLoading();
-
         const header = { year: this.year_statement, establishment: this.selectedEstablishment[0] };
         let flag = false;
-
-        for (let i = 0; i < this.newData.length; i++) {
-          const e = this.newData[i];
-          e.residue = e.precedence;
-          try {
-            const r: any = await this.consumerService.save({ header, detail: e }).toPromise();
-            if (!r.status) {
-              Swal.close();
-              Swal.fire({
-                icon: 'error',
-                text: 'Ocurrió un error mientras se guardaba el formulario.'
-              });
-              flag = true;
-            }
-          } catch (error) {
+        const e = this.newData[i];
+        e.residue = e.precedence;
+        try {
+          const r: any = await this.consumerService.save({ header, detail: e }).toPromise();
+          if (!r.status) {
             Swal.close();
             Swal.fire({
               icon: 'error',
-              text: 'Ocurrió un error mientras se enviaba el formulario.'
+              text: 'Ocurrió un error mientras se guardaba el formulario.'
             });
             flag = true;
           }
-        }
-
-        if (!flag) {
+        } catch (error) {
           Swal.close();
           Swal.fire({
-            icon: 'success',
-            text: 'Declaración guardada satisfactoriamente'
-          }).then(btn => {
-            if (btn.isConfirmed) {
-              this.router.navigate(['/consumidor']);
-            }
+            icon: 'error',
+            text: 'Ocurrió un error mientras se enviaba el formulario.'
           });
+          flag = true;
         }
 
       } else if (selectedDateType === '1') { // Todo el mes
@@ -281,27 +259,21 @@ export class FormComponent implements OnInit {
         if (reg.value == 0 || reg.mdate == "" || reg.gestor == "-1" || reg.treatment == "-1" || reg.sub == "-1" || reg.precedence == "-1") {
           if (reg.precedence == "-1") {
             error = "Debe seleccionar una Subcategoria";
-            break;
           }
           if (reg.treatment == "-1") {
             error = "Debe seleccionar un Tipo Tratamiento";
-            break;
           }
           if (reg.sub == "-1") {
             error = "Debe seleccionar un SubTipo";
-            break;
           }
           if (reg.value == 0) {
             error = "Debe ingresar un peso correcto";
-            break;
           }
           if (reg.mdate == "") {
             error = "Debe ingresar un mes de retiro";
-            break;
           }
           if (reg.gestor == "-1") {
             error = "Debe seleccionar un gestor";
-            break;
           }
         }
 
@@ -313,51 +285,29 @@ export class FormComponent implements OnInit {
           return;
         }
 
-        Swal.fire({
-          icon: 'info',
-          title: 'Espere...',
-          text: `Enviando formulario`
-        });
-        Swal.showLoading();
-
         const header = { year: this.year_statement, establishment: this.selectedEstablishment[0] };
         let flag = false;
 
-        for (let i = 0; i < this.newData.length; i++) {
-          const e = this.newData[i];
-          e.residue = e.precedence;
-          try {
-            const r: any = await this.consumerService.save({ header, detail: e }).toPromise();
-            if (!r.status) {
-              Swal.close();
-              Swal.fire({
-                icon: 'error',
-                text: 'Ocurrió un error mientras se guardaba el formulario.'
-              });
-              flag = true;
-            }
-          } catch (error) {
+        const e = this.newData[i];
+        e.residue = e.precedence;
+        try {
+          const r: any = await this.consumerService.save({ header, detail: e }).toPromise();
+          if (!r.status) {
             Swal.close();
             Swal.fire({
               icon: 'error',
-              text: 'Ocurrió un error mientras se enviaba el formulario.'
+              text: 'Ocurrió un error mientras se guardaba el formulario.'
             });
             flag = true;
           }
-        }
-
-        if (!flag) {
+        } catch (error) {
           Swal.close();
           Swal.fire({
-            icon: 'success',
-            text: 'Declaración guardada satisfactoriamente'
-          }).then(btn => {
-            if (btn.isConfirmed) {
-              this.router.navigate(['/consumidor']);
-            }
+            icon: 'error',
+            text: 'Ocurrió un error mientras se enviaba el formulario.'
           });
+          flag = true;
         }
-
       } else {
         error = "Debe seleccionar un tipo de fecha";
 
@@ -369,6 +319,17 @@ export class FormComponent implements OnInit {
           return;
         }
       }
+    }
+    if (!flag) {
+      Swal.close();
+      Swal.fire({
+        icon: 'success',
+        text: 'Declaración guardada satisfactoriamente'
+      }).then(btn => {
+        if (btn.isConfirmed) {
+          this.router.navigate(['/consumidor']);
+        }
+      });
     }
   }
 
@@ -383,15 +344,30 @@ export class FormComponent implements OnInit {
   rowSelected = 0;
   tableSelected = 0;
   verifyRow(data: any, input: HTMLInputElement) {
+    if (data.dateType == "0") {
+      data.mdate = "";
+    }
     this.consumerService.checkRow(data).subscribe({
       next: r => {
         if (!r.status) {
           Swal.fire({
             icon: 'info',
-            text: 'Ya existe la misma Empresa, Establecimiento, Material, Subtipo, y Gestor para esta Fecha'
+            html: `
+            <h2 style="font-weight: bold;">Duplicidad de Declaración</h2>
+            <p style="text-align: justify;">
+              Ya existe una declaración para la misma Empresa, Establecimiento, Material, Subtipo, y Gestor en esta Fecha. 
+              Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+            </p>
+          `,
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+            cancelButtonText: 'Cancelar'
+          }).then((result) => {
+            if (!result.isConfirmed) {
+              input.value = "-1";
+              this.newData[data.index - 1].gestor = "-1";
+            }
           });
-          input.value = "-1";
-          return;
         }
       }
     });
@@ -415,8 +391,6 @@ export class FormComponent implements OnInit {
       mesRetiroInput.classList.add('d-none');
     }
   }
-
-
 
   addRow(i: number) {
     this.lastRowNumber++;
@@ -507,10 +481,10 @@ export class FormComponent implements OnInit {
       dateType: ""
     };
     tmp.push(e);
-    const analize = (treatment: any, sub: any, gestor: any, date: any, row: any, idEstablishment: any, mdate: any) => {
-      this.verifyRow({ treatment, sub, gestor, date, idEstablishment, mdate }, row);
+    const analize = (treatment: any, sub: any, gestor: any, date: any, row: any, idEstablishment: any, mdate: any, dateType: any, index: any) => {
+      this.verifyRow({ treatment, sub, gestor, date, idEstablishment, mdate, dateType, index }, row);
     }
-    
+
     const selectDateType = document.getElementById(`inp_dateType_${i + 1}_${n_row}`) as HTMLSelectElement;
     selectDateType.addEventListener('change', (event) => {
       this.onDateTypeChange(event, i + 1, n_row);
@@ -529,12 +503,24 @@ export class FormComponent implements OnInit {
       if (tmp_filter >= 1) {
         Swal.fire({
           icon: 'info',
-          text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
+          html: `
+            <h2 style="font-weight: bold;">Duplicidad de Declaración</h2>
+            <p style="text-align: justify;">
+              Ya existe una declaración para la misma Empresa, Establecimiento, Material, Subtipo, y Gestor en esta Fecha. 
+              Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+            </p>
+          `,
+          showCancelButton: true,
+          confirmButtonText: 'Ok',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (!result.isConfirmed) {
+            inp_treatment.value = "0";
+            return;
+          }
         });
-        inp_treatment.value = "0";
-        return;
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_treatment, this.id_compare, inp_mdate.value);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_treatment, this.id_compare, inp_mdate.value, inp_dateType.value, n_row);
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -623,12 +609,24 @@ export class FormComponent implements OnInit {
       if (tmp_filter >= 1) {
         Swal.fire({
           icon: 'info',
-          text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
+          html: `
+            <h2 style="font-weight: bold;">Duplicidad de Declaración</h2>
+            <p style="text-align: justify;">
+              Ya existe una declaración para la misma Empresa, Establecimiento, Material, Subtipo, y Gestor en esta Fecha. 
+              Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+            </p>
+          `,
+          showCancelButton: true,
+          confirmButtonText: 'Ok',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (!result.isConfirmed) {
+            inp_sub.value = "0";
+            return;
+          }
         });
-        inp_sub.value = "0";
-        return;
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_sub, this.id_compare, inp_mdate.value);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_sub, this.id_compare, inp_mdate.value, inp_dateType.value, n_row);
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -738,17 +736,6 @@ export class FormComponent implements OnInit {
         if (i.row == n_row) continue;
       }
 
-      // if (tmp_filter >= 1) {
-      //     Swal.fire({
-      //         icon: 'info',
-      //         text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
-      //     });
-      //     inp_dateType.value = "-1";
-      //     return;
-      // } else {
-      //     analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_date, this.id_compare);
-      // }
-
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
         const e = {
@@ -784,12 +771,24 @@ export class FormComponent implements OnInit {
       if (tmp_filter >= 1) {
         Swal.fire({
           icon: 'info',
-          text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
+          html: `
+            <h2 style="font-weight: bold;">Duplicidad de Declaración</h2>
+            <p style="text-align: justify;">
+              Ya existe una declaración para la misma Empresa, Establecimiento, Material, Subtipo, y Gestor en esta Fecha. 
+              Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+            </p>
+          `,
+          showCancelButton: true,
+          confirmButtonText: 'Ok',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (!result.isConfirmed) {
+            inp_date.value = "";
+            return;
+          }
         });
-        inp_date.value = "";
-        return;
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_date, this.id_compare, inp_mdate.value);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_date, this.id_compare, inp_mdate.value, inp_dateType.value, n_row);
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -826,12 +825,24 @@ export class FormComponent implements OnInit {
       if (tmp_filter >= 1) {
         Swal.fire({
           icon: 'info',
-          text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
+          html: `
+            <h2 style="font-weight: bold;">Duplicidad de Declaración</h2>
+            <p style="text-align: justify;">
+              Ya existe una declaración para la misma Empresa, Establecimiento, Material, Subtipo, y Gestor en esta Fecha. 
+              Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+            </p>
+          `,
+          showCancelButton: true,
+          confirmButtonText: 'Ok',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (!result.isConfirmed) {
+            inp_mdate.value = "";
+            return;
+          }
         });
-        inp_mdate.value = "";
-        return;
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_date, this.id_compare, inp_mdate.value);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_date, this.id_compare, inp_mdate.value, inp_dateType, n_row);
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -868,12 +879,24 @@ export class FormComponent implements OnInit {
       if (tmp_filter >= 1) {
         Swal.fire({
           icon: 'info',
-          text: 'Mismo tratamiento, material, subtipo y gestor para esta fecha'
+          html: `
+            <h2 style="font-weight: bold;">Duplicidad de Declaración</h2>
+            <p style="text-align: justify;">
+              Ya existe una declaración para la misma Empresa, Establecimiento, Material, Subtipo, y Gestor en esta Fecha. 
+              Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+            </p>
+          `,
+          showCancelButton: true,
+          confirmButtonText: 'Ok',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (!result.isConfirmed) {
+            inp_gestor.value = "-1";
+            return;
+          }
         });
-        inp_gestor.value = "-1";
-        return;
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_gestor, this.id_compare, inp_mdate.value);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_gestor, this.id_compare, inp_mdate.value, inp_dateType.value, n_row);
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
