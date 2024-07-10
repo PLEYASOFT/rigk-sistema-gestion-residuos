@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  API_V1_URL: 'https://pleyades.dynu.net/api/v1'
+  API_V1_URL: 'http://localhost:8080/api/v1'
 };
 
 /*

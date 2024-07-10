@@ -30,31 +30,31 @@ export class BulkUploadComponent implements OnInit {
   downloadExcel() {
     const id = this.selectedBusiness?.value;
     if (!id || id == "-1") {
-        Swal.fire({
-            icon: 'error',
-            text: 'Debe seleccionar empresa'
-        });
-        return;
+      Swal.fire({
+        icon: 'error',
+        text: 'Debe seleccionar empresa'
+      });
+      return;
     }
     this.consumer.downloadExcel(id).subscribe({
-        next: r => {
-            if (r) {
-                const file = new Blob([r], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
-                let link = document.createElement('a');
-                link.href = window.URL.createObjectURL(file);
-                link.download = `carga masiva`;
-                document.body.appendChild(link);
-                link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
-                link.remove();
-                window.URL.revokeObjectURL(link.href);
-            }
-        },
-        error: r => {
-            Swal.fire({
-                icon: 'error',
-                text: 'Empresa no tiene ningún establecimiento creado en el sistema. En caso de ser necesario, contacte al administrador del sistema.'
-            });
+      next: r => {
+        if (r) {
+          const file = new Blob([r], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+          let link = document.createElement('a');
+          link.href = window.URL.createObjectURL(file);
+          link.download = `carga masiva`;
+          document.body.appendChild(link);
+          link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+          link.remove();
+          window.URL.revokeObjectURL(link.href);
         }
+      },
+      error: r => {
+        Swal.fire({
+          icon: 'error',
+          text: 'Empresa no tiene ningún establecimiento creado en el sistema. En caso de ser necesario, contacte al administrador del sistema.'
+        });
+      }
     });
   }
   loadStatements() {
@@ -79,21 +79,21 @@ export class BulkUploadComponent implements OnInit {
   filterBusiness(event: any) {
     const query = event.query.toLowerCase();
     this.filteredBusiness = this.dbBusiness
-        .filter(b => b.NAME.toLowerCase().includes(query))
-        .map(b => ({ label: `${b.CODE_BUSINESS} - ${b.NAME}`, value: b.ID }))
-        .sort((a, b) => a.label.localeCompare(b.label));
-        
-      if (this.filteredBusiness.length > 0) {
-          this.filteredBusiness.unshift({ label: 'Seleccionar Empresa', value: '-1' });
-      } else {
-          this.filteredBusiness = [{ label: 'Seleccionar Empresa', value: '-1' }];
-      }
+      .filter(b => b.NAME.toLowerCase().includes(query))
+      .map(b => ({ label: `${b.CODE_BUSINESS} - ${b.NAME}`, value: b.ID }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+
+    if (this.filteredBusiness.length > 0) {
+      this.filteredBusiness.unshift({ label: 'Seleccionar Empresa', value: '-1' });
+    } else {
+      this.filteredBusiness = [{ label: 'Seleccionar Empresa', value: '-1' }];
+    }
   }
 
   onBusinessSelect(event: any) {
     this.selectedBusiness = event;
   }
-  
+
   onFileChange(event: any) {
     const allowedMimeTypes = [
       'application/vnd.ms-excel',
@@ -218,7 +218,7 @@ export class BulkUploadComponent implements OnInit {
             });
             return;
           }
-        } else{
+        } else {
           if (w[0] === row[0] && w[1] === row[1] && w[2] === row[2] && w[3] === row[3] && w[4] === row[4] && w[6] === row[6] && w[7] === row[7]) {
             Swal.fire({
               icon: 'info',
@@ -227,7 +227,7 @@ export class BulkUploadComponent implements OnInit {
             return;
           }
         }
-        
+
 
       }
       // Código de establecimiento
@@ -281,23 +281,27 @@ export class BulkUploadComponent implements OnInit {
       // Fecha
       const date = row[5];
       const validationResult = this.isValidDate(date);
-      if (!validationResult.valid) {
-        Swal.fire({
-          icon: 'error',
-          text: `Error en la fila ${excelRowNumber}. ${validationResult.message}`
-        });
-        return;
+      if (dateType == 'FECHA PRECISA') {
+        if (!validationResult.valid) {
+          Swal.fire({
+            icon: 'error',
+            text: `Error en la fila ${excelRowNumber}. ${validationResult.message}`
+          });
+          return;
+        }
       }
 
       // Mes
       const mdate = row[6];
       const mvalidationResult = this.isValidMDate(mdate);
-      if (!mvalidationResult.valid) {
-        Swal.fire({
-          icon: 'error',
-          text: `Error en la fila ${excelRowNumber}. ${mvalidationResult.message}`
-        });
-        return;
+      if (dateType == 'TODO EL MES') {
+        if (!mvalidationResult.valid) {
+          Swal.fire({
+            icon: 'error',
+            text: `Error en la fila ${excelRowNumber}. ${mvalidationResult.message}`
+          });
+          return;
+        }
       }
 
       // Número de guía de despacho
@@ -321,7 +325,7 @@ export class BulkUploadComponent implements OnInit {
 
       let partsGestor = gestor.split(' - ');
       let gestorsId: any = await this.businessService.getBusinessByCode(partsGestor[2]).toPromise();
-      if(partsGestor[0] == 1){
+      if (partsGestor[0] == 1) {
         gestorsId = 0;
       }
       // Tipo específico
@@ -341,7 +345,7 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-      
+
       const sanitizedQuantity = row[10].toString().replace(',', '.');
       const quantity = parseFloat(sanitizedQuantity);
 
@@ -392,12 +396,12 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-      
+
       let dateFormateada = "";
       let mdateFormateada = "";
       if (dateType == "FECHA PRECISA") {
         dateFormateada = this.convertDate(date);
-      }else if (dateType == "TODO EL MES") {
+      } else if (dateType == "TODO EL MES") {
         mdateFormateada = this.convertMonthYear(mdate);
         dateFormateada = `${mdateFormateada}-01`;
       }
@@ -415,19 +419,19 @@ export class BulkUploadComponent implements OnInit {
             text: `La declaración de la fila ${excelRowNumber} ya ha sido declarada, Mismo tratamiento, material, subtipo y gestor para esta fecha`
           });
           return;
-        } else{
+        } else {
           Swal.fire({
             icon: 'info',
             text: `La declaración de la fila ${excelRowNumber} ya ha sido declarada, Mismo tratamiento, material, subtipo y gestor para este mes`
           });
           return;
         }
-        
+
 
       }
 
 
-      if(partsEstablishment[1] != partsGestor[1] && gestorIdValue != 0){
+      if (partsEstablishment[1] != partsGestor[1] && gestorIdValue != 0) {
         Swal.fire({
           icon: 'error',
           text: `La región del gestor en la fila ${excelRowNumber} no coincide con la del establecimiento seleccionado.`
@@ -533,7 +537,7 @@ export class BulkUploadComponent implements OnInit {
               LER: rowData.LER,
               TREATMENT_TYPE: rowData.treatmentType,
             };
-            console.log("detailFormData ",detailFormData)
+            console.log("detailFormData ", detailFormData)
             this.consumer.saveDetailFromExcel(detailFormData).subscribe((detailResponse: any) => {
               if (!detailResponse.status) {
                 Swal.fire({
@@ -552,7 +556,7 @@ export class BulkUploadComponent implements OnInit {
           }
         });
       }
-      
+
     }
     Swal.fire({
       icon: 'success',
