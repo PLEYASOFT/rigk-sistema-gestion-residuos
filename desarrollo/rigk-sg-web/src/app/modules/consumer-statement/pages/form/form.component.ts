@@ -276,7 +276,7 @@ export class FormComponent implements OnInit {
 
       } else if (selectedDateType === '1') { // Todo el mes
         dateToValidate = reg.mdate;
-        reg.date = "0001-01-01";
+        reg.date = `${reg.mdate}-01`;
 
         if (reg.value == 0 || reg.mdate == "" || reg.gestor == "-1" || reg.treatment == "-1" || reg.sub == "-1" || reg.precedence == "-1") {
           if (reg.precedence == "-1") {
@@ -507,10 +507,10 @@ export class FormComponent implements OnInit {
       dateType: ""
     };
     tmp.push(e);
-    const analize = (treatment: any, sub: any, gestor: any, date: any, row: any, idEstablishment: any) => {
-      this.verifyRow({ treatment, sub, gestor, date, idEstablishment }, row);
+    const analize = (treatment: any, sub: any, gestor: any, date: any, row: any, idEstablishment: any, mdate: any) => {
+      this.verifyRow({ treatment, sub, gestor, date, idEstablishment, mdate }, row);
     }
-
+    
     const selectDateType = document.getElementById(`inp_dateType_${i + 1}_${n_row}`) as HTMLSelectElement;
     selectDateType.addEventListener('change', (event) => {
       this.onDateTypeChange(event, i + 1, n_row);
@@ -534,7 +534,7 @@ export class FormComponent implements OnInit {
         inp_treatment.value = "0";
         return;
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_treatment, this.id_compare);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_treatment, this.id_compare, inp_mdate.value);
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -628,7 +628,7 @@ export class FormComponent implements OnInit {
         inp_sub.value = "0";
         return;
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_sub, this.id_compare);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_sub, this.id_compare, inp_mdate.value);
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -789,7 +789,7 @@ export class FormComponent implements OnInit {
         inp_date.value = "";
         return;
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_date, this.id_compare);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_date, this.id_compare, inp_mdate.value);
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -831,7 +831,7 @@ export class FormComponent implements OnInit {
         inp_mdate.value = "";
         return;
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_date, this.id_compare);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_date, this.id_compare, inp_mdate.value);
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -843,7 +843,7 @@ export class FormComponent implements OnInit {
           treatment: "-1",
           ler: "",
           value: 0,
-          date: "0001-01-01",
+          date: `${inp_mdate.value}-01`,
           mdate: inp_mdate.value,
           gestor: "-1",
           files: [],
@@ -873,7 +873,7 @@ export class FormComponent implements OnInit {
         inp_gestor.value = "-1";
         return;
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_gestor, this.id_compare);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_gestor, this.id_compare, inp_mdate.value);
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
