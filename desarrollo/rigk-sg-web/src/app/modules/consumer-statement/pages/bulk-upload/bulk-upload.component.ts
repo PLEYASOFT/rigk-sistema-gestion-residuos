@@ -399,7 +399,7 @@ export class BulkUploadComponent implements OnInit {
         dateFormateada = this.convertDate(date);
       }else if (dateType == "TODO EL MES") {
         mdateFormateada = this.convertMonthYear(mdate);
-        dateFormateada = "0001-01-01";
+        dateFormateada = `${mdateFormateada}-01`;
       }
 
       let valueEstablishment = row[0];
@@ -527,8 +527,8 @@ export class BulkUploadComponent implements OnInit {
               PRECEDENCE: rowData.precedence,
               TYPE_RESIDUE: rowData.typeResidue,
               VALUE: parseFloat(rowData.quantity.toFixed(2).replace(",", ".")),
-              DATE_WITHDRAW: this.convertDate("01/01/0001"),
               MDATE_WITHDRAW: this.convertMonthYear(rowData.mdate),
+              DATE_WITHDRAW: this.convertDate(`01/${rowData.mdate}`),
               ID_GESTOR: rowData.businessId,
               LER: rowData.LER,
               TREATMENT_TYPE: rowData.treatmentType,
