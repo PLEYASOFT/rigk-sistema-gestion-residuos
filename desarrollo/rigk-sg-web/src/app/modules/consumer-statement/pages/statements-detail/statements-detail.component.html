@@ -64,7 +64,7 @@
           <td>
             {{formatValue(detail_consulta.VALUE)}}
           </td>
-          <td class="text-center">{{detail_consulta.FechaRetiro |  date: 'dd-MM-yyyy':'UTC'}}</td>
+          <td class="text-center">{{detail_consulta.FechaMostrar ? (detail_consulta.FechaMostrar.length > 7 ? (detail_consulta.FechaMostrar | date: 'dd-MM-yyyy') : (detail_consulta.FechaMostrar | date: 'MM-yyyy')) : '' }}</td>
           <td class="text-center">{{detail_consulta.NombreGestor}}</td>
           <td class="text-center">
             <button class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal"><i

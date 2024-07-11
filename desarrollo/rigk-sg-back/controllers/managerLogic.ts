@@ -208,16 +208,20 @@ class ManagerLogic {
             for (let i = 0; i < noaprovediv.length; i++) {
                 const invoice = noaprovediv[i];
                 if (invoice.STATE_GESTOR == 0) {
-                    const dateFormat = new Date(invoice.FechaRetiro);
-
-                    let day = dateFormat.getDate();
-                    let month = dateFormat.getMonth();
-                    let year = dateFormat.getFullYear();
-
-                    let correctMonth = month+1;
-                    let monthWithTwoDigits = correctMonth.toString().padStart(2, '0');
-                    let dayWithTwoDigits = day.toString().padStart(2, '0');
-                    let format1 = dayWithTwoDigits + "/" + monthWithTwoDigits + "/" + year;
+                    const dateFormat = invoice.FechaRetiro;
+                    let fechaFormateada;
+                    if (invoice.MesRetiro != "" && invoice.MesRetiro != null) {
+                        const mesRetiro = invoice.MesRetiro.split('-');
+                        const año = mesRetiro[0];
+                        const mes = mesRetiro[1];
+                        fechaFormateada = `${mes.padStart(2, '0')}/${año}`;
+                    } else {
+                        const fechaParts = dateFormat.split('-');
+                        const año = fechaParts[0];
+                        const mes = fechaParts[1];
+                        const dia = fechaParts[2];
+                        fechaFormateada = `${dia.padStart(2, '0')}/${mes.padStart(2, '0')}/${año}`;
+                    }
 
                     const rowdata = worksheet.getRow(i + 2);
                     rowdata.getCell(1).value = `${invoice.NAME_BUSINESS}`;
@@ -226,7 +230,7 @@ class ManagerLogic {
                     rowdata.getCell(4).value = `${invoice.TipoTratamiento}`;
                     rowdata.getCell(5).value = `${invoice.PRECEDENCE}`;
                     rowdata.getCell(6).value = `${invoice.TYPE_RESIDUE}`;
-                    rowdata.getCell(7).value = `${format1}`;
+                    rowdata.getCell(7).value = `${fechaFormateada}`;
                     rowdata.getCell(8).value = "";
                     rowdata.getCell(9).value = "";
                     rowdata.getCell(10).value = "";

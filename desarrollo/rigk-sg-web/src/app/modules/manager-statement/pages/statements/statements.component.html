@@ -157,7 +157,7 @@
                         <td>{{s.TipoTratamiento}}</td>
                         <td>{{s.PRECEDENCE}}</td>
                         <td>{{s.TYPE_RESIDUE}}</td>
-                        <td>{{s.FechaRetiro | date: 'dd-MM-yyyy'}}</td>
+                        <td>{{ s.FechaMostrar ? (s.FechaMostrar.length > 7 ? (s.FechaMostrar | date: 'dd-MM-yyyy') : (s.FechaMostrar | date: 'MM-yyyy')) : '' }}</td>
                         <td>
                             <span *ngIf="s.STATE_GESTOR == 0">Por aprobar</span>
                             <span *ngIf="s.STATE_GESTOR != 0">Aprobado</span>
