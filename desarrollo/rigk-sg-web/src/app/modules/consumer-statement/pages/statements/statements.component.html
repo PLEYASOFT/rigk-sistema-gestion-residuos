@@ -91,10 +91,8 @@
                         <td>{{s.TipoTratamiento}}</td>
                         <td>{{s.PRECEDENCE}}</td>
                         <td>{{s.TYPE_RESIDUE}}</td>
-                        <td>
-                            {{formatValue(s.VALUE)}}
-                        </td>
-                        <td>{{s.FechaRetiro | date: 'dd-MM-yyyy'}}</td>
+                        <td>{{formatValue(s.VALUE)}}</td>
+                        <td>{{ s.FechaMostrar ? (s.FechaMostrar.length > 7 ? (s.FechaMostrar | date: 'dd-MM-yyyy') : (s.FechaMostrar | date: 'MM-yyyy')) : '' }}</td>
                         <td>
                             <span [ngClass]="s.semaforo ? 'circle green-circle' : 'circle red-circle'"></span>
                         </td>

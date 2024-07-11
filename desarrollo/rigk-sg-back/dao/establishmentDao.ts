@@ -56,8 +56,9 @@ class EstablishmentDao {
             detail_industrial_consumer_form.VALUE,
             detail_industrial_consumer_form.STATE_GESTOR,
             invoices_detail.VALUE AS VALUE_DECLARATE,
-            detail_industrial_consumer_form.DATE_WITHDRAW AS FechaRetiro,
+            DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%Y-%m-%d') AS FechaRetiro,
             CONCAT(UPPER(SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 1, 1)), SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 2)) AS FechaRetiroTipeada,
+            detail_industrial_consumer_form.DATE_MONTH AS MesRetiro,
             detail_industrial_consumer_form.ID_GESTOR AS IdGestor,
             detail_industrial_consumer_form.LER,
             detail_industrial_consumer_form.TREATMENT_TYPE AS TREATMENT_TYPE_NUMBER,
@@ -99,8 +100,9 @@ class EstablishmentDao {
         detail_industrial_consumer_form.VALUE,
         detail_industrial_consumer_form.STATE_GESTOR,
         invoices_detail.VALUE AS VALUE_DECLARATE,
-        detail_industrial_consumer_form.DATE_WITHDRAW AS FechaRetiro,
+        DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%Y-%m-%d') AS FechaRetiro,
         CONCAT(UPPER(SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 1, 1)), SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 2)) AS FechaRetiroTipeada,
+        detail_industrial_consumer_form.DATE_MONTH AS MesRetiro,
         detail_industrial_consumer_form.ID_GESTOR AS IdGestor,
         detail_industrial_consumer_form.LER,
         detail_industrial_consumer_form.TREATMENT_TYPE AS TREATMENT_TYPE_NUMBER,
@@ -149,9 +151,9 @@ class EstablishmentDao {
         detail_industrial_consumer_form.VALUE,
         detail_industrial_consumer_form.STATE_GESTOR,
         invoices_detail.VALUE AS VALUE_DECLARATE,
-        detail_industrial_consumer_form.DATE_WITHDRAW AS FechaRetiro,
-        CONCAT(UPPER(SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 1, 1)), 
-               SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 2)) AS FechaRetiroTipeada,
+        DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%Y-%m-%d') AS FechaRetiro,
+        CONCAT(UPPER(SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 1, 1)), SUBSTRING(DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%M-%Y'), 2)) AS FechaRetiroTipeada,
+        detail_industrial_consumer_form.DATE_MONTH AS MesRetiro,
         detail_industrial_consumer_form.ID_GESTOR AS IdGestor,
         detail_industrial_consumer_form.LER,
         detail_industrial_consumer_form.TREATMENT_TYPE AS TREATMENT_TYPE_NUMBER,
@@ -216,7 +218,8 @@ class EstablishmentDao {
             submaterial.SUBMATERIAL AS SUBTIPO,
             detail_industrial_consumer_form.VALUE AS PESO_DECLARADO,
             invoices_detail.VALUE AS PESO_VALORIZADO,
-            detail_industrial_consumer_form.DATE_WITHDRAW AS FECHA_DE_RETIRO,
+            DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%Y-%m-%d') AS FECHA_DE_RETIRO,
+            detail_industrial_consumer_form.DATE_MONTH AS MES_DE_RETIRO,
             detail_industrial_consumer_form.ID_GESTOR AS ID_GESTOR,
             business_assignated_to.NAME AS GESTOR,
             business_assignated_to.VAT AS RUT_GESTOR,
@@ -245,13 +248,11 @@ class EstablishmentDao {
         LEFT JOIN type_material ON type_material.ID = detail_industrial_consumer_form.PRECEDENCE
         LEFT JOIN submaterial ON submaterial.ID = detail_industrial_consumer_form.TYPE_RESIDUE
         LEFT JOIN type_treatment ON type_treatment.ID = detail_industrial_consumer_form.TREATMENT_TYPE
-        
         WHERE user_assigned.STATE = '1' AND header_industrial_consumer_form.YEAR_STATEMENT = ?
      `, [YEAR]).then(res => res[0]).catch(erro => { console.log(erro); return undefined });
         conn.end();
         return data;
     }
-
 
     public async getEstablishmentByID(ID: any) {
         const conn = mysqlcon.getConnection()!;
