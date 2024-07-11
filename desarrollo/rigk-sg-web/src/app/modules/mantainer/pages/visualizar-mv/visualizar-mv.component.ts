@@ -102,6 +102,10 @@ export class VisualizarMvComponent implements OnInit {
       Swal.showLoading();
       this.establishmentService.getAllDeclarationEstablishments().subscribe(r => {
         if (r.status) {
+          r.status = r.status.map((item: any) => {
+            item.FechaParaOrdenar = (item.MesRetiro != "" && item.MesRetiro != null) ? item.MesRetiro : item.FechaRetiro;
+            return item;
+          });
           const uniqueMap = new Map();
           r.status.forEach((item: any) => {
             if (!uniqueMap.has(item.ID_DETAIL)) {
@@ -109,9 +113,14 @@ export class VisualizarMvComponent implements OnInit {
             }
           });
           const uniqueStatus = Array.from(uniqueMap.values());
-          uniqueStatus.sort((a: any, b: any) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime());
+          uniqueStatus.sort((a: any, b: any) => new Date(b.FechaParaOrdenar).getTime() - new Date(a.FechaParaOrdenar).getTime());
 
           uniqueStatus.forEach(e => {
+            if (e.MesRetiro != "" && e.MesRetiro != null) {
+              e.FechaMostrar = e.MesRetiro;
+            } else {
+                e.FechaMostrar = e.FechaRetiro;
+            }
             const businessEntry = { code: e.CODE_BUSINESS, name: e.NAME_BUSINESS, label: `${e.CODE_BUSINESS} — ${e.NAME_BUSINESS}` };
             if (!this.business_name.some(b => b.label === businessEntry.label)) {
               this.business_name.push(businessEntry);
@@ -133,7 +142,7 @@ export class VisualizarMvComponent implements OnInit {
           this.years.sort((a, b) => b - a);
           this.dbStatements = uniqueStatus;
           this.cant = Math.ceil(this.dbStatements.length / 10);
-          this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();
+          this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a, b) => new Date(b.FechaMostrar).getTime() - new Date(a.FechaMostrar).getTime()).reverse();
           Swal.close();
         }
         resolve();

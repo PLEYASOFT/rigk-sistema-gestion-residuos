@@ -108,10 +108,8 @@
                         <td>{{s.TipoTratamiento}}</td>
                         <td>{{s.PRECEDENCE}}</td>
                         <td>{{s.TYPE_RESIDUE}}</td>
-                        <td>
-                            {{formatValue(s.VALUE)}}
-                        </td>
-                        <td>{{s.FechaRetiro | date: 'dd-MM-yyyy'}}</td>
+                        <td>{{formatValue(s.VALUE)}}</td>
+                        <td>{{ s.FechaMostrar ? (s.FechaMostrar.length > 7 ? (s.FechaMostrar | date: 'dd-MM-yyyy') : (s.FechaMostrar | date: 'MM-yyyy')) : '' }}</td>
                         <td class="text-center text-nowrap">
                             <button class="btn"
                                 style="border-color: rgb(192, 192, 192); box-shadow: 0 0 5px rgba(0, 0, 0, 0.3)"

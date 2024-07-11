@@ -627,7 +627,6 @@ class IndustrialConsumer {
 
             for (let i = 0; i < response.length; i++) {
                 const invoice = response[i];
-
                 const rowdata = worksheetDatos.getRow(i + 2);
                 rowdata.getCell(1).value = `${invoice.ID_EMPRESA}`;
                 rowdata.getCell(2).value = `${invoice.RUT_EMPRESA}`;
@@ -646,13 +645,20 @@ class IndustrialConsumer {
                 rowdata.getCell(14).value = invoice.PESO_VALORIZADO !== null ? (invoice.PESO_VALORIZADO % 1 === 0 ? Math.round(invoice.PESO_VALORIZADO) : parseFloat(invoice.PESO_VALORIZADO.toFixed(2))) : null;
                 rowdata.getCell(14).numFmt = invoice.PESO_VALORIZADO !== null && invoice.PESO_VALORIZADO % 1 === 0 ? '0' : '0.00';
 
-
-                const fechaOriginal = new Date(invoice.FECHA_DE_RETIRO);
-
-                const dia = fechaOriginal.getDate();
-                const mes = fechaOriginal.getMonth() + 1;
-                const año = fechaOriginal.getFullYear();
-                const fechaFormateada = `${dia.toString().padStart(2, '0')}/${mes.toString().padStart(2, '0')}/${año}`;
+                const fechaOriginal = invoice.FECHA_DE_RETIRO;
+                let fechaFormateada;
+                if (invoice.MES_DE_RETIRO != "" && invoice.MES_DE_RETIRO != null) {
+                    const mesRetiro = invoice.MES_DE_RETIRO.split('-');
+                    const año = mesRetiro[0];
+                    const mes = mesRetiro[1];
+                    fechaFormateada = `${mes.padStart(2, '0')}/${año}`;
+                } else {
+                    const fechaParts = fechaOriginal.split('-');
+                    const año = fechaParts[0];
+                    const mes = fechaParts[1];
+                    const dia = fechaParts[2];
+                    fechaFormateada = `${dia.padStart(2, '0')}/${mes.padStart(2, '0')}/${año}`;
+                }
 
                 rowdata.getCell(15).value = `${fechaFormateada}`;
                 if (invoice.PESO_VALORIZADO !== null && invoice.ID_GESTOR == 0 && invoice.GESTOR == null && invoice.RUT_GESTOR == null) {
