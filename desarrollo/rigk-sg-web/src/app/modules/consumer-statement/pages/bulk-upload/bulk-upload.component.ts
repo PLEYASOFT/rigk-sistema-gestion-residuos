@@ -209,27 +209,49 @@ export class BulkUploadComponent implements OnInit {
       //Validación declaración repetida
       for (let j = i + 1; j < rows.length; j++) {
         const w = rows[j];
-        console.log(rows);
         if (w[4] == "FECHA PRECISA") {
           if (w[0] === row[0] && w[1] === row[1] && w[2] === row[2] && w[3] === row[3] && w[4] === row[4] && w[5] === row[5] && w[7] === row[7]) {
-            Swal.fire({
+            const result = await Swal.fire({
               icon: 'info',
-              text: `Error en fila ${excelRowNumber}. Se repite en el archivo el mismo Establecimiento, Subcategoría, Tratamiento y Gestor para esta Fecha de Retiro. Por favor, revisar.`
+              html: `
+                <h2 style="font-weight: bold;">Error en fila ${excelRowNumber}</h2>
+                <p style="text-align: justify;">
+                  Se repite en el archivo el mismo Establecimiento, Subcategoría, Tratamiento y Gestor para esta Fecha de Retiro.
+                  Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+                </p>
+              `,
+              showCancelButton: true,
+              confirmButtonText: 'Ok',
+              cancelButtonText: 'Cancelar'
             });
-            return;
+
+            if (!result.isConfirmed) {
+              return;
+            }
           }
         } else {
           if (w[0] === row[0] && w[1] === row[1] && w[2] === row[2] && w[3] === row[3] && w[4] === row[4] && w[6] === row[6] && w[7] === row[7]) {
-            Swal.fire({
+            const result = await Swal.fire({
               icon: 'info',
-              text: `Error en fila ${excelRowNumber}. Se repite en el archivo el mismo Establecimiento, Subcategoría, Tratamiento y Gestor para este Mes de Retiro. Por favor, revisar.`
+              html: `
+                <h2 style="font-weight: bold;">Error en fila ${excelRowNumber}</h2>
+                <p style="text-align: justify;">
+                  Se repite en el archivo el mismo Establecimiento, Subcategoría, Tratamiento y Gestor para este Mes de Retiro.
+                  Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+                </p>
+              `,
+              showCancelButton: true,
+              confirmButtonText: 'Ok',
+              cancelButtonText: 'Cancelar'
             });
-            return;
+
+            if (!result.isConfirmed) {
+              return;
+            }
           }
         }
-
-
       }
+
       // Código de establecimiento
       const establishmentCode = row[0];
       if (!establishmentCode || establishmentCode.trim() === '') {
@@ -414,22 +436,43 @@ export class BulkUploadComponent implements OnInit {
       const r: any = await this.consumer.checkRow({ treatment: treatmentTypeNumber, sub: typeResidueNumber, gestor: gestorIdValue, date: dateFormateada, idEstablishment: establishmentId, mdate: mdateFormateada }).toPromise();
       if (!r.status) {
         if (dateType == "FECHA PRECISA") {
-          Swal.fire({
+          const result = await Swal.fire({
             icon: 'info',
-            text: `La declaración de la fila ${excelRowNumber} ya ha sido declarada, Mismo tratamiento, material, subtipo y gestor para esta fecha`
+            html: `
+        <h2 style="font-weight: bold;">Error en fila ${excelRowNumber}</h2>
+        <p style="text-align: justify;">
+          Ya existe una declaración registrada en el sistema para la misma Empresa, Establecimiento, Subcategoría, Tratamiento y Gestor para esta Fecha de Retiro.
+          Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+        </p>
+      `,
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+            cancelButtonText: 'Cancelar'
           });
-          return;
+
+          if (!result.isConfirmed) {
+            return;
+          }
         } else {
-          Swal.fire({
+          const result = await Swal.fire({
             icon: 'info',
-            text: `La declaración de la fila ${excelRowNumber} ya ha sido declarada, Mismo tratamiento, material, subtipo y gestor para este mes`
+            html: `
+        <h2 style="font-weight: bold;">Error en fila ${excelRowNumber}</h2>
+        <p style="text-align: justify;">
+          Ya existe una declaración registrada en el sistema para la misma Empresa, Establecimiento, Subcategoría, Tratamiento y Gestor para este Mes de Retiro.
+          Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+        </p>
+      `,
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+            cancelButtonText: 'Cancelar'
           });
-          return;
+
+          if (!result.isConfirmed) {
+            return;
+          }
         }
-
-
       }
-
 
       if (partsEstablishment[1] != partsGestor[1] && gestorIdValue != 0) {
         Swal.fire({
@@ -459,7 +502,6 @@ export class BulkUploadComponent implements OnInit {
         businessId: gestorIdValue
       };
       rowsData.push(rowData);
-      console.log("DATOS " + JSON.stringify(rowData));
     }
     // Obtiene el ID del usuario de la variable de sesión
     const userId = this.userData.ID;
@@ -537,7 +579,6 @@ export class BulkUploadComponent implements OnInit {
               LER: rowData.LER,
               TREATMENT_TYPE: rowData.treatmentType,
             };
-            console.log("detailFormData ", detailFormData)
             this.consumer.saveDetailFromExcel(detailFormData).subscribe((detailResponse: any) => {
               if (!detailResponse.status) {
                 Swal.fire({
