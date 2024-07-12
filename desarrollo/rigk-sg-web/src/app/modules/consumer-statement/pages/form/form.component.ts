@@ -359,7 +359,16 @@ export class FormComponent implements OnInit {
             }).then((result) => {
               if (!result.isConfirmed) {
                 input.value = "-1";
-                this.newData[data.index - 1].gestor = "-1";
+                switch(data.nameColumn){
+                    case 'date': this.newData[data.index - 1].date = "";
+                    break;
+                    case 'treatment': this.newData[data.index - 1].treatment = "-1";
+                    break;
+                    case 'gestor': this.newData[data.index - 1].gestor = "-1";
+                    break;
+                    case 'sub': this.newData[data.index - 1].sub = '-1'
+                    break;
+                }
               }
             });
           }
@@ -475,8 +484,8 @@ export class FormComponent implements OnInit {
       dateType: ""
     };
     tmp.push(e);
-    const analize = (treatment: any, sub: any, gestor: any, date: any, row: any, idEstablishment: any, mdate: any, dateType: any, index: any) => {
-      this.verifyRow({ treatment, sub, gestor, date, idEstablishment, mdate, dateType, index }, row);
+    const analize = (treatment: any, sub: any, gestor: any, date: any, row: any, idEstablishment: any, mdate: any, dateType: any, index: any, nameColumn: any) => {
+      this.verifyRow({ treatment, sub, gestor, date, idEstablishment, mdate, dateType, index, nameColumn }, row);
     }
 
     const selectDateType = document.getElementById(`inp_dateType_${i + 1}_${n_row}`) as HTMLSelectElement;
@@ -514,7 +523,7 @@ export class FormComponent implements OnInit {
           }
         });
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_treatment, this.id_compare, inp_mdate.value, inp_dateType.value, n_row);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_treatment, this.id_compare, inp_mdate.value, inp_dateType.value, n_row, 'treatment');
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -620,7 +629,7 @@ export class FormComponent implements OnInit {
           }
         });
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_sub, this.id_compare, inp_mdate.value, inp_dateType.value, n_row);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_sub, this.id_compare, inp_mdate.value, inp_dateType.value, n_row, 'sub');
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -782,7 +791,7 @@ export class FormComponent implements OnInit {
           }
         });
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_date, this.id_compare, inp_mdate.value, inp_dateType.value, n_row);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_date, this.id_compare, inp_mdate.value, inp_dateType.value, n_row, 'date');
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -836,7 +845,7 @@ export class FormComponent implements OnInit {
           }
         });
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_date, this.id_compare, inp_mdate.value, inp_dateType, n_row);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_date, this.id_compare, inp_mdate.value, inp_dateType, n_row, 'mdate');
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -890,7 +899,7 @@ export class FormComponent implements OnInit {
           }
         });
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_gestor, this.id_compare, inp_mdate.value, inp_dateType.value, n_row);
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_gestor, this.id_compare, inp_mdate.value, inp_dateType.value, n_row, 'gestor');
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
