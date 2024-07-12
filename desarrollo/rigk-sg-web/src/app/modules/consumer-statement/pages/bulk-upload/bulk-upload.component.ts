@@ -670,7 +670,7 @@ export class BulkUploadComponent implements OnInit {
     switch (typeResidue) {
       case "Papel":
         return 1;
-      case "Papel Compuesto (cemento)":
+      case "Papel Compuesto (Cemento)":
         return 2;
       case "Caja Cartón":
         return 3;
