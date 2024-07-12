@@ -184,8 +184,6 @@ export class FormComponent implements OnInit {
     if (!this.selectedEstablishment[0] || this.selectedEstablishment[0] == 0) {
       error = 'Falta establecimiento';
     }
-    let flag = "";
-
     Swal.fire({
       icon: 'info',
       title: 'Espere...',
@@ -199,25 +197,32 @@ export class FormComponent implements OnInit {
       if (selectedDateType === '0') { // Fecha precisa
         dateToValidate = reg.date;
         reg.mdate = "";
-
-        if (reg.value == 0 || reg.date == "" || reg.gestor == "-1" || reg.treatment == "-1" || reg.sub == "-1" || reg.precedence == "-1") {
-          if (reg.precedence == "-1") {
-            error = "Debe seleccionar una Subcategoria";
-          }
-          if (reg.treatment == "-1") {
-            error = "Debe seleccionar un Tipo Tratamiento";
-          }
-          if (reg.sub == "-1") {
-            error = "Debe seleccionar un SubTipo";
-          }
-          if (reg.value == 0) {
-            error = "Debe ingresar un peso correcto";
-          }
-          if (reg.date == "") {
-            error = "Debe ingresar una fecha de retiro";
-          }
-          if (reg.gestor == "-1") {
-            error = "Debe seleccionar un gestor";
+        for (let i = 0; i < this.newData.length; i++) {
+          if (this.newData[i].value == 0 || this.newData[i].date == "" || this.newData[i].gestor == "-1" || this.newData[i].treatment == "-1" || this.newData[i].sub == "-1" || this.newData[i].precedence == "-1") {
+            if (this.newData[i].precedence == "-1") {
+              error = "Debe seleccionar una Subcategoria";
+              break;
+            }
+            if (this.newData[i].treatment == "-1") {
+              error = "Debe seleccionar un Tipo Tratamiento";
+              break;
+            }
+            if (this.newData[i].sub == "-1") {
+              error = "Debe seleccionar un SubTipo";
+              break;
+            }
+            if (this.newData[i].value == 0) {
+              error = "Debe ingresar un peso correcto";
+              break;
+            }
+            if (this.newData[i].date == "" && this.newData[i].dateType== '0') {
+              error = "Debe ingresar una fecha de retiro";
+              break;
+            }
+            if (this.newData[i].gestor == "-1") {
+              error = "Debe seleccionar un gestor";
+              break;
+            }
           }
         }
 
@@ -227,53 +232,38 @@ export class FormComponent implements OnInit {
             text: error
           });
           return;
-        }
-
-        const header = { year: this.year_statement, establishment: this.selectedEstablishment[0] };
-        let flag = false;
-        const e = this.newData[i];
-        e.residue = e.precedence;
-        try {
-          const r: any = await this.consumerService.save({ header, detail: e }).toPromise();
-          if (!r.status) {
-            Swal.close();
-            Swal.fire({
-              icon: 'error',
-              text: 'Ocurrió un error mientras se guardaba el formulario.'
-            });
-            flag = true;
-          }
-        } catch (error) {
-          Swal.close();
-          Swal.fire({
-            icon: 'error',
-            text: 'Ocurrió un error mientras se enviaba el formulario.'
-          });
-          flag = true;
         }
 
       } else if (selectedDateType === '1') { // Todo el mes
         dateToValidate = reg.mdate;
         reg.date = `${reg.mdate}-01`;
+        for (let i = 0; i < this.newData.length; i++) {
 
-        if (reg.value == 0 || reg.mdate == "" || reg.gestor == "-1" || reg.treatment == "-1" || reg.sub == "-1" || reg.precedence == "-1") {
-          if (reg.precedence == "-1") {
-            error = "Debe seleccionar una Subcategoria";
-          }
-          if (reg.treatment == "-1") {
-            error = "Debe seleccionar un Tipo Tratamiento";
-          }
-          if (reg.sub == "-1") {
-            error = "Debe seleccionar un SubTipo";
-          }
-          if (reg.value == 0) {
-            error = "Debe ingresar un peso correcto";
-          }
-          if (reg.mdate == "") {
-            error = "Debe ingresar un mes de retiro";
-          }
-          if (reg.gestor == "-1") {
-            error = "Debe seleccionar un gestor";
+          if (this.newData[i].value == 0 || this.newData[i].mdate == "" || this.newData[i].gestor == "-1" || this.newData[i].treatment == "-1" || this.newData[i].sub == "-1" || this.newData[i].precedence == "-1") {
+            if (this.newData[i].precedence == "-1") {
+              error = "Debe seleccionar una Subcategoria";
+              break;
+            }
+            if (this.newData[i].treatment == "-1") {
+              error = "Debe seleccionar un Tipo Tratamiento";
+              break;
+            }
+            if (this.newData[i].sub == "-1") {
+              error = "Debe seleccionar un SubTipo";
+              break;
+            }
+            if (this.newData[i].value == 0) {
+              error = "Debe ingresar un peso correcto";
+              break;
+            }
+            if (this.newData[i].mdate == "" && this.newData[i].dateType== '1') {
+              error = "Debe ingresar una mes de retiro";
+              break;
+            }
+            if (this.newData[i].gestor == "-1") {
+              error = "Debe seleccionar un gestor";
+              break;
+            }
           }
         }
 
@@ -284,103 +274,107 @@ export class FormComponent implements OnInit {
           });
           return;
         }
+      } else {
+          error = "Debe seleccionar un tipo de fecha";
 
-        const header = { year: this.year_statement, establishment: this.selectedEstablishment[0] };
-        let flag = false;
-
-        const e = this.newData[i];
-        e.residue = e.precedence;
-        try {
-          const r: any = await this.consumerService.save({ header, detail: e }).toPromise();
-          if (!r.status) {
-            Swal.close();
+          if (error != null) {
             Swal.fire({
-              icon: 'error',
-              text: 'Ocurrió un error mientras se guardaba el formulario.'
+              icon: 'info',
+              text: error
             });
-            flag = true;
+            return;
           }
-        } catch (error) {
+        }
+      }
+      
+      let flag = false;
+      for (let i = 0; i < this.newData.length; i++) {
+        
+      const header = { year: this.year_statement, establishment: this.selectedEstablishment[0] };
+
+      const e = this.newData[i];
+      e.residue = e.precedence;
+      try {
+        const r: any = await this.consumerService.save({ header, detail: e }).toPromise();
+        if (!r.status) {
           Swal.close();
           Swal.fire({
             icon: 'error',
-            text: 'Ocurrió un error mientras se enviaba el formulario.'
+            text: 'Ocurrió un error mientras se guardaba el formulario.'
           });
           flag = true;
         }
-      } else {
-        error = "Debe seleccionar un tipo de fecha";
+      } catch (error) {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          text: 'Ocurrió un error mientras se enviaba el formulario.'
+        });
+        flag = true;
+      }
+      }
 
-        if (error != null) {
-          Swal.fire({
-            icon: 'info',
-            text: error
-          });
-          return;
-        }
+      if (!flag) {
+        Swal.close();
+        Swal.fire({
+          icon: 'success',
+          text: 'Declaración guardada satisfactoriamente'
+        }).then(btn => {
+          if (btn.isConfirmed) {
+            this.router.navigate(['/consumidor']);
+          }
+        });
       }
     }
-    if (!flag) {
-      Swal.close();
-      Swal.fire({
-        icon: 'success',
-        text: 'Declaración guardada satisfactoriamente'
-      }).then(btn => {
-        if (btn.isConfirmed) {
-          this.router.navigate(['/consumidor']);
-        }
-      });
-    }
-  }
 
-  goBack() {
-    this.router.navigate([this.goTo]);
-  }
-  getId(element: any) {
-    alert("row" + element.parentNode.parentNode.rowIndex +
-      " - column" + element.parentNode.cellIndex);
-  }
-  newData: any[] = [];
-  rowSelected = 0;
-  tableSelected = 0;
-  verifyRow(data: any, input: HTMLInputElement) {
-    if (data.dateType == "0") {
-      data.mdate = "";
+    goBack() {
+      this.router.navigate([this.goTo]);
     }
-    this.consumerService.checkRow(data).subscribe({
-      next: r => {
-        if (!r.status) {
-          Swal.fire({
-            icon: 'info',
-            html: `
+    getId(element: any) {
+      alert("row" + element.parentNode.parentNode.rowIndex +
+        " - column" + element.parentNode.cellIndex);
+    }
+    newData: any[] = [];
+    rowSelected = 0;
+    tableSelected = 0;
+    verifyRow(data: any, input: HTMLInputElement) {
+      if (data.dateType == "0") {
+        data.mdate = "";
+      }
+      this.consumerService.checkRow(data).subscribe({
+        next: r => {
+          if (!r.status) {
+            Swal.fire({
+              icon: 'info',
+              html: `
             <h2 style="font-weight: bold;">Duplicidad de Declaración</h2>
             <p style="text-align: justify;">
               Ya existe una declaración para la misma Empresa, Establecimiento, Material, Subtipo, y Gestor en esta Fecha. 
               Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
             </p>
           `,
-            showCancelButton: true,
-            confirmButtonText: 'Ok',
-            cancelButtonText: 'Cancelar'
-          }).then((result) => {
-            if (!result.isConfirmed) {
-              input.value = "-1";
-              this.newData[data.index - 1].gestor = "-1";
-            }
-          });
+              showCancelButton: true,
+              confirmButtonText: 'Ok',
+              cancelButtonText: 'Cancelar'
+            }).then((result) => {
+              if (!result.isConfirmed) {
+                input.value = "-1";
+                this.newData[data.index - 1].gestor = "-1";
+              }
+            });
+          }
         }
-      }
-    });
-  }
+      });
+    }
 
-  onDateTypeChange(event: Event, i: number, n_row: number): void {
-    const selectedValue = (event.target as HTMLSelectElement).value;
+    onDateTypeChange(event: Event, i: number, n_row: number): void {
+      const selectedValue = (event.target as HTMLSelectElement).value;
 
-    // Encuentra los inputs correspondientes usando las nuevas clases
-    const fechaRetiroInput = document.getElementById(`inp_date_${i}_${n_row}`) as HTMLElement;
-    const mesRetiroInput = document.getElementById(`inp_mdate_${i}_${n_row}`) as HTMLElement;
+      // Encuentra los inputs correspondientes usando las nuevas clases
+      const fechaRetiroInput = document.getElementById(`inp_date_${i}_${n_row}`) as HTMLElement;
+      const mesRetiroInput = document.getElementById(`inp_mdate_${i}_${n_row}`) as HTMLElement;
 
-    if (selectedValue === '0') { // Fecha precisa
+      if(selectedValue === '0') { // Fecha precisa
       fechaRetiroInput.classList.remove('d-none');
       mesRetiroInput.classList.add('d-none');
     } else if (selectedValue === '1') { // Todo el mes
