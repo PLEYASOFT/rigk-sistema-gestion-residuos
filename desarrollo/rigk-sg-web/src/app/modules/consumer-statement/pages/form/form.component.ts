@@ -362,6 +362,8 @@ export class FormComponent implements OnInit {
                 switch(data.nameColumn){
                     case 'date': this.newData[data.index - 1].date = "";
                     break;
+                    case 'mdate': this.newData[data.index - 1].mdate = "";
+                    break;
                     case 'treatment': this.newData[data.index - 1].treatment = "-1";
                     break;
                     case 'gestor': this.newData[data.index - 1].gestor = "-1";
@@ -499,7 +501,9 @@ export class FormComponent implements OnInit {
       for (let j = 0; j < tmp.length; j++) {
         const i = tmp[j];
         if (i.row == n_row) continue;
-        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.precedence == inp_subcat.value) {
+        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value && i.precedence == inp_subcat.value && i.dateType == '0' && i.date != "") {
+          tmp_filter++;
+        } else if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.mdate == inp_mdate.value && i.precedence == inp_subcat.value && i.dateType == '1' && i.mdate != "") {
           tmp_filter++;
         }
       }
@@ -605,7 +609,9 @@ export class FormComponent implements OnInit {
       for (let j = 0; j < tmp.length; j++) {
         const i = tmp[j];
         if (i.row == n_row) continue;
-        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value && i.precedence == inp_subcat.value) {
+        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value && i.precedence == inp_subcat.value && i.dateType == '0' && i.date != "") {
+          tmp_filter++;
+        } else if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.mdate == inp_mdate.value && i.precedence == inp_subcat.value && i.dateType == '1' && i.mdate != "") {
           tmp_filter++;
         }
       }
@@ -767,7 +773,9 @@ export class FormComponent implements OnInit {
       for (let j = 0; j < tmp.length; j++) {
         const i = tmp[j];
         if (i.row == n_row) continue;
-        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value && i.precedence == inp_subcat.value) {
+        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value && i.precedence == inp_subcat.value && i.dateType == '0' && i.date != "") {
+          tmp_filter++;
+        } else if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.mdate == inp_mdate.value && i.precedence == inp_subcat.value && i.dateType == '1' && i.mdate != "") {
           tmp_filter++;
         }
       }
@@ -821,7 +829,9 @@ export class FormComponent implements OnInit {
       for (let j = 0; j < tmp.length; j++) {
         const i = tmp[j];
         if (i.row == n_row) continue;
-        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.mdate == inp_mdate.value && i.precedence == inp_subcat.value) {
+        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value && i.precedence == inp_subcat.value && i.dateType == '0' && i.date != "") {
+          tmp_filter++;
+        } else if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.mdate == inp_mdate.value && i.precedence == inp_subcat.value && i.dateType == '1' && i.mdate != "") {
           tmp_filter++;
         }
       }
@@ -845,7 +855,7 @@ export class FormComponent implements OnInit {
           }
         });
       } else {
-        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_date, this.id_compare, inp_mdate.value, inp_dateType, n_row, 'mdate');
+        analize(inp_treatment.value, inp_sub.value, inp_gestor.value, inp_date.value, inp_mdate, this.id_compare, inp_mdate.value, inp_dateType.value, n_row, 'mdate');
       }
       const w = tmp.findIndex(r => r.row == n_row && r.residue == (i + 1));
       if (w == -1) {
@@ -875,7 +885,9 @@ export class FormComponent implements OnInit {
       for (let j = 0; j < tmp.length; j++) {
         const i = tmp[j];
         if (i.row == n_row) continue;
-        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value && i.precedence == inp_subcat.value) {
+        if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.date == inp_date.value && i.precedence == inp_subcat.value && i.dateType == '0' && i.date != "") {
+          tmp_filter++;
+        } else if (i.sub == inp_sub.value && i.gestor == inp_gestor.value && i.treatment == inp_treatment.value && i.mdate == inp_mdate.value && i.precedence == inp_subcat.value && i.dateType == '1' && i.mdate != "") {
           tmp_filter++;
         }
       }
