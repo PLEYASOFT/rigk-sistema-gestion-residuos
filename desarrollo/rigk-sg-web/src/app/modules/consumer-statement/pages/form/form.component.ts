@@ -372,7 +372,6 @@ export class FormComponent implements OnInit {
                     break;
                 }
               }
-              console.log("AAAAA ",data);
             });
           }
         }
