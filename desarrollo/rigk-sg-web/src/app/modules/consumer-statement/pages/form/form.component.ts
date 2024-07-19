@@ -347,12 +347,12 @@ export class FormComponent implements OnInit {
             Swal.fire({
               icon: 'info',
               html: `
-            <h2 style="font-weight: bold;">Duplicidad de Declaración</h2>
-            <p style="text-align: justify;">
-              Ya existe una declaración para la misma Empresa, Establecimiento, Material, Subtipo, y Gestor en esta Fecha. 
-              Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
-            </p>
-          `,
+                <h2 style="font-weight: bold;">Advertencia de Duplicidad de declaración.</h2>
+                <p style="text-align: justify;">
+                  Ya existe una declaración para la misma Empresa, Establecimiento, Material, Subtipo, y Gestor en esta Fecha. 
+                  Si desea continuar con esta declaración de características similares a una anterior, pinche OK. De lo contrario, pinche Cancelar.
+                </p>
+              `,
               showCancelButton: true,
               confirmButtonText: 'Ok',
               cancelButtonText: 'Cancelar'
@@ -511,10 +511,10 @@ export class FormComponent implements OnInit {
         Swal.fire({
           icon: 'info',
           html: `
-            <h2 style="font-weight: bold;">Duplicidad de Declaración</h2>
+            <h2 style="font-weight: bold;">Advertencia de Duplicidad de declaración.</h2>
             <p style="text-align: justify;">
               Ya existe una declaración para la misma Empresa, Establecimiento, Material, Subtipo, y Gestor en esta Fecha. 
-              Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+              Si desea continuar con esta declaración de características similares a una anterior, pinche OK. De lo contrario, pinche Cancelar.
             </p>
           `,
           showCancelButton: true,
@@ -619,10 +619,10 @@ export class FormComponent implements OnInit {
         Swal.fire({
           icon: 'info',
           html: `
-            <h2 style="font-weight: bold;">Duplicidad de Declaración</h2>
+            <h2 style="font-weight: bold;">Advertencia de Duplicidad de declaración.</h2>
             <p style="text-align: justify;">
               Ya existe una declaración para la misma Empresa, Establecimiento, Material, Subtipo, y Gestor en esta Fecha. 
-              Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+              Si desea continuar con esta declaración de características similares a una anterior, seleccione OK. De lo contrario, seleccione Cancelar.
             </p>
           `,
           showCancelButton: true,
@@ -783,10 +783,10 @@ export class FormComponent implements OnInit {
         Swal.fire({
           icon: 'info',
           html: `
-            <h2 style="font-weight: bold;">Duplicidad de Declaración</h2>
+            <h2 style="font-weight: bold;">Advertencia de Duplicidad de declaración.</h2>
             <p style="text-align: justify;">
               Ya existe una declaración para la misma Empresa, Establecimiento, Material, Subtipo, y Gestor en esta Fecha. 
-              Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+              Si desea continuar con esta declaración de características similares a una anterior, pinche OK. De lo contrario, pinche Cancelar.
             </p>
           `,
           showCancelButton: true,
@@ -839,10 +839,10 @@ export class FormComponent implements OnInit {
         Swal.fire({
           icon: 'info',
           html: `
-            <h2 style="font-weight: bold;">Duplicidad de Declaración</h2>
+            <h2 style="font-weight: bold;">Advertencia de Duplicidad de declaración.</h2>
             <p style="text-align: justify;">
               Ya existe una declaración para la misma Empresa, Establecimiento, Material, Subtipo, y Gestor en esta Fecha. 
-              Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+              Si desea continuar con esta declaración de características similares a una anterior, pinche OK. De lo contrario, pinche Cancelar.
             </p>
           `,
           showCancelButton: true,
@@ -895,10 +895,10 @@ export class FormComponent implements OnInit {
         Swal.fire({
           icon: 'info',
           html: `
-            <h2 style="font-weight: bold;">Duplicidad de Declaración</h2>
+            <h2 style="font-weight: bold;">Advertencia de Duplicidad de declaración.</h2>
             <p style="text-align: justify;">
               Ya existe una declaración para la misma Empresa, Establecimiento, Material, Subtipo, y Gestor en esta Fecha. 
-              Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+              Si desea continuar con esta declaración de características similares a una anterior, pinche OK. De lo contrario, pinche Cancelar.
             </p>
           `,
           showCancelButton: true,
