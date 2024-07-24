@@ -288,44 +288,46 @@ export class FormComponent implements OnInit {
       }
       
       let flag = false;
-      for (let i = 0; i < this.newData.length; i++) {
-        
+    let savedSuccessfully = [];
+    let saveErrors = [];
+    for (let i = 0; i < this.newData.length; i++) {
       const header = { year: this.year_statement, establishment: this.selectedEstablishment[0] };
-
       const e = this.newData[i];
       e.residue = e.precedence;
       try {
         const r: any = await this.consumerService.save({ header, detail: e }).toPromise();
-        if (!r.status) {
-          Swal.close();
-          Swal.fire({
-            icon: 'error',
-            text: 'Ocurrió un error mientras se guardaba el formulario.'
-          });
-          flag = true;
+        if (r.status) {
+          savedSuccessfully.push(e);
+        } else {
+          saveErrors.push(e);
         }
       } catch (error) {
-        Swal.close();
-        Swal.fire({
-          icon: 'error',
-          text: 'Ocurrió un error mientras se enviaba el formulario.'
-        });
-        flag = true;
-      }
-      }
-
-      if (!flag) {
-        Swal.close();
-        Swal.fire({
-          icon: 'success',
-          text: 'Declaración guardada satisfactoriamente'
-        }).then(btn => {
-          if (btn.isConfirmed) {
-            this.router.navigate(['/consumidor']);
-          }
-        });
+        saveErrors.push(e);
       }
     }
+
+    if (saveErrors.length > 0) {
+      Swal.close();
+      Swal.fire({
+        icon: 'error',
+        text: `Ocurrió un error mientras se enviaban algunas declaraciones. Se guardaron correctamente ${savedSuccessfully.length} de ${this.newData.length} declaraciones. Consultar en "Consulta de declaración" cuales fueron ingresadas.`
+      }).then(btn => {
+        if (btn.isConfirmed) {
+          this.router.navigate(['/consumidor']);
+        }
+      });
+    } else {
+      Swal.close();
+      Swal.fire({
+        icon: 'success',
+        text: 'Declaración guardada satisfactoriamente'
+      }).then(btn => {
+        if (btn.isConfirmed) {
+          this.router.navigate(['/consumidor']);
+        }
+      });
+    }
+  }
 
     goBack() {
       this.router.navigate([this.goTo]);
