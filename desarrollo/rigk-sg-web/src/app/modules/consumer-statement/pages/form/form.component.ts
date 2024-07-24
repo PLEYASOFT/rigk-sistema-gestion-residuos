@@ -286,8 +286,6 @@ export class FormComponent implements OnInit {
           }
         }
       }
-      
-      let flag = false;
     let savedSuccessfully = [];
     let saveErrors = [];
     for (let i = 0; i < this.newData.length; i++) {
