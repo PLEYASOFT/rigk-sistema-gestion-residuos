@@ -27,11 +27,13 @@ export class VisualizarMvComponent implements OnInit {
   filteredBusinesses: any[] = [];
   filteredEstablishments: any[] = [];
   filteredMaterial: any[] = [];
+  filteredTreatment: any[] = [];
   filteredYear: any[] = [];
 
   selectedBusiness: string = '-1';
   selectedEstablishment: string = '-1';
   selectedMaterial: string = '-1';
+  selectedTreatment: string = '-1';
   selectedYear: string = '-1';
   private filtersApplied: boolean = false;
   autoFilter: boolean = true;
@@ -134,7 +136,7 @@ export class VisualizarMvComponent implements OnInit {
             if (!this.material_name.includes(e.TYPE_RESIDUE)) {
               this.material_name.push(e.TYPE_RESIDUE);
             }
-            if (!this.treatment_name.includes(e.TipoTratamiento)) {
+            if (e.TipoTratamiento != null && !this.treatment_name.includes(e.TipoTratamiento)) {
               this.treatment_name.push(e.TipoTratamiento);
             }
           });
@@ -154,6 +156,7 @@ export class VisualizarMvComponent implements OnInit {
     const selectedBusinessValue = (this.selectedBusiness as any)?.value === '-1' ? '-1' : (this.selectedBusiness as any)?.label || this.selectedBusiness;
     const selectedEstablishmentValue = (this.selectedEstablishment as any)?.value || this.selectedEstablishment;
     const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
+    const selectedTreatmentValue = (this.selectedTreatment as any)?.value || this.selectedTreatment;
     const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
 
     if (auto && !this.autoFilter) return;
@@ -163,6 +166,7 @@ export class VisualizarMvComponent implements OnInit {
         (selectedBusinessValue === '-1' || `${r.CODE_BUSINESS} — ${r.NAME_BUSINESS}` === selectedBusinessValue) &&
         (selectedEstablishmentValue === '-1' || r.NAME_ESTABLISHMENT_REGION === selectedEstablishmentValue) &&
         (selectedMaterialValue === '-1' || r.PRECEDENCE === selectedMaterialValue) &&
+        (selectedTreatmentValue === '-1' || r.TipoTratamiento === selectedTreatmentValue) &&
         (selectedYearValue === '-1' || r.FechaRetiroTipeada === selectedYearValue)
       );
     });
@@ -211,6 +215,20 @@ export class VisualizarMvComponent implements OnInit {
     }
   }
 
+  filterTreatment(event: any) {
+    const query = event.query.toLowerCase();
+    this.treatment_name = this.treatment_name.filter(name => name != null && name.trim() !== '');
+    this.filteredTreatment = this.treatment_name
+        .filter((na: string) => na.toLowerCase().includes(query))
+        .map((na: string) => ({ label: na, value: na }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+    if (this.filteredTreatment.length === 0) {
+        this.filteredTreatment = [{ label: 'Todos', value: '-1' }];
+    } else {
+        this.filteredTreatment.unshift({ label: 'Todos', value: '-1' });
+    }
+}
+
   filterYear(event: any) {
     const query = event.query?.toString() || '';
     this.filteredYear = this.years
@@ -227,6 +245,7 @@ export class VisualizarMvComponent implements OnInit {
     const selectedBusinessValue = (this.selectedBusiness as any)?.value === '-1' ? '-1' : (this.selectedBusiness as any)?.label || this.selectedBusiness;
     const selectedEstablishmentValue = (this.selectedEstablishment as any)?.value || this.selectedEstablishment;
     const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
+    const selectedTreatmentValue = (this.selectedTreatment as any)?.value || this.selectedTreatment;
     const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
 
     // Filtrar las opciones de business_name
@@ -235,6 +254,7 @@ export class VisualizarMvComponent implements OnInit {
         (r) =>
           (selectedEstablishmentValue === "-1" || r.NAME_ESTABLISHMENT_REGION === selectedEstablishmentValue) &&
           (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue) &&
           (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue)
       )
       .map((r) => ({ code: r.CODE_BUSINESS, name: r.NAME_BUSINESS, label: `${r.CODE_BUSINESS} — ${r.NAME_BUSINESS}` }))
@@ -246,6 +266,7 @@ export class VisualizarMvComponent implements OnInit {
         (r) =>
           (selectedBusinessValue === "-1" || `${r.CODE_BUSINESS} — ${r.NAME_BUSINESS}` === selectedBusinessValue) &&
           (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue) &&
           (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue)
       )
       .map((r) => r.NAME_ESTABLISHMENT_REGION)
@@ -257,10 +278,23 @@ export class VisualizarMvComponent implements OnInit {
         (r) =>
           (selectedBusinessValue === "-1" || `${r.CODE_BUSINESS} — ${r.NAME_BUSINESS}` === selectedBusinessValue) &&
           (selectedEstablishmentValue === "-1" || r.NAME_ESTABLISHMENT_REGION === selectedEstablishmentValue) &&
+          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue) &&
           (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue)
       )
       .map((r) => r.PRECEDENCE)
       .filter((value, index, self) => self.indexOf(value) === index);
+
+    // Filtrar las opciones de treatment_name
+    this.treatment_name = this.dbStatements
+    .filter(
+      (r) =>
+        (selectedBusinessValue === "-1" || `${r.CODE_BUSINESS} — ${r.NAME_BUSINESS}` === selectedBusinessValue) &&
+        (selectedEstablishmentValue === "-1" || r.NAME_ESTABLISHMENT_REGION === selectedEstablishmentValue) &&
+        (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+        (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue)
+    )
+    .map((r) => r.TipoTratamiento)
+    .filter((value, index, self) => self.indexOf(value) === index);
 
     // Filtrar las opciones de years
     this.years = this.dbStatements
@@ -268,7 +302,8 @@ export class VisualizarMvComponent implements OnInit {
         (r) =>
           (selectedBusinessValue === "-1" || `${r.CODE_BUSINESS} — ${r.NAME_BUSINESS}` === selectedBusinessValue) &&
           (selectedEstablishmentValue === "-1" || r.NAME_ESTABLISHMENT_REGION === selectedEstablishmentValue) &&
-          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue)
+          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue)
       )
       .map((r) => r.FechaRetiroTipeada)
       .filter((value, index, self) => self.indexOf(value) === index)
@@ -333,6 +368,7 @@ export class VisualizarMvComponent implements OnInit {
       selectedBusiness: this.selectedBusiness,
       selectedEstablishment: this.selectedEstablishment,
       selectedMaterial: this.selectedMaterial,
+      selectedTreatment: this.selectedTreatment,
       selectedYear: this.selectedYear,
       pos: this.pos,
     };
@@ -345,6 +381,7 @@ export class VisualizarMvComponent implements OnInit {
       this.selectedBusiness = state.selectedBusiness || '-1';
       this.selectedEstablishment = state.selectedEstablishment || '-1';
       this.selectedMaterial = state.selectedMaterial || '-1';
+      this.selectedTreatment = state.selectedTreatment || '-1';
       this.selectedYear = state.selectedYear || '-1';
       this.pos = state.pos || 1;
     }
