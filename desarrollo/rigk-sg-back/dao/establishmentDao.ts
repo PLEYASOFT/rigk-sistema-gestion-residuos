@@ -200,7 +200,7 @@ class EstablishmentDao {
         const conn = mysqlcon.getConnection()!;
         await conn.execute("SET lc_time_names = 'es_ES';");
         const data: any = await conn.execute(`
-            SELECT DISTINCT 
+            SELECT
             business_created_by.CODE_BUSINESS AS ID_EMPRESA,
             business_created_by.VAT AS RUT_EMPRESA,
             business_created_by.NAME AS NOMBRE,
@@ -241,7 +241,7 @@ class EstablishmentDao {
         JOIN user_business ON business_created_by.ID = user_business.ID_BUSINESS
         JOIN user AS user_created_by ON user_created_by.ID = header_industrial_consumer_form.CREATED_BY
         JOIN user AS user_assigned ON user_assigned.ID = user_business.ID_USER
-        JOIN user_rol ON user_assigned.ID = user_rol.USER_ID
+        JOIN user_rol ON user_assigned.ID = user_rol.USER_ID AND user_rol.ROL_ID = (SELECT MIN(ROL_ID) FROM user_rol WHERE user_rol.USER_ID = user_assigned.ID)
         JOIN rol ON user_rol.ROL_ID = rol.ID
         
         LEFT JOIN invoices_detail ON invoices_detail.ID_DETAIL = detail_industrial_consumer_form.ID
