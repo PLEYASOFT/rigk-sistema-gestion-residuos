@@ -79,6 +79,11 @@ export class StatementsDetailComponent implements OnInit {
     this.ConsumerService.getDeclarationByID(idHeader, idDetail).subscribe(r => {
       if (r.status) {
         this.detail_consulta = r.status[0];
+        if (this.detail_consulta.mesRetiro != "") {
+          this.detail_consulta.FechaMostrar = this.detail_consulta.MesRetiro;
+        } else {
+          this.detail_consulta.FechaMostrar = this.detail_consulta.FechaRetiro;
+        }
         this.loadMV();
       }
     })

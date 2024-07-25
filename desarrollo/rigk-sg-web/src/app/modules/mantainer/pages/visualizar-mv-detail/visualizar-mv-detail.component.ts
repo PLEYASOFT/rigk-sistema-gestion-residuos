@@ -85,7 +85,7 @@ export class VisualizarMvDetailComponent implements OnInit {
   }
 
   volver() {
-    this.router.navigate(['/mantenedor/visualizar-mv']);
+    this.router.navigate(['/mantenedor/ci']);
   }
 
   formatValue(value: number): string {
