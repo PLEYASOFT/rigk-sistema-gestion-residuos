@@ -69,8 +69,8 @@ export class VisualizarMvComponent implements OnInit {
 
   isRelevantRoute(url: string): boolean {
     // Definir las rutas relevantes
-    return url === '/mantenedor/visualizar-mv' ||
-      url.startsWith('/mantenedor/visualizar-mv/') && !url.endsWith('/visualizar-mv');
+    return url === '/mantenedor/ci' ||
+      url.startsWith('/mantenedor/ci/') && !url.endsWith('/ci');
   }
 
   formatValue(value: number): string {
@@ -80,6 +80,7 @@ export class VisualizarMvComponent implements OnInit {
       return value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
   }
+
   resetFilters() {
     this.selectedBusiness = '-1';
     this.selectedEstablishment = '-1';
@@ -101,6 +102,10 @@ export class VisualizarMvComponent implements OnInit {
       Swal.showLoading();
       this.establishmentService.getAllDeclarationEstablishments().subscribe(r => {
         if (r.status) {
+          r.status = r.status.map((item: any) => {
+            item.FechaParaOrdenar = (item.MesRetiro != "" && item.MesRetiro != null) ? item.MesRetiro : item.FechaRetiro;
+            return item;
+          });
           const uniqueMap = new Map();
           r.status.forEach((item: any) => {
             if (!uniqueMap.has(item.ID_DETAIL)) {
@@ -108,30 +113,36 @@ export class VisualizarMvComponent implements OnInit {
             }
           });
           const uniqueStatus = Array.from(uniqueMap.values());
-          uniqueStatus.sort((a: any, b: any) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime());
+          uniqueStatus.sort((a: any, b: any) => new Date(b.FechaParaOrdenar).getTime() - new Date(a.FechaParaOrdenar).getTime());
 
           uniqueStatus.forEach(e => {
-            if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
-              this.business_name.push(e.NAME_BUSINESS);
+            if (e.MesRetiro != "" && e.MesRetiro != null) {
+              e.FechaMostrar = e.MesRetiro;
+            } else {
+                e.FechaMostrar = e.FechaRetiro;
             }
-            if (this.establishment_name.indexOf(e.NAME_ESTABLISHMENT_REGION) == -1) {
+            const businessEntry = { code: e.CODE_BUSINESS, name: e.NAME_BUSINESS, label: `${e.CODE_BUSINESS} — ${e.NAME_BUSINESS}` };
+            if (!this.business_name.some(b => b.label === businessEntry.label)) {
+              this.business_name.push(businessEntry);
+            }
+            if (!this.establishment_name.includes(e.NAME_ESTABLISHMENT_REGION)) {
               this.establishment_name.push(e.NAME_ESTABLISHMENT_REGION);
             }
-            if (this.years.indexOf(e.FechaRetiroTipeada) == -1) {
-              this.years.push(e.FechaRetiroTipeada)
+            if (!this.years.includes(e.FechaRetiroTipeada)) {
+              this.years.push(e.FechaRetiroTipeada);
             }
-            if (this.material_name.indexOf(e.TYPE_RESIDUE) == -1) {
-              this.material_name.push(e.TYPE_RESIDUE)
+            if (!this.material_name.includes(e.TYPE_RESIDUE)) {
+              this.material_name.push(e.TYPE_RESIDUE);
             }
-            if (this.treatment_name.indexOf(e.TipoTratamiento) == -1) {
-              this.treatment_name.push(e.TipoTratamiento)
+            if (!this.treatment_name.includes(e.TipoTratamiento)) {
+              this.treatment_name.push(e.TipoTratamiento);
             }
           });
 
           this.years.sort((a, b) => b - a);
           this.dbStatements = uniqueStatus;
           this.cant = Math.ceil(this.dbStatements.length / 10);
-          this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();
+          this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a, b) => new Date(b.FechaMostrar).getTime() - new Date(a.FechaMostrar).getTime()).reverse();
           Swal.close();
         }
         resolve();
@@ -140,7 +151,7 @@ export class VisualizarMvComponent implements OnInit {
   }
 
   filter(auto: boolean = false) {
-    const selectedBusinessValue = (this.selectedBusiness as any)?.value || this.selectedBusiness;
+    const selectedBusinessValue = (this.selectedBusiness as any)?.value === '-1' ? '-1' : (this.selectedBusiness as any)?.label || this.selectedBusiness;
     const selectedEstablishmentValue = (this.selectedEstablishment as any)?.value || this.selectedEstablishment;
     const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
     const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
@@ -149,7 +160,7 @@ export class VisualizarMvComponent implements OnInit {
 
     this.filteredStatements = this.dbStatements.filter(r => {
       return (
-        (selectedBusinessValue === '-1' || r.NAME_BUSINESS === selectedBusinessValue) &&
+        (selectedBusinessValue === '-1' || `${r.CODE_BUSINESS} — ${r.NAME_BUSINESS}` === selectedBusinessValue) &&
         (selectedEstablishmentValue === '-1' || r.NAME_ESTABLISHMENT_REGION === selectedEstablishmentValue) &&
         (selectedMaterialValue === '-1' || r.PRECEDENCE === selectedMaterialValue) &&
         (selectedYearValue === '-1' || r.FechaRetiroTipeada === selectedYearValue)
@@ -159,13 +170,13 @@ export class VisualizarMvComponent implements OnInit {
     this.cant = Math.ceil(this.filteredStatements.length / 10);
     this.saveState();
     this.filtersApplied = false;
+    this.updateFilters();
   }
 
   filterBusinesses(event: any) {
-    const query = event.query.toLowerCase();
+    const query = event.query?.toLowerCase() || '';
     this.filteredBusinesses = this.business_name
-      .filter((na: string) => na.toLowerCase().includes(query))
-      .map((na: string) => ({ label: na, value: na }))
+      .filter(business => business.label?.toLowerCase().includes(query))
       .sort((a, b) => a.label.localeCompare(b.label));
     if (this.filteredBusinesses.length === 0) {
       this.filteredBusinesses = [{ label: 'Todos', value: '-1' }];
@@ -175,7 +186,7 @@ export class VisualizarMvComponent implements OnInit {
   }
 
   filterEstablishments(event: any) {
-    const query = event.query.toLowerCase();
+    const query = event.query?.toLowerCase() || '';
     this.filteredEstablishments = this.establishment_name
       .filter((na: string) => na.toLowerCase().includes(query))
       .map((na: string) => ({ label: na, value: na }))
@@ -188,7 +199,7 @@ export class VisualizarMvComponent implements OnInit {
   }
 
   filterMaterial(event: any) {
-    const query = event.query.toLowerCase();
+    const query = event.query?.toLowerCase() || '';
     this.filteredMaterial = this.material_name
       .filter((na: string) => na.toLowerCase().includes(query))
       .map((na: string) => ({ label: na, value: na }))
@@ -201,7 +212,7 @@ export class VisualizarMvComponent implements OnInit {
   }
 
   filterYear(event: any) {
-    const query = event.query.toString();
+    const query = event.query?.toString() || '';
     this.filteredYear = this.years
       .filter((year: number) => year.toString().includes(query))
       .map((year: number) => ({ label: year.toString(), value: year.toString() }));
@@ -213,7 +224,7 @@ export class VisualizarMvComponent implements OnInit {
   }
 
   updateFilters() {
-    const selectedBusinessValue = (this.selectedBusiness as any)?.value || this.selectedBusiness;
+    const selectedBusinessValue = (this.selectedBusiness as any)?.value === '-1' ? '-1' : (this.selectedBusiness as any)?.label || this.selectedBusiness;
     const selectedEstablishmentValue = (this.selectedEstablishment as any)?.value || this.selectedEstablishment;
     const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
     const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
@@ -226,14 +237,14 @@ export class VisualizarMvComponent implements OnInit {
           (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
           (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue)
       )
-      .map((r) => r.NAME_BUSINESS)
-      .filter((value, index, self) => self.indexOf(value) === index);
+      .map((r) => ({ code: r.CODE_BUSINESS, name: r.NAME_BUSINESS, label: `${r.CODE_BUSINESS} — ${r.NAME_BUSINESS}` }))
+      .filter((value, index, self) => self.findIndex(v => v.label === value.label) === index);
 
     // Filtrar las opciones de establishment_name
     this.establishment_name = this.dbStatements
       .filter(
         (r) =>
-          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedBusinessValue === "-1" || `${r.CODE_BUSINESS} — ${r.NAME_BUSINESS}` === selectedBusinessValue) &&
           (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
           (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue)
       )
@@ -244,7 +255,7 @@ export class VisualizarMvComponent implements OnInit {
     this.material_name = this.dbStatements
       .filter(
         (r) =>
-          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedBusinessValue === "-1" || `${r.CODE_BUSINESS} — ${r.NAME_BUSINESS}` === selectedBusinessValue) &&
           (selectedEstablishmentValue === "-1" || r.NAME_ESTABLISHMENT_REGION === selectedEstablishmentValue) &&
           (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue)
       )
@@ -255,7 +266,7 @@ export class VisualizarMvComponent implements OnInit {
     this.years = this.dbStatements
       .filter(
         (r) =>
-          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
+          (selectedBusinessValue === "-1" || `${r.CODE_BUSINESS} — ${r.NAME_BUSINESS}` === selectedBusinessValue) &&
           (selectedEstablishmentValue === "-1" || r.NAME_ESTABLISHMENT_REGION === selectedEstablishmentValue) &&
           (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue)
       )
@@ -267,6 +278,7 @@ export class VisualizarMvComponent implements OnInit {
   reset() {
     this.loadStatements();
   }
+
   pagTo(i: number) {
     this.pos = i + 1;
     this.db = this.filteredStatements.slice((i * 10), (i + 1) * 10).sort((a, b) => new Date(a.FechaRetiro).getTime() - new Date(b.FechaRetiro).getTime()).reverse();
@@ -275,13 +287,13 @@ export class VisualizarMvComponent implements OnInit {
   next() {
     if (this.pos >= this.cant) return;
     this.pos++;
-    this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(a.FechaRetiro).getTime() - new Date(b.FechaRetiro).getTime()).reverse();
+    this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();
   }
 
   previus() {
     if (this.pos - 1 <= 0 || this.pos >= this.cant + 1) return;
     this.pos = this.pos - 1;
-    this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(a.FechaRetiro).getTime() - new Date(b.FechaRetiro).getTime()).reverse();
+    this.db = this.filteredStatements.slice((this.pos - 1) * 10, (this.pos) * 10).sort((a, b) => new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime()).reverse();
   }
 
   setArrayFromNumber() {

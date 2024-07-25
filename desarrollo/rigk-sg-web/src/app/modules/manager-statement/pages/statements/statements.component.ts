@@ -109,6 +109,10 @@ export class StatementsComponent implements OnInit {
       Swal.showLoading();
       this.establishmentService.getDeclarationEstablishmentByIdGestor(idGestors).subscribe(r => {
         if (r.status) {
+          r.data = r.data.map((item: any) => {
+            item.FechaParaOrdenar = (item.MesRetiro != "" && item.MesRetiro != null) ? item.MesRetiro : item.FechaRetiro;
+            return item;
+          });
           r.data = r.data.filter((item: any) => item.TipoTratamiento != null);
           r.data = r.data.sort((a: any, b: any) => {
             const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
@@ -122,6 +126,11 @@ export class StatementsComponent implements OnInit {
 
           (r.data as any[]).forEach(e => {
             e.isChecked = false;
+            if (e.MesRetiro != "" && e.MesRetiro != null) {
+              e.FechaMostrar = e.MesRetiro;
+            } else {
+                e.FechaMostrar = e.FechaRetiro;
+            }
             if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
               this.business_name.push(e.NAME_BUSINESS);
             }

@@ -30,31 +30,31 @@ export class BulkUploadComponent implements OnInit {
   downloadExcel() {
     const id = this.selectedBusiness?.value;
     if (!id || id == "-1") {
-        Swal.fire({
-            icon: 'error',
-            text: 'Debe seleccionar empresa'
-        });
-        return;
+      Swal.fire({
+        icon: 'error',
+        text: 'Debe seleccionar empresa'
+      });
+      return;
     }
     this.consumer.downloadExcel(id).subscribe({
-        next: r => {
-            if (r) {
-                const file = new Blob([r], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
-                let link = document.createElement('a');
-                link.href = window.URL.createObjectURL(file);
-                link.download = `carga masiva`;
-                document.body.appendChild(link);
-                link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
-                link.remove();
-                window.URL.revokeObjectURL(link.href);
-            }
-        },
-        error: r => {
-            Swal.fire({
-                icon: 'error',
-                text: 'Empresa no tiene ningún establecimiento creado en el sistema. En caso de ser necesario, contacte al administrador del sistema.'
-            });
+      next: r => {
+        if (r) {
+          const file = new Blob([r], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+          let link = document.createElement('a');
+          link.href = window.URL.createObjectURL(file);
+          link.download = `carga masiva`;
+          document.body.appendChild(link);
+          link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+          link.remove();
+          window.URL.revokeObjectURL(link.href);
         }
+      },
+      error: r => {
+        Swal.fire({
+          icon: 'error',
+          text: 'Empresa no tiene ningún establecimiento creado en el sistema. En caso de ser necesario, contacte al administrador del sistema.'
+        });
+      }
     });
   }
   loadStatements() {
@@ -79,21 +79,21 @@ export class BulkUploadComponent implements OnInit {
   filterBusiness(event: any) {
     const query = event.query.toLowerCase();
     this.filteredBusiness = this.dbBusiness
-        .filter(b => b.NAME.toLowerCase().includes(query))
-        .map(b => ({ label: `${b.CODE_BUSINESS} - ${b.NAME}`, value: b.ID }))
-        .sort((a, b) => a.label.localeCompare(b.label));
-        
-      if (this.filteredBusiness.length > 0) {
-          this.filteredBusiness.unshift({ label: 'Seleccionar Empresa', value: '-1' });
-      } else {
-          this.filteredBusiness = [{ label: 'Seleccionar Empresa', value: '-1' }];
-      }
+      .filter(b => b.NAME.toLowerCase().includes(query))
+      .map(b => ({ label: `${b.CODE_BUSINESS} - ${b.NAME}`, value: b.ID }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+
+    if (this.filteredBusiness.length > 0) {
+      this.filteredBusiness.unshift({ label: 'Seleccionar Empresa', value: '-1' });
+    } else {
+      this.filteredBusiness = [{ label: 'Seleccionar Empresa', value: '-1' }];
+    }
   }
 
   onBusinessSelect(event: any) {
     this.selectedBusiness = event;
   }
-  
+
   onFileChange(event: any) {
     const allowedMimeTypes = [
       'application/vnd.ms-excel',
@@ -182,7 +182,7 @@ export class BulkUploadComponent implements OnInit {
     let parts = valueWithDash.split(' - ');
     let code: any = await this.businessService.getBusinessByCode(parts[0]).toPromise();
     let businessId = code.data.business[0].ID;
-    if (data[2].length != 9) {
+    if (data[2].length != 11) {
       Swal.fire({
         icon: 'error',
         text: 'Archivo inválido. No tiene todas las columnas necesarias'
@@ -209,14 +209,49 @@ export class BulkUploadComponent implements OnInit {
       //Validación declaración repetida
       for (let j = i + 1; j < rows.length; j++) {
         const w = rows[j];
-        if (w[0] === row[0] && w[3] === row[3] && w[4] === row[4] && w[6] === row[6] && w[1] === row[1] && w[2] === row[2]) {
-          Swal.fire({
-            icon: 'info',
-            text: `Error en fila ${excelRowNumber}. Se repite en el archivo el mismo Establecimiento, Subcategoría, Tratamiento y Gestor para esta Fecha de Retiro. Por favor, revisar.`
-          });
-          return;
+        if (w[4] == "FECHA PRECISA") {
+          if (w[0] === row[0] && w[1] === row[1] && w[2] === row[2] && w[3] === row[3] && w[4] === row[4] && w[5] === row[5] && w[7] === row[7]) {
+            const result = await Swal.fire({
+              icon: 'info',
+              html: `
+                <h2 style="font-weight: bold;">Error en fila ${excelRowNumber}</h2>
+                <p style="text-align: justify;">
+                  Se repite en el archivo el mismo Establecimiento, Subcategoría, Tratamiento y Gestor para esta Fecha de Retiro.
+                  Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+                </p>
+              `,
+              showCancelButton: true,
+              confirmButtonText: 'Ok',
+              cancelButtonText: 'Cancelar'
+            });
+
+            if (!result.isConfirmed) {
+              return;
+            }
+          }
+        } else {
+          if (w[0] === row[0] && w[1] === row[1] && w[2] === row[2] && w[3] === row[3] && w[4] === row[4] && w[6] === row[6] && w[7] === row[7]) {
+            const result = await Swal.fire({
+              icon: 'info',
+              html: `
+                <h2 style="font-weight: bold;">Error en fila ${excelRowNumber}</h2>
+                <p style="text-align: justify;">
+                  Se repite en el archivo el mismo Establecimiento, Subcategoría, Tratamiento y Gestor para este Mes de Retiro.
+                  Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+                </p>
+              `,
+              showCancelButton: true,
+              confirmButtonText: 'Ok',
+              cancelButtonText: 'Cancelar'
+            });
+
+            if (!result.isConfirmed) {
+              return;
+            }
+          }
         }
       }
+
       // Código de establecimiento
       const establishmentCode = row[0];
       if (!establishmentCode || establishmentCode.trim() === '') {
@@ -254,18 +289,45 @@ export class BulkUploadComponent implements OnInit {
         });
         return;
       }
-      // Fecha
-      const date = row[4];
-      const validationResult = this.isValidDate(date);
-      if (!validationResult.valid) {
+
+      //Tipo de fecha
+      const dateType = row[4];
+      if (!dateType) {
         Swal.fire({
           icon: 'error',
-          text: `Error en la fila ${excelRowNumber}. ${validationResult.message}`
+          text: `Error en fila ${excelRowNumber}. Campo TIPO DE FECHA no puede venir vacío`
         });
         return;
       }
+
+      // Fecha
+      const date = row[5];
+      const validationResult = this.isValidDate(date);
+      if (dateType == 'FECHA PRECISA') {
+        if (!validationResult.valid) {
+          Swal.fire({
+            icon: 'error',
+            text: `Error en la fila ${excelRowNumber}. ${validationResult.message}`
+          });
+          return;
+        }
+      }
+
+      // Mes
+      const mdate = row[6];
+      const mvalidationResult = this.isValidMDate(mdate);
+      if (dateType == 'TODO EL MES') {
+        if (!mvalidationResult.valid) {
+          Swal.fire({
+            icon: 'error',
+            text: `Error en la fila ${excelRowNumber}. ${mvalidationResult.message}`
+          });
+          return;
+        }
+      }
+
       // Número de guía de despacho
-      const dispatchGuideNumber = row[5];
+      const dispatchGuideNumber = row[7];
       if (!dispatchGuideNumber) {
         Swal.fire({
           icon: 'error',
@@ -274,7 +336,7 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
       // Tipo específico
-      const gestor = row[6];
+      const gestor = row[8];
       if (!gestor) {
         Swal.fire({
           icon: 'error',
@@ -285,11 +347,11 @@ export class BulkUploadComponent implements OnInit {
 
       let partsGestor = gestor.split(' - ');
       let gestorsId: any = await this.businessService.getBusinessByCode(partsGestor[2]).toPromise();
-      if(partsGestor[0] == 1){
+      if (partsGestor[0] == 1) {
         gestorsId = 0;
       }
       // Tipo específico
-      const gestorIdVu = row[7];
+      const gestorIdVu = row[9];
       if (!gestorIdVu) {
         Swal.fire({
           icon: 'error',
@@ -298,16 +360,15 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
       //Cantidad
-
-      if (row[8] == undefined) {
+      if (row[10] == undefined) {
         Swal.fire({
           icon: 'error',
           text: `Error en fila ${excelRowNumber}. Campo CANTIDAD (KG) no puede venir vacío.`
         });
         return;
       }
-      
-      const sanitizedQuantity = row[8].toString().replace(',', '.');
+
+      const sanitizedQuantity = row[10].toString().replace(',', '.');
       const quantity = parseFloat(sanitizedQuantity);
 
       if (quantity <= 0) {
@@ -358,22 +419,62 @@ export class BulkUploadComponent implements OnInit {
         return;
       }
 
-      const dateFormateada = this.convertDate(date);
+      let dateFormateada = "";
+      let mdateFormateada = "";
+      if (dateType == "FECHA PRECISA") {
+        dateFormateada = this.convertDate(date);
+      } else if (dateType == "TODO EL MES") {
+        mdateFormateada = this.convertMonthYear(mdate);
+        dateFormateada = `${mdateFormateada}-01`;
+      }
 
       let valueEstablishment = row[0];
       let partsEstablishment = valueEstablishment.split(' - ');
       let establishments: any = await this.establishmentService.getIdByEstablishment(partsEstablishment[0], partsEstablishment[1], partsEstablishment[2], partsEstablishment[3]).toPromise();
       let establishmentId = establishments.status[0].ID;
       const gestorIdValue = gestorsId === 0 ? 0 : gestorsId.data.business[0].ID;
-      const r: any = await this.consumer.checkRow({ treatment: treatmentTypeNumber, sub: typeResidueNumber, gestor: gestorIdValue, date: dateFormateada, idEstablishment: establishmentId }).toPromise();
+      const r: any = await this.consumer.checkRow({ treatment: treatmentTypeNumber, sub: typeResidueNumber, gestor: gestorIdValue, date: dateFormateada, idEstablishment: establishmentId, mdate: mdateFormateada }).toPromise();
       if (!r.status) {
-        Swal.fire({
-          icon: 'info',
-          text: `La declaración de la fila ${excelRowNumber} ya ha sido declarada, Mismo tratamiento, material, subtipo y gestor para esta fecha`
-        });
-        return;
+        if (dateType == "FECHA PRECISA") {
+          const result = await Swal.fire({
+            icon: 'info',
+            html: `
+        <h2 style="font-weight: bold;">Error en fila ${excelRowNumber}</h2>
+        <p style="text-align: justify;">
+          Ya existe una declaración registrada en el sistema para la misma Empresa, Establecimiento, Subcategoría, Tratamiento y Gestor para esta Fecha de Retiro.
+          Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+        </p>
+      `,
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+            cancelButtonText: 'Cancelar'
+          });
+
+          if (!result.isConfirmed) {
+            return;
+          }
+        } else {
+          const result = await Swal.fire({
+            icon: 'info',
+            html: `
+        <h2 style="font-weight: bold;">Error en fila ${excelRowNumber}</h2>
+        <p style="text-align: justify;">
+          Ya existe una declaración registrada en el sistema para la misma Empresa, Establecimiento, Subcategoría, Tratamiento y Gestor para este Mes de Retiro.
+          Si desea continuar con esta declaración, puede hacerlo, pero tenga en cuenta que se registrará una entrada duplicada.
+        </p>
+      `,
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+            cancelButtonText: 'Cancelar'
+          });
+
+          if (!result.isConfirmed) {
+            return;
+          }
+        }
       }
-      if(partsEstablishment[1] != partsGestor[1] && gestorIdValue != 0){
+
+      if (partsEstablishment[1] != partsGestor[1] && gestorIdValue != 0) {
         Swal.fire({
           icon: 'error',
           text: `La región del gestor en la fila ${excelRowNumber} no coincide con la del establecimiento seleccionado.`
@@ -390,7 +491,9 @@ export class BulkUploadComponent implements OnInit {
       }
       const rowData = {
         establishmentId,
+        dateType,
         date,
+        mdate,
         precedence: precedenceNumber,
         typeResidue: typeResidueNumber,
         quantity,
@@ -407,47 +510,94 @@ export class BulkUploadComponent implements OnInit {
     const currentDate = new Date().toISOString().replace('T', ' ').replace('Z', '');
 
     for (const rowData of rowsData) {
-      // Obtiene el año de la fecha proporcionada en el Excel
-      const year = rowData.date.split('/')[2];
+      if (rowData.dateType == "FECHA PRECISA") {
+        // Obtiene el año de la fecha proporcionada en el Excel
+        const year = rowData.date.split('/')[2];
 
-      const headerFormData = {
-        establishmentId: rowData.establishmentId,
-        createdBy: userId,
-        createdAt: currentDate,
-        updatedAt: currentDate,
-        yearStatement: year
-      };
-      this.consumer.saveHeaderFromExcel(headerFormData).subscribe((headerResponse: any) => {
-        if (headerResponse.status) {
-          const headerId = headerResponse.data.header.insertId;
-          // Ahora crea la información de detalle del formulario y guarda los datos en la tabla detail_industrial_consumer_form
-          const detailFormData = {
-            ID_HEADER: headerId,
-            PRECEDENCE: rowData.precedence,
-            TYPE_RESIDUE: rowData.typeResidue,
-            VALUE: parseFloat(rowData.quantity.toFixed(2).replace(",", ".")),
-            DATE_WITHDRAW: this.convertDate(rowData.date),
-            ID_GESTOR: rowData.businessId,
-            LER: rowData.LER,
-            TREATMENT_TYPE: rowData.treatmentType,
-          };
-          this.consumer.saveDetailFromExcel(detailFormData).subscribe((detailResponse: any) => {
-            if (!detailResponse.status) {
-              Swal.fire({
-                icon: 'error',
-                text: 'Hubo un problema al guardar los datos en la tabla detail_industrial_consumer_form'
-              });
-              return;
-            }
-          });
-        } else {
-          Swal.fire({
-            icon: 'error',
-            text: 'Hubo un problema al guardar los datos en la tabla header_industrial_consumer_form'
-          });
-          return;
-        }
-      });
+        const headerFormData = {
+          establishmentId: rowData.establishmentId,
+          createdBy: userId,
+          createdAt: currentDate,
+          updatedAt: currentDate,
+          yearStatement: year
+        };
+        this.consumer.saveHeaderFromExcel(headerFormData).subscribe((headerResponse: any) => {
+          if (headerResponse.status) {
+            const headerId = headerResponse.data.header.insertId;
+            // Ahora crea la información de detalle del formulario y guarda los datos en la tabla detail_industrial_consumer_form
+            const detailFormData = {
+              ID_HEADER: headerId,
+              PRECEDENCE: rowData.precedence,
+              TYPE_RESIDUE: rowData.typeResidue,
+              VALUE: parseFloat(rowData.quantity.toFixed(2).replace(",", ".")),
+              DATE_WITHDRAW: this.convertDate(rowData.date),
+              MDATE_WITHDRAW: "",
+              ID_GESTOR: rowData.businessId,
+              LER: rowData.LER,
+              TREATMENT_TYPE: rowData.treatmentType,
+            };
+            this.consumer.saveDetailFromExcel(detailFormData).subscribe((detailResponse: any) => {
+              if (!detailResponse.status) {
+                Swal.fire({
+                  icon: 'error',
+                  text: 'Hubo un problema al guardar los datos en la tabla detail_industrial_consumer_form'
+                });
+                return;
+              }
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              text: 'Hubo un problema al guardar los datos en la tabla header_industrial_consumer_form'
+            });
+            return;
+          }
+        });
+      } else if (rowData.dateType == "TODO EL MES") {
+        // Obtiene el año de la fecha proporcionada en el Excel
+        const myear = rowData.mdate.split('/')[1];
+
+        const headerFormData = {
+          establishmentId: rowData.establishmentId,
+          createdBy: userId,
+          createdAt: currentDate,
+          updatedAt: currentDate,
+          yearStatement: myear
+        };
+        this.consumer.saveHeaderFromExcel(headerFormData).subscribe((headerResponse: any) => {
+          if (headerResponse.status) {
+            const headerId = headerResponse.data.header.insertId;
+            // Ahora crea la información de detalle del formulario y guarda los datos en la tabla detail_industrial_consumer_form
+            const detailFormData = {
+              ID_HEADER: headerId,
+              PRECEDENCE: rowData.precedence,
+              TYPE_RESIDUE: rowData.typeResidue,
+              VALUE: parseFloat(rowData.quantity.toFixed(2).replace(",", ".")),
+              MDATE_WITHDRAW: this.convertMonthYear(rowData.mdate),
+              DATE_WITHDRAW: this.convertDate(`01/${rowData.mdate}`),
+              ID_GESTOR: rowData.businessId,
+              LER: rowData.LER,
+              TREATMENT_TYPE: rowData.treatmentType,
+            };
+            this.consumer.saveDetailFromExcel(detailFormData).subscribe((detailResponse: any) => {
+              if (!detailResponse.status) {
+                Swal.fire({
+                  icon: 'error',
+                  text: 'Hubo un problema al guardar los datos en la tabla detail_industrial_consumer_form'
+                });
+                return;
+              }
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              text: 'Hubo un problema al guardar los datos en la tabla header_industrial_consumer_form'
+            });
+            return;
+          }
+        });
+      }
+
     }
     Swal.fire({
       icon: 'success',
@@ -479,6 +629,26 @@ export class BulkUploadComponent implements OnInit {
     return { valid: true, message: "" };
   }
 
+  isValidMDate(dateString: string): { valid: boolean; message: string } {
+    if (typeof dateString === 'undefined' || dateString.trim() === '') {
+      return { valid: false, message: "El mes no puede estar vacío." };
+    }
+
+    const dateParts = dateString.split("/");
+
+    if (dateParts.length !== 2 || isNaN(+dateParts[0]) || isNaN(+dateParts[1])) {
+      return { valid: false, message: "El formato del mes es incorrecto. Formato requerido: MM/AAAA" };
+    }
+
+    // const dateObject = new Date(+dateParts[1] - 1, +dateParts[0]);
+
+    // if (dateObject.getDate() !== +dateParts[0] || dateObject.getMonth() !== +dateParts[1] - 1 || dateObject.getFullYear() !== +dateParts[2]) {
+    //   return { valid: false, message: "La fecha proporcionada no es válida." };
+    // }
+
+    return { valid: true, message: "" };
+  }
+
   convertPrecedence(precedence: any): number {
     switch (precedence) {
       case 'Papel/Cartón':
@@ -500,7 +670,7 @@ export class BulkUploadComponent implements OnInit {
     switch (typeResidue) {
       case "Papel":
         return 1;
-      case "Papel Compuesto (cemento)":
+      case "Papel Compuesto (Cemento)":
         return 2;
       case "Caja Cartón":
         return 3;
@@ -565,5 +735,9 @@ export class BulkUploadComponent implements OnInit {
   convertDate(dateString: any) {
     const dateParts = dateString.split('/');
     return `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}`;
+  }
+  convertMonthYear(dateString: any) {
+    const dateParts = dateString.split('/');
+    return `${dateParts[1]}-${dateParts[0].padStart(2, '0')}`;
   }
 }
