@@ -238,7 +238,7 @@ class EstablishmentDao {
         JOIN communes ON communes.ID = establishment.ID_COMUNA
         JOIN regions ON regions.ID = establishment.ID_REGION
         
-        JOIN user_business ON business_created_by.ID = user_business.ID_BUSINESS
+        JOIN user_business ON business_created_by.ID = user_business.ID_BUSINESS AND user_business.ID_USER = (SELECT MIN(ID_USER) FROM user_business WHERE user_business.ID_BUSINESS = business_created_by.ID)
         JOIN user AS user_created_by ON user_created_by.ID = header_industrial_consumer_form.CREATED_BY
         JOIN user AS user_assigned ON user_assigned.ID = user_business.ID_USER
         JOIN user_rol ON user_assigned.ID = user_rol.USER_ID AND user_rol.ROL_ID = (SELECT MIN(ROL_ID) FROM user_rol WHERE user_rol.USER_ID = user_assigned.ID)
