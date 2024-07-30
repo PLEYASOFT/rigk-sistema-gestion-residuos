@@ -200,7 +200,7 @@ class EstablishmentDao {
         const conn = mysqlcon.getConnection()!;
         await conn.execute("SET lc_time_names = 'es_ES';");
         const data: any = await conn.execute(`
-            SELECT
+            SELECT DISTINCT 
             business_created_by.CODE_BUSINESS AS ID_EMPRESA,
             business_created_by.VAT AS RUT_EMPRESA,
             business_created_by.NAME AS NOMBRE,
@@ -221,6 +221,7 @@ class EstablishmentDao {
             DATE_FORMAT(detail_industrial_consumer_form.DATE_WITHDRAW, '%Y-%m-%d') AS FECHA_DE_RETIRO,
             detail_industrial_consumer_form.DATE_MONTH AS MES_DE_RETIRO,
             detail_industrial_consumer_form.ID_GESTOR AS ID_GESTOR,
+            detail_industrial_consumer_form.ID AS ID_CI,
             business_assignated_to.NAME AS GESTOR,
             business_assignated_to.VAT AS RUT_GESTOR,
             concat(user_created_by.FIRST_NAME , " " , user_created_by.LAST_NAME) AS USUARIO	
@@ -238,10 +239,10 @@ class EstablishmentDao {
         JOIN communes ON communes.ID = establishment.ID_COMUNA
         JOIN regions ON regions.ID = establishment.ID_REGION
         
-        JOIN user_business ON business_created_by.ID = user_business.ID_BUSINESS AND user_business.ID_USER = (SELECT MIN(ID_USER) FROM user_business WHERE user_business.ID_BUSINESS = business_created_by.ID)
+        JOIN user_business ON business_created_by.ID = user_business.ID_BUSINESS
         JOIN user AS user_created_by ON user_created_by.ID = header_industrial_consumer_form.CREATED_BY
         JOIN user AS user_assigned ON user_assigned.ID = user_business.ID_USER
-        JOIN user_rol ON user_assigned.ID = user_rol.USER_ID AND user_rol.ROL_ID = (SELECT MIN(ROL_ID) FROM user_rol WHERE user_rol.USER_ID = user_assigned.ID)
+        JOIN user_rol ON user_assigned.ID = user_rol.USER_ID
         JOIN rol ON user_rol.ROL_ID = rol.ID
         
         LEFT JOIN invoices_detail ON invoices_detail.ID_DETAIL = detail_industrial_consumer_form.ID
