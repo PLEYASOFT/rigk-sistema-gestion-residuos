@@ -85,7 +85,7 @@ class EstablishmentDao {
         const query = `
         SELECT CONCAT(establishment.NAME_ESTABLISHMENT, ' - ', communes.NAME, ' - ', establishment.REGION ) AS NAME_ESTABLISHMENT_REGION,
             header_industrial_consumer_form.CREATED_AT, header_industrial_consumer_form.YEAR_STATEMENT,
-            header_industrial_consumer_form.ID AS ID_HEADER, business.NAME as NAME_BUSINESS, detail_industrial_consumer_form.ID AS ID_DETAIL,
+            header_industrial_consumer_form.ID AS ID_HEADER, business.NAME as NAME_BUSINESS, business.VAT as RUT_BUSINESS, detail_industrial_consumer_form.ID AS ID_DETAIL,
             CASE
             WHEN detail_industrial_consumer_form.PRECEDENCE = 4 THEN 1
             WHEN EXISTS (SELECT 1
@@ -95,6 +95,7 @@ class EstablishmentDao {
             ELSE 0
         END AS semaforo,
         detail_industrial_consumer_form.PRECEDENCE AS PRECEDENCE_NUMBER,
+        invoices.INVOICE_NUMBER AS NUMERO_FACTURA,
         type_material.MATERIAL AS PRECEDENCE,
         submaterial.SUBMATERIAL AS TYPE_RESIDUE,
         detail_industrial_consumer_form.VALUE,
@@ -115,6 +116,7 @@ class EstablishmentDao {
     INNER JOIN detail_industrial_consumer_form ON detail_industrial_consumer_form.ID_HEADER = header_industrial_consumer_form.ID
     INNER JOIN communes ON communes.ID = establishment.ID_COMUNA
     LEFT JOIN invoices_detail ON invoices_detail.ID_DETAIL = detail_industrial_consumer_form.ID
+    LEFT JOIN invoices ON invoices.ID = invoices_detail.ID_INVOICE 
     LEFT JOIN type_material ON type_material.ID = detail_industrial_consumer_form.PRECEDENCE
     LEFT JOIN submaterial ON submaterial.ID = detail_industrial_consumer_form.TYPE_RESIDUE
     LEFT JOIN type_treatment ON type_treatment.ID = detail_industrial_consumer_form.TREATMENT_TYPE

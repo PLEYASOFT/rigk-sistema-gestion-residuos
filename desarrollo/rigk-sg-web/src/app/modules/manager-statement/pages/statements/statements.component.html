@@ -12,62 +12,135 @@
             <div class="row align-items-end">
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Empresa CI:</label>
-                    <div class="input-group">
-                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedBusiness"
-                                        [suggestions]="filteredBusinesses" (completeMethod)="filterBusinesses($event)" field="label"
-                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                    <div class="input-group"  style="white-space: nowrap; text-overflow: ellipsis;">
+                        <p-multiSelect 
+                            [(ngModel)]="selectedBusinesses" 
+                            [options]="filteredBusinesses" 
+                            (onChange)="updateFilters()" 
+                            (onPanelShow)="filterBusinesses({ query: '' })"
+                            optionLabel="label" 
+                            defaultLabel="Seleccione"
+                            [maxSelectedLabels]="1"
+                            [selectedItemsLabel]="'{0} Empresas'"
+                            [showToggleAll]="false">
                             <ng-template let-business pTemplate="item">
                                 <div>{{ business.label }}</div>
                             </ng-template>
-                        </p-autoComplete>
+                        </p-multiSelect>
                     </div>
-                </div>
+                </div>  
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <label class="form-label">Rut CI:</label>
+                    <div class="input-group">
+                        <p-multiSelect 
+                            [(ngModel)]="selectedRutCI" 
+                            [options]="filteredRutCI" 
+                            (onChange)="updateFilters()" 
+                            (onPanelShow)="filterRutCI({ query: '' })"
+                            optionLabel="label" 
+                            defaultLabel="Seleccione"
+                            [maxSelectedLabels]="1"
+                            [selectedItemsLabel]="'{0} Ruts'"
+                            [showToggleAll]="false">>
+                            <ng-template let-rut pTemplate="item">
+                                <div>{{ rut.label }}</div>
+                            </ng-template>
+                        </p-multiSelect>
+                    </div>
+                </div>  
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Empresa Gestor:</label>
                     <div class="input-group">
-                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedGestor"
-                                        [suggestions]="filteredBusinessesManager" (completeMethod)="filterBusinessesManager($event)" field="label"
-                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                        <p-multiSelect 
+                            [(ngModel)]="selectedGestores" 
+                            [options]="filteredBusinessesManager" 
+                            (onChange)="updateFilters()" 
+                            (onPanelShow)="filterBusinessesManager({ query: '' })"
+                            optionLabel="label" 
+                            defaultLabel="Seleccione"
+                            [maxSelectedLabels]="1"
+                            [selectedItemsLabel]="'{0} Empresas'"
+                            [showToggleAll]="false">>
                             <ng-template let-gestor pTemplate="item">
                                 <div>{{ gestor.label }}</div>
                             </ng-template>
-                        </p-autoComplete>
+                        </p-multiSelect>
                     </div>
-                </div>                
+                </div> 
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
+                    <label class="form-label">Numero Factura:</label>
+                    <div class="input-group">
+                        <p-multiSelect 
+                            [(ngModel)]="selectedInvoiceNumber" 
+                            [options]="filteredInvoice" 
+                            (onChange)="updateFilters()" 
+                            (onPanelShow)="filterInvoices({ query: '' })"
+                            optionLabel="label" 
+                            defaultLabel="Seleccione"
+                            [maxSelectedLabels]="1"
+                            [selectedItemsLabel]="'{0} Facturas'"
+                            [showToggleAll]="false">>
+                            <ng-template let-invoice pTemplate="item">
+                                <div>{{ invoice.label }}</div>
+                            </ng-template>
+                        </p-multiSelect>
+                    </div>
+                </div>  
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Tipo de tratamiento:</label>
                     <div class="input-group">
-                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedTreatment"
-                                        [suggestions]="filteredTreatment" (completeMethod)="filterTreatment($event)" field="label"
-                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                        <p-multiSelect 
+                            [(ngModel)]="selectedTreatments" 
+                            [options]="filteredTreatment" 
+                            (onChange)="updateFilters()" 
+                            (onPanelShow)="filterTreatment({ query: '' })"
+                            optionLabel="label" 
+                            defaultLabel="Seleccione"
+                            [maxSelectedLabels]="1"
+                            [selectedItemsLabel]="'{0} Tipos'"
+                            [showToggleAll]="false">>
                             <ng-template let-treatment pTemplate="item">
                                 <div>{{ treatment.label }}</div>
                             </ng-template>
-                        </p-autoComplete>
+                        </p-multiSelect>
                     </div>
                 </div>
-                <div class="col-12 col-xl-1 mb-3 mb-xl-0">
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Material:</label>
                     <div class="input-group">
-                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedMaterial"
-                                        [suggestions]="filteredMaterial" (completeMethod)="filterMaterial($event)" field="label"
-                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                        <p-multiSelect 
+                            [(ngModel)]="selectedMaterials" 
+                            [options]="filteredMaterial" 
+                            (onChange)="updateFilters()" 
+                            (onPanelShow)="filterMaterial({ query: '' })"
+                            optionLabel="label" 
+                            defaultLabel="Seleccione"
+                            [maxSelectedLabels]="1"
+                            [selectedItemsLabel]="'{0} Materiales'"
+                            [showToggleAll]="false">>
                             <ng-template let-material pTemplate="item">
                                 <div>{{ material.label }}</div>
                             </ng-template>
-                        </p-autoComplete>
+                        </p-multiSelect>
                     </div>
                 </div>
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Fecha de retiro:</label>
                     <div class="input-group">
-                        <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedYear"
-                                        [suggestions]="filteredYear" (completeMethod)="filterYear($event)" field="label"
-                                        [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
+                        <p-multiSelect 
+                            [(ngModel)]="selectedYears" 
+                            [options]="filteredYear"
+                            (onChange)="updateFilters()" 
+                            (onPanelShow)="filterYear({ query: '' })"
+                            optionLabel="label" 
+                            defaultLabel="Seleccione"
+                            [maxSelectedLabels]="1"
+                            [selectedItemsLabel]="'{0} Fechas'"
+                            [showToggleAll]="false">>
                             <ng-template let-year pTemplate="item">
                                 <div>{{ year.label }}</div>
                             </ng-template>
-                        </p-autoComplete>
+                        </p-multiSelect>
                     </div>
                 </div>
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
@@ -82,21 +155,21 @@
                         </p-autoComplete>
                     </div>
                 </div>
-                <div class="col-12 col-xl-1 mb-3 mb-xl-0">
+                <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">&nbsp;</label>
                     <!-- Añade un espacio vacío para alinear el botón correctamente -->
                     <div class="input-group">
-                        <button class="btn btn-primary w-100"
+                        <button class="btn btn-primary col-12" style="height: 2.875rem; border-radius: .25rem;"
                             (click)="autoFilter = false; filter(); pagTo(0);disableFilters = false;">Mostrar</button>
                     </div>
                 </div>
+                <div class="clearfix"></div>
                 <div class="col-12 col-xl-3 mb-3 mb-xl-0">
                     <label class="form-label">Número de declaraciones seleccionadas:</label>
                     <div class="input-group">
                         <input type="text" class="form-control" [(ngModel)]="selectedDeclarationsCount" readonly>
                     </div>
                 </div>
-
                 <div class="col-12 col-xl-3 mb-3 mb-xl-0">
                     <p></p>
                     <label class="form-label">Peso total declarado seleccionado (Kg):</label>
@@ -129,7 +202,9 @@
                             Seleccionar todo
                         </th>
                         <th>Empresa CI</th>
+                        <th>Rut CI</th>
                         <th>Empresa Gestor</th>
+                        <th>Numero Factura</th>
                         <th>Establecimiento CI</th>
                         <th>Tipo de tratamiento</th>
                         <th>Material</th>
@@ -152,7 +227,9 @@
                             </section>
                         </td>
                         <td>{{s.NAME_BUSINESS}}</td>
+                        <td>{{s.RUT_BUSINESS}}</td>
                         <td>{{s.NAME_GESTOR}}</td>
+                        <td>{{s.NUMERO_FACTURA}}</td>
                         <td>{{s.NAME_ESTABLISHMENT_REGION}}</td>
                         <td>{{s.TipoTratamiento}}</td>
                         <td>{{s.PRECEDENCE}}</td>
@@ -200,6 +277,7 @@
 
 <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
     (hidden.bs.modal)="reset_nocheck()">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -301,7 +379,11 @@
                         </div>
                     </div>
                     <div class="row mb-3">
-                        <label class="col-sm-4 col-form-label">Peso Total Factura Reciclador</label>
+                        <label class="col-sm-4 col-form-label">Peso Total Factura Reciclador
+                            <span title="Peso total reflejado en la factura del reciclador final, en kg">
+                                <i class="bi bi-question-circle-fill"></i>
+                            </span>
+                        </label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" formControlName="totalWeight">
                             <div *ngIf="userForm.controls['totalWeight'].errors && userForm.controls['totalWeight'].touched"
@@ -322,7 +404,12 @@
                         </div>
                     </div>
                     <div class="row mb-3">
-                        <label class="col-sm-4 col-form-label">Peso Valorizado</label>
+                        <label class="col-sm-4 col-form-label">Peso Valorizado
+                            <span title="Porción o la totalidad del peso de la(s) declaración(es) que está
+                            aprobando, en kg">
+                                <i class="bi bi-question-circle-fill"></i>
+                            </span>
+                        </label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" formControlName="valuedWeight">
                             <div *ngIf="userForm.controls['valuedWeight'].errors && userForm.controls['valuedWeight'].touched"

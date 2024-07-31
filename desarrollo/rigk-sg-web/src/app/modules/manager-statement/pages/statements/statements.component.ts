@@ -24,6 +24,8 @@ export class StatementsComponent implements OnInit {
   pos = 1;
 
   business_name: any[] = [];
+  rut_ci: any[] = [];
+  invoice: any[] = [];
   establishment_name: any[] = [];
   material_name: any[] = [];
   treatment_name: any[] = [];
@@ -32,12 +34,21 @@ export class StatementsComponent implements OnInit {
   cant: number = 0;
   filteredStatements: any[] = [];
   filteredBusinesses: any[] = [];
+  filteredRutCI: any[] = [];
+  filteredInvoice: any[] = [];
   filteredMaterial: any[] = [];
   filteredYear: any[] = [];
   filteredBusinessesManager: any[] = [];
   filteredTreatment: any[] = [];
   filteredState: any[] = [];
 
+  selectedBusinesses: any[] = [{ label: 'Todos', value: '-1' }];
+  selectedGestores: any[] = [{ label: 'Todos', value: '-1' }];
+  selectedTreatments: any[] = [{ label: 'Todos', value: '-1' }];
+  selectedMaterials: any[] = [{ label: 'Todos', value: '-1' }];
+  selectedYears: any[] = [{ label: 'Todos', value: '-1' }];
+  selectedRutCI: any[] = [{ label: 'Todos', value: '-1' }];
+  selectedInvoiceNumber: any[] = [{ label: 'Todos', value: '-1' }];
   selectedBusiness: string = '-1';
   selectedMaterial: string = '-1';
   selectedYear: string = '-1';
@@ -134,8 +145,14 @@ export class StatementsComponent implements OnInit {
             if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
               this.business_name.push(e.NAME_BUSINESS);
             }
+            if (this.rut_ci.indexOf(e.RUT_BUSINESS) == -1) {
+              this.rut_ci.push(e.RUT_BUSINESS);
+            }
             if (this.establishment_name.indexOf(e.NAME_ESTABLISHMENT_REGION) == -1) {
               this.establishment_name.push(e.NAME_ESTABLISHMENT_REGION);
+            }
+            if (e.NUMERO_FACTURA != null && this.invoice.indexOf(e.NUMERO_FACTURA) == -1) {
+              this.invoice.push(e.NUMERO_FACTURA);
             }
             if (this.years.indexOf(e.FechaRetiroTipeada) == -1) {
               this.years.push(e.FechaRetiroTipeada)
@@ -169,6 +186,13 @@ export class StatementsComponent implements OnInit {
         }
         resolve();
       })
+      this.filterBusinesses({ query: '' });
+      this.filterBusinessesManager({ query: '' });
+      this.filterTreatment({ query: '' });
+      this.filterMaterial({ query: '' });
+      this.filterYear({ query: '' });
+      this.filterRutCI({ query: '' });
+      this.filterInvoices({ query: '' });
     });
   }
 
@@ -193,26 +217,29 @@ export class StatementsComponent implements OnInit {
   }
 
   filter(auto: boolean = false) {
-    const selectedBusinessValue = (this.selectedBusiness as any)?.value || this.selectedBusiness;
-    const selectedBusinessManagerValue = (this.selectedGestor as any)?.value || this.selectedGestor;
-    const selectedTreatmentValue = (this.selectedTreatment as any)?.value || this.selectedTreatment;
-    const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
-    const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
+    const selectedBusinessValues = this.selectedBusinesses.map((business: any) => business.value);
+    const selectedRutCIValues = this.selectedRutCI.map((rut: any) => rut.value);
+    const selectedBusinessManagerValues = this.selectedGestores.map((gestor: any) => gestor.value);
+    const selectedInvoiceValues = this.selectedInvoiceNumber.map((invoice: any) => invoice.value);
+    const selectedTreatmentValues = this.selectedTreatments.map((treatment: any) => treatment.value);
+    const selectedMaterialValues = this.selectedMaterials.map((material: any) => material.value);
+    const selectedYearValues = this.selectedYears.map((year: any) => year.value);
     const selectedStateValue = (this.selectedState as any)?.value || this.selectedState;
 
     if (auto && !this.autoFilter) return;
 
     const selectedStateNum = parseInt(selectedStateValue);
-
     this.filteredStatements = this.dbStatements.filter(r => {
       const rStateGestorNum = parseInt(r.STATE_GESTOR);
       return (
-        (selectedBusinessValue === '-1' || r.NAME_BUSINESS === selectedBusinessValue) &&
-        (selectedMaterialValue === '-1' || r.PRECEDENCE === selectedMaterialValue) &&
-        (selectedTreatmentValue === '-1' || r.TipoTratamiento === selectedTreatmentValue) &&
-        (selectedYearValue === '-1' || r.FechaRetiroTipeada === selectedYearValue) &&
+        (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
+        (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
+        (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&  
+        (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
+        (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
+        (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
         (selectedStateValue === '-1' || rStateGestorNum === selectedStateNum) &&
-        (selectedBusinessManagerValue === '-1' || r.NAME_GESTOR === selectedBusinessManagerValue)
+        (selectedBusinessManagerValues.includes('-1') || selectedBusinessManagerValues.includes(r.NAME_GESTOR))
       );
     });
 
@@ -246,6 +273,19 @@ export class StatementsComponent implements OnInit {
     }
   }
 
+  filterRutCI(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredRutCI = this.rut_ci
+      .filter((na: string) => na.toLowerCase().includes(query))
+      .map((na: string) => ({ label: na, value: na }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+    if (this.filteredRutCI.length === 0) {
+      this.filteredRutCI = [{ label: 'Todos', value: '-1' }];
+    } else {
+      this.filteredRutCI.unshift({ label: 'Todos', value: '-1' });
+    }
+  }
+
   filterBusinessesManager(event: any) {
     const query = event.query.toLowerCase();
     this.filteredBusinessesManager = this.gestor_name
@@ -256,6 +296,19 @@ export class StatementsComponent implements OnInit {
       this.filteredBusinessesManager = [{ label: 'Todos', value: '-1' }];
     } else {
       this.filteredBusinessesManager.unshift({ label: 'Todos', value: '-1' });
+    }
+  }
+
+  filterInvoices(event: any) {
+    const query = event.query.toString();
+    this.filteredInvoice = this.invoice
+      .filter((invoice: number) => invoice.toString().includes(query))
+      .map((invoice: number) => ({ label: invoice.toString(), value: invoice.toString() }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+    if (this.filteredInvoice.length === 0) {
+      this.filteredInvoice = [{ label: 'Todos', value: '-1' }];
+    } else {
+      this.filteredInvoice.unshift({ label: 'Todos', value: '-1' });
     }
   }
 
@@ -311,11 +364,13 @@ export class StatementsComponent implements OnInit {
   }
 
   filter_two(auto: boolean = false) {
-    const selectedBusinessValue = (this.selectedBusiness as any)?.value || this.selectedBusiness;
-    const selectedBusinessManagerValue = (this.selectedGestor as any)?.value || this.selectedGestor;
-    const selectedTreatmentValue = (this.selectedTreatment as any)?.value || this.selectedTreatment;
-    const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
-    const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
+    const selectedBusinessValues = this.selectedBusinesses.map((business: any) => business.value);
+    const selectedRutCIValues = this.selectedRutCI.map((rut: any) => rut.value);
+    const selectedBusinessManagerValues = this.selectedGestores.map((gestor: any) => gestor.value);
+    const selectedInvoiceValues = this.selectedInvoiceNumber.map((invoice: any) => invoice.value);
+    const selectedTreatmentValues = this.selectedTreatments.map((treatment: any) => treatment.value);
+    const selectedMaterialValues = this.selectedMaterials.map((material: any) => material.value);
+    const selectedYearValues = this.selectedYears.map((year: any) => year.value);
     const selectedStateValue = (this.selectedState as any)?.value || this.selectedState;
 
     if (auto && !this.autoFilter) return;
@@ -325,12 +380,14 @@ export class StatementsComponent implements OnInit {
     this.filteredStatements = this.dbStatements.filter(r => {
       const rStateGestorNum = parseInt(r.STATE_GESTOR);
       return (
-        (selectedBusinessValue === '-1' || r.NAME_BUSINESS === selectedBusinessValue) &&
-        (selectedMaterialValue === '-1' || r.PRECEDENCE === selectedMaterialValue) &&
-        (selectedTreatmentValue === '-1' || r.TipoTratamiento === selectedTreatmentValue) &&
-        (selectedYearValue === '-1' || r.FechaRetiroTipeada === selectedYearValue) &&
+        (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
+        (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
+        (selectedInvoiceValues.includes('-1') || selectedInvoiceValues.includes(r.NUMERO_FACTURA)) &&
+        (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
+        (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
+        (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
         (selectedStateValue === '-1' || rStateGestorNum === selectedStateNum) &&
-        (selectedBusinessManagerValue === '-1' || r.NAME_GESTOR === selectedBusinessManagerValue)
+        (selectedBusinessManagerValues.includes('-1') || selectedBusinessManagerValues.includes(r.NAME_GESTOR))
       );
     });
 
@@ -339,87 +396,130 @@ export class StatementsComponent implements OnInit {
     );
 
     this.cant = Math.ceil(this.filteredStatements.length / 10);
+    
   }
 
 
 
   updateFilters() {
-    const selectedBusinessValue = (this.selectedBusiness as any)?.value || this.selectedBusiness;
-    const selectedBusinessManagerValue = (this.selectedGestor as any)?.value || this.selectedGestor;
-    const selectedTreatmentValue = (this.selectedTreatment as any)?.value || this.selectedTreatment;
-    const selectedMaterialValue = (this.selectedMaterial as any)?.value || this.selectedMaterial;
-    const selectedYearValue = (this.selectedYear as any)?.value || this.selectedYear;
+    const selectedBusinessValues = this.selectedBusinesses.map((business: any) => business.value);
+    const selectedBusinessManagerValues = this.selectedGestores.map((gestor: any) => gestor.value);
+    const selectedRutCIValues = this.selectedRutCI.map((rut: any) => rut.value);
+    const selectedInvoiceValues = this.selectedInvoiceNumber.map((invoice: any) => invoice.value);
+    const selectedTreatmentValues = this.selectedTreatments.map((treatment: any) => treatment.value);
+    const selectedMaterialValues = this.selectedMaterials.map((material: any) => material.value);
+    const selectedYearValues = this.selectedYears.map((year: any) => year.value);
     const selectedStateValue = (this.selectedState as any)?.value || this.selectedState;
-
     // Filtrar las opciones de business_name
-    this.business_name = this.dbStatements
+    this.business_name = this.filteredStatements
       .filter(
         (r) =>
-          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue) &&
-          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
-          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue) &&
+          (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
+          (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
+          (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
           (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
-          (selectedBusinessManagerValue === "-1" || r.NAME_GESTOR === selectedBusinessManagerValue)
+          (selectedBusinessManagerValues.includes('-1') || selectedBusinessManagerValues.includes(r.NAME_GESTOR))
       )
       .map((r) => r.NAME_BUSINESS)
       .filter((value, index, self) => self.indexOf(value) === index);
-    // Filtrar las opciones de treatment_name
-    this.treatment_name = this.dbStatements
+    // Filtrar las opciones de rut_ci
+    this.rut_ci = this.filteredStatements
       .filter(
         (r) =>
-          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
-          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
-          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue) &&
+          (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
+          (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
+          (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
           (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
-          (selectedBusinessManagerValue === "-1" || r.NAME_GESTOR === selectedBusinessManagerValue)
+          (selectedBusinessManagerValues.includes('-1') || selectedBusinessManagerValues.includes(r.NAME_GESTOR))
+      )
+      .map((r) => r.RUT_BUSINESS)
+      .filter((value, index, self) => self.indexOf(value) === index);
+    // Filtrar las opciones de treatment_name
+    this.treatment_name = this.filteredStatements
+      .filter(
+        (r) =>
+          (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
+          (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
+          (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
+          (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
+          (selectedBusinessManagerValues.includes('-1') || selectedBusinessManagerValues.includes(r.NAME_GESTOR))
       )
       .map((r) => r.TipoTratamiento)
       .filter((value, index, self) => self.indexOf(value) === index);
-    // Filtrar las opciones de material_name
-    this.material_name = this.dbStatements
+      // Filtrar las opciones de invoice
+      this.invoice = this.filteredStatements
       .filter(
         (r) =>
-          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
-          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue) &&
-          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue) &&
+          (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
+          (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
+          (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
+          (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
+          (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
           (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
-          (selectedBusinessManagerValue === "-1" || r.NAME_GESTOR === selectedBusinessManagerValue)
+          (selectedBusinessManagerValues.includes('-1') || selectedBusinessManagerValues.includes(r.NAME_GESTOR))
+      )
+      .map((r) => r.NUMERO_FACTURA)
+      .filter((value) => value != null)
+      .filter((value, index, self) => self.indexOf(value) === index);
+    // Filtrar las opciones de material_name
+    this.material_name = this.filteredStatements
+      .filter(
+        (r) =>
+          (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
+          (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
+          (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
+          (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
+          (selectedBusinessManagerValues.includes('-1') || selectedBusinessManagerValues.includes(r.NAME_GESTOR))
       )
       .map((r) => r.PRECEDENCE)
       .filter((value, index, self) => self.indexOf(value) === index);
     // Filtrar las opciones de years
-    this.years = this.dbStatements
+    this.years = this.filteredStatements
       .filter(
         (r) =>
-          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
-          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue) &&
-          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
+          (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
+          (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
+          (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
           (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
-          (selectedBusinessManagerValue === "-1" || r.NAME_GESTOR === selectedBusinessManagerValue)
+          (selectedBusinessManagerValues.includes('-1') || selectedBusinessManagerValues.includes(r.NAME_GESTOR))
       )
       .map((r) => r.FechaRetiroTipeada)
       .filter((value, index, self) => self.indexOf(value) === index)
       .sort((a, b) => b - a);
     // Filtrar las opciones de state
-    this.state = this.dbStatements
+    this.state = this.filteredStatements
       .filter(
         (r) =>
-          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
-          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue) &&
-          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
-          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue) &&
-          (selectedBusinessManagerValue === "-1" || r.NAME_GESTOR === selectedBusinessManagerValue)
+          (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
+          (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
+          (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
+          (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
+          (selectedBusinessManagerValues.includes('-1') || selectedBusinessManagerValues.includes(r.NAME_GESTOR))
       )
       .map((r) => parseInt(r.STATE_GESTOR))
       .filter((value, index, self) => self.indexOf(value) === index);
     // Filtrar las opciones de gestor_name
-    this.gestor_name = this.dbStatements
+    this.gestor_name = this.filteredStatements
       .filter(
         (r) =>
-          (selectedBusinessValue === "-1" || r.NAME_BUSINESS === selectedBusinessValue) &&
-          (selectedTreatmentValue === "-1" || r.TipoTratamiento === selectedTreatmentValue) &&
-          (selectedMaterialValue === "-1" || r.PRECEDENCE === selectedMaterialValue) &&
-          (selectedYearValue === "-1" || r.FechaRetiroTipeada === selectedYearValue) &&
+          (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
+          (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
+          (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
+          (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
           (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined)
       )
       .map((r) => r.NAME_GESTOR)
@@ -881,10 +981,14 @@ export class StatementsComponent implements OnInit {
       this.updateFilters();
     } else {
       // Si no hay elementos seleccionados, restablecer los filtros y habilitarlos
-      this.selectedTreatment = '-1';
-      this.selectedMaterial = '-1';
+      this.selectedBusinesses = [{ label: 'Todos', value: '-1' }];
+      this.selectedGestores  = [{ label: 'Todos', value: '-1' }];
+      this.selectedTreatments  = [{ label: 'Todos', value: '-1' }];
+      this.selectedMaterials  = [{ label: 'Todos', value: '-1' }];
+      this.selectedYears  = [{ label: 'Todos', value: '-1' }];
+      this.selectedRutCI  = [{ label: 'Todos', value: '-1' }];
+      this.selectedInvoiceNumber  = [{ label: 'Todos', value: '-1' }];
       this.selectedState = '-1';
-      this.selectedGestor = '-1';
       this.disableFilters = false;
       this.filter_two();
       this.updateFilters();
