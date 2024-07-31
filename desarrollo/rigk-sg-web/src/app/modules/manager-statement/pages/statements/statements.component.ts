@@ -21,6 +21,7 @@ export class StatementsComponent implements OnInit {
   userData: any | null;
   dbStatements: any[] = [];
   db: any[] = [];
+  allDb: any[] = [];
   pos = 1;
 
   business_name: any[] = [];
@@ -172,6 +173,7 @@ export class StatementsComponent implements OnInit {
           });
           this.years.sort((a, b) => b - a);
           this.dbStatements = r.data;
+          this.allDb = [...this.dbStatements];
           this.cant = Math.ceil(this.dbStatements.length / 10);
           this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a: any, b: any) => {
             const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
@@ -382,7 +384,7 @@ export class StatementsComponent implements OnInit {
       return (
         (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
         (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
-        (selectedInvoiceValues.includes('-1') || selectedInvoiceValues.includes(r.NUMERO_FACTURA)) &&
+        (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&  
         (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
         (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
         (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
@@ -411,7 +413,7 @@ export class StatementsComponent implements OnInit {
     const selectedYearValues = this.selectedYears.map((year: any) => year.value);
     const selectedStateValue = (this.selectedState as any)?.value || this.selectedState;
     // Filtrar las opciones de business_name
-    this.business_name = this.filteredStatements
+    this.business_name = this.dbStatements
       .filter(
         (r) =>
           (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
@@ -425,7 +427,7 @@ export class StatementsComponent implements OnInit {
       .map((r) => r.NAME_BUSINESS)
       .filter((value, index, self) => self.indexOf(value) === index);
     // Filtrar las opciones de rut_ci
-    this.rut_ci = this.filteredStatements
+    this.rut_ci = this.dbStatements
       .filter(
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
@@ -439,7 +441,7 @@ export class StatementsComponent implements OnInit {
       .map((r) => r.RUT_BUSINESS)
       .filter((value, index, self) => self.indexOf(value) === index);
     // Filtrar las opciones de treatment_name
-    this.treatment_name = this.filteredStatements
+    this.treatment_name = this.dbStatements
       .filter(
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
@@ -453,7 +455,7 @@ export class StatementsComponent implements OnInit {
       .map((r) => r.TipoTratamiento)
       .filter((value, index, self) => self.indexOf(value) === index);
       // Filtrar las opciones de invoice
-      this.invoice = this.filteredStatements
+      this.invoice = this.dbStatements
       .filter(
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
@@ -468,7 +470,7 @@ export class StatementsComponent implements OnInit {
       .filter((value) => value != null)
       .filter((value, index, self) => self.indexOf(value) === index);
     // Filtrar las opciones de material_name
-    this.material_name = this.filteredStatements
+    this.material_name = this.dbStatements
       .filter(
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
@@ -482,7 +484,7 @@ export class StatementsComponent implements OnInit {
       .map((r) => r.PRECEDENCE)
       .filter((value, index, self) => self.indexOf(value) === index);
     // Filtrar las opciones de years
-    this.years = this.filteredStatements
+    this.years = this.dbStatements
       .filter(
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
@@ -497,7 +499,7 @@ export class StatementsComponent implements OnInit {
       .filter((value, index, self) => self.indexOf(value) === index)
       .sort((a, b) => b - a);
     // Filtrar las opciones de state
-    this.state = this.filteredStatements
+    this.state = this.dbStatements
       .filter(
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
@@ -511,7 +513,7 @@ export class StatementsComponent implements OnInit {
       .map((r) => parseInt(r.STATE_GESTOR))
       .filter((value, index, self) => self.indexOf(value) === index);
     // Filtrar las opciones de gestor_name
-    this.gestor_name = this.filteredStatements
+    this.gestor_name = this.dbStatements
       .filter(
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
@@ -957,6 +959,7 @@ export class StatementsComponent implements OnInit {
     this.filteredStatements = this.dbStatements.filter(r =>
       r.STATE_GESTOR === 0 && r.NAME_GESTOR === selectedGestor
     );
+
     const selectedItems = this.filteredStatements.filter(s => s.isChecked && s.STATE_GESTOR == 0);
     this.anyCheckboxSelected = selectedItems.length > 0;
     // Actualizar el número de declaraciones seleccionadas
@@ -974,7 +977,8 @@ export class StatementsComponent implements OnInit {
       this.selectedWeight = totalWeight.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
     if (selectedItems.length > 0) {
-
+      
+      this.dbStatements = [...this.filteredStatements];
       this.selectedGestor = selectedGestor;
       this.selectedState = '0'; // Estado "Por aprobar"
       this.disableFilters = true; // Deshabilitar filtros
@@ -990,6 +994,7 @@ export class StatementsComponent implements OnInit {
       this.selectedInvoiceNumber  = [{ label: 'Todos', value: '-1' }];
       this.selectedState = '-1';
       this.disableFilters = false;
+      this.dbStatements = [...this.allDb];
       this.filter_two();
       this.updateFilters();
       this.pagTo(0);
