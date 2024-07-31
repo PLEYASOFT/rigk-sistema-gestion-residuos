@@ -111,7 +111,7 @@ class Server {
         this.app.use(express.json({ strict: true }));
         this.app.use(cors(corsOptionsDelegate));
         this.app.use(fileUpload({
-            limits: { fileSize: 1024 * 1024 * 1 }
+            limits: { fileSize: 1024 * 1024 * 40 }
         }));
         this.app.use(morgan('dev'));
     }

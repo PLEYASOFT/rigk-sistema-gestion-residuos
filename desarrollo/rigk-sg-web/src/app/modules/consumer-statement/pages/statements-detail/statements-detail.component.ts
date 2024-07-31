@@ -14,7 +14,8 @@ import { FormBuilder, Validators, AbstractControl } from '@angular/forms';
 
 export class StatementsDetailComponent implements OnInit {
 
-  maxFiles = 3;
+  maxFiles = 40;
+  maxTotalSize = 40 * 1024 * 1024; // 40 MB
   userData: any | null;
   dbStatements: any[] = [];
   db: any[] = [];
@@ -38,6 +39,7 @@ export class StatementsDetailComponent implements OnInit {
   attached: any[] = [];
   fileName = '';
   fileBuffer: any;
+
   constructor(public productorService: ProductorService,
     private ConsumerService: ConsumerService,
     private router: Router,
@@ -127,18 +129,33 @@ export class StatementsDetailComponent implements OnInit {
 
   saveFile() {
     this.detail_consulta.FechaRetiro = this.formatDate(this.detail_consulta.FechaRetiro);
+
+    Swal.fire({
+      title: 'Subiendo archivo',
+      text: 'Por favor espere mientras se sube el archivo',
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
     this.ConsumerService.saveFile(this.detail_consulta.ID_DETAIL, this.fileName, this.fileBuffer, this.userForm.controls['MV'].value).subscribe(r => {
+      Swal.close();
       if (r.status) {
         Swal.fire({
           icon: 'success',
           text: 'Medio de verificación guardado satisfactoriamente'
         })
         this.loadMV();
-      }
-      else {
+      } else {
+        Swal.fire({
+          icon: 'error',
+          text: 'Error al guardar el medio de verificación'
+        });
         console.log('error')
       }
-    })
+    });
   }
 
   deleteMV(id: any) {
@@ -149,8 +166,7 @@ export class StatementsDetailComponent implements OnInit {
           text: 'Medio de verificación eliminado satisfactoriamente'
         })
         this.loadMV();
-      }
-      else {
+      } else {
         console.log('error')
       }
     })
@@ -171,9 +187,14 @@ export class StatementsDetailComponent implements OnInit {
       if (!isValid) {
         this.userForm.controls['ARCHIVO'].setErrors({ 'invalidFileType': true });
         this.userForm.controls['ARCHIVO'].markAsTouched();
-      } else if (file.size > 1 * 1024 * 1024) {
+      } else if (file.size > this.maxTotalSize) {
         this.userForm.controls['ARCHIVO'].setErrors({ 'invalidFileSize': true });
         this.userForm.controls['ARCHIVO'].markAsTouched();
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'El archivo no debe superar los 40 MB.',
+        });
       } else {
         this.userForm.controls['ARCHIVO'].setErrors(null);
         this.userForm.controls['ARCHIVO'].markAsTouched();
@@ -226,7 +247,7 @@ export class StatementsDetailComponent implements OnInit {
   fileSizeValidator(control: AbstractControl): { [key: string]: any } | null {
     const file = control.value;
     if (file) {
-      const maxSizeInBytes = 1 * 1024 * 1024; // 1 MB
+      const maxSizeInBytes = 40 * 1024 * 1024; // 40 MB
       if (file.size > maxSizeInBytes) {
         return { invalidFileSize: true };
       }

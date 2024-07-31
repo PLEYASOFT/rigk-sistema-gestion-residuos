@@ -5,6 +5,7 @@ import { ConsumerService } from '../../../../core/services/consumer.service';
 import Swal from 'sweetalert2';
 import { ManagerService } from 'src/app/core/services/manager.service';
 import { BusinessService } from 'src/app/core/services/business.service';
+
 @Component({
   selector: 'app-form',
   templateUrl: './form.component.html',
@@ -47,12 +48,15 @@ export class FormComponent implements OnInit {
   business_code = "";
   userData: any;
   id_compare: any;
-  constructor(public establishmentService: EstablishmentService,
+
+  constructor(
+    public establishmentService: EstablishmentService,
     public consumerService: ConsumerService,
     public business: BusinessService,
     private router: Router,
     private actived: ActivatedRoute,
-    private managerService: ManagerService) {
+    private managerService: ManagerService
+  ) {
     this.actived.data.subscribe((r: any) => {
       if (r.show) {
         const id = this.actived.snapshot.params['id'];
@@ -70,6 +74,7 @@ export class FormComponent implements OnInit {
       }
     });
   }
+
   ngOnInit(): void {
     localStorage.removeItem('statementsState');
     this.userData = JSON.parse(sessionStorage.getItem('user')!);
@@ -78,6 +83,7 @@ export class FormComponent implements OnInit {
     this.getAllMaterials();
     this.getAllTreatments();
   }
+
   getAllSubmaterialFormatted() {
     this.managerService.getAllSubmaterialFormatted().subscribe(r => {
       if (r.status) {
@@ -109,6 +115,7 @@ export class FormComponent implements OnInit {
       }
     });
   }
+
   reset() {
     this.id_establishment = -1;
     const tb_ref_1 = document.getElementById(`table_1`)?.getElementsByTagName('tbody')[0];
@@ -121,11 +128,13 @@ export class FormComponent implements OnInit {
     document.getElementById(`table_td_1`)!.innerHTML = "0";
     this.newData = [];
   }
+
   getManagersForMaterial(materialId: number): any[] {
     const managersForMaterial = this.managers.find(m => m.material === materialId)?.managers || [];
     return managersForMaterial.map(
       (manager: { ID_BUSINESS: any, BUSINESS_NAME: any; }) => { return { name: manager.BUSINESS_NAME, id: manager.ID_BUSINESS } || { name: "Reciclaje Interno", id: 0 } });
   }
+
   onEstablishmentChange(event: any) {
     this.establishmentService.getEstablishmentByID(this.selectedEstablishment[0]).subscribe(r => {
       if (r.status) {
@@ -171,6 +180,7 @@ export class FormComponent implements OnInit {
       }
     });
   }
+
   async saveForm() {
     if (this.newData.length == 0) {
       Swal.fire({
@@ -327,65 +337,68 @@ export class FormComponent implements OnInit {
     }
   }
 
-    goBack() {
-      this.router.navigate([this.goTo]);
+  goBack() {
+    this.router.navigate([this.goTo]);
+  }
+
+  getId(element: any) {
+    alert("row" + element.parentNode.parentNode.rowIndex +
+      " - column" + element.parentNode.cellIndex);
+  }
+
+  newData: any[] = [];
+  rowSelected = 0;
+  tableSelected = 0;
+
+  verifyRow(data: any, input: HTMLInputElement) {
+    if (data.dateType == "0") {
+      data.mdate = "";
     }
-    getId(element: any) {
-      alert("row" + element.parentNode.parentNode.rowIndex +
-        " - column" + element.parentNode.cellIndex);
-    }
-    newData: any[] = [];
-    rowSelected = 0;
-    tableSelected = 0;
-    verifyRow(data: any, input: HTMLInputElement) {
-      if (data.dateType == "0") {
-        data.mdate = "";
-      }
-      this.consumerService.checkRow(data).subscribe({
-        next: r => {
-          if (!r.status) {
-            Swal.fire({
-              icon: 'info',
-              html: `
-                <h2 style="font-weight: bold;">Advertencia de Duplicidad de declaración.</h2>
-                <p style="text-align: justify;">
-                  Ya existe una declaración para la misma Empresa, Establecimiento, Material, Subtipo, y Gestor en esta Fecha. 
-                  Si desea continuar con esta declaración de características similares a una anterior, pinche OK. De lo contrario, pinche Cancelar.
-                </p>
-              `,
-              showCancelButton: true,
-              confirmButtonText: 'Ok',
-              cancelButtonText: 'Cancelar'
-            }).then((result) => {
-              if (!result.isConfirmed) {
-                input.value = "-1";
-                switch(data.nameColumn){
-                    case 'date': this.newData[data.index - 1].date = "";
-                    break;
-                    case 'mdate': this.newData[data.index - 1].mdate = "";
-                    break;
-                    case 'treatment': this.newData[data.index - 1].treatment = "-1";
-                    break;
-                    case 'gestor': this.newData[data.index - 1].gestor = "-1";
-                    break;
-                    case 'sub': this.newData[data.index - 1].sub = '-1'
-                    break;
-                }
+    this.consumerService.checkRow(data).subscribe({
+      next: r => {
+        if (!r.status) {
+          Swal.fire({
+            icon: 'info',
+            html: `
+              <h2 style="font-weight: bold;">Advertencia de Duplicidad de declaración.</h2>
+              <p style="text-align: justify;">
+                Ya existe una declaración para la misma Empresa, Establecimiento, Material, Subtipo, y Gestor en esta Fecha. 
+                Si desea continuar con esta declaración de características similares a una anterior, pinche OK. De lo contrario, pinche Cancelar.
+              </p>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+            cancelButtonText: 'Cancelar'
+          }).then((result) => {
+            if (!result.isConfirmed) {
+              input.value = "-1";
+              switch (data.nameColumn) {
+                case 'date': this.newData[data.index - 1].date = "";
+                  break;
+                case 'mdate': this.newData[data.index - 1].mdate = "";
+                  break;
+                case 'treatment': this.newData[data.index - 1].treatment = "-1";
+                  break;
+                case 'gestor': this.newData[data.index - 1].gestor = "-1";
+                  break;
+                case 'sub': this.newData[data.index - 1].sub = '-1'
+                  break;
               }
-            });
-          }
+            }
+          });
         }
-      });
-    }
+      }
+    });
+  }
 
-    onDateTypeChange(event: Event, i: number, n_row: number): void {
-      const selectedValue = (event.target as HTMLSelectElement).value;
+  onDateTypeChange(event: Event, i: number, n_row: number): void {
+    const selectedValue = (event.target as HTMLSelectElement).value;
 
-      // Encuentra los inputs correspondientes usando las nuevas clases
-      const fechaRetiroInput = document.getElementById(`inp_date_${i}_${n_row}`) as HTMLElement;
-      const mesRetiroInput = document.getElementById(`inp_mdate_${i}_${n_row}`) as HTMLElement;
+    // Encuentra los inputs correspondientes usando las nuevas clases
+    const fechaRetiroInput = document.getElementById(`inp_date_${i}_${n_row}`) as HTMLElement;
+    const mesRetiroInput = document.getElementById(`inp_mdate_${i}_${n_row}`) as HTMLElement;
 
-      if(selectedValue === '0') { // Fecha precisa
+    if (selectedValue === '0') { // Fecha precisa
       fechaRetiroInput.classList.remove('d-none');
       mesRetiroInput.classList.add('d-none');
     } else if (selectedValue === '1') { // Todo el mes
@@ -557,7 +570,6 @@ export class FormComponent implements OnInit {
       }
     }
 
-
     const inp_subcat = (document.getElementById(`inp_subcat_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_subcat.onchange = () => {
       this.selectedCategoryId = parseInt(inp_subcat.value);
@@ -601,7 +613,6 @@ export class FormComponent implements OnInit {
 
       updateGestorOptions();
     };
-
 
     const inp_sub = (document.getElementById(`inp_sub_${i + 1}_${n_row}`) as HTMLInputElement);
     inp_sub.onchange = () => {
@@ -658,7 +669,6 @@ export class FormComponent implements OnInit {
         tmp[w].sub = inp_sub.value;
       }
     }
-
 
     function updateGestorOptions() {
       removeOptions(inp_gestor);
@@ -987,8 +997,10 @@ export class FormComponent implements OnInit {
       this.filess = tmp[w].files || [];
     }
   }
+
   tmpFile = [];
   filess: any[] = [];
+
   addFile() {
     let type = (document.getElementById('inp_select_mv') as HTMLInputElement).value;
     if (!type || type == "0") {
@@ -1013,46 +1025,58 @@ export class FormComponent implements OnInit {
       });
       return;
     }
-    if (this.newData[q].files.length == 3) {
+    if (this.newData[q].files.length == 40) {
       Swal.fire({
         icon: 'info',
-        text: 'Se permite máximo 3 medios de verificación'
+        text: 'Solo se permite un máximo 40 medios de verificación'
       });
       (document.getElementById('inp_select_mv') as HTMLInputElement).value = "0";
       (document.getElementById('inp_file_0') as HTMLInputElement).value = "";
       return;
     }
 
-    if ((this.newData[q].files as any[]).findIndex(t => t.type == type) > -1) {
-      Swal.fire({
-        icon: 'warning',
-        text: 'Tipo de Medio de Verificación ya fue agregado'
-      });
-      (document.getElementById('inp_select_mv') as HTMLInputElement).value = "0";
-      (document.getElementById('inp_file_0') as HTMLInputElement).value = "";
-      return;
-    }
     this.newData[q].files.push({ type, file: this.tmpFile[0] });
     (document.getElementById('inp_select_mv') as HTMLInputElement).value = "0";
     (document.getElementById('inp_file_0') as HTMLInputElement).value = "";
     this.tmpFile = [];
   }
+
   selectFile(event: any) {
     const target = event.target;
-
     if (target.files.length == 0) {
       (document.getElementById('inp_file_0') as HTMLInputElement).value = "";
       this.tmpFile = [];
+      return;
     }
-    if (target.files[0].size / 1000 > 1000) {
+    const selectedFile = target.files[0];
+    const selectedFileSizeMB = selectedFile.size / 1024 / 1024;
+    let totalFileSizeMB = selectedFileSizeMB;
+
+    for (const data of this.newData) {
+      for (const file of data.files) {
+        totalFileSizeMB += file.file.size / 1024 / 1024;
+      }
+    }
+
+    if (totalFileSizeMB > 40) {
       Swal.fire({
         icon: 'info',
-        text: 'Archivo excede el tamaño permitido (1Mb).'
+        text: 'Los Medios de Verificación agregados exceden el tamaño máximo permitido (40 Mb).'
       });
       (document.getElementById('inp_file_0') as HTMLInputElement).value = "";
       return;
     }
-    const tmp = target.files[0].type.split('/');
+
+    if (selectedFileSizeMB > 40) {
+      Swal.fire({
+        icon: 'info',
+        text: 'Medio de Verificación excede el tamaño máximo permitido (40 Mb).'
+      });
+      (document.getElementById('inp_file_0') as HTMLInputElement).value = "";
+      return;
+    }
+
+    const tmp = selectedFile.type.split('/');
     if (tmp.length == 2 && (tmp[1] != 'jpeg' && tmp[1] != 'jpg' && tmp[1] != 'pdf')) {
       Swal.fire({
         icon: 'info',
@@ -1061,8 +1085,10 @@ export class FormComponent implements OnInit {
       (document.getElementById('inp_file_0') as HTMLInputElement).value = "";
       return;
     }
-    this.tmpFile = event.target.files;
+
+    this.tmpFile = target.files;
   }
+
   deleteFile(file: any) {
     const i = this.newData.findIndex(r => r.residue == this.tableSelected && r.row == this.rowSelected);
     if (i > -1) {
