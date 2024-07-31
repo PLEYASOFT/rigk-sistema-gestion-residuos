@@ -3,7 +3,8 @@
   <nav class="breadcrumbs d-none d-lg-block" aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="#"><i class="fa fa-home" aria-hidden="true"></i> Inicio</a></li>
-      <li class="breadcrumb-item"><a href="#/consumidor/statements"><i class="fa fa-home" aria-hidden="true"></i> Consulta de
+      <li class="breadcrumb-item"><a href="#/consumidor/statements"><i class="fa fa-home" aria-hidden="true"></i>
+          Consulta de
           Declaración</a></li>
       <li class="breadcrumb-item active" aria-current="page">Detalle de Declaración</li>
     </ol>
@@ -64,7 +65,11 @@
           <td>
             {{formatValue(detail_consulta.VALUE)}}
           </td>
-          <td class="text-center">{{detail_consulta.FechaMostrar ? (detail_consulta.FechaMostrar.length > 7 ? (detail_consulta.FechaMostrar | date: 'dd-MM-yyyy') : (detail_consulta.FechaMostrar | date: 'MM-yyyy')) : '' }}</td>
+          <td class="text-center">
+            {{ detail_consulta.FechaMostrar && detail_consulta.FechaMostrar != '' ? (detail_consulta.FechaMostrar |
+            date: 'MM-yyyy') : (detail_consulta.FechaRetiro ? (detail_consulta.FechaRetiro | date: 'dd-MM-yyyy') : '')
+            }}
+          </td>
           <td class="text-center">{{detail_consulta.NombreGestor}}</td>
           <td class="text-center">
             <button class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal"><i
@@ -109,12 +114,12 @@
                   <p *ngIf="userForm.controls['ARCHIVO'].errors['invalidFileType']">El formato del archivo debe ser PDF,
                     JPEG o JPG.</p>
                   <p *ngIf="userForm.controls['ARCHIVO'].errors['invalidFileSize']">El tamaño del archivo no debe
-                    superar 1 MB.</p>
+                    superar 40 MB.</p>
                 </div>
               </div>
             </div>
             <div *ngIf="MV_consulta.length >= maxFiles" class="text-danger mt-2 text-end">
-              No se pueden subir más de 3 archivos de verificación.
+              No se pueden subir más de 40 archivos de verificación.
             </div>
             <div class="modal-footer">
               <button type="button" id="btnCloseModal" class="btn btn-secondary" data-bs-dismiss="modal"
