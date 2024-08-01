@@ -124,6 +124,7 @@
                         </p-multiSelect>
                     </div>
                 </div>
+                <p></p>
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Fecha de retiro:</label>
                     <div class="input-group">
@@ -145,7 +146,7 @@
                 </div>
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Estado:</label>
-                    <div class="input-group">
+                    <div class="input-group" style="width: 115px;">
                         <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedState"
                                         [suggestions]="filteredState" (completeMethod)="filterState($event)" field="label"
                                         [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">

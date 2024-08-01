@@ -679,6 +679,10 @@ export class StatementsComponent implements OnInit {
     }
 
     let { rut, invoiceNumber, entryDate, valuedWeight, reciclador } = this.userForm.value;
+    if (!invoiceNumber) {
+      console.error('Número de factura no válido');
+      return;
+  }
     const totalWeight = parseFloat(this.userForm.controls['totalWeight'].value!.replace(",", "."));
     const valuedWeightFloat = parseFloat(valuedWeight!.replace(",", "."));
 
@@ -706,7 +710,7 @@ export class StatementsComponent implements OnInit {
           rut, reciclador, invoiceNumber, id_detail, entryDate, proportionalValuedWeight, totalWeight, treatmentType, material, this.selectedFile, IdGestor
         ).toPromise();
         if (response.status) {
-          this.updateItemState(id_detail, proportionalValuedWeight);
+          this.updateItemState(id_detail, proportionalValuedWeight, invoiceNumber);
         }
       }
 
@@ -718,10 +722,11 @@ export class StatementsComponent implements OnInit {
     }
   }
 
-  updateItemState(id_detail: number, valuedWeight: string): void {
+  updateItemState(id_detail: number, valuedWeight: string, invoiceNumber: string): void {
     const updatedItem = this.db.find(item => item.ID_DETAIL === id_detail);
     if (updatedItem) {
       updatedItem.STATE_GESTOR = 1;
+      updatedItem.NUMERO_FACTURA = invoiceNumber; 
       const valuedWeightNum = parseFloat(valuedWeight);
       if (valuedWeightNum % 1 === 0) {
         updatedItem.VALUE_DECLARATE = valuedWeightNum.toString().replace('.', ',');
