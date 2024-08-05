@@ -12,6 +12,11 @@ class IndustrialConsumer {
         const header = JSON.parse(req.body.header);
         const detail = JSON.parse(req.body.detail);
         const files = req.files;
+
+        console.log(header);
+        console.log(detail);
+        console.log(files);
+        
         try {
             header.created_by = req['uid'];
             const id_header = await industrialConsumerDao.saveForm(header, detail, files);
