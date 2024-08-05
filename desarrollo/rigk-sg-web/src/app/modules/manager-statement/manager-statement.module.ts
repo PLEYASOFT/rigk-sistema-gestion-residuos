@@ -25,7 +25,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
     ReactiveFormsModule,
     FormsModule,
     AutoCompleteModule,
-    MultiSelectModule,
+    MultiSelectModule
   ]
 })
 export class ManagerStatementModule { }

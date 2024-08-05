@@ -174,7 +174,7 @@ export class StatementsComponent implements OnInit {
                     return dateComparison === 0 ? b.ID_DETAIL - a.ID_DETAIL : dateComparison;
                 });
 
-                // Ejecuta los métodos de filtrado en orden secuencial
+                // Ejecuta los métodos de filtrado en orden
                 this.filterBusinesses({ query: '' });
                 this.filterBusinessesManager({ query: '' });
                 this.filterTreatment({ query: '' });
@@ -184,9 +184,15 @@ export class StatementsComponent implements OnInit {
                 this.filterInvoices({ query: '' });
 
                 // Inicializa selectedBusinesses después de que se completen los filtros
-                this.selectedBusinesses = this.filteredBusinesses
-                    .filter(business => business.value !== '-1')  // Excluye la opción "Todos"
-                    .map(business => business.value);
+                this.selectedBusinesses = this.filteredBusinesses;
+                this.selectedRutCI = this.filteredRutCI;
+                this.selectedGestores = this.filteredBusinessesManager;
+                this.selectedInvoiceNumber = this.filteredInvoice;
+                this.selectedTreatments = this.filteredTreatment;
+                this.selectedMaterials = this.filteredMaterial;
+                this.selectedYears = this.filteredYear;
+
+                console.log(this.selectedBusinesses); // Verifica los datos seleccionados
 
                 Swal.close();
             }
@@ -267,9 +273,9 @@ export class StatementsComponent implements OnInit {
       .map((na: string) => ({ label: na, value: na }))
       .sort((a, b) => a.label.localeCompare(b.label));
     if (this.filteredBusinesses.length === 0) {
-      this.filteredBusinesses = [{ label: 'Todos', value: '-1' }];
+      this.filteredBusinesses = [];
     } else {
-      this.filteredBusinesses.unshift({ label: 'Todos', value: '-1' });
+      this.filteredBusinesses.unshift();
     }
   }
 
@@ -280,9 +286,9 @@ export class StatementsComponent implements OnInit {
       .map((na: string) => ({ label: na, value: na }))
       .sort((a, b) => a.label.localeCompare(b.label));
     if (this.filteredRutCI.length === 0) {
-      this.filteredRutCI = [{ label: 'Todos', value: '-1' }];
+      this.filteredRutCI = [];
     } else {
-      this.filteredRutCI.unshift({ label: 'Todos', value: '-1' });
+      this.filteredRutCI.unshift();
     }
   }
 
@@ -293,9 +299,9 @@ export class StatementsComponent implements OnInit {
       .map((na: string) => ({ label: na, value: na }))
       .sort((a, b) => a.label.localeCompare(b.label));
     if (this.filteredBusinessesManager.length === 0) {
-      this.filteredBusinessesManager = [{ label: 'Todos', value: '-1' }];
+      this.filteredBusinessesManager = [];
     } else {
-      this.filteredBusinessesManager.unshift({ label: 'Todos', value: '-1' });
+      this.filteredBusinessesManager.unshift();
     }
   }
 
@@ -306,9 +312,9 @@ export class StatementsComponent implements OnInit {
       .map((invoice: number) => ({ label: invoice.toString(), value: invoice.toString() }))
       .sort((a, b) => parseInt(a.label) - parseInt(b.label));
     if (this.filteredInvoice.length === 0) {
-      this.filteredInvoice = [{ label: 'Todos', value: '-1' }];
+      this.filteredInvoice = [];
     } else {
-      this.filteredInvoice.unshift({ label: 'Todos', value: '-1' });
+      this.filteredInvoice.unshift();
     }
   }
 
@@ -319,9 +325,9 @@ export class StatementsComponent implements OnInit {
       .map((na: string) => ({ label: na, value: na }))
       .sort((a, b) => a.label.localeCompare(b.label));
     if (this.filteredTreatment.length === 0) {
-      this.filteredTreatment = [{ label: 'Todos', value: '-1' }];
+      this.filteredTreatment = [];
     } else {
-      this.filteredTreatment.unshift({ label: 'Todos', value: '-1' });
+      this.filteredTreatment.unshift();
     }
   }
 
@@ -332,9 +338,9 @@ export class StatementsComponent implements OnInit {
       .map((na: string) => ({ label: na, value: na }))
       .sort((a, b) => a.label.localeCompare(b.label));
     if (this.filteredMaterial.length === 0) {
-      this.filteredMaterial = [{ label: 'Todos', value: '-1' }];
+      this.filteredMaterial = [];
     } else {
-      this.filteredMaterial.unshift({ label: 'Todos', value: '-1' });
+      this.filteredMaterial.unshift();
     }
   }
 
@@ -344,9 +350,9 @@ export class StatementsComponent implements OnInit {
       .filter((year: number) => year.toString().includes(query))
       .map((year: number) => ({ label: year.toString(), value: year.toString() }));
     if (this.filteredYear.length > 0) {
-      this.filteredYear.unshift({ label: 'Todos', value: '-1' });
+      this.filteredYear.unshift();
     } else {
-      this.filteredYear = [{ label: 'Todos', value: '-1' }];
+      this.filteredYear = [];
     }
   }
 
@@ -357,9 +363,9 @@ export class StatementsComponent implements OnInit {
       .map((state: number) => ({ label: this.getStateText(state), value: state.toString() }));
 
     if (this.filteredState.length > 0) {
-      this.filteredState.unshift({ label: 'Todos', value: '-1' });
+      this.filteredState.unshift();
     } else {
-      this.filteredState = [{ label: 'Todos', value: '-1' }];
+      this.filteredState = [];
     }
   }
 
