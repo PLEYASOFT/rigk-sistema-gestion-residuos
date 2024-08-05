@@ -191,9 +191,6 @@ export class StatementsComponent implements OnInit {
                 this.selectedTreatments = this.filteredTreatment;
                 this.selectedMaterials = this.filteredMaterial;
                 this.selectedYears = this.filteredYear;
-
-                console.log(this.selectedBusinesses); // Verifica los datos seleccionados
-
                 Swal.close();
             }
             resolve();
@@ -240,7 +237,7 @@ export class StatementsComponent implements OnInit {
       return (
         (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
         (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
-        (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&  
+        (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null || r.NUMERO_FACTURA === null) &&  
         (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
         (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
         (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
@@ -363,9 +360,9 @@ export class StatementsComponent implements OnInit {
       .map((state: number) => ({ label: this.getStateText(state), value: state.toString() }));
 
     if (this.filteredState.length > 0) {
-      this.filteredState.unshift();
+      this.filteredState.unshift({ label: 'Todos', value: '-1' });
     } else {
-      this.filteredState = [];
+      this.filteredState = [{ label: 'Todos', value: '-1' }];
     }
   }
 
@@ -388,7 +385,7 @@ export class StatementsComponent implements OnInit {
       return (
         (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
         (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
-        (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&  
+        (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))|| r.NUMERO_FACTURA === null) &&  
         (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
         (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
         (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
@@ -422,7 +419,7 @@ export class StatementsComponent implements OnInit {
         (r) =>
           (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
           (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
-          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null) &&
           (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
           (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
           (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
@@ -436,7 +433,7 @@ export class StatementsComponent implements OnInit {
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
           (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
-          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null) &&
           (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
           (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
           (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
@@ -450,7 +447,7 @@ export class StatementsComponent implements OnInit {
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
           (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
-          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null) &&
           (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
           (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
           (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
@@ -479,7 +476,7 @@ export class StatementsComponent implements OnInit {
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
           (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
-          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null) &&
           (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
           (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
           (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
@@ -493,7 +490,7 @@ export class StatementsComponent implements OnInit {
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
           (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
-          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null) &&
           (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
           (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
           (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
@@ -508,7 +505,7 @@ export class StatementsComponent implements OnInit {
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
           (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
-          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null) &&
           (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
           (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
           (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
@@ -522,7 +519,7 @@ export class StatementsComponent implements OnInit {
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
           (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
-          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null) &&
           (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
           (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
           (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
@@ -530,11 +527,15 @@ export class StatementsComponent implements OnInit {
       )
       .map((r) => r.NAME_GESTOR)
       .filter((value, index, self) => self.indexOf(value) === index);
+
+    
+      this.cdr.detectChanges();
   }
 
   reset() {
     this.loadStatements().then(() => {
       this.filter();
+      this.updateFilters();
       this.pagTo(this.pos - 1);
     });
     this.userForm.reset({ reciclador: '' })
@@ -706,7 +707,6 @@ export class StatementsComponent implements OnInit {
       const totalDeclaredWeight = itemsToProcess.reduce((sum, current) => sum + parseFloat(current.VALUE), 0);
 
       for (const item of itemsToProcess) {
-        console
         const { TREATMENT_TYPE_NUMBER: treatmentType, PRECEDENCE_NUMBER: material, ID_DETAIL: id_detail, VALUE, IdGestor: IdGestor } = item;
         const declaredWeight = parseFloat(VALUE);
         const proportionalValuedWeight = ((declaredWeight / totalDeclaredWeight) * valuedWeightFloat).toFixed(2);
