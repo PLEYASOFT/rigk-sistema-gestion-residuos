@@ -43,7 +43,7 @@ export class StatementsComponent implements OnInit {
   filteredTreatment: any[] = [];
   filteredState: any[] = [];
 
-  selectedBusinesses: any[] = [{ label: 'Todos', value: '-1' }];
+  selectedBusinesses: any[] = [];
   selectedGestores: any[] = [{ label: 'Todos', value: '-1' }];
   selectedTreatments: any[] = [{ label: 'Todos', value: '-1' }];
   selectedMaterials: any[] = [{ label: 'Todos', value: '-1' }];
@@ -109,94 +109,92 @@ export class StatementsComponent implements OnInit {
 
   loadStatements(): Promise<void> {
     return new Promise<void>((resolve) => {
-      const idGestors = JSON.parse(sessionStorage.getItem('user')!).ID_BUSINESS;
-      Swal.fire({
-        title: 'Cargando Datos',
-        text: 'Se están recuperando datos',
-        timerProgressBar: true,
-        showConfirmButton: false,
-        allowEscapeKey: false,
-        allowOutsideClick: false
-      });
-      Swal.showLoading();
-      this.establishmentService.getDeclarationEstablishmentByIdGestor(idGestors).subscribe(r => {
-        if (r.status) {
-          r.data = r.data.map((item: any) => {
-            item.FechaParaOrdenar = (item.MesRetiro != "" && item.MesRetiro != null) ? item.MesRetiro : item.FechaRetiro;
-            return item;
-          });
-          r.data = r.data.filter((item: any) => item.TipoTratamiento != null);
-          r.data = r.data.sort((a: any, b: any) => {
-            const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+        const idGestors = JSON.parse(sessionStorage.getItem('user')!).ID_BUSINESS;
+        Swal.fire({
+            title: 'Cargando Datos',
+            text: 'Se están recuperando datos',
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowEscapeKey: false,
+            allowOutsideClick: false
+        });
+        Swal.showLoading();
 
-            if (dateComparison === 0) {
-              return b.ID_DETAIL - a.ID_DETAIL;
-            } else {
-              return dateComparison;
-            }
-          });
+        this.establishmentService.getDeclarationEstablishmentByIdGestor(idGestors).subscribe(r => {
+            if (r.status) {
+                r.data = r.data.map((item: any) => {
+                    item.FechaParaOrdenar = (item.MesRetiro != "" && item.MesRetiro != null) ? item.MesRetiro : item.FechaRetiro;
+                    return item;
+                });
+                r.data = r.data.filter((item: any) => item.TipoTratamiento != null);
+                r.data = r.data.sort((a: any, b: any) => {
+                    const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+                    return dateComparison === 0 ? b.ID_DETAIL - a.ID_DETAIL : dateComparison;
+                });
 
-          (r.data as any[]).forEach(e => {
-            e.isChecked = false;
-            if (e.MesRetiro != "" && e.MesRetiro != null) {
-              e.FechaMostrar = e.MesRetiro;
-            } else {
-                e.FechaMostrar = e.FechaRetiro;
-            }
-            if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
-              this.business_name.push(e.NAME_BUSINESS);
-            }
-            if (this.rut_ci.indexOf(e.RUT_BUSINESS) == -1) {
-              this.rut_ci.push(e.RUT_BUSINESS);
-            }
-            if (this.establishment_name.indexOf(e.NAME_ESTABLISHMENT_REGION) == -1) {
-              this.establishment_name.push(e.NAME_ESTABLISHMENT_REGION);
-            }
-            if (e.NUMERO_FACTURA != null && this.invoice.indexOf(e.NUMERO_FACTURA) == -1) {
-              this.invoice.push(e.NUMERO_FACTURA);
-            }
-            if (this.years.indexOf(e.FechaRetiroTipeada) == -1) {
-              this.years.push(e.FechaRetiroTipeada)
-            }
-            if (this.material_name.indexOf(e.PRECEDENCE) == -1) {
-              this.material_name.push(e.PRECEDENCE)
-            }
-            if (this.treatment_name.indexOf(e.TipoTratamiento) === -1) {
-              this.treatment_name.push(e.TipoTratamiento);
-            }
-            if (this.state.indexOf(e.STATE_GESTOR) == -1) {
-              this.state.push(e.STATE_GESTOR)
-            }
-            if (this.gestor_name.indexOf(e.NAME_GESTOR) == -1) {
-              this.gestor_name.push(e.NAME_GESTOR)
-            }
-          });
-          this.years.sort((a, b) => b - a);
-          this.dbStatements = r.data;
-          this.allDb = [...this.dbStatements];
-          this.cant = Math.ceil(this.dbStatements.length / 10);
-          this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a: any, b: any) => {
-            const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+                (r.data as any[]).forEach(e => {
+                    e.isChecked = false;
+                    e.FechaMostrar = e.MesRetiro != "" && e.MesRetiro != null ? e.MesRetiro : e.FechaRetiro;
 
-            if (dateComparison === 0) {
-              return b.ID_DETAIL - a.ID_DETAIL;
-            } else {
-              return dateComparison;
+                    if (this.business_name.indexOf(e.NAME_BUSINESS) === -1) {
+                        this.business_name.push(e.NAME_BUSINESS);
+                    }
+                    if (this.rut_ci.indexOf(e.RUT_BUSINESS) === -1) {
+                        this.rut_ci.push(e.RUT_BUSINESS);
+                    }
+                    if (this.establishment_name.indexOf(e.NAME_ESTABLISHMENT_REGION) === -1) {
+                        this.establishment_name.push(e.NAME_ESTABLISHMENT_REGION);
+                    }
+                    if (e.NUMERO_FACTURA != null && this.invoice.indexOf(e.NUMERO_FACTURA) === -1) {
+                        this.invoice.push(e.NUMERO_FACTURA);
+                    }
+                    if (this.years.indexOf(e.FechaRetiroTipeada) === -1) {
+                        this.years.push(e.FechaRetiroTipeada)
+                    }
+                    if (this.material_name.indexOf(e.PRECEDENCE) === -1) {
+                        this.material_name.push(e.PRECEDENCE)
+                    }
+                    if (this.treatment_name.indexOf(e.TipoTratamiento) === -1) {
+                        this.treatment_name.push(e.TipoTratamiento);
+                    }
+                    if (this.state.indexOf(e.STATE_GESTOR) === -1) {
+                        this.state.push(e.STATE_GESTOR)
+                    }
+                    if (this.gestor_name.indexOf(e.NAME_GESTOR) === -1) {
+                        this.gestor_name.push(e.NAME_GESTOR)
+                    }
+                });
+
+                this.years.sort((a, b) => b - a);
+                this.dbStatements = r.data;
+                this.allDb = [...this.dbStatements];
+                this.cant = Math.ceil(this.dbStatements.length / 10);
+                this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a: any, b: any) => {
+                    const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+                    return dateComparison === 0 ? b.ID_DETAIL - a.ID_DETAIL : dateComparison;
+                });
+
+                // Ejecuta los métodos de filtrado en orden secuencial
+                this.filterBusinesses({ query: '' });
+                this.filterBusinessesManager({ query: '' });
+                this.filterTreatment({ query: '' });
+                this.filterMaterial({ query: '' });
+                this.filterYear({ query: '' });
+                this.filterRutCI({ query: '' });
+                this.filterInvoices({ query: '' });
+
+                // Inicializa selectedBusinesses después de que se completen los filtros
+                this.selectedBusinesses = this.filteredBusinesses
+                    .filter(business => business.value !== '-1')  // Excluye la opción "Todos"
+                    .map(business => business.value);
+
+                Swal.close();
             }
-          });
-          Swal.close();
-        }
-        resolve();
-      })
-      this.filterBusinesses({ query: '' });
-      this.filterBusinessesManager({ query: '' });
-      this.filterTreatment({ query: '' });
-      this.filterMaterial({ query: '' });
-      this.filterYear({ query: '' });
-      this.filterRutCI({ query: '' });
-      this.filterInvoices({ query: '' });
+            resolve();
+        });
     });
-  }
+}
+
 
   openApprovalModal() {
     const selectedItems = this.db.filter(s => s.isChecked && s.STATE_GESTOR == 0);
@@ -306,7 +304,7 @@ export class StatementsComponent implements OnInit {
     this.filteredInvoice = this.invoice
       .filter((invoice: number) => invoice.toString().includes(query))
       .map((invoice: number) => ({ label: invoice.toString(), value: invoice.toString() }))
-      .sort((a, b) => a.label.localeCompare(b.label));
+      .sort((a, b) => parseInt(a.label) - parseInt(b.label));
     if (this.filteredInvoice.length === 0) {
       this.filteredInvoice = [{ label: 'Todos', value: '-1' }];
     } else {
