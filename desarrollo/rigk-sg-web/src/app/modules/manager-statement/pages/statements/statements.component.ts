@@ -191,6 +191,7 @@ export class StatementsComponent implements OnInit {
                 this.selectedTreatments = this.filteredTreatment;
                 this.selectedMaterials = this.filteredMaterial;
                 this.selectedYears = this.filteredYear;
+                this.updateFilters();
                 Swal.close();
             }
             resolve();
@@ -527,15 +528,12 @@ export class StatementsComponent implements OnInit {
       )
       .map((r) => r.NAME_GESTOR)
       .filter((value, index, self) => self.indexOf(value) === index);
-
-    
       this.cdr.detectChanges();
   }
 
   reset() {
     this.loadStatements().then(() => {
       this.filter();
-      this.updateFilters();
       this.pagTo(this.pos - 1);
     });
     this.userForm.reset({ reciclador: '' })
@@ -731,6 +729,7 @@ export class StatementsComponent implements OnInit {
     if (updatedItem) {
       updatedItem.STATE_GESTOR = 1;
       updatedItem.NUMERO_FACTURA = invoiceNumber; 
+      this.invoice.push(parseInt(invoiceNumber));
       const valuedWeightNum = parseFloat(valuedWeight);
       if (valuedWeightNum % 1 === 0) {
         updatedItem.VALUE_DECLARATE = valuedWeightNum.toString().replace('.', ',');
