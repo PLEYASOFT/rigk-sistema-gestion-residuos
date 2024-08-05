@@ -43,7 +43,7 @@ export class StatementsComponent implements OnInit {
   filteredTreatment: any[] = [];
   filteredState: any[] = [];
 
-  selectedBusinesses: any[] = [{ label: 'Todos', value: '-1' }];
+  selectedBusinesses: any[] = [];
   selectedGestores: any[] = [{ label: 'Todos', value: '-1' }];
   selectedTreatments: any[] = [{ label: 'Todos', value: '-1' }];
   selectedMaterials: any[] = [{ label: 'Todos', value: '-1' }];
@@ -109,94 +109,95 @@ export class StatementsComponent implements OnInit {
 
   loadStatements(): Promise<void> {
     return new Promise<void>((resolve) => {
-      const idGestors = JSON.parse(sessionStorage.getItem('user')!).ID_BUSINESS;
-      Swal.fire({
-        title: 'Cargando Datos',
-        text: 'Se están recuperando datos',
-        timerProgressBar: true,
-        showConfirmButton: false,
-        allowEscapeKey: false,
-        allowOutsideClick: false
-      });
-      Swal.showLoading();
-      this.establishmentService.getDeclarationEstablishmentByIdGestor(idGestors).subscribe(r => {
-        if (r.status) {
-          r.data = r.data.map((item: any) => {
-            item.FechaParaOrdenar = (item.MesRetiro != "" && item.MesRetiro != null) ? item.MesRetiro : item.FechaRetiro;
-            return item;
-          });
-          r.data = r.data.filter((item: any) => item.TipoTratamiento != null);
-          r.data = r.data.sort((a: any, b: any) => {
-            const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+        const idGestors = JSON.parse(sessionStorage.getItem('user')!).ID_BUSINESS;
+        Swal.fire({
+            title: 'Cargando Datos',
+            text: 'Se están recuperando datos',
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowEscapeKey: false,
+            allowOutsideClick: false
+        });
+        Swal.showLoading();
 
-            if (dateComparison === 0) {
-              return b.ID_DETAIL - a.ID_DETAIL;
-            } else {
-              return dateComparison;
-            }
-          });
+        this.establishmentService.getDeclarationEstablishmentByIdGestor(idGestors).subscribe(r => {
+            if (r.status) {
+                r.data = r.data.map((item: any) => {
+                    item.FechaParaOrdenar = (item.MesRetiro != "" && item.MesRetiro != null) ? item.MesRetiro : item.FechaRetiro;
+                    return item;
+                });
+                r.data = r.data.filter((item: any) => item.TipoTratamiento != null);
+                r.data = r.data.sort((a: any, b: any) => {
+                    const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+                    return dateComparison === 0 ? b.ID_DETAIL - a.ID_DETAIL : dateComparison;
+                });
 
-          (r.data as any[]).forEach(e => {
-            e.isChecked = false;
-            if (e.MesRetiro != "" && e.MesRetiro != null) {
-              e.FechaMostrar = e.MesRetiro;
-            } else {
-                e.FechaMostrar = e.FechaRetiro;
-            }
-            if (this.business_name.indexOf(e.NAME_BUSINESS) == -1) {
-              this.business_name.push(e.NAME_BUSINESS);
-            }
-            if (this.rut_ci.indexOf(e.RUT_BUSINESS) == -1) {
-              this.rut_ci.push(e.RUT_BUSINESS);
-            }
-            if (this.establishment_name.indexOf(e.NAME_ESTABLISHMENT_REGION) == -1) {
-              this.establishment_name.push(e.NAME_ESTABLISHMENT_REGION);
-            }
-            if (e.NUMERO_FACTURA != null && this.invoice.indexOf(e.NUMERO_FACTURA) == -1) {
-              this.invoice.push(e.NUMERO_FACTURA);
-            }
-            if (this.years.indexOf(e.FechaRetiroTipeada) == -1) {
-              this.years.push(e.FechaRetiroTipeada)
-            }
-            if (this.material_name.indexOf(e.PRECEDENCE) == -1) {
-              this.material_name.push(e.PRECEDENCE)
-            }
-            if (this.treatment_name.indexOf(e.TipoTratamiento) === -1) {
-              this.treatment_name.push(e.TipoTratamiento);
-            }
-            if (this.state.indexOf(e.STATE_GESTOR) == -1) {
-              this.state.push(e.STATE_GESTOR)
-            }
-            if (this.gestor_name.indexOf(e.NAME_GESTOR) == -1) {
-              this.gestor_name.push(e.NAME_GESTOR)
-            }
-          });
-          this.years.sort((a, b) => b - a);
-          this.dbStatements = r.data;
-          this.allDb = [...this.dbStatements];
-          this.cant = Math.ceil(this.dbStatements.length / 10);
-          this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a: any, b: any) => {
-            const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+                (r.data as any[]).forEach(e => {
+                    e.isChecked = false;
+                    e.FechaMostrar = e.MesRetiro != "" && e.MesRetiro != null ? e.MesRetiro : e.FechaRetiro;
 
-            if (dateComparison === 0) {
-              return b.ID_DETAIL - a.ID_DETAIL;
-            } else {
-              return dateComparison;
+                    if (this.business_name.indexOf(e.NAME_BUSINESS) === -1) {
+                        this.business_name.push(e.NAME_BUSINESS);
+                    }
+                    if (this.rut_ci.indexOf(e.RUT_BUSINESS) === -1) {
+                        this.rut_ci.push(e.RUT_BUSINESS);
+                    }
+                    if (this.establishment_name.indexOf(e.NAME_ESTABLISHMENT_REGION) === -1) {
+                        this.establishment_name.push(e.NAME_ESTABLISHMENT_REGION);
+                    }
+                    if (e.NUMERO_FACTURA != null && this.invoice.indexOf(e.NUMERO_FACTURA) === -1) {
+                        this.invoice.push(e.NUMERO_FACTURA);
+                    }
+                    if (this.years.indexOf(e.FechaRetiroTipeada) === -1) {
+                        this.years.push(e.FechaRetiroTipeada)
+                    }
+                    if (this.material_name.indexOf(e.PRECEDENCE) === -1) {
+                        this.material_name.push(e.PRECEDENCE)
+                    }
+                    if (this.treatment_name.indexOf(e.TipoTratamiento) === -1) {
+                        this.treatment_name.push(e.TipoTratamiento);
+                    }
+                    if (this.state.indexOf(e.STATE_GESTOR) === -1) {
+                        this.state.push(e.STATE_GESTOR)
+                    }
+                    if (this.gestor_name.indexOf(e.NAME_GESTOR) === -1) {
+                        this.gestor_name.push(e.NAME_GESTOR)
+                    }
+                });
+
+                this.years.sort((a, b) => b - a);
+                this.dbStatements = r.data;
+                this.allDb = [...this.dbStatements];
+                this.cant = Math.ceil(this.dbStatements.length / 10);
+                this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a: any, b: any) => {
+                    const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+                    return dateComparison === 0 ? b.ID_DETAIL - a.ID_DETAIL : dateComparison;
+                });
+
+                // Ejecuta los métodos de filtrado en orden
+                this.filterBusinesses({ query: '' });
+                this.filterBusinessesManager({ query: '' });
+                this.filterTreatment({ query: '' });
+                this.filterMaterial({ query: '' });
+                this.filterYear({ query: '' });
+                this.filterRutCI({ query: '' });
+                this.filterInvoices({ query: '' });
+
+                // Inicializa selectedBusinesses después de que se completen los filtros
+                this.selectedBusinesses = this.filteredBusinesses;
+                this.selectedRutCI = this.filteredRutCI;
+                this.selectedGestores = this.filteredBusinessesManager;
+                this.selectedInvoiceNumber = this.filteredInvoice;
+                this.selectedTreatments = this.filteredTreatment;
+                this.selectedMaterials = this.filteredMaterial;
+                this.selectedYears = this.filteredYear;
+                Swal.close();
             }
-          });
-          Swal.close();
-        }
-        resolve();
-      })
-      this.filterBusinesses({ query: '' });
-      this.filterBusinessesManager({ query: '' });
-      this.filterTreatment({ query: '' });
-      this.filterMaterial({ query: '' });
-      this.filterYear({ query: '' });
-      this.filterRutCI({ query: '' });
-      this.filterInvoices({ query: '' });
+            resolve();
+        });
     });
-  }
+}
+
 
   openApprovalModal() {
     const selectedItems = this.db.filter(s => s.isChecked && s.STATE_GESTOR == 0);
@@ -236,7 +237,7 @@ export class StatementsComponent implements OnInit {
       return (
         (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
         (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
-        (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&  
+        (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null || r.NUMERO_FACTURA === null) &&  
         (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
         (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
         (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
@@ -269,9 +270,9 @@ export class StatementsComponent implements OnInit {
       .map((na: string) => ({ label: na, value: na }))
       .sort((a, b) => a.label.localeCompare(b.label));
     if (this.filteredBusinesses.length === 0) {
-      this.filteredBusinesses = [{ label: 'Todos', value: '-1' }];
+      this.filteredBusinesses = [];
     } else {
-      this.filteredBusinesses.unshift({ label: 'Todos', value: '-1' });
+      this.filteredBusinesses.unshift();
     }
   }
 
@@ -282,9 +283,9 @@ export class StatementsComponent implements OnInit {
       .map((na: string) => ({ label: na, value: na }))
       .sort((a, b) => a.label.localeCompare(b.label));
     if (this.filteredRutCI.length === 0) {
-      this.filteredRutCI = [{ label: 'Todos', value: '-1' }];
+      this.filteredRutCI = [];
     } else {
-      this.filteredRutCI.unshift({ label: 'Todos', value: '-1' });
+      this.filteredRutCI.unshift();
     }
   }
 
@@ -295,9 +296,9 @@ export class StatementsComponent implements OnInit {
       .map((na: string) => ({ label: na, value: na }))
       .sort((a, b) => a.label.localeCompare(b.label));
     if (this.filteredBusinessesManager.length === 0) {
-      this.filteredBusinessesManager = [{ label: 'Todos', value: '-1' }];
+      this.filteredBusinessesManager = [];
     } else {
-      this.filteredBusinessesManager.unshift({ label: 'Todos', value: '-1' });
+      this.filteredBusinessesManager.unshift();
     }
   }
 
@@ -306,11 +307,11 @@ export class StatementsComponent implements OnInit {
     this.filteredInvoice = this.invoice
       .filter((invoice: number) => invoice.toString().includes(query))
       .map((invoice: number) => ({ label: invoice.toString(), value: invoice.toString() }))
-      .sort((a, b) => a.label.localeCompare(b.label));
+      .sort((a, b) => parseInt(a.label) - parseInt(b.label));
     if (this.filteredInvoice.length === 0) {
-      this.filteredInvoice = [{ label: 'Todos', value: '-1' }];
+      this.filteredInvoice = [];
     } else {
-      this.filteredInvoice.unshift({ label: 'Todos', value: '-1' });
+      this.filteredInvoice.unshift();
     }
   }
 
@@ -321,9 +322,9 @@ export class StatementsComponent implements OnInit {
       .map((na: string) => ({ label: na, value: na }))
       .sort((a, b) => a.label.localeCompare(b.label));
     if (this.filteredTreatment.length === 0) {
-      this.filteredTreatment = [{ label: 'Todos', value: '-1' }];
+      this.filteredTreatment = [];
     } else {
-      this.filteredTreatment.unshift({ label: 'Todos', value: '-1' });
+      this.filteredTreatment.unshift();
     }
   }
 
@@ -334,9 +335,9 @@ export class StatementsComponent implements OnInit {
       .map((na: string) => ({ label: na, value: na }))
       .sort((a, b) => a.label.localeCompare(b.label));
     if (this.filteredMaterial.length === 0) {
-      this.filteredMaterial = [{ label: 'Todos', value: '-1' }];
+      this.filteredMaterial = [];
     } else {
-      this.filteredMaterial.unshift({ label: 'Todos', value: '-1' });
+      this.filteredMaterial.unshift();
     }
   }
 
@@ -346,9 +347,9 @@ export class StatementsComponent implements OnInit {
       .filter((year: number) => year.toString().includes(query))
       .map((year: number) => ({ label: year.toString(), value: year.toString() }));
     if (this.filteredYear.length > 0) {
-      this.filteredYear.unshift({ label: 'Todos', value: '-1' });
+      this.filteredYear.unshift();
     } else {
-      this.filteredYear = [{ label: 'Todos', value: '-1' }];
+      this.filteredYear = [];
     }
   }
 
@@ -384,7 +385,7 @@ export class StatementsComponent implements OnInit {
       return (
         (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
         (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
-        (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&  
+        (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))|| r.NUMERO_FACTURA === null) &&  
         (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
         (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
         (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
@@ -418,7 +419,7 @@ export class StatementsComponent implements OnInit {
         (r) =>
           (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
           (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
-          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null) &&
           (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
           (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
           (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
@@ -432,7 +433,7 @@ export class StatementsComponent implements OnInit {
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
           (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
-          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null) &&
           (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
           (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
           (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
@@ -446,7 +447,7 @@ export class StatementsComponent implements OnInit {
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
           (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
-          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null) &&
           (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
           (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
           (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
@@ -475,7 +476,7 @@ export class StatementsComponent implements OnInit {
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
           (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
-          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null) &&
           (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
           (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
           (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
@@ -489,7 +490,7 @@ export class StatementsComponent implements OnInit {
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
           (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
-          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null) &&
           (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
           (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
           (selectedStateValue === "-1" || parseInt(r.STATE_GESTOR) === parseInt(selectedStateValue) || r.STATE_GESTOR === undefined) &&
@@ -504,7 +505,7 @@ export class StatementsComponent implements OnInit {
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
           (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
-          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null) &&
           (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
           (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
           (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
@@ -518,7 +519,7 @@ export class StatementsComponent implements OnInit {
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
           (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
-          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))) &&
+          (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null) &&
           (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
           (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
           (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
@@ -526,11 +527,15 @@ export class StatementsComponent implements OnInit {
       )
       .map((r) => r.NAME_GESTOR)
       .filter((value, index, self) => self.indexOf(value) === index);
+
+    
+      this.cdr.detectChanges();
   }
 
   reset() {
     this.loadStatements().then(() => {
       this.filter();
+      this.updateFilters();
       this.pagTo(this.pos - 1);
     });
     this.userForm.reset({ reciclador: '' })
@@ -702,7 +707,6 @@ export class StatementsComponent implements OnInit {
       const totalDeclaredWeight = itemsToProcess.reduce((sum, current) => sum + parseFloat(current.VALUE), 0);
 
       for (const item of itemsToProcess) {
-        console
         const { TREATMENT_TYPE_NUMBER: treatmentType, PRECEDENCE_NUMBER: material, ID_DETAIL: id_detail, VALUE, IdGestor: IdGestor } = item;
         const declaredWeight = parseFloat(VALUE);
         const proportionalValuedWeight = ((declaredWeight / totalDeclaredWeight) * valuedWeightFloat).toFixed(2);

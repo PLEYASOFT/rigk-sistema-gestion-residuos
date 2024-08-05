@@ -13,25 +13,26 @@
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Empresa CI:</label>
                     <div class="input-group"  style="white-space: nowrap; text-overflow: ellipsis;">
-                        <p-multiSelect 
-                            [(ngModel)]="selectedBusinesses" 
-                            [options]="filteredBusinesses" 
-                            (onChange)="updateFilters()" 
-                            (onPanelShow)="filterBusinesses({ query: '' })"
-                            optionLabel="label" 
-                            defaultLabel="Seleccione"
-                            [maxSelectedLabels]="1"
-                            [selectedItemsLabel]="'{0} Empresas'"
-                            [showToggleAll]="false">
-                            <ng-template let-business pTemplate="item">
-                                <div>{{ business.label }}</div>
-                            </ng-template>
-                        </p-multiSelect>
+                            <p-multiSelect 
+                                [(ngModel)]="selectedBusinesses" 
+                                [options]="filteredBusinesses" 
+                                (onChange)="updateFilters()" 
+                                (onPanelShow)="filterBusinesses({ query: '' })"
+                                optionLabel="label" 
+                                defaultLabel="Seleccione"
+                                [maxSelectedLabels]="1"
+                                [selectedItemsLabel]="'Empresas'"
+                                [style]="{ width: '150px' }"
+                                emptyFilterMessage="No se encontraron resultados">
+                                <ng-template let-business pTemplate="item">
+                                    <div>{{ business.label }}</div>
+                                </ng-template>
+                            </p-multiSelect>
                     </div>
                 </div>  
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Rut CI:</label>
-                    <div class="input-group">
+                    <div class="input-group" style="white-space: nowrap; text-overflow: ellipsis;">
                         <p-multiSelect 
                             [(ngModel)]="selectedRutCI" 
                             [options]="filteredRutCI" 
@@ -40,8 +41,9 @@
                             optionLabel="label" 
                             defaultLabel="Seleccione"
                             [maxSelectedLabels]="1"
-                            [selectedItemsLabel]="'{0} Ruts'"
-                            [showToggleAll]="false">>
+                            [selectedItemsLabel]="'Ruts'"
+                            [style]="{ width: '150px' }"
+                            emptyFilterMessage="No se encontraron resultados">
                             <ng-template let-rut pTemplate="item">
                                 <div>{{ rut.label }}</div>
                             </ng-template>
@@ -50,7 +52,7 @@
                 </div>  
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Empresa Gestor:</label>
-                    <div class="input-group">
+                    <div class="input-group" style="white-space: nowrap; text-overflow: ellipsis;">
                         <p-multiSelect 
                             [(ngModel)]="selectedGestores" 
                             [options]="filteredBusinessesManager" 
@@ -59,8 +61,9 @@
                             optionLabel="label" 
                             defaultLabel="Seleccione"
                             [maxSelectedLabels]="1"
-                            [selectedItemsLabel]="'{0} Empresas'"
-                            [showToggleAll]="false">>
+                            [selectedItemsLabel]="'Empresas'"
+                            [style]="{ width: '150px' }"
+                            emptyFilterMessage="No se encontraron resultados">
                             <ng-template let-gestor pTemplate="item">
                                 <div>{{ gestor.label }}</div>
                             </ng-template>
@@ -69,7 +72,7 @@
                 </div> 
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Numero Factura:</label>
-                    <div class="input-group">
+                    <div class="input-group" style="white-space: nowrap; text-overflow: ellipsis;">
                         <p-multiSelect 
                             [(ngModel)]="selectedInvoiceNumber" 
                             [options]="filteredInvoice" 
@@ -78,8 +81,9 @@
                             optionLabel="label" 
                             defaultLabel="Seleccione"
                             [maxSelectedLabels]="1"
-                            [selectedItemsLabel]="'{0} Facturas'"
-                            [showToggleAll]="false">>
+                            [selectedItemsLabel]="'Facturas'"
+                            [style]="{ width: '150px' }"
+                            emptyFilterMessage="No se encontraron resultados">
                             <ng-template let-invoice pTemplate="item">
                                 <div>{{ invoice.label }}</div>
                             </ng-template>
@@ -88,7 +92,7 @@
                 </div>  
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Tipo de tratamiento:</label>
-                    <div class="input-group">
+                    <div class="input-group" style="white-space: nowrap; text-overflow: ellipsis;">
                         <p-multiSelect 
                             [(ngModel)]="selectedTreatments" 
                             [options]="filteredTreatment" 
@@ -97,8 +101,9 @@
                             optionLabel="label" 
                             defaultLabel="Seleccione"
                             [maxSelectedLabels]="1"
-                            [selectedItemsLabel]="'{0} Tipos'"
-                            [showToggleAll]="false">>
+                            [selectedItemsLabel]="'Tipos'"
+                            [style]="{ width: '150px' }"
+                            emptyFilterMessage="No se encontraron resultados">
                             <ng-template let-treatment pTemplate="item">
                                 <div>{{ treatment.label }}</div>
                             </ng-template>
@@ -107,7 +112,7 @@
                 </div>
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Material:</label>
-                    <div class="input-group">
+                    <div class="input-group" style="white-space: nowrap; text-overflow: ellipsis;">
                         <p-multiSelect 
                             [(ngModel)]="selectedMaterials" 
                             [options]="filteredMaterial" 
@@ -116,8 +121,9 @@
                             optionLabel="label" 
                             defaultLabel="Seleccione"
                             [maxSelectedLabels]="1"
-                            [selectedItemsLabel]="'{0} Materiales'"
-                            [showToggleAll]="false">>
+                            [selectedItemsLabel]="'Materiales'"
+                            [style]="{ width: '150px' }"
+                            emptyFilterMessage="No se encontraron resultados">
                             <ng-template let-material pTemplate="item">
                                 <div>{{ material.label }}</div>
                             </ng-template>
@@ -127,7 +133,7 @@
                 <p></p>
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Fecha de retiro:</label>
-                    <div class="input-group">
+                    <div class="input-group" style="white-space: nowrap; text-overflow: ellipsis;">
                         <p-multiSelect 
                             [(ngModel)]="selectedYears" 
                             [options]="filteredYear"
@@ -136,8 +142,9 @@
                             optionLabel="label" 
                             defaultLabel="Seleccione"
                             [maxSelectedLabels]="1"
-                            [selectedItemsLabel]="'{0} Fechas'"
-                            [showToggleAll]="false">>
+                            [selectedItemsLabel]="'Fechas'"
+                            [style]="{ width: '150px' }"
+                            emptyFilterMessage="No se encontraron resultados">
                             <ng-template let-year pTemplate="item">
                                 <div>{{ year.label }}</div>
                             </ng-template>
@@ -146,7 +153,7 @@
                 </div>
                 <div class="col-12 col-xl-2 mb-3 mb-xl-0">
                     <label class="form-label">Estado:</label>
-                    <div class="input-group" style="width: 115px;">
+                    <div class="input-group" style="width: 150px;">
                         <p-autoComplete class="custom-autocomplete" [(ngModel)]="selectedState"
                                         [suggestions]="filteredState" (completeMethod)="filterState($event)" field="label"
                                         [dropdown]="true" placeholder="Todos" (onSelect)="updateFilters()">
