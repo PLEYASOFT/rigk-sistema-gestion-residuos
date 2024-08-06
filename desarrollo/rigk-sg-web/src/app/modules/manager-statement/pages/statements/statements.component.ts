@@ -703,7 +703,6 @@ export class StatementsComponent implements OnInit {
 
     try {
       const totalDeclaredWeight = itemsToProcess.reduce((sum, current) => sum + parseFloat(current.VALUE), 0);
-      console.log(itemsToProcess);
       for (const item of itemsToProcess) {
         const { TREATMENT_TYPE_NUMBER: treatmentType, PRECEDENCE_NUMBER: material, ID_DETAIL: id_detail, VALUE, IdGestor: IdGestor } = item;
         const declaredWeight = parseFloat(VALUE);
