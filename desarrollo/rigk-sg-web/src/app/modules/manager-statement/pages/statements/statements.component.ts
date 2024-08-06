@@ -109,94 +109,95 @@ export class StatementsComponent implements OnInit {
 
   loadStatements(): Promise<void> {
     return new Promise<void>((resolve) => {
-        const idGestors = JSON.parse(sessionStorage.getItem('user')!).ID_BUSINESS;
-        Swal.fire({
-            title: 'Cargando Datos',
-            text: 'Se están recuperando datos',
-            timerProgressBar: true,
-            showConfirmButton: false,
-            allowEscapeKey: false,
-            allowOutsideClick: false
-        });
-        Swal.showLoading();
+      const idGestors = JSON.parse(sessionStorage.getItem('user')!).ID_BUSINESS;
+      Swal.fire({
+        title: 'Cargando Datos',
+        text: 'Se están recuperando datos',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowEscapeKey: false,
+        allowOutsideClick: false
+      });
+      Swal.showLoading();
 
-        this.establishmentService.getDeclarationEstablishmentByIdGestor(idGestors).subscribe(r => {
-            if (r.status) {
-                r.data = r.data.map((item: any) => {
-                    item.FechaParaOrdenar = (item.MesRetiro != "" && item.MesRetiro != null) ? item.MesRetiro : item.FechaRetiro;
-                    return item;
-                });
-                r.data = r.data.filter((item: any) => item.TipoTratamiento != null);
-                r.data = r.data.sort((a: any, b: any) => {
-                    const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
-                    return dateComparison === 0 ? b.ID_DETAIL - a.ID_DETAIL : dateComparison;
-                });
+      this.establishmentService.getDeclarationEstablishmentByIdGestor(idGestors).subscribe(r => {
+        if (r.status) {
+          r.data = r.data.map((item: any) => {
+            item.FechaParaOrdenar = (item.MesRetiro != "" && item.MesRetiro != null) ? item.MesRetiro : item.FechaRetiro;
+            return item;
+          });
+          r.data = r.data.filter((item: any) => item.TipoTratamiento != null);
+          r.data = r.data.sort((a: any, b: any) => {
+            const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+            return dateComparison === 0 ? b.ID_DETAIL - a.ID_DETAIL : dateComparison;
+          });
 
-                (r.data as any[]).forEach(e => {
-                    e.isChecked = false;
-                    e.FechaMostrar = e.MesRetiro != "" && e.MesRetiro != null ? e.MesRetiro : e.FechaRetiro;
+          (r.data as any[]).forEach(e => {
+            e.isChecked = false;
+            e.FechaMostrar = e.MesRetiro != "" && e.MesRetiro != null ? e.MesRetiro : e.FechaRetiro;
 
-                    if (this.business_name.indexOf(e.NAME_BUSINESS) === -1) {
-                        this.business_name.push(e.NAME_BUSINESS);
-                    }
-                    if (this.rut_ci.indexOf(e.RUT_BUSINESS) === -1) {
-                        this.rut_ci.push(e.RUT_BUSINESS);
-                    }
-                    if (this.establishment_name.indexOf(e.NAME_ESTABLISHMENT_REGION) === -1) {
-                        this.establishment_name.push(e.NAME_ESTABLISHMENT_REGION);
-                    }
-                    if (e.NUMERO_FACTURA != null && this.invoice.indexOf(e.NUMERO_FACTURA) === -1) {
-                        this.invoice.push(e.NUMERO_FACTURA);
-                    }
-                    if (this.years.indexOf(e.FechaRetiroTipeada) === -1) {
-                        this.years.push(e.FechaRetiroTipeada)
-                    }
-                    if (this.material_name.indexOf(e.PRECEDENCE) === -1) {
-                        this.material_name.push(e.PRECEDENCE)
-                    }
-                    if (this.treatment_name.indexOf(e.TipoTratamiento) === -1) {
-                        this.treatment_name.push(e.TipoTratamiento);
-                    }
-                    if (this.state.indexOf(e.STATE_GESTOR) === -1) {
-                        this.state.push(e.STATE_GESTOR)
-                    }
-                    if (this.gestor_name.indexOf(e.NAME_GESTOR) === -1) {
-                        this.gestor_name.push(e.NAME_GESTOR)
-                    }
-                });
-
-                this.years.sort((a, b) => b - a);
-                this.dbStatements = r.data;
-                this.allDb = [...this.dbStatements];
-                this.cant = Math.ceil(this.dbStatements.length / 10);
-                this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a: any, b: any) => {
-                    const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
-                    return dateComparison === 0 ? b.ID_DETAIL - a.ID_DETAIL : dateComparison;
-                });
-
-                // Ejecuta los métodos de filtrado en orden
-                this.filterBusinesses({ query: '' });
-                this.filterBusinessesManager({ query: '' });
-                this.filterTreatment({ query: '' });
-                this.filterMaterial({ query: '' });
-                this.filterYear({ query: '' });
-                this.filterRutCI({ query: '' });
-                this.filterInvoices({ query: '' });
-
-                // Inicializa selectedBusinesses después de que se completen los filtros
-                this.selectedBusinesses = this.filteredBusinesses;
-                this.selectedRutCI = this.filteredRutCI;
-                this.selectedGestores = this.filteredBusinessesManager;
-                this.selectedInvoiceNumber = this.filteredInvoice;
-                this.selectedTreatments = this.filteredTreatment;
-                this.selectedMaterials = this.filteredMaterial;
-                this.selectedYears = this.filteredYear;
-                Swal.close();
+            if (this.business_name.indexOf(e.NAME_BUSINESS) === -1) {
+              this.business_name.push(e.NAME_BUSINESS);
             }
-            resolve();
-        });
+            if (this.rut_ci.indexOf(e.RUT_BUSINESS) === -1) {
+              this.rut_ci.push(e.RUT_BUSINESS);
+            }
+            if (this.establishment_name.indexOf(e.NAME_ESTABLISHMENT_REGION) === -1) {
+              this.establishment_name.push(e.NAME_ESTABLISHMENT_REGION);
+            }
+            if (e.NUMERO_FACTURA != null && this.invoice.indexOf(e.NUMERO_FACTURA) === -1) {
+              this.invoice.push(e.NUMERO_FACTURA);
+            }
+            if (this.years.indexOf(e.FechaRetiroTipeada) === -1) {
+              this.years.push(e.FechaRetiroTipeada)
+            }
+            if (this.material_name.indexOf(e.PRECEDENCE) === -1) {
+              this.material_name.push(e.PRECEDENCE)
+            }
+            if (this.treatment_name.indexOf(e.TipoTratamiento) === -1) {
+              this.treatment_name.push(e.TipoTratamiento);
+            }
+            if (this.state.indexOf(e.STATE_GESTOR) === -1) {
+              this.state.push(e.STATE_GESTOR)
+            }
+            if (this.gestor_name.indexOf(e.NAME_GESTOR) === -1) {
+              this.gestor_name.push(e.NAME_GESTOR)
+            }
+          });
+
+          this.years.sort((a, b) => b - a);
+          this.dbStatements = r.data;
+          this.allDb = [...this.dbStatements];
+          this.cant = Math.ceil(this.dbStatements.length / 10);
+          this.db = this.dbStatements.slice((this.pos - 1) * 10, this.pos * 10).sort((a: any, b: any) => {
+            const dateComparison = new Date(b.FechaRetiro).getTime() - new Date(a.FechaRetiro).getTime();
+            return dateComparison === 0 ? b.ID_DETAIL - a.ID_DETAIL : dateComparison;
+          });
+
+          // Ejecuta los métodos de filtrado en orden
+          this.filterBusinesses({ query: '' });
+          this.filterBusinessesManager({ query: '' });
+          this.filterTreatment({ query: '' });
+          this.filterMaterial({ query: '' });
+          this.filterYear({ query: '' });
+          this.filterRutCI({ query: '' });
+          this.filterInvoices({ query: '' });
+
+          // Inicializa selectedBusinesses después de que se completen los filtros
+          this.selectedBusinesses = this.filteredBusinesses;
+          this.selectedRutCI = this.filteredRutCI;
+          this.selectedGestores = this.filteredBusinessesManager;
+          this.selectedInvoiceNumber = this.filteredInvoice;
+          this.selectedTreatments = this.filteredTreatment;
+          this.selectedMaterials = this.filteredMaterial;
+          this.selectedYears = this.filteredYear;
+          this.updateFilters();
+          Swal.close();
+        }
+        resolve();
+      });
     });
-}
+  }
 
 
   openApprovalModal() {
@@ -237,7 +238,7 @@ export class StatementsComponent implements OnInit {
       return (
         (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
         (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
-        (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null || r.NUMERO_FACTURA === null) &&  
+        (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null || r.NUMERO_FACTURA === null) &&
         (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
         (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
         (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
@@ -385,7 +386,7 @@ export class StatementsComponent implements OnInit {
       return (
         (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
         (selectedRutCIValues.includes('-1') || selectedRutCIValues.includes(r.RUT_BUSINESS)) &&
-        (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString()))|| r.NUMERO_FACTURA === null) &&  
+        (selectedInvoiceValues.includes('-1') || (r.NUMERO_FACTURA && selectedInvoiceValues.includes(r.NUMERO_FACTURA.toString())) || r.NUMERO_FACTURA === null) &&
         (selectedMaterialValues.includes('-1') || selectedMaterialValues.includes(r.PRECEDENCE)) &&
         (selectedTreatmentValues.includes('-1') || selectedTreatmentValues.includes(r.TipoTratamiento)) &&
         (selectedYearValues.includes('-1') || selectedYearValues.includes(r.FechaRetiroTipeada)) &&
@@ -399,7 +400,7 @@ export class StatementsComponent implements OnInit {
     );
 
     this.cant = Math.ceil(this.filteredStatements.length / 10);
-    
+
   }
 
 
@@ -455,8 +456,8 @@ export class StatementsComponent implements OnInit {
       )
       .map((r) => r.TipoTratamiento)
       .filter((value, index, self) => self.indexOf(value) === index);
-      // Filtrar las opciones de invoice
-      this.invoice = this.dbStatements
+    // Filtrar las opciones de invoice
+    this.invoice = this.dbStatements
       .filter(
         (r) =>
           (selectedBusinessValues.includes('-1') || selectedBusinessValues.includes(r.NAME_BUSINESS)) &&
@@ -527,15 +528,12 @@ export class StatementsComponent implements OnInit {
       )
       .map((r) => r.NAME_GESTOR)
       .filter((value, index, self) => self.indexOf(value) === index);
-
-    
-      this.cdr.detectChanges();
+    this.cdr.detectChanges();
   }
 
   reset() {
     this.loadStatements().then(() => {
       this.filter();
-      this.updateFilters();
       this.pagTo(this.pos - 1);
     });
     this.userForm.reset({ reciclador: '' })
@@ -687,7 +685,7 @@ export class StatementsComponent implements OnInit {
     if (!invoiceNumber) {
       console.error('Número de factura no válido');
       return;
-  }
+    }
     const totalWeight = parseFloat(this.userForm.controls['totalWeight'].value!.replace(",", "."));
     const valuedWeightFloat = parseFloat(valuedWeight!.replace(",", "."));
 
@@ -705,7 +703,6 @@ export class StatementsComponent implements OnInit {
 
     try {
       const totalDeclaredWeight = itemsToProcess.reduce((sum, current) => sum + parseFloat(current.VALUE), 0);
-
       for (const item of itemsToProcess) {
         const { TREATMENT_TYPE_NUMBER: treatmentType, PRECEDENCE_NUMBER: material, ID_DETAIL: id_detail, VALUE, IdGestor: IdGestor } = item;
         const declaredWeight = parseFloat(VALUE);
@@ -727,10 +724,16 @@ export class StatementsComponent implements OnInit {
   }
 
   updateItemState(id_detail: number, valuedWeight: string, invoiceNumber: string): void {
-    const updatedItem = this.db.find(item => item.ID_DETAIL === id_detail);
+    const updatedItem = this.allDb.find(item => item.ID_DETAIL === id_detail);
     if (updatedItem) {
       updatedItem.STATE_GESTOR = 1;
-      updatedItem.NUMERO_FACTURA = invoiceNumber; 
+      updatedItem.NUMERO_FACTURA = invoiceNumber;
+      const invoiceNum = parseInt(invoiceNumber);
+
+      if (!this.invoice.includes(invoiceNum)) {
+        this.invoice.push(invoiceNum);
+      }
+
       const valuedWeightNum = parseFloat(valuedWeight);
       if (valuedWeightNum % 1 === 0) {
         updatedItem.VALUE_DECLARATE = valuedWeightNum.toString().replace('.', ',');
@@ -740,7 +743,6 @@ export class StatementsComponent implements OnInit {
     }
     this.cdr.detectChanges();
   }
-
 
   async showSuccessMessage(multiple: boolean) {
     await Swal.fire({
@@ -820,7 +822,7 @@ export class StatementsComponent implements OnInit {
             this.userForm.controls['rut'].setValue('');
             this.userForm.controls['valuedWeight'].disable();
           }
-        } else if (businessResponse.data[0].num_asoc > 0){
+        } else if (businessResponse.data[0].num_asoc > 0) {
           if (invoiceNumber) {
             this.userForm.controls['reciclador'].setValue(businessResponse.data[0]?.NAME);
             this.userForm.controls['rut'].setValue(businessResponse.data[0]?.RUT);
@@ -836,7 +838,7 @@ export class StatementsComponent implements OnInit {
             this.userForm.controls['valuedWeight'].disable();
           }
         }
-        else{
+        else {
           if (invoiceNumber) {
             this.userForm.controls['valuedWeight'].enable();
             this.userForm.controls['totalWeight'].enable();
@@ -986,7 +988,7 @@ export class StatementsComponent implements OnInit {
       this.selectedWeight = totalWeight.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
     if (selectedItems.length > 0) {
-      
+
       this.dbStatements = [...this.filteredStatements];
       this.selectedGestor = selectedGestor;
       this.selectedState = '0'; // Estado "Por aprobar"
@@ -995,12 +997,12 @@ export class StatementsComponent implements OnInit {
     } else {
       // Si no hay elementos seleccionados, restablecer los filtros y habilitarlos
       this.selectedBusinesses = [{ label: 'Todos', value: '-1' }];
-      this.selectedGestores  = [{ label: 'Todos', value: '-1' }];
-      this.selectedTreatments  = [{ label: 'Todos', value: '-1' }];
-      this.selectedMaterials  = [{ label: 'Todos', value: '-1' }];
-      this.selectedYears  = [{ label: 'Todos', value: '-1' }];
-      this.selectedRutCI  = [{ label: 'Todos', value: '-1' }];
-      this.selectedInvoiceNumber  = [{ label: 'Todos', value: '-1' }];
+      this.selectedGestores = [{ label: 'Todos', value: '-1' }];
+      this.selectedTreatments = [{ label: 'Todos', value: '-1' }];
+      this.selectedMaterials = [{ label: 'Todos', value: '-1' }];
+      this.selectedYears = [{ label: 'Todos', value: '-1' }];
+      this.selectedRutCI = [{ label: 'Todos', value: '-1' }];
+      this.selectedInvoiceNumber = [{ label: 'Todos', value: '-1' }];
       this.selectedState = '-1';
       this.disableFilters = false;
       this.dbStatements = [...this.allDb];
