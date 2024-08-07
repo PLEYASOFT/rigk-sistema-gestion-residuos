@@ -162,7 +162,20 @@ export class FormComponent implements OnInit {
           managers: item.BUSINESS_NAME,
           id_gestor: item.ID_BUSINESS
         }));
-      } else {
+
+        // Elimina duplicados
+        const uniqueManagers = this.managers.reduce((acc, current) => {
+          const x = acc.find((item: { managers: any; material: any; }) => item.managers === current.managers && item.material === current.material);
+          if (!x) {
+            return acc.concat([current]);
+          } else {
+            return acc;
+          }
+        }, []);
+        uniqueManagers.sort((a: { managers: string; }, b: { managers: any; }) => a.managers.localeCompare(b.managers));
+        this.managers = uniqueManagers;
+      }
+      else {
         console.error('results.status no es un array');
       }
     });
@@ -225,7 +238,7 @@ export class FormComponent implements OnInit {
               error = "Debe ingresar un peso correcto";
               break;
             }
-            if (this.newData[i].date == "" && this.newData[i].dateType== '0') {
+            if (this.newData[i].date == "" && this.newData[i].dateType == '0') {
               error = "Debe ingresar una fecha de retiro";
               break;
             }
@@ -266,7 +279,7 @@ export class FormComponent implements OnInit {
               error = "Debe ingresar un peso correcto";
               break;
             }
-            if (this.newData[i].mdate == "" && this.newData[i].dateType== '1') {
+            if (this.newData[i].mdate == "" && this.newData[i].dateType == '1') {
               error = "Debe ingresar una mes de retiro";
               break;
             }
@@ -285,17 +298,17 @@ export class FormComponent implements OnInit {
           return;
         }
       } else {
-          error = "Debe seleccionar un tipo de fecha";
+        error = "Debe seleccionar un tipo de fecha";
 
-          if (error != null) {
-            Swal.fire({
-              icon: 'info',
-              text: error
-            });
-            return;
-          }
+        if (error != null) {
+          Swal.fire({
+            icon: 'info',
+            text: error
+          });
+          return;
         }
       }
+    }
     let savedSuccessfully = [];
     let saveErrors = [];
     for (let i = 0; i < this.newData.length; i++) {
