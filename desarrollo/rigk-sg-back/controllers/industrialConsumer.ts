@@ -402,6 +402,29 @@ class IndustrialConsumer {
             row.getCell(10).value = "ID VU GESTOR";
             row.getCell(11).value = "CANTIDAD (KG)";
             row.commit();
+
+            worksheet.getCell('C1').value = "(NO COPIE DATOS O FORMATOS ENTRE COLUMNAS. ESTA ACCION PODRIA CAUSAR ERRORES DURANTE LA CARGA DEL ARCHIVO.)"
+            worksheet.getCell('E3').note = {
+                texts: [
+                    { text: 'FECHA PRECISA:', font: { bold: true } },
+                    { text: ' DEBE INGRESAR FECHA RETIRO EN FORMATO DD/MM/AAAA EN COLUMNA F.\n' },
+                    { text: 'TODO EL MES:', font: { bold: true } },
+                    { text: ' DEBE INGRESAR MES RETIRO EN FORMATO MM/AAAA EN COLUMNA G.' }
+                ]
+            };
+            worksheet.getCell('F3').note = {
+                texts: [
+                    { text: 'ESTA COLUMNA DEBE SER RELLENADA SI ES QUE EL TIPO DE FECHA ES ' },
+                    { text: 'FECHA PRECISA', font: { bold: true } },
+                ]
+            };
+            worksheet.getCell('G3').note = {
+                texts: [
+                    { text: 'ESTA COLUMNA DEBE SER RELLENADA SI ES QUE EL TIPO DE FECHA ES ' },
+                    { text: 'TODO EL MES', font: { bold: true } },
+                ]
+            };
+
             const col = worksheet.columns;
             col[0].width = 26;
             col[1].width = 26;
